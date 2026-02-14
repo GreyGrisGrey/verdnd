@@ -47,6 +47,20 @@ export class Board {
         this.tokenObj.addEventListeners()
     }
     
+    swapMode(newMode: string): void {
+        this.currMode = newMode
+        this.tokenObj.flipListeners(false)
+        this.viewObj.flipListeners(false)
+        this.drawObj.flipListeners(false)
+        if (newMode === "VIEW") {
+            this.viewObj.flipListeners(true)
+        } else if (newMode === "TOKEN") {
+            this.tokenObj.flipListeners(true)
+        } else if (newMode === "DRAW") {
+            this.drawObj.flipListeners(true)
+        }
+    }
+    
     flipView(): void {
         this.viewObj.flipListeners(true)
         return

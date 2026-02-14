@@ -1,0 +1,33 @@
+<div class="modeMenu" id="modeMenuID">
+    <button class="modeButton" id="t1">View</button>
+    <button class="modeButton" id="t2">Token</button>
+    <button class="modeButton" id="t3"">Draw</button>
+</div>
+
+<style>
+  .modeButton {
+    background: rgba(200, 200, 200, 1);
+    z-index: 3;
+    width: 100px;
+    height: 50px;
+    pointer-events: auto;
+  }
+  
+
+    .modeButton:active {
+    background-color: rgba(100, 100, 100, 1);
+    }
+
+  
+  .modeMenu {
+    background-color: rgba(200, 200, 200, 0.5);
+    border: solid black;
+    position: absolute;
+    z-index: 2;
+    bottom: 10px;
+    left: 10px;
+    width: 100px;
+    height: 150px;
+    pointer-events: none;
+  }
+</style>

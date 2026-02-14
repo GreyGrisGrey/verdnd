@@ -114,9 +114,7 @@ let board: BoardParams.Board = new BoardParams.Board(can)
 let serveInter: ServerInterface.ServerInterface = new ServerInterface.ServerInterface()
 let storedObjects: Map<number, any> = new Map()
 
-createLayer()
-createObj(["POLYLINE", 5, 0, [[2, 1], [1, 3], [-1, 3], [-2, 1]]], 0)
-changeObjColour(0, "#cccccc")
+addTestObjects()
 while (true) {
     if (can.width != window.innerWidth){
         can.width = window.innerWidth
