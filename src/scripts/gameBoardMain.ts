@@ -3,6 +3,7 @@ import * as BoardParams from "./localBoard.ts";
 import * as BoardLayer from "./boardLayer.ts"
 import * as BoardObject from "./boardObject.ts"
 import * as ServerInterface from "./serverInterface.ts"
+import * as viewMode from "./boardViewMode.ts"
 
 function addTestObjects() {
     let testLayer: BoardLayer.BoardLayer = new BoardLayer.BoardLayer()
@@ -78,7 +79,7 @@ function moveLayer(ID: number, x: number, y: number) {
     serveInter.sendItem(["LAYER", ID, "MOVE", x, y])
 }
 
-// Movs an object from layer 1 to layer 2
+// Moves an object from layer 1 to layer 2
 function swapObjLayer(obj: number, lay1: number, lay2: number) {
     serveInter.sendItem(["LAYER", lay1, "REMOVE", obj])
     serveInter.sendItem(["LAYER", lay2, "ADD", obj])

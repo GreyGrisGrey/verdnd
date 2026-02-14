@@ -1,5 +1,8 @@
 // File managing the local version of the board.
 import * as BoardLayer from "./boardLayer.ts"
+import * as viewMode from "./boardViewMode.ts"
+import * as drawMode from "./boardDrawMode.ts"
+import * as tokenMode from "./boardTokenMode.ts"
 
 export class Board {
     zoomGlobal: number
@@ -13,6 +16,10 @@ export class Board {
     leftMouseDown: boolean
     boardLayers: Array<BoardLayer.BoardLayer>
     layerMap: Map<number, BoardLayer.BoardLayer>
+    currMode: string
+    viewObj: viewMode.BoardViewMode
+    tokenObj: tokenMode.BoardTokenMode
+    drawObj: drawMode.BoardDrawMode
     
     constructor(can: HTMLElement) {
         this.zoomGlobal = 3
@@ -26,50 +33,22 @@ export class Board {
         this.leftMouseDown = false
         this.boardLayers = new Array()
         this.layerMap = new Map()
+        this.currMode = "VIEW"
+        this.viewObj = new viewMode.BoardViewMode(this)
+        this.tokenObj = new tokenMode.BoardTokenMode(this)
+        this.drawObj = new drawMode.BoardDrawMode(this)
         this.addEventListeners()
     }
     
     // Adds various event listeners for mouse movement and scrolling.
     addEventListeners(): void {
-        this.can.addEventListener('mousemove', (event) => {
-            let change = [Math.round(this.mouseCoords[0] - event.clientX), Math.round(this.mouseCoords[1] - event.clientY)]
-            if (this.leftMouseDown) {
-                this.moveCamera(change[0], change[1])
-            }
-            this.mouseCoords[0] = event.clientX;
-            this.mouseCoords[1] = event.clientY;
-            
-        })
-        
-        this.can.addEventListener('mousedown', (event) => {
-            this.leftMouseDown = true;
-        });
-        
-        this.can.addEventListener('mouseup', (event) => {
-            this.leftMouseDown = false;
-        });
-        
-        // Changes the zoom level when scrolled
-        this.can.addEventListener('wheel', (event) => {
-            let old = this.zoomVal
-            if (event.deltaY < 0 && this.zoomGlobal < this.zoomLevels.length - 1) {
-                this.zoomGlobal += 1
-                this.zoomVal = this.zoomLevels[this.zoomGlobal]
-                let originDist = [this.mouseCoords[0] - this.originCoords[0], this.mouseCoords[1] - this.originCoords[1]]
-                let goals = [originDist[0] * this.zoomVal / old, originDist[1] * this.zoomVal / old]
-                this.originCoords[0] -= goals[0] - originDist[0]
-                this.originCoords[1] -= goals[1] - originDist[1]
-            } else if (event.deltaY > 0 && this.zoomGlobal > 0) {
-                this.zoomGlobal -= 1
-                this.zoomVal = this.zoomLevels[this.zoomGlobal]
-                let originDist = [this.mouseCoords[0] - this.originCoords[0], this.mouseCoords[1] - this.originCoords[1]]
-                let goals = [originDist[0] * this.zoomVal / old, originDist[1] * this.zoomVal / old]
-                this.originCoords[0] -= goals[0] - originDist[0]
-                this.originCoords[1] -= goals[1] - originDist[1]
-            }
-            this.originCoords[0] = Math.round(this.originCoords[0] * 10000) / 10000
-            this.originCoords[1] = Math.round(this.originCoords[1] * 10000) / 10000
-        });
+        this.viewObj.addEventListeners()
+        this.drawObj.addEventListeners()
+        this.tokenObj.addEventListeners()
+    }
+    
+    flipView(): void {
+        this.viewObj.flipListeners(true)
         return
     }
     
@@ -88,15 +67,15 @@ export class Board {
     
     // Ensures camera is kept within the board boundaries.
     bindCamera():void {
-        if (this.originCoords[0] < this.boardBounds[0] - 100) {
-            this.originCoords[0] = this.boardBounds[0] - 100
-        } else if (this.originCoords[0] > this.boardBounds[1] + 100) {
-            this.originCoords[0] = this.boardBounds[1] + 100
+        if (this.originCoords[0] < (this.boardBounds[0] - 100) * this.zoomVal) {
+            this.originCoords[0] = (this.boardBounds[0] - 100)  * this.zoomVal
+        } else if (this.originCoords[0] > (this.boardBounds[1] + 100) * this.zoomVal) {
+            this.originCoords[0] = (this.boardBounds[1] + 100) * this.zoomVal
         }
-        if (this.originCoords[1] < this.boardBounds[2] - 100) {
-            this.originCoords[1] = this.boardBounds[2] - 100
-        } else if (this.originCoords[1] > this.boardBounds[3] + 100) {
-            this.originCoords[1] = this.boardBounds[3] + 100
+        if (this.originCoords[1] < (this.boardBounds[2] - 100) * this.zoomVal) {
+            this.originCoords[1] = (this.boardBounds[2] - 100) * this.zoomVal
+        } else if (this.originCoords[1] > (this.boardBounds[3] + 100) * this.zoomVal) {
+            this.originCoords[1] = (this.boardBounds[3] + 100) * this.zoomVal
         }
     }
     
