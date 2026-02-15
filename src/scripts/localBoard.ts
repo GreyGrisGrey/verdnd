@@ -1,8 +1,6 @@
 // File managing the local version of the board.
 import * as BoardLayer from "./boardLayer.ts"
-import * as viewMode from "./boardViewMode.ts"
-import * as drawMode from "./boardDrawMode.ts"
-import * as tokenMode from "./boardTokenMode.ts"
+import * as modeManager from "./modeManager.ts"
 
 export class Board {
     zoomGlobal: number
@@ -16,10 +14,7 @@ export class Board {
     leftMouseDown: boolean
     boardLayers: Array<BoardLayer.BoardLayer>
     layerMap: Map<number, BoardLayer.BoardLayer>
-    currMode: string
-    viewObj: viewMode.BoardViewMode
-    tokenObj: tokenMode.BoardTokenMode
-    drawObj: drawMode.BoardDrawMode
+    modeObj: modeManager.ModeManager
     
     constructor(can: HTMLElement) {
         this.zoomGlobal = 3
@@ -33,37 +28,7 @@ export class Board {
         this.leftMouseDown = false
         this.boardLayers = new Array()
         this.layerMap = new Map()
-        this.currMode = "VIEW"
-        this.viewObj = new viewMode.BoardViewMode(this)
-        this.tokenObj = new tokenMode.BoardTokenMode(this)
-        this.drawObj = new drawMode.BoardDrawMode(this)
-        this.addEventListeners()
-    }
-    
-    // Adds various event listeners for mouse movement and scrolling.
-    addEventListeners(): void {
-        this.viewObj.addEventListeners()
-        this.drawObj.addEventListeners()
-        this.tokenObj.addEventListeners()
-    }
-    
-    swapMode(newMode: string): void {
-        this.currMode = newMode
-        this.tokenObj.flipListeners(false)
-        this.viewObj.flipListeners(false)
-        this.drawObj.flipListeners(false)
-        if (newMode === "VIEW") {
-            this.viewObj.flipListeners(true)
-        } else if (newMode === "TOKEN") {
-            this.tokenObj.flipListeners(true)
-        } else if (newMode === "DRAW") {
-            this.drawObj.flipListeners(true)
-        }
-    }
-    
-    flipView(): void {
-        this.viewObj.flipListeners(true)
-        return
+        this.modeObj = new modeManager.ModeManager(this)
     }
     
     // Test function for pointer drawing.
@@ -157,8 +122,9 @@ export class Board {
     }
     
     // Adds an object to a specified layer.
-    addObject(objID: number, layerID: number, newObject: any) {
+    addObject(objID: number, layerID: number, newObject: any): void {
         this.layerMap.get(layerID)!.addObject(newObject, objID)
+        return
     }
     
     
@@ -173,6 +139,10 @@ export class Board {
         let squareSize = 5 * this.zoomVal
         for (let i = 0; i < this.boardLayers.length; i++) {
             this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
+        }
+        let tempObj = this.modeObj.drawObj.getTempObject()
+        if (tempObj != 1) {
+            tempObj.draw(this.ctx, squareSize, this.originCoords)
         }
         this.drawPointGrid(squareSize)
         this.drawMousePointer()
@@ -192,11 +162,36 @@ export class Board {
             }
             while (currY < this.can.height + 100) {
                 if (currX <= this.originCoords[0] && currX + squareSize >= this.originCoords[0]) {
-                    this.ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
+                    this.ctx.fillStyle = "rgba(255, 255, 255, 1)"
                 } else [
-                    this.ctx.fillStyle = "rgba(255, 255, 255, 0.5)"
+                    this.ctx.fillStyle = "rgba(255, 255, 255, 1)"
                 ]
                 this.ctx.fillRect(currX - 1, currY - 1, 2, 2)
+                currY += squareSize
+            }
+            currX += squareSize
+        }
+        return
+    }
+    
+    drawLineGrid(squareSize: number): void {
+        let currX = this.originCoords[0]
+        while (currX + squareSize < 0) {
+            currX += squareSize
+        }
+        while (currX < this.can.width + 100) {
+            let currY = this.originCoords[1]
+            while (currY + squareSize < 0) {
+                currY += squareSize
+            }
+            while (currY < this.can.height + 100) {
+                if (currX <= this.originCoords[0] && currX + squareSize >= this.originCoords[0]) {
+                    this.ctx.fillStyle = "rgba(100, 100, 100, 0.25)"
+                } else [
+                    this.ctx.fillStyle = "rgba(100, 100, 100, 0.25)"
+                ]
+                this.ctx.fillRect(currX - 1, currY - 1, squareSize, 2)
+                this.ctx.fillRect(currX- 1, currY - 1, 2, squareSize)
                 currY += squareSize
             }
             currX += squareSize
@@ -228,5 +223,14 @@ export class Board {
             currX += squareSize
         }
         return
+    }
+    
+    determineTile(x: number, y: number, vertex: boolean): Array<number> {
+        let squareSize = 5 * this.zoomVal
+        if (vertex) {
+            return [Math.round((x - this.originCoords[0]) / squareSize), Math.round((y - this.originCoords[1]) / squareSize)]
+        } else {
+            return [Math.floor((x - this.originCoords[0]) / squareSize), Math.floor((y - this.originCoords[1]) / squareSize)]
+        }
     }
 }

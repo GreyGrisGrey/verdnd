@@ -8,11 +8,11 @@ export class BoardObject {
     hasImage: boolean
     imagePath: string
     
-    constructor(x: number, y: number) {
+    constructor(x: number, y: number, col: string = "#cc0000") {
         this.ID = 0
         this.zOrder = 0
         this.location = [x, y]
-        this.colour = "#cc0000"
+        this.colour = col
         this.hasImage = false
         this.imagePath = ""
     }
@@ -38,7 +38,7 @@ export class Token extends BoardObject{
     name: string
     objType: string
     
-    constructor(x: number, y: number) {
+    constructor(x: number, y: number, col: string = "#cc0000") {
         super(x, y)
         this.owner = ""
         this.radius = 1
@@ -62,7 +62,7 @@ export class Rect extends BoardObject{
     size: Array<number>
     objType: string
     
-    constructor(x:number, y:number, xSize:number, ySize:number) {
+    constructor(x:number, y:number, xSize:number, ySize:number, col: string = "#cc0000") {
         super(x, y)
         this.size = [xSize, ySize]
         this.objType = "Rect"
@@ -72,14 +72,13 @@ export class Rect extends BoardObject{
         ctx.fillStyle = this.colour
         ctx.fillRect(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1], this.size[0] * squareSize, this.size[1] * squareSize)
     }
-    
 }
 
 export class Circle extends BoardObject{
     radius: number
     objType: string
     
-    constructor(x:number, y:number, rad:number) {
+    constructor(x:number, y:number, rad:number, col: string = "#cc0000") {
         super(x, y)
         this.radius = rad
         this.objType = "Circle"
@@ -99,7 +98,7 @@ export class Polyline extends BoardObject{
     points: Array<Array<number>>
     objType: string
     
-    constructor(x: number, y:number, structure:Array<Array<number>>) {
+    constructor(x: number, y:number, structure:Array<Array<number>>, col: string = "#cc0000") {
         super(x, y)
         this.points = structure
         this.objType = "Polyline"

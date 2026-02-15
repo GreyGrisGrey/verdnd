@@ -5,14 +5,18 @@ import * as localBoard from "./localBoard.ts"
 export class BoardViewMode {
     board: localBoard.Board
     active: boolean
+    modeButton: any
     
     constructor(parentBoard: localBoard.Board) {
         this.board = parentBoard
         this.active = true
+        this.modeButton = document.getElementById("viewMenuButton")!
+        this.addEventListeners()
     }
     
     flipListeners(setOn: boolean) {
         this.active = setOn
+        this.modeButton.disabled = setOn
     }
     
     addEventListeners(): void {
@@ -63,5 +67,9 @@ export class BoardViewMode {
             }
         });
         return
+    }
+    
+    getText(): string {
+        return "Scroll : Zoom\nLeft Click + Drag : Pan"
     }
 }

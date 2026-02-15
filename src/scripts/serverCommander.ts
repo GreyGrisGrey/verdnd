@@ -1,9 +1,3 @@
-// This should be doing the drawing. Or at least sending out the drawing command.
-import * as BoardParams from "./localBoard.ts";
-import * as BoardLayer from "./boardLayer.ts"
-import * as BoardObject from "./boardObject.ts"
-import * as ServerInterface from "./serverInterface.ts"
-
 // Please make this less worse in every way.
 function handleObjEvent(event: Array<any>) {
     if (event[0] === "LAYER") {
@@ -81,31 +75,4 @@ function destroyObj(id: number) {
 
 function changeObjColour(id: number, newColour: string) {
     serveInter.sendItem(["OBJECT", id, "RECOLOUR", newColour])
-}
-
-let can = document.getElementById("board")!
-let ctx = can.getContext('2d')
-can.width = window.innerWidth
-can.height = window.innerHeight
-let board: BoardParams.Board = new BoardParams.Board(can)
-let serveInter: ServerInterface.ServerInterface = new ServerInterface.ServerInterface()
-let storedObjects: Map<number, any> = new Map()
-
-createLayer()
-while (true) {
-    if (can.width != window.innerWidth){
-        can.width = window.innerWidth
-        can.height = window.innerHeight
-    }
-    await new Promise(resolve => setTimeout(resolve, 25));
-    ctx.clearRect(0, 0, can.width, can.height)
-    board.draw()
-    let events = serveInter.getItems()
-    for (let i = 0; i < events.length; i++) {
-        handleObjEvent(events[i])
-    }
-    serveInter.clearQueue()
-    if (board.modeObj.drawObj.completeObjCheck) {
-        createObj(board.modeObj.drawObj.getNewObject(), 0)
-    }
 }

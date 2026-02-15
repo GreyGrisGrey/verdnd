@@ -1,22 +1,33 @@
 <div class="modeMenu" id="modeMenuID">
-    <button class="modeButton" id="t1">View</button>
-    <button class="modeButton" id="t2">Token</button>
-    <button class="modeButton" id="t3"">Draw</button>
+    <button class="modeButton" id="viewMenuButton" disabled>View</button>
+    <button class="modeButton" id="tokenMenuButton">Token</button>
+    <button class="modeButton" id="drawMenuButton"">Draw</button>
+</div>
+
+<div class="modeExplain" id="modeExplainations">
+  <p id="modeParagraph"> 
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+    Excepteur sint occaecat cupidatat non proident, 
+    sunt in culpa qui officia deserunt mollit anim id est laborum. 
+  </p>
 </div>
 
 <style>
   .modeButton {
     background: rgba(200, 200, 200, 1);
     z-index: 3;
-    width: 100px;
+    width: 250px;
     height: 50px;
     pointer-events: auto;
   }
   
 
-    .modeButton:active {
-    background-color: rgba(100, 100, 100, 1);
-    }
+  .modeButton:disabled {
+    background-color: rgba(150, 150, 150, 1);
+  }
 
   
   .modeMenu {
@@ -26,8 +37,26 @@
     z-index: 2;
     bottom: 10px;
     left: 10px;
-    width: 100px;
+    width: 250px;
     height: 150px;
     pointer-events: none;
+  }
+  
+  .modeExplain {
+    background-color: rgba(200, 200, 200, 0.5);
+    border: solid black;
+    position: absolute;
+    z-index: 2;
+    bottom: 170px;
+    left: 10px;
+    width: 250px;
+    height: 300px;
+    pointer-events: none;
+  }
+  
+  #modeParagraph {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
   }
 </style>
