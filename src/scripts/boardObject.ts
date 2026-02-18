@@ -9,8 +9,8 @@ export class BoardObject {
     imagePath: string
     centerPoint: Array<number>
     
-    constructor(x: number, y: number, col: string = "#cc0000") {
-        this.ID = 0
+    constructor(id: number, x: number, y: number, col: string) {
+        this.ID = id
         this.zOrder = 0
         this.location = [x, y]
         this.colour = col
@@ -47,8 +47,8 @@ export class Token extends BoardObject{
     name: string
     objType: string
     
-    constructor(x: number, y: number, col: string) {
-        super(x, y, col)
+    constructor(id: number, x: number, y: number, col: string) {
+        super(id, x, y, col)
         this.owner = ""
         this.radius = 1
         this.name = ""
@@ -71,8 +71,8 @@ export class Rect extends BoardObject{
     size: Array<number>
     objType: string
     
-    constructor(x:number, y:number, xSize:number, ySize:number, col: string = "#cc0000") {
-        super(x, y, col)
+    constructor(id: number, x:number, y:number, xSize:number, ySize:number, col: string) {
+        super(id, x, y, col)
         this.size = [xSize, ySize]
         this.objType = "Rect"
         this.centerPoint = [x + (xSize/2), y + (ySize/2)]
@@ -100,8 +100,8 @@ export class Circle extends BoardObject{
     diameter: number
     objType: string
     
-    constructor(x:number, y:number, rad:number, col: string = "#cc0000") {
-        super(x, y, col)
+    constructor(id: number, x:number, y:number, rad:number, col: string) {
+        super(id, x, y, col)
         this.diameter = rad
         this.objType = "Circle"
         this.centerPoint = [x + rad/2, y + rad/2]
@@ -143,8 +143,8 @@ export class Polyline extends BoardObject{
     currPathSpecs: Array<number>
     ctx: any
     
-    constructor(x: number, y:number, structure:Array<Array<number>>, col: string = "#cc0000") {
-        super(x, y, col)
+    constructor(id: number, x: number, y:number, structure:Array<Array<number>>, col: string) {
+        super(id, x, y, col)
         this.points = structure
         this.objType = "Polyline"
         this.currPath = new Path2D()
@@ -213,8 +213,8 @@ export class Line extends BoardObject{
     points: Array<Array<number>>
     objType: string
     
-    constructor(x: number, y:number, structure:Array<Array<number>>, col: string = "#cc0000") {
-        super(x, y, col)
+    constructor(id: number, x: number, y:number, structure:Array<Array<number>>, col: string) {
+        super(id, x, y, col)
         this.points = structure
         this.objType = "Line"
     }

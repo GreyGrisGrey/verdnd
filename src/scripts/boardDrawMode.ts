@@ -38,6 +38,10 @@ export class BoardDrawMode {
         this.active = setOn
         this.modeButton.disabled = setOn
         this.params = new Array()
+        this.selectMode = false
+        this.selectState = 0
+        this.completeObjCheck = false
+        this.tempObj = null
     }
     
     addEventListeners(): void {
@@ -214,9 +218,9 @@ export class BoardDrawMode {
                     sizes[1] += 1
                 }
                 if (this.selectMode) {
-                    return new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1], "rgb(255, 255, 255, 0.5)")
+                    return new BoardObject.Rect(-1, coords[0], coords[1], sizes[0], sizes[1], "rgb(255, 255, 255, 0.5)")
                 }
-                return new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1], this.activeColour)
+                return new BoardObject.Rect(-1, coords[0], coords[1], sizes[0], sizes[1], this.activeColour)
             } else if (this.shape === "CIRCLE") {
                 if (res[0] >= this.params[0][0]) {
                     res[0] += 1
@@ -226,16 +230,16 @@ export class BoardDrawMode {
                 }
                 let coords = [Math.min(this.params[0][0], res[0]), Math.min(this.params[0][1], res[1])]
                 let radius = Math.max(Math.abs((this.params[0][0] - res[0])), Math.abs((this.params[0][1] - res[1])))
-                let newObj = new BoardObject.Circle(coords[0], coords[1], radius, this.activeColour)
+                let newObj = new BoardObject.Circle(-1, coords[0], coords[1], radius, this.activeColour)
                 return newObj
             }
         } else if (this.params.length >= 2 && this.shape === "POLY") {
             let newParams = this.params.slice(1)
-            let newObj = new BoardObject.Polyline(this.params[0][0], this.params[0][1], newParams, this.activeColour)
+            let newObj = new BoardObject.Polyline(-1, this.params[0][0], this.params[0][1], newParams, this.activeColour)
             return newObj
         } else if (this.params.length >= 2 && this.shape === "LINE") {
             let newParams = this.params.slice(1)
-            let newObj = new BoardObject.Line(this.params[0][0], this.params[0][1], newParams, this.activeColour)
+            let newObj = new BoardObject.Line(-1, this.params[0][0], this.params[0][1], newParams, this.activeColour)
             return newObj
         }
         return 1

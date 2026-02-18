@@ -75,19 +75,19 @@ export class ServerInterface {
                 this.storedObjects.get(event[1]).move(event[3], event[4])
             } else if (event[2] === "CREATE") {
                 if (event[3] === "CIRCLE") {
-                    let newObj: BoardObject.Circle = new BoardObject.Circle(event[4], event[5], event[6], event[7])
+                    let newObj: BoardObject.Circle = new BoardObject.Circle(event[1], event[4], event[5], event[6], event[7])
                     this.storedObjects.set(event[1], newObj)
                 } else if (event[3] === "RECT") {
-                    let newObj: BoardObject.Rect = new BoardObject.Rect(event[4], event[5], event[6], event[7], event[8])
+                    let newObj: BoardObject.Rect = new BoardObject.Rect(event[1], event[4], event[5], event[6], event[7], event[8])
                     this.storedObjects.set(event[1], newObj)
                 } else if (event[3] === "TOKEN") {
-                    let newObj: BoardObject.Token = new BoardObject.Token(event[4], event[5], event[6])
+                    let newObj: BoardObject.Token = new BoardObject.Token(event[1], event[4], event[5], event[6])
                     this.storedObjects.set(event[1], newObj)
                 } else if (event[3] === "POLY") {
-                    let newObj: BoardObject.Polyline = new BoardObject.Polyline(event[4], event[5], event[6], event[7])
+                    let newObj: BoardObject.Polyline = new BoardObject.Polyline(event[1], event[4], event[5], event[6], event[7])
                     this.storedObjects.set(event[1], newObj)
                 } else if (event[3] === "LINE") {
-                    let newObj: BoardObject.Line = new BoardObject.Line(event[4], event[5], event[6], event[7])
+                    let newObj: BoardObject.Line = new BoardObject.Line(event[1], event[4], event[5], event[6], event[7])
                     this.storedObjects.set(event[1], newObj)
                 }
             } else if (event[2] === "DESTROY") {

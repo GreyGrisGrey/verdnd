@@ -12,6 +12,7 @@ export class ModeManager {
     drawObj: drawMode.BoardDrawMode
     drawButton: any
     currSelected: Array<any>
+    deleteTrigger: boolean
     
     constructor(parentBoard: localBoard.Board) {
         this.currMode = "VIEW"
@@ -22,6 +23,7 @@ export class ModeManager {
         this.drawObj = new drawMode.BoardDrawMode(parentBoard)
         this.drawButton = document.getElementById("drawMenuButton")!
         this.currSelected = new Array()
+        this.deleteTrigger = false
         this.addEventListeners()
         this.modifyText(this.viewObj)
         this.viewObj.flipListeners(true)
@@ -34,6 +36,7 @@ export class ModeManager {
             this.tokenObj.flipListeners(false)
             this.drawObj.flipListeners(false)
             this.modifyText(this.viewObj)
+            this.currSelected = new Array()
         })
         
         this.tokenButton.addEventListener('click', (event) => {
@@ -42,6 +45,7 @@ export class ModeManager {
             this.tokenObj.flipListeners(true)
             this.drawObj.flipListeners(false)
             this.modifyText(this.tokenObj)
+            this.currSelected = new Array()
         })
         
         this.drawButton.addEventListener('click', (event) => {
@@ -50,6 +54,15 @@ export class ModeManager {
             this.tokenObj.flipListeners(false)
             this.drawObj.flipListeners(true)
             this.modifyText(this.drawObj)
+            this.currSelected = new Array()
+        })
+        
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Backspace") {
+                this.deleteTrigger = true
+            } else {
+                this.currSelected = new Array()
+            }
         })
     }
     
@@ -82,6 +95,10 @@ export class ModeManager {
         return 1
     }
     
+    getSelected(): Array<any> {
+        return this.currSelected
+    }
+    
     setSelected(newSelection: Array<any>) {
         this.currSelected = newSelection
         this.drawObj.selectState = 0
@@ -93,6 +110,12 @@ export class ModeManager {
         for (let i = 0; i < this.currSelected.length; i++) {
             this.currSelected[i].drawOutline(ctx, squareSize, outlineOffset);
         }
+        return
+    }
+    
+    clearSelected(): void {
+        this.deleteTrigger = false
+        this.currSelected = new Array()
         return
     }
 }
