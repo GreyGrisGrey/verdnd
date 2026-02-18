@@ -8,6 +8,7 @@ export class BoardObject {
     hasImage: boolean
     imagePath: string
     centerPoint: Array<number>
+    selected: boolean
     
     constructor(id: number, x: number, y: number, col: string) {
         this.ID = id
@@ -17,11 +18,13 @@ export class BoardObject {
         this.hasImage = false
         this.imagePath = ""
         this.centerPoint = [0, 0]
+        this.selected = false
     }
     
     move(xChange: number, yChange:number): Array<number> {
         this.location[0] += xChange
         this.location[1] += yChange
+        this.getCenter()
         return this.location
     }
     
@@ -38,6 +41,10 @@ export class BoardObject {
             return true
         }
         return false
+    }
+    
+    getCenter() {
+        this.centerPoint = [0, 0]
     }
 }
 
@@ -56,14 +63,18 @@ export class Token extends BoardObject{
     }
     
     draw(ctx:any, squareSize:number, offset:Array<number>) {
-        let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.radius/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.radius/2]
-        ctx.beginPath()
-        ctx.arc(coords[0], coords[1], this.radius * squareSize / 2, 0, 2 * Math.PI, false);
-        ctx.fillStyle = this.colour
-        ctx.fill()
-        ctx.strokeStyle = "#cccccc"
-        ctx.stroke()
-        ctx.closePath()
+        if (!this.selected) {
+            let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.radius/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.radius/2]
+            ctx.beginPath()
+            ctx.arc(coords[0], coords[1], this.radius * squareSize / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.colour
+            ctx.fill()
+            ctx.strokeStyle = "#cccccc"
+            ctx.stroke()
+            ctx.closePath()
+        } else {
+            this.selected = false
+        }
     }
 }
 
@@ -75,12 +86,16 @@ export class Rect extends BoardObject{
         super(id, x, y, col)
         this.size = [xSize, ySize]
         this.objType = "Rect"
-        this.centerPoint = [x + (xSize/2), y + (ySize/2)]
+        this.getCenter()
     }
     
     draw(ctx:any, squareSize:number, offset:Array<number>) {
-        ctx.fillStyle = this.colour
-        ctx.fillRect(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1], this.size[0] * squareSize, this.size[1] * squareSize)
+        if (!this.selected) {
+            ctx.fillStyle = this.colour
+            ctx.fillRect(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1], this.size[0] * squareSize, this.size[1] * squareSize)
+        } else {
+            this.selected = false
+        }
     }
     
     drawOutline(ctx:any, squareSize:number, offset:Array<number>) {
@@ -94,6 +109,10 @@ export class Rect extends BoardObject{
         }
         return false
     }
+    
+    getCenter() {
+        this.centerPoint = [this.location[0] + this.size[0]/2, this.location[1] + this.size[1]/2]
+    }
 }
 
 export class Circle extends BoardObject{
@@ -104,16 +123,20 @@ export class Circle extends BoardObject{
         super(id, x, y, col)
         this.diameter = rad
         this.objType = "Circle"
-        this.centerPoint = [x + rad/2, y + rad/2]
+        this.getCenter()
     }
     
     draw(ctx:any, squareSize:number, offset:Array<number>) {
-        let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.diameter/2]
-        ctx.beginPath()
-        ctx.arc(coords[0], coords[1], this.diameter * squareSize / 2, 0, 2 * Math.PI, false);
-        ctx.fillStyle = this.colour
-        ctx.fill()
-        ctx.closePath()
+        if (!this.selected) {
+            let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.diameter/2]
+            ctx.beginPath()
+            ctx.arc(coords[0], coords[1], this.diameter * squareSize / 2, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.colour
+            ctx.fill()
+            ctx.closePath()
+        } else {
+            this.selected = false
+        }
     }
     
     drawOutline(ctx:any, squareSize:number, offset:Array<number>) {
@@ -133,6 +156,10 @@ export class Circle extends BoardObject{
             return true
         }
         return false
+    }
+    
+    getCenter() {
+        this.centerPoint = [this.location[0] + this.diameter/2, this.location[1] + this.diameter/2]
     }
 }
 
@@ -154,18 +181,22 @@ export class Polyline extends BoardObject{
     }
     
     draw(ctx:any, squareSize:number, offset:Array<number>) {
-        if (squareSize != this.currPathSpecs[0] || offset[0] != this.currPathSpecs[1] || offset[1] != this.currPathSpecs[2]) {
-            this.currPath = new Path2D()
-            this.currPath.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
-            for (let i = 0; i < this.points.length; i++) {
-                this.currPath.lineTo((this.location[0] + this.points[i][0]) * squareSize + offset[0], (this.location[1] + this.points[i][1]) * squareSize + offset[1])
+        if (!this.selected) {
+            if (squareSize != this.currPathSpecs[0] || offset[0] != this.currPathSpecs[1] || offset[1] != this.currPathSpecs[2]) {
+                this.currPath = new Path2D()
+                this.currPath.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
+                for (let i = 0; i < this.points.length; i++) {
+                    this.currPath.lineTo((this.location[0] + this.points[i][0]) * squareSize + offset[0], (this.location[1] + this.points[i][1]) * squareSize + offset[1])
+                }
+                this.currPathSpecs = [squareSize, offset[0], offset[1]]
+                this.currPath.closePath()
             }
-            this.currPathSpecs = [squareSize, offset[0], offset[1]]
-            this.currPath.closePath()
+            ctx.fillStyle = this.colour
+            ctx.fill(this.currPath)
+            this.ctx = ctx
+        } else {
+            this.selected = false
         }
-        ctx.fillStyle = this.colour
-        ctx.fill(this.currPath)
-        this.ctx = ctx
     }
     
     drawOutline(ctx:any, squareSize:number, offset:Array<number>) {
@@ -220,14 +251,18 @@ export class Line extends BoardObject{
     }
     
     draw(ctx:any, squareSize:number, offset:Array<number>) {
-        ctx.beginPath()
-        ctx.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
-        for (let i = 0; i < this.points.length; i++) {
-            ctx.lineTo((this.location[0] + this.points[i][0]) * squareSize + offset[0], (this.location[1] + this.points[i][1]) * squareSize + offset[1])
+        if (!this.selected) {
+            ctx.beginPath()
+            ctx.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
+            for (let i = 0; i < this.points.length; i++) {
+                ctx.lineTo((this.location[0] + this.points[i][0]) * squareSize + offset[0], (this.location[1] + this.points[i][1]) * squareSize + offset[1])
+            }
+            ctx.lineWidth = 3
+            ctx.strokeStyle = this.colour
+            ctx.stroke()
+        } else {
+            this.selected = false
         }
-        ctx.lineWidth = 3
-        ctx.strokeStyle = this.colour
-        ctx.stroke()
     }
     
     getCenter() {

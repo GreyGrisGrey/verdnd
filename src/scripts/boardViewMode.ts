@@ -26,22 +26,8 @@ export class BoardViewMode {
                 if (this.board.leftMouseDown) {
                     this.board.moveCamera(change[0], change[1])
                 }
-                this.board.mouseCoords[0] = event.clientX;
-                this.board.mouseCoords[1] = event.clientY;
             }
         })
-        
-        this.board.can.addEventListener('mousedown', (event) => {
-            if (this.active) {
-                this.board.leftMouseDown = true;
-            }
-        });
-        
-        this.board.can.addEventListener('mouseup', (event) => {
-            if (this.active) {
-                this.board.leftMouseDown = false;
-            }
-        });
         
         // Changes the zoom level when scrolled
         this.board.can.addEventListener('wheel', (event) => {

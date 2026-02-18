@@ -258,8 +258,6 @@ export class Board {
         }
         await new Promise(resolve => setTimeout(resolve, 25));
         this.ctx.clearRect(0, 0, this.can.width, this.can.height)
-        this.selectObjects()
-        this.draw()
         let events = this.serveInter.getItems()
         for (let i = 0; i < events.length; i++) {
             this.serveInter.handleObjEvent(events[i])
@@ -277,6 +275,8 @@ export class Board {
             }
         }
         this.checkDeletion()
+        this.selectObjects()
+        this.draw()
     }
     
     checkDeletion(): void {

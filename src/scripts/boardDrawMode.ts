@@ -47,10 +47,6 @@ export class BoardDrawMode {
     addEventListeners(): void {
         this.board.can.addEventListener('mousemove', (event) => {
             if (this.active) {
-                let change = [Math.round(this.board.mouseCoords[0] - event.clientX), Math.round(this.board.mouseCoords[1] - event.clientY)]
-                if (this.board.leftMouseDown) {
-                    this.board.moveCamera(change[0], change[1])
-                }
                 this.board.mouseCoords[0] = event.clientX;
                 this.board.mouseCoords[1] = event.clientY;
             }
@@ -95,7 +91,9 @@ export class BoardDrawMode {
         })
         
         this.board.can.addEventListener('mouseup', (event) => {
-            if (this.active && this.selectMode) {
+            if (this.params.length == 0) {
+                return
+            } else if (this.active && this.selectMode) {
                 let newPos = this.board.determineTile(this.board.mouseCoords[0] + 1, this.board.mouseCoords[1] + 1, false)
                 if (newPos[0] === this.params[0][0] && newPos[1] === this.params[0][1]) {
                     this.selectState = 1

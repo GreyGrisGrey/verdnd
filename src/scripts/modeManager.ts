@@ -4,6 +4,7 @@ import * as tokenMode from "./boardTokenMode.ts"
 import * as localBoard from "./localBoard.ts"
 
 export class ModeManager {
+    board: localBoard.Board
     currMode: string
     viewObj: viewMode.BoardViewMode
     viewButton: any
@@ -13,8 +14,11 @@ export class ModeManager {
     drawButton: any
     currSelected: Array<any>
     deleteTrigger: boolean
+    selectClick: boolean
+    thirdOffset: Array<number>
     
     constructor(parentBoard: localBoard.Board) {
+        this.board = parentBoard
         this.currMode = "VIEW"
         this.viewObj = new viewMode.BoardViewMode(parentBoard)
         this.viewButton = document.getElementById("viewMenuButton")!
@@ -24,6 +28,8 @@ export class ModeManager {
         this.drawButton = document.getElementById("drawMenuButton")!
         this.currSelected = new Array()
         this.deleteTrigger = false
+        this.selectClick = false
+        this.thirdOffset = [0, 0]
         this.addEventListeners()
         this.modifyText(this.viewObj)
         this.viewObj.flipListeners(true)
@@ -64,6 +70,43 @@ export class ModeManager {
                 this.currSelected = new Array()
             }
         })
+        
+        this.board.can.addEventListener('mousemove', (event) => {
+            let change = [Math.round(this.board.mouseCoords[0] - event.clientX), Math.round(this.board.mouseCoords[1] - event.clientY)]
+            if (this.selectClick) {
+                this.thirdOffset[0] -= change[0]
+                this.thirdOffset[1] -= change[1]
+            }
+            this.board.mouseCoords[0] = event.clientX;
+            this.board.mouseCoords[1] = event.clientY;
+        })
+        
+        this.board.can.addEventListener('mousedown', (event) => {
+            this.board.leftMouseDown = true;
+            for (let i = 0; i < this.currSelected.length; i++) {
+                if (this.currSelected[i].isPointInside(this.board.determineTile(event.clientX, event.clientY, false))) {
+                    this.selectClick = true
+                    this.drawObj.active = false
+                    this.tokenObj.active = false
+                }
+            }
+        }, {capture: true});
+        
+        this.board.can.addEventListener('mouseup', (event) => {
+            let valChange = this.board.determineTile(this.thirdOffset[0] + this.board.originCoords[0], this.thirdOffset[1] + this.board.originCoords[1], true)
+            if (valChange[0] != 0 || valChange[1] != 0) {
+                for (let i = 0; i < this.currSelected.length; i++) {
+                    this.board.serveInter.moveObj(this.currSelected[i].ID, valChange[0], valChange[1])
+                }
+            }
+            this.clearSelected()
+            this.board.leftMouseDown = false
+            if (this.currMode === "DRAW") {
+                this.drawObj.active = true
+            } else if (this.currMode === "TOKEN") {
+                this.tokenObj.active = true
+            }
+        });
     }
     
     modifyText(selectMode: any): void {
@@ -106,9 +149,11 @@ export class ModeManager {
     }
     
     outlineSelected(ctx: any, squareSize: number, offset: Array<number>, offset2: Array<number>): void {
-        let outlineOffset = [offset[0] + offset2[0], offset[1] + offset2[1]]
+        let outlineOffset = [offset[0] + offset2[0] + this.thirdOffset[0], offset[1] + offset2[1] +this.thirdOffset[1]]
         for (let i = 0; i < this.currSelected.length; i++) {
-            this.currSelected[i].drawOutline(ctx, squareSize, outlineOffset);
+            this.currSelected[i].drawOutline(ctx, squareSize, outlineOffset)
+            this.currSelected[i].draw(ctx, squareSize, outlineOffset)
+            this.currSelected[i].selected = true
         }
         return
     }
@@ -116,6 +161,7 @@ export class ModeManager {
     clearSelected(): void {
         this.deleteTrigger = false
         this.currSelected = new Array()
+        this.thirdOffset = [0, 0]
         return
     }
 }
