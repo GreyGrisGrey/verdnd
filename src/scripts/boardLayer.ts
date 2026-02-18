@@ -1,6 +1,7 @@
-// Manages a single layer of the board.
 import * as BoardObject from "./boardObject.ts"
 
+// Manages a single layer of the board.
+// Currently has little functionality.
 export class BoardLayer {
     layerOffset: Array<number>
     heldObjects: Array<any>

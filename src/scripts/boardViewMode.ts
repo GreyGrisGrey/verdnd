@@ -1,6 +1,6 @@
 import * as localBoard from "./localBoard.ts"
 
-// Class handling the view mode for the gameboard
+// Class handling canvas' view mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardViewMode {
     board: localBoard.Board
@@ -14,11 +14,14 @@ export class BoardViewMode {
         this.addEventListeners()
     }
     
-    flipListeners(setOn: boolean) {
+    // Flips the active state of the mode.
+    flipListeners(setOn: boolean): void {
         this.active = setOn
         this.modeButton.disabled = setOn
+        return
     }
     
+    // Adds relevant event listeners
     addEventListeners(): void {
         this.board.can.addEventListener('mousemove', (event) => {
             if (this.active) {
@@ -55,6 +58,7 @@ export class BoardViewMode {
         return
     }
     
+    // Text for the information bar.
     getText(): string {
         return "Scroll : Zoom\nLeft Click + Drag : Pan"
     }

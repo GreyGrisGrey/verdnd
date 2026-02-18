@@ -1,5 +1,6 @@
-// Includes, tokens, drawings, map drawings, and areas of effect
-
+// General purpose superclass for any shape that appears on the board.
+// Includes tokens, rectangles, polylines.
+// Future plans to include more specific subclasses
 export class BoardObject {
     ID: number
     zOrder: number
@@ -21,21 +22,26 @@ export class BoardObject {
         this.selected = false
     }
     
+    // Moves the object a set amount
     move(xChange: number, yChange:number): Array<number> {
         this.location[0] += xChange
         this.location[1] += yChange
-        this.getCenter()
+        this.setCenter()
         return this.location
     }
     
-    setColour(newColour: string) {
+    setColour(newColour: string): void {
         this.colour = newColour
+        return
     }
     
-    setZOrder(newOrder: number) {
+    setZOrder(newOrder: number): void {
         this.zOrder = newOrder
+        return
     }
     
+    // Checks if the center of the object is contained within a given rectangle.
+    // Used for selection of board objects.
     isCenterInsideRect(point1: Array<number>, point2: Array<number>): boolean {
         if (this.centerPoint[0] >= point1[0] && this.centerPoint[0] <= point2[0] && this.centerPoint[1] >= point1[1] && this.centerPoint[1] <= point2[1]) {
             return true
@@ -43,12 +49,16 @@ export class BoardObject {
         return false
     }
     
-    getCenter() {
+    // Function to set the center point of the object.
+    setCenter(): void {
         this.centerPoint = [0, 0]
+        return
     }
 }
 
-export class Token extends BoardObject{
+// Subclass for token objects.
+// Currently WIP.
+export class Token extends BoardObject {
     owner: string
     radius: number
     name: string
@@ -62,7 +72,7 @@ export class Token extends BoardObject{
         this.objType = "Token"
     }
     
-    draw(ctx:any, squareSize:number, offset:Array<number>) {
+    draw(ctx:any, squareSize:number, offset:Array<number>): void {
         if (!this.selected) {
             let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.radius/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.radius/2]
             ctx.beginPath()
@@ -75,10 +85,12 @@ export class Token extends BoardObject{
         } else {
             this.selected = false
         }
+        return
     }
 }
 
-export class Rect extends BoardObject{
+// Subclass for rectangle objects.
+export class Rect extends BoardObject {
     size: Array<number>
     objType: string
     
@@ -86,21 +98,23 @@ export class Rect extends BoardObject{
         super(id, x, y, col)
         this.size = [xSize, ySize]
         this.objType = "Rect"
-        this.getCenter()
+        this.setCenter()
     }
     
-    draw(ctx:any, squareSize:number, offset:Array<number>) {
+    draw(ctx:any, squareSize:number, offset:Array<number>): void {
         if (!this.selected) {
             ctx.fillStyle = this.colour
             ctx.fillRect(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1], this.size[0] * squareSize, this.size[1] * squareSize)
         } else {
             this.selected = false
         }
+        return
     }
     
-    drawOutline(ctx:any, squareSize:number, offset:Array<number>) {
+    drawOutline(ctx:any, squareSize:number, offset:Array<number>): void {
         ctx.fillStyle = "#ffd500"
         ctx.fillRect(this.location[0] * squareSize + offset[0] - 2, this.location[1] * squareSize + offset[1] - 2, this.size[0] * squareSize + 4, this.size[1] * squareSize + 4)
+        return
     }
     
     isPointInside(point: Array<number>): boolean{
@@ -110,23 +124,25 @@ export class Rect extends BoardObject{
         return false
     }
     
-    getCenter() {
+    setCenter(): void {
         this.centerPoint = [this.location[0] + this.size[0]/2, this.location[1] + this.size[1]/2]
+        return
     }
 }
 
-export class Circle extends BoardObject{
+// Subclass for circle objects.
+export class Circle extends BoardObject {
     diameter: number
     objType: string
     
-    constructor(id: number, x:number, y:number, rad:number, col: string) {
+    constructor(id: number, x:number, y:number, diam:number, col: string) {
         super(id, x, y, col)
-        this.diameter = rad
+        this.diameter = diam
         this.objType = "Circle"
-        this.getCenter()
+        this.setCenter()
     }
     
-    draw(ctx:any, squareSize:number, offset:Array<number>) {
+    draw(ctx:any, squareSize:number, offset:Array<number>): void {
         if (!this.selected) {
             let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.diameter/2]
             ctx.beginPath()
@@ -137,15 +153,17 @@ export class Circle extends BoardObject{
         } else {
             this.selected = false
         }
+        return
     }
     
-    drawOutline(ctx:any, squareSize:number, offset:Array<number>) {
+    drawOutline(ctx:any, squareSize:number, offset:Array<number>): void {
         let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.diameter/2]
         ctx.beginPath()
         ctx.arc(coords[0], coords[1], (this.diameter * squareSize / 2) + 2, 0, 2 * Math.PI, false);
         ctx.fillStyle = "#ffd500"
         ctx.fill()
         ctx.closePath()
+        return
     }
     
     isPointInside(point: Array<number>): boolean{
@@ -158,12 +176,14 @@ export class Circle extends BoardObject{
         return false
     }
     
-    getCenter() {
+    setCenter(): void {
         this.centerPoint = [this.location[0] + this.diameter/2, this.location[1] + this.diameter/2]
+        return
     }
 }
 
-export class Polyline extends BoardObject{
+// Subclass for polyline objects.
+export class Polyline extends BoardObject {
     points: Array<Array<number>>
     objType: string
     currPath: Path2D
@@ -177,10 +197,10 @@ export class Polyline extends BoardObject{
         this.currPath = new Path2D()
         this.currPathSpecs = [0, 0, 0]
         this.ctx = null
-        this.getCenter()
+        this.setCenter()
     }
     
-    draw(ctx:any, squareSize:number, offset:Array<number>) {
+    draw(ctx:any, squareSize:number, offset:Array<number>): void {
         if (!this.selected) {
             if (squareSize != this.currPathSpecs[0] || offset[0] != this.currPathSpecs[1] || offset[1] != this.currPathSpecs[2]) {
                 this.currPath = new Path2D()
@@ -197,9 +217,10 @@ export class Polyline extends BoardObject{
         } else {
             this.selected = false
         }
+        return
     }
     
-    drawOutline(ctx:any, squareSize:number, offset:Array<number>) {
+    drawOutline(ctx:any, squareSize:number, offset:Array<number>): void {
         if (squareSize != this.currPathSpecs[0] || offset[0] != this.currPathSpecs[1] || offset[1] != this.currPathSpecs[2]) {
             this.currPath = new Path2D()
             this.currPath.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
@@ -213,16 +234,17 @@ export class Polyline extends BoardObject{
         ctx.lineWidth = 4
         ctx.stroke(this.currPath)
         this.ctx = ctx
+        return
     }
     
-    isPointInside(point: Array<number>): boolean{
+    isPointInside(point: Array<number>): boolean {
         if (this.ctx.isPointInPath(this.currPath, (point[0] + 0.5) * this.currPathSpecs[0] + this.currPathSpecs[1], (point[1] + 0.5) * this.currPathSpecs[0] + this.currPathSpecs[2])) {
             return true
         }
         return false
     }
     
-    getCenter() {
+    setCenter(): void {
         let coords = [0, 0, 0, 0]
         for (let i = 0; i < this.points.length; i++) {
             if (this.points[i][0] < coords[0]) {
@@ -237,10 +259,13 @@ export class Polyline extends BoardObject{
             }
         }
         this.centerPoint = [(coords[1] + coords[0]) / 2 + this.location[0], (coords[3] + coords[2]) / 2 + this.location[1]]
+        return
     }
 }
 
-export class Line extends BoardObject{
+// Subclass for handling line objects.
+// Not tested recently.
+export class Line extends BoardObject {
     points: Array<Array<number>>
     objType: string
     
@@ -248,9 +273,10 @@ export class Line extends BoardObject{
         super(id, x, y, col)
         this.points = structure
         this.objType = "Line"
+        this.setCenter()
     }
     
-    draw(ctx:any, squareSize:number, offset:Array<number>) {
+    draw(ctx:any, squareSize:number, offset:Array<number>): void {
         if (!this.selected) {
             ctx.beginPath()
             ctx.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
@@ -263,9 +289,10 @@ export class Line extends BoardObject{
         } else {
             this.selected = false
         }
+        return
     }
     
-    getCenter() {
+    setCenter(): void {
         let coords = [0, 0, 0, 0]
         for (let i = 0; i < this.points.length; i++) {
             if (this.points[i][0] < coords[0]) {
@@ -280,5 +307,6 @@ export class Line extends BoardObject{
             }
         }
         this.centerPoint = [(coords[1] + coords[0]) / 2 + this.location[0], (coords[3] + coords[2]) / 2 + this.location[1]]
+        return
     }
 }

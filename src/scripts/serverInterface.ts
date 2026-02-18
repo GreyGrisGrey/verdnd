@@ -1,7 +1,9 @@
 import * as BoardLayer from "./boardLayer.ts"
-import * as BoardParams from "./localBoard.ts";
+import * as BoardParams from "./localBoard.ts"
 import * as BoardObject from "./boardObject.ts"
 
+// Class that will handle interfacing with the server.
+// Currently does not do much of anything besides serving as a standin.
 export class ServerInterface {
     user: string
     pass: string

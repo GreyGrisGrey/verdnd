@@ -1,8 +1,9 @@
-// File managing the local version of the board.
 import * as BoardLayer from "./boardLayer.ts"
 import * as modeManager from "./modeManager.ts"
 import * as ServerInterface from "./serverInterface.ts"
 
+// Main class controlling the state of the canvas.
+// Somewhat oversized, may be split up eventually.
 export class Board {
     zoomGlobal: number
     zoomLevels: Array<number>
@@ -38,6 +39,7 @@ export class Board {
     }
     
     // Test function for pointer drawing.
+    // Will be removed when a proper laser tool is added.
     drawMousePointer(): void {
         this.ctx.beginPath()
         this.ctx.arc(this.mouseCoords[0], this.mouseCoords[1], 1 * this.zoomVal, 0, 2 * Math.PI, false);
@@ -51,7 +53,7 @@ export class Board {
     }
     
     // Ensures camera is kept within the board boundaries.
-    bindCamera():void {
+    bindCamera(): void {
         if (this.originCoords[0] < (this.boardBounds[0] - 100) * this.zoomVal) {
             this.originCoords[0] = (this.boardBounds[0] - 100)  * this.zoomVal
         } else if (this.originCoords[0] > (this.boardBounds[1] + 100) * this.zoomVal) {
@@ -62,6 +64,7 @@ export class Board {
         } else if (this.originCoords[1] > (this.boardBounds[3] + 100) * this.zoomVal) {
             this.originCoords[1] = (this.boardBounds[3] + 100) * this.zoomVal
         }
+        return
     }
     
     // Updates the center of the camera, subject to the boundaries of the board.
@@ -133,18 +136,19 @@ export class Board {
         return
     }
     
-    
     // Changes the offset of specified layer.
     moveLayer(moveID: number, moveX: number, moveY: number): void {
         this.layerMap.get(moveID)!.shiftLayer([moveX, moveY])
         return
     }
     
+    // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
     selectObjects(): void {
         if (this.modeObj.hasCompleteSelection()) {
             let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeObj.getSelectCoords())
             this.modeObj.setSelected(res)
         }
+        return
     }
     
     // Draws the board.
@@ -152,7 +156,7 @@ export class Board {
         let squareSize = 5 * this.zoomVal
         for (let i = 0; i < this.boardLayers.length; i++) {
             if (this.boardLayers[i] === this.layerMap.get(this.activeLayer)) {
-                this.modeObj.outlineSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
+                this.modeObj.drawSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
             }
             this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
         }
@@ -166,7 +170,7 @@ export class Board {
         return
     }
     
-    // Draws points at the vertices of the tiles for better navigation.
+    // Draws points at the vertices of the tiles for.
     drawPointGrid(squareSize: number): void {
         let currX = this.originCoords[0]
         while (currX + squareSize < 0) {
@@ -191,6 +195,8 @@ export class Board {
         return
     }
     
+    // Draws lines between vertices of the grid.
+    // Currently defunct.
     drawLineGrid(squareSize: number): void {
         let currX = this.originCoords[0]
         while (currX + squareSize < 0) {
@@ -216,7 +222,8 @@ export class Board {
         return
     }
     
-    // Draws the underlying grid of the board. Currently defunct.
+    // Draws the underlying grid of the board. 
+    // Currently defunct.
     drawUnderGrid(squareSize: number): void {
         let currX = this.originCoords[0]
         while (currX + squareSize < 0) {
@@ -242,6 +249,7 @@ export class Board {
         return
     }
     
+    // Determines which tile/vertex a coordinate pair is located on.
     determineTile(x: number, y: number, vertex: boolean): Array<number> {
         let squareSize = 5 * this.zoomVal
         if (vertex) {
@@ -251,6 +259,7 @@ export class Board {
         }
     }
     
+    // Performs a single drawing step.
     async step() {
         if (this.can.width != window.innerWidth) {
             this.can.width = window.innerWidth
@@ -279,6 +288,7 @@ export class Board {
         this.draw()
     }
     
+    // Checks if a deletion request has been made, deletes marked objects if so.
     checkDeletion(): void {
         if (this.modeObj.deleteTrigger) {
             let deletions = this.modeObj.getSelected()

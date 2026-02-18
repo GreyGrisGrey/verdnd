@@ -1,7 +1,7 @@
 import * as localBoard from "./localBoard.ts"
 
-// Class handling the token mode for the gameboard
-// I do not like this, but it was the cleanest way I could think to do the job.
+// Class handling canvas' token mode.
+// Currently WIP.
 export class BoardTokenMode {
     board: localBoard.Board
     active: boolean

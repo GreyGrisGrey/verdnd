@@ -3,6 +3,8 @@ import * as drawMode from "./boardDrawMode.ts"
 import * as tokenMode from "./boardTokenMode.ts"
 import * as localBoard from "./localBoard.ts"
 
+// Class handling the draw/token/view modes.
+// Also handles behaviour when a selection of board objects has been made. This may be split off.
 export class ModeManager {
     board: localBoard.Board
     currMode: string
@@ -35,6 +37,7 @@ export class ModeManager {
         this.viewObj.flipListeners(true)
     }
     
+    // Adds event listeners for all modes, as well as some of its own.
     addEventListeners(): void {
         this.viewButton.addEventListener('click', (event) => {
             this.currMode = "VIEW"
@@ -107,12 +110,16 @@ export class ModeManager {
                 this.tokenObj.active = true
             }
         });
+        return
     }
     
+    // Switches the information bar's text to match the current mode.
     modifyText(selectMode: any): void {
         document.getElementById("modeParagraph")!.innerText = selectMode.getText()
+        return
     }
     
+    // Checks if the user has selected an area of the canvas.
     hasCompleteSelection(): boolean {
         if (this.currMode === "DRAW" && this.drawObj.selectState > 0) {
             return true
@@ -120,6 +127,7 @@ export class ModeManager {
         return false
     }
     
+    // Retrieves the coordinates corresponding to the currently selected area of the canvas.
     getSelectCoords(): Array<Array<number>> {
         if (this.currMode === "DRAW" && this.drawObj.selectState != 0) {
             return this.drawObj.params
@@ -127,6 +135,7 @@ export class ModeManager {
         return [[0]]
     }
     
+    // Retrieves the object currently being drawn by the draw mode.
     getObject(reason: string): any {
         if (reason === "DRAW") {
             return this.drawObj.getTempObject()
@@ -138,18 +147,23 @@ export class ModeManager {
         return 1
     }
     
+    // Returns all board objects that are currently selected.
     getSelected(): Array<any> {
         return this.currSelected
     }
     
-    setSelected(newSelection: Array<any>) {
+    // Stores a set of board objects that have been selected.
+    setSelected(newSelection: Array<any>): void {
         this.currSelected = newSelection
         this.drawObj.selectState = 0
         this.drawObj.params = new Array()
+        return
     }
     
-    outlineSelected(ctx: any, squareSize: number, offset: Array<number>, offset2: Array<number>): void {
-        let outlineOffset = [offset[0] + offset2[0] + this.thirdOffset[0], offset[1] + offset2[1] +this.thirdOffset[1]]
+    // Draws all currently selected board objects.
+    // Also ensures those objects are not drawn twice.
+    drawSelected(ctx: any, squareSize: number, offset: Array<number>, offset2: Array<number>): void {
+        let outlineOffset = [offset[0] + offset2[0] + this.thirdOffset[0], offset[1] + offset2[1] + this.thirdOffset[1]]
         for (let i = 0; i < this.currSelected.length; i++) {
             this.currSelected[i].drawOutline(ctx, squareSize, outlineOffset)
             this.currSelected[i].draw(ctx, squareSize, outlineOffset)
@@ -158,6 +172,7 @@ export class ModeManager {
         return
     }
     
+    // Clears the list of selected objects.
     clearSelected(): void {
         this.deleteTrigger = false
         this.currSelected = new Array()

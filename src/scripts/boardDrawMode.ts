@@ -1,7 +1,7 @@
 import * as localBoard from "./localBoard.ts"
 import * as BoardObject from "./boardObject.ts"
 
-// Class handling the draw mode for the gameboard
+// Class handling canvas' draw mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardDrawMode {
     board: localBoard.Board
@@ -30,11 +30,14 @@ export class BoardDrawMode {
         this.selectState = 0
     }
     
-    changeColour() {
+    // Changes the active colour to match the colour picker.
+    changeColour(): void {
         this.activeColour = document.getElementById("colourSquare")!.style.background
+        return
     }
     
-    flipListeners(setOn: boolean) {
+    // Flips the active state of the mode and resets key variables.
+    flipListeners(setOn: boolean): void {
         this.active = setOn
         this.modeButton.disabled = setOn
         this.params = new Array()
@@ -42,16 +45,12 @@ export class BoardDrawMode {
         this.selectState = 0
         this.completeObjCheck = false
         this.tempObj = null
+        return
     }
     
+    // Adds all relevant event listeners.
     addEventListeners(): void {
-        this.board.can.addEventListener('mousemove', (event) => {
-            if (this.active) {
-                this.board.mouseCoords[0] = event.clientX;
-                this.board.mouseCoords[1] = event.clientY;
-            }
-        })
-        
+        // Handling for switching between drawn shape.
         document.addEventListener("keydown", (event) => {
             if (this.active) {
                 this.selectMode = false
@@ -90,6 +89,7 @@ export class BoardDrawMode {
             }
         })
         
+        // Seriously suboptimal code for finishing construction of circles and rectangles.
         this.board.can.addEventListener('mouseup', (event) => {
             if (this.params.length == 0) {
                 return
@@ -134,12 +134,14 @@ export class BoardDrawMode {
         })
     }
     
+    // Text for the information bar.
     getText(): string {
         return "1 : Create Rectangle\n2 : Create Square Style Rectangle" +
         "\n3 : Create Circle\n4 : Create Polyline\n5 : Create Wall\n6 : Complete Wall/Polyline\n7 : Select" + 
         "\n8 : Cancel"
     }
     
+    // Finalizes the current object.
     setNewObject(): void {
         if (this.shape === "RECT" && this.params.length === 2) {
             let one = Math.min(this.params[0][0], this.params[1][0])
@@ -189,11 +191,13 @@ export class BoardDrawMode {
         return
     }
     
+    // Returns the fully constructed shape.
     getNewObject(): any {
         this.completeObjCheck = false
         return this.tempObj
     }
     
+    // Returns a temporary board object to display the shape about to be drawn.
     getTempObject(): any {
         if (!this.active) {
             return 1
