@@ -38,8 +38,8 @@ export class Token extends BoardObject{
     name: string
     objType: string
     
-    constructor(x: number, y: number, col: string = "#cc0000") {
-        super(x, y)
+    constructor(x: number, y: number, col: string) {
+        super(x, y, col)
         this.owner = ""
         this.radius = 1
         this.name = ""
@@ -63,7 +63,7 @@ export class Rect extends BoardObject{
     objType: string
     
     constructor(x:number, y:number, xSize:number, ySize:number, col: string = "#cc0000") {
-        super(x, y)
+        super(x, y, col)
         this.size = [xSize, ySize]
         this.objType = "Rect"
     }
@@ -79,7 +79,7 @@ export class Circle extends BoardObject{
     objType: string
     
     constructor(x:number, y:number, rad:number, col: string = "#cc0000") {
-        super(x, y)
+        super(x, y, col)
         this.radius = rad
         this.objType = "Circle"
     }
@@ -99,7 +99,7 @@ export class Polyline extends BoardObject{
     objType: string
     
     constructor(x: number, y:number, structure:Array<Array<number>>, col: string = "#cc0000") {
-        super(x, y)
+        super(x, y, col)
         this.points = structure
         this.objType = "Polyline"
     }
@@ -112,5 +112,27 @@ export class Polyline extends BoardObject{
         }
         ctx.fillStyle = this.colour
         ctx.fill()
+    }
+}
+
+export class Line extends BoardObject{
+    points: Array<Array<number>>
+    objType: string
+    
+    constructor(x: number, y:number, structure:Array<Array<number>>, col: string = "#cc0000") {
+        super(x, y, col)
+        this.points = structure
+        this.objType = "Line"
+    }
+    
+    draw(ctx:any, squareSize:number, offset:Array<number>) {
+        ctx.beginPath()
+        ctx.moveTo(this.location[0] * squareSize + offset[0], this.location[1] * squareSize + offset[1])
+        for (let i = 0; i < this.points.length; i++) {
+            ctx.lineTo((this.location[0] + this.points[i][0]) * squareSize + offset[0], (this.location[1] + this.points[i][1]) * squareSize + offset[1])
+        }
+        ctx.lineWidth = 3
+        ctx.strokeStyle = this.colour
+        ctx.stroke()
     }
 }

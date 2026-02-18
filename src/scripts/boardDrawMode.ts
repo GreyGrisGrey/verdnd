@@ -25,6 +25,10 @@ export class BoardDrawMode {
         this.activeColour = "#cccccc"
     }
     
+    changeColour() {
+        this.activeColour = document.getElementById("colourSquare")!.style.background
+    }
+    
     flipListeners(setOn: boolean) {
         this.active = setOn
         this.modeButton.disabled = setOn
@@ -53,17 +57,19 @@ export class BoardDrawMode {
                     this.shape = "CIRCLE"
                 } else if (event.key === "4") {
                     this.shape = "POLY"
+                } else if (event.key === "5") {
+                    this.shape = "LINE"
                 }
-            } else if (this.active && event.key === "5" && this.params.length > 2 && this.shape === "POLY") {
+            } else if (this.active && event.key === "6" && this.params.length > 2 && (this.shape === "POLY" || this.shape === "LINE")) {
                 this.setNewObject()
-            } else if (this.active && event.key === "6") {
+            } else if (this.active && event.key === "7") {
                 this.params = new Array()
             }
         })
         
         this.board.can.addEventListener('mousedown', (event) => {
             if (this.active) {
-                if (this.shape != "POLY") {
+                if (this.shape != "POLY" && this.shape != "LINE") {
                     this.params.push(this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false))
                 } else if (this.params.length > 0) {
                     let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], true)
@@ -75,8 +81,8 @@ export class BoardDrawMode {
         })
         
         this.board.can.addEventListener('mouseup', (event) => {
-            if (this.active && this.shape != "POLY") {
-                if (this.shape === "RECT") {
+            if (this.active && this.shape != "POLY" && this.shape != "LINE") {
+                if (this.shape === "RECT" || this.shape === "RECTS") {
                     let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
                     if (res[0] >= this.params[0][0]) {
                         res[0] += 1
@@ -102,7 +108,7 @@ export class BoardDrawMode {
     }
     
     getText(): string {
-        return "1 : Select Rectangle\n2 : Square style Rectangle\n3 : Select Circle\n4 : Select Polyline\n5 : Complete Polyline\n6 : Cancel"
+        return "1 : Create Rectangle\n2 : Create Square Style Rectangle\n3 : Create Circle\n4 : Create Polyline\n5 : Create Wall\n6 : Complete Wall/Polyline\n7 : Cancel"
     }
     
     setNewObject(): void {
@@ -110,11 +116,11 @@ export class BoardDrawMode {
             let one = Math.min(this.params[0][0], this.params[1][0])
             let two = Math.min(this.params[0][1], this.params[1][1])
             let sizes = [Math.abs(this.params[1][0] - this.params[0][0]), Math.abs(this.params[1][1] - this.params[0][1])]
-                if (this.params[1][0] < this.params[0][0]) {
-                    sizes[0] += 1
-                } if (this.params[1][1] < this.params[0][1]) {
-                    sizes[1] += 1
-                }
+            if (this.params[1][0] < this.params[0][0]) {
+                sizes[0] += 1
+            } if (this.params[1][1] < this.params[0][1]) {
+                sizes[1] += 1
+            }
             this.tempObj = ["RECT", one, two, sizes[0], sizes[1]]
             this.completeObjCheck = true
         } else if (this.shape === "CIRCLE" && this.params.length === 2) {
@@ -126,8 +132,31 @@ export class BoardDrawMode {
         } else if (this.shape === "POLY" && this.params.length > 2) {
             this.tempObj = ["POLY", this.params[0][0], this.params[0][1], this.params.slice(1)]
             this.completeObjCheck = true
+        } else if (this.shape === "RECTS" && this.params.length === 2) {
+            let one = Math.min(this.params[0][0], this.params[1][0])
+            let two = Math.min(this.params[0][1], this.params[1][1])
+            let sizes = [Math.abs(this.params[1][0] - this.params[0][0]), Math.abs(this.params[1][1] - this.params[0][1])]
+            let objects = []
+            if (this.params[1][0] < this.params[0][0]) {
+                sizes[0] += 1
+            } if (this.params[1][1] < this.params[0][1]) {
+                sizes[1] += 1
+            }
+            for (let i = 0; i < sizes[0]; i++) {
+                for (let j = 0; j < sizes[1]; j++) {
+                    objects.push(["RECT", one + i, two + j, 1, 1, this.activeColour])
+                }
+            }
+            this.tempObj = objects
+            this.completeObjCheck = true
+        } else if (this.shape === "LINE" && this.params.length > 2) {
+            this.tempObj = ["LINE", this.params[0][0], this.params[0][1], this.params.slice(1)]
+            this.completeObjCheck = true
         }
         this.params = new Array()
+        if (this.shape != "RECTS") {
+            this.tempObj.push(this.activeColour)
+        }
         return
     }
     
@@ -140,9 +169,9 @@ export class BoardDrawMode {
         if (!this.active) {
             return 1
         }
-        if (this.shape != "POLY" && this.params.length >= 1) {
+        if (this.shape != "POLY" && this.shape != "LINE" && this.params.length >= 1) {
             let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
-            if (this.shape === "RECT") {
+            if (this.shape === "RECT" || this.shape === "RECTS") {
                 let coords = [0, 0]
                 if (res[0] >= this.params[0][0]) {
                     res[0] += 1
@@ -157,7 +186,7 @@ export class BoardDrawMode {
                 } if (res[1] < this.params[0][1]) {
                     sizes[1] += 1
                 }
-                let newObj = new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1])
+                let newObj = new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1], this.activeColour)
                 return newObj
             } else if (this.shape === "CIRCLE") {
                 if (res[0] >= this.params[0][0]) {
@@ -168,12 +197,16 @@ export class BoardDrawMode {
                 }
                 let coords = [Math.min(this.params[0][0], res[0]), Math.min(this.params[0][1], res[1])]
                 let radius = Math.max(Math.abs((this.params[0][0] - res[0])), Math.abs((this.params[0][1] - res[1])))
-                let newObj = new BoardObject.Circle(coords[0], coords[1], radius)
+                let newObj = new BoardObject.Circle(coords[0], coords[1], radius, this.activeColour)
                 return newObj
             }
         } else if (this.params.length >= 2 && this.shape === "POLY") {
             let newParams = this.params.slice(1)
-            let newObj = new BoardObject.Polyline(this.params[0][0], this.params[0][1], newParams)
+            let newObj = new BoardObject.Polyline(this.params[0][0], this.params[0][1], newParams, this.activeColour)
+            return newObj
+        } else if (this.params.length >= 2 && this.shape === "LINE") {
+            let newParams = this.params.slice(1)
+            let newObj = new BoardObject.Line(this.params[0][0], this.params[0][1], newParams, this.activeColour)
             return newObj
         }
         return 1

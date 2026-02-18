@@ -1,4 +1,57 @@
 <div id="colContainer">
-    <canvas id="colourBox">
-
+    <input type="range" id="redColBox" min="0" max="255">
+    <input type="range" id="greenColBox" min="0" max="255">
+    <input type="range" id="blueColBox" min="0" max="255">
+    <canvas id="colourSquare"></canvas>
+    <script>
+    let can = document.getElementById("colourSquare")
+    let ctx = document.getElementById("colourSquare").getContext("2d")
+        while (true) {
+            await new Promise(resolve => setTimeout(resolve, 25))
+            let red = document.getElementById("redColBox").value
+            let green = document.getElementById("greenColBox").value
+            let blue = document.getElementById("blueColBox").value
+            let col = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")"
+            can.style.background = col
+        }
+    </script>
 </div>
+
+<style>
+    #colContainer {
+        background-color: rgba(200, 200, 200, 0.5);
+        position: absolute;
+        bottom: 480px;
+        left: 10px;
+        width: 250px;
+        height: 250px;
+        border: solid black;
+    }
+    
+    #redColBox {
+        position: absolute;
+        top: 10px;
+        left: 45px;
+    }
+    
+    #greenColBox {
+        position: absolute;
+        top: 40px;
+        left: 45px;
+    }
+    
+    #blueColBox {
+        position: absolute;
+        top: 70px;
+        left: 45px;
+    }
+    
+    #colourSquare {
+        position: absolute;
+        top: 100px;
+        left: 75px;
+        width: 100px;
+        height: 100px;
+        background-color:rgba(200, 0, 0, 1);
+    }
+</style>

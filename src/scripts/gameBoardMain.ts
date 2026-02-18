@@ -23,16 +23,19 @@ function handleObjEvent(event: Array<any>) {
             storedObjects.get(event[1]).move(event[3], event[4])
         } else if (event[2] === "CREATE") {
             if (event[3] === "CIRCLE") {
-                let newObj: BoardObject.Circle = new BoardObject.Circle(event[4], event[5], event[6])
+                let newObj: BoardObject.Circle = new BoardObject.Circle(event[4], event[5], event[6], event[7])
                 storedObjects.set(event[1], newObj)
             } else if (event[3] === "RECT") {
-                let newObj: BoardObject.Rect = new BoardObject.Rect(event[4], event[5], event[6], event[7])
+                let newObj: BoardObject.Rect = new BoardObject.Rect(event[4], event[5], event[6], event[7], event[8])
                 storedObjects.set(event[1], newObj)
             } else if (event[3] === "TOKEN") {
-                let newObj: BoardObject.Token = new BoardObject.Token(event[4], event[5])
+                let newObj: BoardObject.Token = new BoardObject.Token(event[4], event[5], event[6])
                 storedObjects.set(event[1], newObj)
             } else if (event[3] === "POLY") {
-                let newObj: BoardObject.Polyline = new BoardObject.Polyline(event[4], event[5], event[6])
+                let newObj: BoardObject.Polyline = new BoardObject.Polyline(event[4], event[5], event[6], event[7])
+                storedObjects.set(event[1], newObj)
+            } else if (event[3] === "LINE") {
+                let newObj: BoardObject.Line = new BoardObject.Line(event[4], event[5], event[6], event[7])
                 storedObjects.set(event[1], newObj)
             }
         } else if (event[2] === "DESTROY") {
@@ -106,6 +109,13 @@ while (true) {
     }
     serveInter.clearQueue()
     if (board.modeObj.drawObj.completeObjCheck) {
-        createObj(board.modeObj.drawObj.getNewObject(), 0)
+        if (board.modeObj.drawObj.shape != "RECTS") {
+            createObj(board.modeObj.drawObj.getNewObject(), 0)
+        } else {
+            let newSquares = board.modeObj.drawObj.getNewObject()
+            for (let i = 0; i < newSquares.length; i++) {
+                createObj(newSquares[i], 0)
+            }
+        }
     }
 }

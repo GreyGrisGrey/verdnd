@@ -146,6 +146,7 @@ export class Board {
         }
         this.drawPointGrid(squareSize)
         this.drawMousePointer()
+        this.modeObj.drawObj.changeColour()
         return
     }
     
