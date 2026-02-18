@@ -1,6 +1,7 @@
 // File managing the local version of the board.
 import * as BoardLayer from "./boardLayer.ts"
 import * as modeManager from "./modeManager.ts"
+import * as ServerInterface from "./serverInterface.ts"
 
 export class Board {
     zoomGlobal: number
@@ -15,13 +16,14 @@ export class Board {
     boardLayers: Array<BoardLayer.BoardLayer>
     layerMap: Map<number, BoardLayer.BoardLayer>
     modeObj: modeManager.ModeManager
+    serveInter: ServerInterface.ServerInterface
     
-    constructor(can: HTMLElement) {
+    constructor() {
         this.zoomGlobal = 3
         this.zoomLevels = [4, 6, 8, 10, 13, 16, 20, 24, 28, 32]
         this.zoomVal = this.zoomLevels[this.zoomGlobal]
-        this.can = can
-        this.ctx = can.getContext('2d')
+        this.can = document.getElementById("board")!
+        this.ctx = this.can.getContext('2d')
         this.originCoords = [0, 0]
         this.mouseCoords = [0, 0]
         this.boardBounds = [-200, 200, -200, 200]
@@ -29,6 +31,8 @@ export class Board {
         this.boardLayers = new Array()
         this.layerMap = new Map()
         this.modeObj = new modeManager.ModeManager(this)
+        this.serveInter = new ServerInterface.ServerInterface(this)
+        this.serveInter.createLayer()
     }
     
     // Test function for pointer drawing.
@@ -233,5 +237,34 @@ export class Board {
         } else {
             return [Math.floor((x - this.originCoords[0]) / squareSize), Math.floor((y - this.originCoords[1]) / squareSize)]
         }
+    }
+    
+    async step() {
+        if (this.can.width != window.innerWidth) {
+            this.can.width = window.innerWidth
+            this.can.height = window.innerHeight
+        }
+        await new Promise(resolve => setTimeout(resolve, 25));
+        this.ctx.clearRect(0, 0, this.can.width, this.can.height)
+        this.draw()
+        let events = this.serveInter.getItems()
+        for (let i = 0; i < events.length; i++) {
+            this.serveInter.handleObjEvent(events[i])
+        }
+        this.serveInter.clearQueue()
+        if (this.modeObj.drawObj.completeObjCheck) {
+            if (this.modeObj.drawObj.shape != "RECTS") {
+                this.serveInter.createObj(this.modeObj.drawObj.getNewObject(), 0)
+            } else {
+                let newSquares = this.modeObj.drawObj.getNewObject()
+                for (let i = 0; i < newSquares.length; i++) {
+                    this.serveInter.createObj(newSquares[i], 0)
+                }
+            }
+        }
+    }
+    
+    deleteFromRect() {
+        
     }
 }

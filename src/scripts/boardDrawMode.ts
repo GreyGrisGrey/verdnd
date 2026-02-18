@@ -12,6 +12,8 @@ export class BoardDrawMode {
     tempObj: any
     completeObjCheck: boolean
     activeColour: string
+    selectMode: boolean
+    selectComplete: boolean
     
     constructor(parentBoard: localBoard.Board) {
         this.board = parentBoard
@@ -23,6 +25,9 @@ export class BoardDrawMode {
         this.tempObj = null
         this.completeObjCheck = false
         this.activeColour = "#cccccc"
+        this.activeColour = "rgb(255, 255, 255, 0.5)"
+        this.selectMode = false
+        this.selectComplete = false
     }
     
     changeColour() {
@@ -48,6 +53,9 @@ export class BoardDrawMode {
         })
         
         document.addEventListener("keydown", (event) => {
+            if (this.active) {
+                this.selectMode = false
+            }
             if (this.active && this.params.length == 0) {
                 if (event.key === "1") {
                     this.shape = "RECT"
@@ -59,10 +67,15 @@ export class BoardDrawMode {
                     this.shape = "POLY"
                 } else if (event.key === "5") {
                     this.shape = "LINE"
+                } else if (event.key === "7") {
+                    this.shape = "RECT"
+                    this.selectMode = true
                 }
             } else if (this.active && event.key === "6" && this.params.length > 2 && (this.shape === "POLY" || this.shape === "LINE")) {
                 this.setNewObject()
-            } else if (this.active && event.key === "7") {
+                alert("aa")
+            }
+            if (this.active) {
                 this.params = new Array()
             }
         })
@@ -81,7 +94,14 @@ export class BoardDrawMode {
         })
         
         this.board.can.addEventListener('mouseup', (event) => {
-            if (this.active && this.shape != "POLY" && this.shape != "LINE") {
+            if (this.active && this.selectMode) {
+                let newPos = [this.board.mouseCoords[0], this.board.mouseCoords[1]]
+                if (Math.abs(newPos[0] - this.params[0][0]) + Math.abs(newPos[1] - this.params[0][1]) < 5) {
+                    alert("a")
+                } else {
+                    alert("b")
+                }
+            } else if (this.active && this.shape != "POLY" && this.shape != "LINE") {
                 if (this.shape === "RECT" || this.shape === "RECTS") {
                     let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
                     if (res[0] >= this.params[0][0]) {
@@ -108,7 +128,9 @@ export class BoardDrawMode {
     }
     
     getText(): string {
-        return "1 : Create Rectangle\n2 : Create Square Style Rectangle\n3 : Create Circle\n4 : Create Polyline\n5 : Create Wall\n6 : Complete Wall/Polyline\n7 : Cancel"
+        return "1 : Create Rectangle\n2 : Create Square Style Rectangle" +
+        "\n3 : Create Circle\n4 : Create Polyline\n5 : Create Wall\n6 : Complete Wall/Polyline\n7 : Select" + 
+        "\n8 : Cancel"
     }
     
     setNewObject(): void {
@@ -186,8 +208,10 @@ export class BoardDrawMode {
                 } if (res[1] < this.params[0][1]) {
                     sizes[1] += 1
                 }
-                let newObj = new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1], this.activeColour)
-                return newObj
+                if (this.selectMode) {
+                    return new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1], "rgb(255, 255, 255, 0.5)")
+                }
+                return new BoardObject.Rect(coords[0], coords[1], sizes[0], sizes[1], this.activeColour)
             } else if (this.shape === "CIRCLE") {
                 if (res[0] >= this.params[0][0]) {
                     res[0] += 1
