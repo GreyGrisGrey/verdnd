@@ -1,13 +1,5 @@
-<div id="modeMenuID">
-    <button class="modeButton" id="viewMenuButton" disabled>View</button>
-    <button class="modeButton" id="tokenMenuButton">Token</button>
-    <button class="modeButton" id="drawMenuButton"">Draw</button>
-    
-</div>
-
-<div class="modeExplain" id="modeExplainations">
-
-    <p id="modeParagraph"> 
+<div id="rightBar">
+    <p id="rightPara"> 
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
         Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
@@ -16,46 +8,58 @@
         sunt in culpa qui officia deserunt mollit anim id est laborum. 
     </p>
     
+    <script>
+        while (true) {
+            await new Promise(resolve => setTimeout(resolve, 25))
+            document.getElementById("rightBar").style.height = window.innerHeight - 20 + "px";
+        }
+    </script>
+    
+    <button class="rightTab" id="rollTab">R</button>
+    <button class="rightTab" id="tokenTab">T</button>
+    <button class="rightTab" id="layerTab">L</button>
+    <button class="rightTab" id="characterTab">C</button>
+    
 </div>
 
 <style>
-    .modeButton {
-        background: rgba(200, 200, 200, 1);
-        z-index: 3;
-        width: 250px;
-        height: 50px;
+    .rightTab {
+        background-color: rgba(200, 200, 200, 0.5);
+        border: solid black;
+        position: absolute;
+        z-index: 2;
+        top: 10px;
+        left: -20px;
+        width: 20px;
+        height: 30px;
         pointer-events: auto;
     }
-
-    .modeButton:disabled {
-        background-color: rgba(150, 150, 150, 1);
+    
+    #tokenTab {
+        top: 50px;
+    }
+    
+    #layerTab {
+        top: 90px;
+    }
+    
+    #characterTab {
+        top: 130px;
     }
 
-    #modeMenuID {
+    #rightBar {
         background-color: rgba(200, 200, 200, 0.5);
         border: solid black;
         position: absolute;
         z-index: 2;
         bottom: 10px;
-        left: 10px;
-        width: 250px;
-        height: 150px;
-        pointer-events: none;
-    }
-
-    .modeExplain {
-        background-color: rgba(200, 200, 200, 0.5);
-        border: solid black;
-        position: absolute;
-        z-index: 2;
-        bottom: 170px;
-        left: 10px;
+        right: 10px;
         width: 250px;
         height: 300px;
         pointer-events: none;
     }
 
-    #modeParagraph {
+    #rightPara {
         position: absolute;
         bottom: 10px;
         left: 10px;

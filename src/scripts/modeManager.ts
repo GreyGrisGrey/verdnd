@@ -175,6 +175,7 @@ export class ModeManager {
     // Clears the list of selected objects.
     clearSelected(): void {
         this.deleteTrigger = false
+        this.selectClick = false
         this.currSelected = new Array()
         this.thirdOffset = [0, 0]
         return

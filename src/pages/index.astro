@@ -1,9 +1,16 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import Board from '../components/Board.astro';
+import ModeMenu from '../components/ModeMenu.astro';
 import Layout from '../layouts/Layout.astro';
+import Colours from '../components/Colours.astro';
+import RightBar from '../components/RightBar.astro';
 ---
 
 <Layout>
-<title> Astro Basics </title>
-	<Welcome/>
+	<title> Gameboard </title>
+	
+	<ModeMenu/>
+	<Board/>
+	<Colours/>
+	<RightBar/>
 </Layout>

@@ -3,21 +3,44 @@
     <input type="range" id="greenColBox" min="0" max="255">
     <input type="range" id="blueColBox" min="0" max="255">
     <canvas id="colourSquare"></canvas>
+    
     <script>
-    let can = document.getElementById("colourSquare")
-    let ctx = document.getElementById("colourSquare").getContext("2d")
-        while (true) {
-            await new Promise(resolve => setTimeout(resolve, 25))
-            let red = document.getElementById("redColBox").value
-            let green = document.getElementById("greenColBox").value
-            let blue = document.getElementById("blueColBox").value
-            let col = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")"
-            can.style.background = col
+        for (let i = 1; i < 7; i++) {
+            let currButton = document.getElementById("col" + i)
+            currButton.style.left = ((i - 1) * 40 + 10) + "px"
         }
+        let can = document.getElementById("colourSquare")
+        let ctx = document.getElementById("colourSquare").getContext("2d")
+            while (true) {
+                await new Promise(resolve => setTimeout(resolve, 25))
+                let red = document.getElementById("redColBox").value
+                let green = document.getElementById("greenColBox").value
+                let blue = document.getElementById("blueColBox").value
+                let col = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")"
+                can.style.background = col
+            }
     </script>
+    
+    <button class="colorTab" id="col1">1</button>
+    <button class="colorTab" id="col2">2</button>
+    <button class="colorTab" id="col3">3</button>
+    <button class="colorTab" id="col4">4</button>
+    <button class="colorTab" id="col5">5</button>
+    <button class="colorTab" id="col6">6</button>
+    
 </div>
 
 <style>
+    .colorTab {
+        background-color: rgba(200, 200, 200, 0.5);
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        top: -40px;
+        border: solid black;
+        pointer-events: auto;
+    }
+
     #colContainer {
         background-color: rgba(200, 200, 200, 0.5);
         position: absolute;
@@ -26,24 +49,28 @@
         width: 250px;
         height: 250px;
         border: solid black;
+        pointer-events: none;
     }
     
     #redColBox {
         position: absolute;
         top: 10px;
         left: 45px;
+        pointer-events: auto;
     }
     
     #greenColBox {
         position: absolute;
         top: 40px;
         left: 45px;
+        pointer-events: auto;
     }
     
     #blueColBox {
         position: absolute;
         top: 70px;
         left: 45px;
+        pointer-events: auto;
     }
     
     #colourSquare {

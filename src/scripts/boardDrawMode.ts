@@ -138,7 +138,7 @@ export class BoardDrawMode {
     getText(): string {
         return "1 : Create Rectangle\n2 : Create Square Style Rectangle" +
         "\n3 : Create Circle\n4 : Create Polyline\n5 : Create Wall\n6 : Complete Wall/Polyline\n7 : Select" + 
-        "\n8 : Cancel"
+        "\n8 : Cancel\nBackspace : Delete Selected"
     }
     
     // Finalizes the current object.
