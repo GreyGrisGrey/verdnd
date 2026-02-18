@@ -13,7 +13,7 @@ export class BoardDrawMode {
     completeObjCheck: boolean
     activeColour: string
     selectMode: boolean
-    selectComplete: boolean
+    selectState: number
     
     constructor(parentBoard: localBoard.Board) {
         this.board = parentBoard
@@ -27,7 +27,7 @@ export class BoardDrawMode {
         this.activeColour = "#cccccc"
         this.activeColour = "rgb(255, 255, 255, 0.5)"
         this.selectMode = false
-        this.selectComplete = false
+        this.selectState = 0
     }
     
     changeColour() {
@@ -71,12 +71,9 @@ export class BoardDrawMode {
                     this.shape = "RECT"
                     this.selectMode = true
                 }
+                this.params = new Array()
             } else if (this.active && event.key === "6" && this.params.length > 2 && (this.shape === "POLY" || this.shape === "LINE")) {
                 this.setNewObject()
-                alert("aa")
-            }
-            if (this.active) {
-                this.params = new Array()
             }
         })
         
@@ -95,11 +92,19 @@ export class BoardDrawMode {
         
         this.board.can.addEventListener('mouseup', (event) => {
             if (this.active && this.selectMode) {
-                let newPos = [this.board.mouseCoords[0], this.board.mouseCoords[1]]
-                if (Math.abs(newPos[0] - this.params[0][0]) + Math.abs(newPos[1] - this.params[0][1]) < 5) {
-                    alert("a")
+                let newPos = this.board.determineTile(this.board.mouseCoords[0] + 1, this.board.mouseCoords[1] + 1, false)
+                if (newPos[0] === this.params[0][0] && newPos[1] === this.params[0][1]) {
+                    this.selectState = 1
                 } else {
-                    alert("b")
+                    let newCoords = [0, 0, 0, 0]
+                    newCoords[0] = Math.min(newPos[0], this.params[0][0])
+                    newCoords[1] = Math.min(newPos[1], this.params[0][1])
+                    newCoords[2] = Math.max(newPos[0], this.params[0][0]) + 1
+                    newCoords[3] = Math.max(newPos[1], this.params[0][1]) + 1
+                    this.selectState = 2
+                    this.params = new Array()
+                    this.params.push([newCoords[0], newCoords[1]])
+                    this.params.push([newCoords[2], newCoords[3]])
                 }
             } else if (this.active && this.shape != "POLY" && this.shape != "LINE") {
                 if (this.shape === "RECT" || this.shape === "RECTS") {

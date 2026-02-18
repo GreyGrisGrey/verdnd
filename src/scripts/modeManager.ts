@@ -11,6 +11,7 @@ export class ModeManager {
     tokenButton: any
     drawObj: drawMode.BoardDrawMode
     drawButton: any
+    currSelected: Array<any>
     
     constructor(parentBoard: localBoard.Board) {
         this.currMode = "VIEW"
@@ -20,6 +21,7 @@ export class ModeManager {
         this.tokenButton = document.getElementById("tokenMenuButton")!
         this.drawObj = new drawMode.BoardDrawMode(parentBoard)
         this.drawButton = document.getElementById("drawMenuButton")!
+        this.currSelected = new Array()
         this.addEventListeners()
         this.modifyText(this.viewObj)
         this.viewObj.flipListeners(true)
@@ -53,5 +55,44 @@ export class ModeManager {
     
     modifyText(selectMode: any): void {
         document.getElementById("modeParagraph")!.innerText = selectMode.getText()
+    }
+    
+    hasCompleteSelection(): boolean {
+        if (this.currMode === "DRAW" && this.drawObj.selectState > 0) {
+            return true
+        }
+        return false
+    }
+    
+    getSelectCoords(): Array<Array<number>> {
+        if (this.currMode === "DRAW" && this.drawObj.selectState != 0) {
+            return this.drawObj.params
+        }
+        return [[0]]
+    }
+    
+    getObject(reason: string): any {
+        if (reason === "DRAW") {
+            return this.drawObj.getTempObject()
+        } else if (reason === "CREATE" && this.currMode === "DRAW") {
+            if (this.drawObj.completeObjCheck) {
+                return this.drawObj.getNewObject()
+            }
+        }
+        return 1
+    }
+    
+    setSelected(newSelection: Array<any>) {
+        this.currSelected = newSelection
+        this.drawObj.selectState = 0
+        this.drawObj.params = new Array()
+    }
+    
+    outlineSelected(ctx: any, squareSize: number, offset: Array<number>, offset2: Array<number>): void {
+        let outlineOffset = [offset[0] + offset2[0], offset[1] + offset2[1]]
+        for (let i = 0; i < this.currSelected.length; i++) {
+            this.currSelected[i].drawOutline(ctx, squareSize, outlineOffset);
+        }
+        return
     }
 }

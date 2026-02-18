@@ -17,6 +17,7 @@ export class Board {
     layerMap: Map<number, BoardLayer.BoardLayer>
     modeObj: modeManager.ModeManager
     serveInter: ServerInterface.ServerInterface
+    activeLayer: number
     
     constructor() {
         this.zoomGlobal = 3
@@ -33,6 +34,7 @@ export class Board {
         this.modeObj = new modeManager.ModeManager(this)
         this.serveInter = new ServerInterface.ServerInterface(this)
         this.serveInter.createLayer()
+        this.activeLayer = 0
     }
     
     // Test function for pointer drawing.
@@ -138,13 +140,23 @@ export class Board {
         return
     }
     
+    selectObjects(): void {
+        if (this.modeObj.hasCompleteSelection()) {
+            let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeObj.getSelectCoords())
+            this.modeObj.setSelected(res)
+        }
+    }
+    
     // Draws the board.
     draw(): void {
         let squareSize = 5 * this.zoomVal
         for (let i = 0; i < this.boardLayers.length; i++) {
+            if (this.boardLayers[i] === this.layerMap.get(this.activeLayer)) {
+                this.modeObj.outlineSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
+            }
             this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
         }
-        let tempObj = this.modeObj.drawObj.getTempObject()
+        let tempObj = this.modeObj.getObject("DRAW")
         if (tempObj != 1) {
             tempObj.draw(this.ctx, squareSize, this.originCoords)
         }
@@ -252,7 +264,8 @@ export class Board {
             this.serveInter.handleObjEvent(events[i])
         }
         this.serveInter.clearQueue()
-        if (this.modeObj.drawObj.completeObjCheck) {
+        let newObj = this.modeObj.getObject("CREATE")
+        if (newObj != 1) {
             if (this.modeObj.drawObj.shape != "RECTS") {
                 this.serveInter.createObj(this.modeObj.drawObj.getNewObject(), 0)
             } else {
@@ -262,6 +275,7 @@ export class Board {
                 }
             }
         }
+        this.selectObjects()
     }
     
     deleteFromRect() {
