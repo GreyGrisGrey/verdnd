@@ -1,36 +1,51 @@
 <div id="colContainer">
-    <input type="range" id="redColBox" min="0" max="255">
-    <input type="range" id="greenColBox" min="0" max="255">
-    <input type="range" id="blueColBox" min="0" max="255">
+    <input type="range" id="redColSlide" min="0" max="255">
+    <label class="colLabel" id="redLabel">R</label>
+    <input type="text" id="redColText">
+    <input type="range" id="greenColSlide" min="0" max="255">
+    <label class="colLabel" id="greenLabel">G</label>
+    <input type="text" id="greenColText">
+    <input type="range" id="blueColSlide" min="0" max="255">
+    <label class="colLabel" id="blueLabel">B</label>
+    <input type="text" id="blueColText">
+    <input type="range" id="opacColSlide" min="0" max="100">
+    <label class="colLabel" id="opacLabel">O</label>
+    <input type="text" id="opacColText">
     <canvas id="colourSquare"></canvas>
     
-    <script>
-        for (let i = 1; i < 7; i++) {
-            let currButton = document.getElementById("col" + i)
-            currButton.style.left = ((i - 1) * 40 + 10) + "px"
-        }
-        let can = document.getElementById("colourSquare")
-        let ctx = document.getElementById("colourSquare").getContext("2d")
-            while (true) {
-                await new Promise(resolve => setTimeout(resolve, 25))
-                let red = document.getElementById("redColBox").value
-                let green = document.getElementById("greenColBox").value
-                let blue = document.getElementById("blueColBox").value
-                let col = "rgb(" + red.toString() + ", " + green.toString() + ", " + blue.toString() + ")"
-                can.style.background = col
-            }
-    </script>
+    <script src="/src/scripts/leftBarMain.ts"></script>
     
-    <button class="colorTab" id="col1">1</button>
-    <button class="colorTab" id="col2">2</button>
-    <button class="colorTab" id="col3">3</button>
-    <button class="colorTab" id="col4">4</button>
-    <button class="colorTab" id="col5">5</button>
-    <button class="colorTab" id="col6">6</button>
+    <button class="colorTab" id="col1"></button>
+    <button class="colorTab" id="col2"></button>
+    <button class="colorTab" id="col3"></button>
+    <button class="colorTab" id="col4"></button>
+    <button class="colorTab" id="col5"></button>
+    <button class="colorTab" id="col6"></button>
     
 </div>
 
 <style>
+    .colLabel {
+        position: absolute;
+        left: 10px;
+    }
+    
+    #redLabel {
+        top: 10px;
+    }
+    
+    #greenLabel {
+        top: 40px;
+    }
+    
+    #blueLabel {
+        top: 70px;
+    }
+    
+    #opacLabel {
+        top: 100px;
+    }
+
     .colorTab {
         background-color: rgba(200, 200, 200, 0.5);
         position: absolute;
@@ -52,32 +67,75 @@
         pointer-events: none;
     }
     
-    #redColBox {
+    #redColSlide {
         position: absolute;
         top: 10px;
-        left: 45px;
+        left: 25px;
+        width: 175px;
         pointer-events: auto;
     }
     
-    #greenColBox {
+    #redColText {
+        position: absolute;
+        top: 10px;
+        left: 215px;
+        width: 25px;
+        pointer-events: auto;
+    }
+    
+    #greenColSlide {
         position: absolute;
         top: 40px;
-        left: 45px;
+        left: 25px;
+        width: 175px;
         pointer-events: auto;
     }
     
-    #blueColBox {
+    #greenColText {
+        position: absolute;
+        top: 40px;
+        left: 215px;
+        width: 25px;
+        pointer-events: auto;
+    }
+    
+    #blueColSlide {
         position: absolute;
         top: 70px;
-        left: 45px;
+        left: 25px;
+        width: 175px;
+        pointer-events: auto;
+    }
+    
+    #blueColText {
+        position: absolute;
+        top: 70px;
+        left: 215px;
+        width: 25px;
+        pointer-events: auto;
+    }
+    
+    #opacColSlide {
+        position: absolute;
+        top: 100px;
+        left: 25px;
+        width: 175px;
+        pointer-events: auto;
+    }
+    
+    #opacColText {
+        position: absolute;
+        top: 100px;
+        left: 215px;
+        width: 25px;
         pointer-events: auto;
     }
     
     #colourSquare {
         position: absolute;
-        top: 100px;
-        left: 75px;
-        width: 100px;
+        bottom: 10px;
+        left: 10px;
+        width: 230px;
         height: 100px;
         background-color:rgba(200, 0, 0, 1);
     }
