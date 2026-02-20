@@ -9,6 +9,7 @@ export class BoardSelectMode {
     selectedObjects: Array<any>
     selectClick: boolean
     thirdOffset: Array<number>
+    currColour: string
     
     constructor(parentBoard: localBoard.Board) {
         this.board = parentBoard
@@ -18,12 +19,14 @@ export class BoardSelectMode {
         this.selectClick = false
         this.addEventListeners()
         this.thirdOffset = [0, 0]
+        this.currColour = "none"
     }
     
     flipListeners(setOn: boolean) {
         this.active = setOn
         this.selectedObjects = new Array()
         this.exitOnNextStep = false
+        this.currColour = document.getElementById("colourSquare")!.style.background
     }
     
     addEventListeners(): void {
@@ -83,5 +86,14 @@ export class BoardSelectMode {
             this.selectedObjects[i].selected = true
         }
         return
+    }
+    
+    editColour(): void {
+        if (document.getElementById("colourSquare")!.style.background != this.currColour) {
+            this.currColour = document.getElementById("colourSquare")!.style.background
+            for (let i = 0; i < this.selectedObjects.length; i++) {
+                this.board.serveInter.changeObjColour(this.selectedObjects[i].ID, this.currColour)
+            }
+        }
     }
 }

@@ -16,7 +16,7 @@ export class Board {
     leftMouseDown: boolean
     boardLayers: Array<BoardLayer.BoardLayer>
     layerMap: Map<number, BoardLayer.BoardLayer>
-    modeObj: modeManager.ModeManager
+    modeMan: modeManager.ModeManager
     serveInter: ServerInterface.ServerInterface
     activeLayer: number
     
@@ -32,7 +32,7 @@ export class Board {
         this.leftMouseDown = false
         this.boardLayers = new Array()
         this.layerMap = new Map()
-        this.modeObj = new modeManager.ModeManager(this)
+        this.modeMan = new modeManager.ModeManager(this)
         this.serveInter = new ServerInterface.ServerInterface(this)
         this.serveInter.createLayer()
         this.activeLayer = 0
@@ -144,7 +144,7 @@ export class Board {
     
     // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
     selectObjects(): Array<any> {
-        let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeObj.getSelectCoords())
+        let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeMan.getSelectCoords())
         return res
     }
     
@@ -153,17 +153,17 @@ export class Board {
         let squareSize = 5 * this.zoomVal
         for (let i = 0; i < this.boardLayers.length; i++) {
             if (this.boardLayers[i] === this.layerMap.get(this.activeLayer)) {
-                this.modeObj.drawSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
+                this.modeMan.drawSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
             }
             this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
         }
-        let tempObj = this.modeObj.getObject("DRAW")
+        let tempObj = this.modeMan.getObject("DRAW")
         if (tempObj != 1) {
             tempObj.draw(this.ctx, squareSize, this.originCoords)
         }
         this.drawPointGrid(squareSize)
         this.drawMousePointer()
-        this.modeObj.drawObj.changeColour()
+        this.modeMan.drawMan.changeColour()
         return
     }
     
@@ -264,12 +264,12 @@ export class Board {
         }
         await new Promise(resolve => setTimeout(resolve, 25));
         this.ctx.clearRect(0, 0, this.can.width, this.can.height)
-        let newObj = this.modeObj.getObject("CREATE")
+        let newObj = this.modeMan.getObject("CREATE")
         if (newObj != 1) {
-            if (this.modeObj.drawObj.shape != "RECTS") {
-                this.serveInter.createObj(this.modeObj.drawObj.getNewObject(), 0)
+            if (this.modeMan.drawMan.shape != "RECTS") {
+                this.serveInter.createObj(this.modeMan.drawMan.getNewObject(), 0)
             } else {
-                let newSquares = this.modeObj.drawObj.getNewObject()
+                let newSquares = this.modeMan.drawMan.getNewObject()
                 for (let i = 0; i < newSquares.length; i++) {
                     this.serveInter.createObj(newSquares[i], 0)
                 }
@@ -281,18 +281,18 @@ export class Board {
         }
         this.serveInter.clearQueue()
         this.checkDeletion()
-        this.modeObj.attemptSelectedSwap()
+        this.modeMan.step()
         this.draw()
     }
     
     // Checks if a deletion request has been made, deletes marked objects if so.
     checkDeletion(): void {
-        if (this.modeObj.deleteTrigger) {
-            let deletions = this.modeObj.getSelected()
+        if (this.modeMan.deleteTrigger) {
+            let deletions = this.modeMan.getSelected()
             for (let i = 0; i < deletions.length; i++) {
                 this.serveInter.destroyObj(deletions[i].ID)
             }
-            this.modeObj.clearSelected()
+            this.modeMan.clearSelected()
         }
         return
     }
