@@ -250,14 +250,13 @@ export class Board {
     draw(): void {
         let squareSize = 5 * this.zoomVal
         for (let i = 0; i < this.boardLayers.length; i++) {
-            if (this.boardLayers[i] === this.layerMap.get(this.activeLayer)) {
-                this.modeMan.drawSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
+            this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords, this.modeMan.selectMan.thirdOffset)
+            if (i === this.activeLayer) {
+                let tempObj = this.modeMan.getObject("DRAW")
+                if (tempObj != 1) {
+                    tempObj.draw(this.ctx, squareSize, this.originCoords)
+                }
             }
-            this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
-        }
-        let tempObj = this.modeMan.getObject("DRAW")
-        if (tempObj != 1) {
-            tempObj.draw(this.ctx, squareSize, this.originCoords)
         }
         this.drawPointGrid(squareSize)
         this.drawMousePointer()
@@ -273,6 +272,7 @@ export class Board {
         }
         await new Promise(resolve => setTimeout(resolve, 25));
         this.ctx.clearRect(0, 0, this.can.width, this.can.height)
+        this.contactLayerMenu()
         let newObj = this.modeMan.getObject("CREATE")
         if (newObj != 1) {
             if (this.modeMan.drawMan.shape != "RECTS") {
@@ -302,6 +302,10 @@ export class Board {
             }
             this.modeMan.clearSelected()
         }
+        return
+    }
+    
+    contactLayerMenu(): void {
         return
     }
 }

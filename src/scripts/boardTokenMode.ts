@@ -91,9 +91,10 @@ export class BoardTokenMode {
                 this.shift = true
             }
         })
-
+        
+        // Should this event listener not check if token mode is active? Probably not, but it causes a bug with single token selection if it does.
         document.addEventListener("keyup", (event) => {
-            if (this.active && event.key === "Shift") {
+            if (event.key === "Shift") {
                 this.shift = false
             }
         })

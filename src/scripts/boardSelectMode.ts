@@ -23,6 +23,9 @@ export class BoardSelectMode {
     }
     
     flipListeners(setOn: boolean) {
+        for (let i = 0; i < this.selectedObjects.length; i++) {
+            this.selectedObjects[i].setSelected(false)
+        }
         this.active = setOn
         this.selectedObjects = new Array()
         this.exitOnNextStep = false
@@ -80,6 +83,9 @@ export class BoardSelectMode {
     
     setSelected(newObjs: Array<any>): void {
         this.selectedObjects = newObjs
+        for (let i = 0; i < this.selectedObjects.length; i++) {
+            this.selectedObjects[i].setSelected(true)
+        }
         return
     }
     

@@ -20,6 +20,18 @@ export class BoardLayer {
     // Sorts the board objects based on zOrder.
     sortObjects() {
         this.heldObjects = this.heldObjects.sort((n1, n2) => {
+            if (n1.objType === "Token" && n2.objType != "Token") {
+                return 1
+            }
+            if (n1.objType != "Token" && n2.objType === "Token") {
+                return -1
+            }
+            if (n1.selected && !n2.selected) {
+                return 1
+            }
+            if (!n1.selected && n2.selected) {
+                return -1
+            }
             if (n1.zOrder > n2.zOrder) {
                 return 1
             }
@@ -61,10 +73,14 @@ export class BoardLayer {
     }
     
     // Draws each board object on the layer.
-    drawLayer(ctx:any, squareSize:number, offset:Array<number>) {
+    drawLayer(ctx:any, squareSize:number, offset:Array<number>, thirdOffset:Array<number> = [0, 0]) {
         let localOffset = [offset[0] + this.layerOffset[0], offset[1] + this.layerOffset[1]]
         for (let i = 0; i < this.heldObjects.length; i++) {
-            this.heldObjects[i].draw(ctx, squareSize, localOffset)
+            if (this.heldObjects[i].selected) {
+                this.heldObjects[i].draw(ctx, squareSize, [localOffset[0] + thirdOffset[0], localOffset[1] + thirdOffset[1]])
+            } else {
+                this.heldObjects[i].draw(ctx, squareSize, localOffset)
+            }
         }
     }
     
