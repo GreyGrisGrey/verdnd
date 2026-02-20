@@ -1,27 +1,31 @@
 <div id="leftBar">
-    <input type="range" id="redColSlide" min="0" max="255">
-    <label class="colLabel" id="redLabel">R</label>
-    <input type="text" id="redColText">
-    <input type="range" id="greenColSlide" min="0" max="255">
-    <label class="colLabel" id="greenLabel">G</label>
-    <input type="text" id="greenColText">
-    <input type="range" id="blueColSlide" min="0" max="255">
-    <label class="colLabel" id="blueLabel">B</label>
-    <input type="text" id="blueColText">
-    <input type="range" id="opacColSlide" min="0" max="100">
-    <label class="colLabel" id="opacLabel">O</label>
-    <input type="text" id="opacColText">
-    <canvas id="colourSquare"></canvas>
+    <div id="colContainer">
+        <input type="range" id="redColSlide" min="0" max="255">
+        <label class="colLabel" id="redLabel">R</label>
+        <input type="text" id="redColText">
+        <input type="range" id="greenColSlide" min="0" max="255">
+        <label class="colLabel" id="greenLabel">G</label>
+        <input type="text" id="greenColText">
+        <input type="range" id="blueColSlide" min="0" max="255">
+        <label class="colLabel" id="blueLabel">B</label>
+        <input type="text" id="blueColText">
+        <input type="range" id="opacColSlide" min="0" max="100">
+        <label class="colLabel" id="opacLabel">O</label>
+        <input type="text" id="opacColText">
+        <canvas id="colourSquare"></canvas>
+        
+        <script src="/src/scripts/leftBarMain.ts"></script>
+        
+        <button class="colorTab" id="col1">
+        <button class="colorTab" id="col2">
+        <button class="colorTab" id="col3">
+        <button class="colorTab" id="col4">
+        <button class="colorTab" id="col5">
+        <button class="colorTab" id="col6">
+    </div>
     
-    <script src="/src/scripts/leftBarMain.ts"></script>
-    
-    <button class="colorTab" id="col1"></button>
-    <button class="colorTab" id="col2"></button>
-    <button class="colorTab" id="col3"></button>
-    <button class="colorTab" id="col4"></button>
-    <button class="colorTab" id="col5"></button>
-    <button class="colorTab" id="col6"></button>
-    
+    <div id="rollContainer">
+    </div>
 </div>
 
 <style>
@@ -31,19 +35,23 @@
     }
     
     #redLabel {
-        top: 10px;
+        top: 45px;
     }
     
     #greenLabel {
-        top: 40px;
+        top: 75px;
     }
     
     #blueLabel {
-        top: 70px;
+        top: 105px;
     }
     
     #opacLabel {
-        top: 100px;
+        top: 135px;
+    }
+    
+    #colContainer {
+        pointer-events: auto;
     }
 
     .colorTab {
@@ -51,9 +59,8 @@
         position: absolute;
         width: 30px;
         height: 30px;
-        top: -40px;
+        top: 8px;
         border: solid black;
-        pointer-events: auto;
     }
 
     #leftBar {
@@ -62,73 +69,65 @@
         bottom: 480px;
         left: 10px;
         width: 250px;
-        height: 250px;
+        height: 280px;
         border: solid black;
         pointer-events: none;
     }
     
     #redColSlide {
         position: absolute;
-        top: 10px;
+        top: 45px;
         left: 25px;
         width: 175px;
-        pointer-events: auto;
     }
     
     #redColText {
         position: absolute;
-        top: 10px;
+        top: 45px;
         left: 215px;
         width: 25px;
-        pointer-events: auto;
     }
     
     #greenColSlide {
         position: absolute;
-        top: 40px;
+        top: 75px;
         left: 25px;
         width: 175px;
-        pointer-events: auto;
     }
     
     #greenColText {
         position: absolute;
-        top: 40px;
+        top: 75px;
         left: 215px;
         width: 25px;
-        pointer-events: auto;
     }
     
     #blueColSlide {
         position: absolute;
-        top: 70px;
+        top: 105px;
         left: 25px;
         width: 175px;
-        pointer-events: auto;
     }
     
     #blueColText {
         position: absolute;
-        top: 70px;
+        top: 105px;
         left: 215px;
         width: 25px;
-        pointer-events: auto;
     }
     
     #opacColSlide {
         position: absolute;
-        top: 100px;
+        top: 135px;
         left: 25px;
         width: 175px;
-        pointer-events: auto;
     }
     
     #opacColText {
         position: absolute;
-        top: 100px;
+        top: 135px;
         left: 215px;
         width: 25px;
-        pointer-events: auto;
     }
     
     #colourSquare {
@@ -138,5 +137,11 @@
         width: 230px;
         height: 100px;
         background-color:rgba(200, 0, 0, 1);
+    }
+</style>
+
+<style>
+    #rollContainer {
+        visibility: hidden;
     }
 </style>

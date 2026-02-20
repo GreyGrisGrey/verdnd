@@ -23,24 +23,28 @@ export class rightBarMenu {
     addEventListeners(): void {
         document.getElementById("layerTab")!.addEventListener('click', (event) => {
             this.layerMan.toggleActive(true)
+            this.rollMan.toggleActive(false)
             this.currActive = "LAYER"
             this.setText()
         })
         
         document.getElementById("tokenTab")!.addEventListener('click', (event) => {
             this.layerMan.toggleActive(false)
+            this.rollMan.toggleActive(false)
             this.currActive = "TOKEN"
             this.setText()
         })
         
         document.getElementById("rollTab")!.addEventListener('click', (event) => {
             this.layerMan.toggleActive(false)
+            this.rollMan.toggleActive(true)
             this.currActive = "ROLL"
             this.setText()
         })
         
         document.getElementById("characterTab")!.addEventListener('click', (event) => {
             this.layerMan.toggleActive(false)
+            this.rollMan.toggleActive(false)
             this.currActive = "CHARACTER"
             this.setText()
         })
@@ -54,6 +58,8 @@ export class rightBarMenu {
             document.getElementById("rightBar")!.style.height = window.innerHeight - 20 + "px"
             if (this.currActive === "LAYER") {
                 this.layerMan.step()
+            } else if (this.currActive === "ROLL") {
+                this.rollMan.step()
             }
         }
     }
@@ -61,6 +67,8 @@ export class rightBarMenu {
     setText() {
         if (this.currActive === "LAYER") {
             document.getElementById("rightPara")!.innerText = this.layerMan.getText()
+        } else if (this.currActive === "ROLL") {
+            document.getElementById("rightPara")!.innerText = "SCRAW"
         } else {
             document.getElementById("rightPara")!.innerText = "WIP"
         }
