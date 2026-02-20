@@ -77,13 +77,13 @@ export class BoardLayer {
     // Selects all objects on the layer that match the corresponding coordinates.
     // If one coordinate point is provided, checks if said point is contained within the object.
     // If two points are provided, checks if each object's center is contained within the produced rectangle.
-    selectObjects(selectCoords: Array<Array<number>>): Array<any> {
+    selectObjects(selectCoords: Array<Array<number>>, matchType: string = "Any"): Array<any> {
         let acceptable: Array<any> = new Array()
         for (let i = 0; i < this.heldObjects.length; i++) {
-            if (selectCoords.length === 1 && this.heldObjects[i].isPointInside(selectCoords[0])) {
+            if (selectCoords.length === 1 && this.heldObjects[i].isPointInside(selectCoords[0]) && (this.heldObjects[i].objType === matchType || matchType === "Any")) {
                 acceptable.push(this.heldObjects[i])
                 break
-            } else if (selectCoords.length === 2 && this.heldObjects[i].isCenterInsideRect(selectCoords[0], selectCoords[1])) {
+            } else if (selectCoords.length === 2 && this.heldObjects[i].isCenterInsideRect(selectCoords[0], selectCoords[1]) && (this.heldObjects[i].objType === matchType || matchType === "Any")) {
                 acceptable.push(this.heldObjects[i])
             }
         }

@@ -57,34 +57,78 @@ export class BoardObject {
 }
 
 // Subclass for token objects.
-// Currently WIP.
 export class Token extends BoardObject {
     owner: string
-    radius: number
+    diameter: number
     name: string
     objType: string
     
-    constructor(id: number, x: number, y: number, col: string) {
+    constructor(id: number, x: number, y: number, diam: number, col: string, name: string = "", owner: string = "") {
         super(id, x, y, col)
-        this.owner = ""
-        this.radius = 1
-        this.name = ""
+        this.owner = owner
+        this.diameter = diam
+        this.name = name
         this.objType = "Token"
+        this.setCenter()
     }
     
     draw(ctx:any, squareSize:number, offset:Array<number>): void {
         if (!this.selected) {
-            let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.radius/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.radius/2]
+            let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.diameter/2]
             ctx.beginPath()
-            ctx.arc(coords[0], coords[1], this.radius * squareSize / 2, 0, 2 * Math.PI, false);
+            ctx.arc(coords[0], coords[1], (this.diameter * squareSize / 2), 0, 2 * Math.PI, false);
+            ctx.fillStyle = "#cccccc"
+            ctx.fill()
+            ctx.closePath()
+            ctx.beginPath()
+            ctx.arc(coords[0], coords[1], this.diameter * squareSize / 2 - 2, 0, 2 * Math.PI, false);
             ctx.fillStyle = this.colour
             ctx.fill()
-            ctx.strokeStyle = "#cccccc"
-            ctx.stroke()
             ctx.closePath()
         } else {
             this.selected = false
         }
+        return
+    }
+    
+    drawOutline(ctx:any, squareSize:number, offset:Array<number>): void {
+        let coords = [(this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] + squareSize * this.diameter/2]
+        ctx.beginPath()
+        ctx.arc(coords[0], coords[1], (this.diameter * squareSize / 2), 0, 2 * Math.PI, false);
+        ctx.fillStyle = "#ffd500"
+        ctx.fill()
+        ctx.closePath()
+        ctx.beginPath()
+        ctx.arc(coords[0], coords[1], this.diameter * squareSize / 2 - 3, 0, 2 * Math.PI, false);
+        ctx.fillStyle = this.colour
+        ctx.fill()
+        ctx.closePath()
+        return
+    }
+    
+    drawLabel(ctx:any, squareSize:number, offset:Array<number>): void {
+        ctx.font = "20px serif";
+        ctx.fillStyle = "#eeeeee"
+        ctx.textAlign = "center"
+        let textSize = ctx.measureText(this.name).width;
+        ctx.fillRect((this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2 - textSize/2 - 5, (this.location[1] * squareSize) + offset[1] - 35, textSize + 10, 25)
+        ctx.fillStyle = "#000000"
+        ctx.fillText(this.name, (this.location[0] * squareSize) + offset[0] + squareSize * this.diameter/2, (this.location[1] * squareSize) + offset[1] - 20);
+        return
+    }
+    
+    isPointInside(point: Array<number>): boolean{
+        let adj = Math.abs(this.location[0] + this.diameter/2 - point[0] - 0.5)
+        let opp = Math.abs(this.location[1] + this.diameter/2 - point[1] - 0.5)
+        let distance = Math.sqrt(adj * adj + opp * opp)
+        if (distance <= this.diameter/2) {
+            return true
+        }
+        return false
+    }
+    
+    setCenter(): void {
+        this.centerPoint = [this.location[0] + this.diameter/2, this.location[1] + this.diameter/2]
         return
     }
 }

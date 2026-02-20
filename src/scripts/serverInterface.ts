@@ -15,7 +15,7 @@ export class ServerInterface {
     
     constructor(newBoard: BoardParams.Board) {
         this.user = "bwagh"
-        this.pass = "nah"
+        this.pass = "password1"
         this.heldItems = new Array()
         this.layerIDMap = new Map()
         this.objectIDMap = new Map()
@@ -83,7 +83,7 @@ export class ServerInterface {
                     let newObj: BoardObject.Rect = new BoardObject.Rect(event[1], event[4], event[5], event[6], event[7], event[8])
                     this.storedObjects.set(event[1], newObj)
                 } else if (event[3] === "TOKEN") {
-                    let newObj: BoardObject.Token = new BoardObject.Token(event[1], event[4], event[5], event[6])
+                    let newObj: BoardObject.Token = new BoardObject.Token(event[1], event[4], event[5], event[6], event[7], event[8])
                     this.storedObjects.set(event[1], newObj)
                 } else if (event[3] === "POLY") {
                     let newObj: BoardObject.Polyline = new BoardObject.Polyline(event[1], event[4], event[5], event[6], event[7])

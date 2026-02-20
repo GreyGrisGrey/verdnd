@@ -1,4 +1,5 @@
 import * as BoardLayer from "./boardLayer.ts"
+import * as BoardObject from "./boardObject.ts"
 import * as modeManager from "./modeManager.ts"
 import * as ServerInterface from "./serverInterface.ts"
 
@@ -143,28 +144,17 @@ export class Board {
     }
     
     // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
-    selectObjects(): Array<any> {
-        let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeMan.getSelectCoords())
+    selectObjects(targetType: string = "None"): Array<any> {
+        let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeMan.getSelectCoords(), targetType)
         return res
     }
     
-    // Draws the board.
-    draw(): void {
-        let squareSize = 5 * this.zoomVal
-        for (let i = 0; i < this.boardLayers.length; i++) {
-            if (this.boardLayers[i] === this.layerMap.get(this.activeLayer)) {
-                this.modeMan.drawSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
-            }
-            this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
+    selectToken(fixedPoint: Array<Array<number>>): BoardObject.Token | null {
+        let res = this.layerMap.get(this.activeLayer)!.selectObjects(fixedPoint, "Token")
+        if (res.length != 0) {
+            return res[0]
         }
-        let tempObj = this.modeMan.getObject("DRAW")
-        if (tempObj != 1) {
-            tempObj.draw(this.ctx, squareSize, this.originCoords)
-        }
-        this.drawPointGrid(squareSize)
-        this.drawMousePointer()
-        this.modeMan.drawMan.changeColour()
-        return
+        return null
     }
     
     // Draws points at the vertices of the tiles for.
@@ -256,6 +246,25 @@ export class Board {
         }
     }
     
+    // Draws the board.
+    draw(): void {
+        let squareSize = 5 * this.zoomVal
+        for (let i = 0; i < this.boardLayers.length; i++) {
+            if (this.boardLayers[i] === this.layerMap.get(this.activeLayer)) {
+                this.modeMan.drawSelected(this.ctx, squareSize, this.originCoords, this.boardLayers[i].layerOffset)
+            }
+            this.boardLayers[i].drawLayer(this.ctx, squareSize, this.originCoords)
+        }
+        let tempObj = this.modeMan.getObject("DRAW")
+        if (tempObj != 1) {
+            tempObj.draw(this.ctx, squareSize, this.originCoords)
+        }
+        this.drawPointGrid(squareSize)
+        this.drawMousePointer()
+        this.modeMan.step(this.ctx, squareSize, this.originCoords)
+        return
+    }
+    
     // Performs a single drawing step.
     async step() {
         if (this.can.width != window.innerWidth) {
@@ -280,9 +289,8 @@ export class Board {
             this.serveInter.handleObjEvent(events[i])
         }
         this.serveInter.clearQueue()
-        this.checkDeletion()
-        this.modeMan.step()
         this.draw()
+        this.checkDeletion()
     }
     
     // Checks if a deletion request has been made, deletes marked objects if so.

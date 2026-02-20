@@ -27,6 +27,8 @@ export class BoardSelectMode {
         this.selectedObjects = new Array()
         this.exitOnNextStep = false
         this.currColour = document.getElementById("colourSquare")!.style.background
+        this.selectClick = this.board.leftMouseDown
+        this.thirdOffset = [0, 0]
     }
     
     addEventListeners(): void {
@@ -59,6 +61,9 @@ export class BoardSelectMode {
                 }
                 this.selectClick = false
                 this.thirdOffset = [0, 0]
+                if (this.selectedObjects.length === 1 && this.selectedObjects[0].objType === "Token") {
+                    this.exitOnNextStep = true
+                }
             }
         });
         
@@ -70,7 +75,7 @@ export class BoardSelectMode {
     }
     
     getText(): string {
-        return "toke"
+        return "nah"
     }
     
     setSelected(newObjs: Array<any>): void {
@@ -81,9 +86,14 @@ export class BoardSelectMode {
     draw(ctx: any, squareSize: number, offset: Array<number>, offset2: Array<number>): void {
         let outlineOffset = [offset[0] + offset2[0] + this.thirdOffset[0], offset[1] + offset2[1] + this.thirdOffset[1]]
         for (let i = 0; i < this.selectedObjects.length; i++) {
-            this.selectedObjects[i].drawOutline(ctx, squareSize, outlineOffset)
-            this.selectedObjects[i].draw(ctx, squareSize, outlineOffset)
-            this.selectedObjects[i].selected = true
+            if (this.selectedObjects[i].objType != "Token") {
+                this.selectedObjects[i].drawOutline(ctx, squareSize, outlineOffset)
+                this.selectedObjects[i].draw(ctx, squareSize, outlineOffset)
+                this.selectedObjects[i].selected = true
+            } else {
+                this.selectedObjects[i].drawOutline(ctx, squareSize, outlineOffset)
+                this.selectedObjects[i].selected = true
+            }
         }
         return
     }

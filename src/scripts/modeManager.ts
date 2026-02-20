@@ -3,6 +3,7 @@ import * as drawMode from "./boardDrawMode.ts"
 import * as tokenMode from "./boardTokenMode.ts"
 import * as selectMode from "./boardSelectMode.ts"
 import * as localBoard from "./localBoard.ts"
+import * as BoardObject from "./boardObject.ts"
 
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off.
@@ -96,6 +97,8 @@ export class ModeManager {
     hasCompleteSelection(): boolean {
         if (this.currMode === "DRAW" && this.drawMan.selectState > 0) {
             return true
+        } else if (this.currMode === "TOKEN" && this.tokenMan.completeSelectCheck) {
+            return true
         }
         return false
     }
@@ -104,6 +107,8 @@ export class ModeManager {
     getSelectCoords(): Array<Array<number>> {
         if (this.currMode === "DRAW" && this.drawMan.selectState != 0) {
             return this.drawMan.params
+        } else if (this.currMode === "TOKEN" && this.tokenMan.completeSelectCheck) {
+            return this.tokenMan.params
         }
         return [[0]]
     }
@@ -111,7 +116,11 @@ export class ModeManager {
     // Retrieves the object currently being drawn by the draw mode.
     getObject(reason: string): any {
         if (reason === "DRAW") {
-            return this.drawMan.getTempObject()
+            if (this.currMode === "DRAW") {
+                return this.drawMan.getTempObject()
+            } else if (this.currMode === "TOKEN") {
+                return this.tokenMan.getTempObject()
+            }
         } else if (reason === "CREATE" && this.currMode === "DRAW") {
             if (this.drawMan.completeObjCheck) {
                 return this.drawMan.getNewObject()
@@ -141,6 +150,12 @@ export class ModeManager {
     
     enterSelected(): void {
         let res = this.board.selectObjects()
+        if (this.currMode === "TOKEN" && this.tokenMan.params.length === 0) {
+            res = [this.tokenMan.currHover]
+            this.tokenMan.currHover = null
+        } else if (this.currMode === "TOKEN") {
+            res = this.board.selectObjects("Token")
+        }
         if (res.length != 0) {
             this.selectMan.flipListeners(true)
             this.selectMan.setSelected(res)
@@ -148,10 +163,19 @@ export class ModeManager {
                 this.drawMan.active = false
                 this.drawMan.selectState = 0
                 this.drawMan.params = new Array()
+            } else if (this.currMode === "TOKEN") {
+                this.tokenMan.active = false
+                this.tokenMan.completeSelectCheck = false
+                this.tokenMan.params = new Array()
             }
         } else {
-            this.drawMan.selectState = 0
-            this.drawMan.params = new Array()
+            if (this.currMode === "DRAW") {
+                this.drawMan.selectState = 0
+                this.drawMan.params = new Array()
+            } else if (this.currMode === "TOKEN") {
+                this.tokenMan.completeSelectCheck = false
+                this.tokenMan.params = new Array()
+            }
         }
         return
     }
@@ -160,6 +184,8 @@ export class ModeManager {
         this.selectMan.flipListeners(false)
         if (this.currMode === "DRAW") {
             this.drawMan.active = true
+        } else if (this.currMode === "TOKEN") {
+            this.tokenMan.active = true
         }
         return
     }
@@ -173,8 +199,15 @@ export class ModeManager {
         return
     }
     
-    step(): void {
+    step(ctx:any, squareSize:number, offset:Array<number>): void {
         this.attemptSelectedSwap()
+        if (this.tokenMan.active) {
+            this.tokenMan.tryDrawLabel(ctx, squareSize, offset)
+            this.tokenMan.getNewHover()
+        }
+        if (this.drawMan.active) {
+            this.drawMan.changeColour()
+        }
         if (this.selectMan.active) {
             this.selectMan.editColour()
         }
