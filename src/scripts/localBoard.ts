@@ -144,7 +144,7 @@ export class Board {
     }
     
     // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
-    selectObjects(targetType: string = "None"): Array<any> {
+    selectObjects(targetType: string = "Any"): Array<any> {
         let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeMan.getSelectCoords(), targetType)
         return res
     }
