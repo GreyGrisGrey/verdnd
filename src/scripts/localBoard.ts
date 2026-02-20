@@ -143,12 +143,9 @@ export class Board {
     }
     
     // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
-    selectObjects(): void {
-        if (this.modeObj.hasCompleteSelection()) {
-            let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeObj.getSelectCoords())
-            this.modeObj.setSelected(res)
-        }
-        return
+    selectObjects(): Array<any> {
+        let res = this.layerMap.get(this.activeLayer)!.selectObjects(this.modeObj.getSelectCoords())
+        return res
     }
     
     // Draws the board.
@@ -267,11 +264,6 @@ export class Board {
         }
         await new Promise(resolve => setTimeout(resolve, 25));
         this.ctx.clearRect(0, 0, this.can.width, this.can.height)
-        let events = this.serveInter.getItems()
-        for (let i = 0; i < events.length; i++) {
-            this.serveInter.handleObjEvent(events[i])
-        }
-        this.serveInter.clearQueue()
         let newObj = this.modeObj.getObject("CREATE")
         if (newObj != 1) {
             if (this.modeObj.drawObj.shape != "RECTS") {
@@ -283,8 +275,13 @@ export class Board {
                 }
             }
         }
+        let events = this.serveInter.getItems()
+        for (let i = 0; i < events.length; i++) {
+            this.serveInter.handleObjEvent(events[i])
+        }
+        this.serveInter.clearQueue()
         this.checkDeletion()
-        this.selectObjects()
+        this.modeObj.attemptSelectedSwap()
         this.draw()
     }
     

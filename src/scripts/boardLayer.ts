@@ -82,6 +82,7 @@ export class BoardLayer {
         for (let i = 0; i < this.heldObjects.length; i++) {
             if (selectCoords.length === 1 && this.heldObjects[i].isPointInside(selectCoords[0])) {
                 acceptable.push(this.heldObjects[i])
+                break
             } else if (selectCoords.length === 2 && this.heldObjects[i].isCenterInsideRect(selectCoords[0], selectCoords[1])) {
                 acceptable.push(this.heldObjects[i])
             }
