@@ -14,15 +14,8 @@ function checkDeletion() {
     return
 }
 
-let board: BoardParams.Board = new BoardParams.Board()
-let leftMan = new leftBar.LeftBarManager()
-let rightMan = new rightBar.RightBarManager()
-let serveInter = new ServerInterface.ServerInterface(board)
-serveInter.createLayer()
-
-while (true) {
-    await new Promise(resolve => setTimeout(resolve, 25))
-        if (board.modeMan.moveFlag) {
+function runBoardStep() {
+    if (board.modeMan.moveFlag) {
         let toChange = board.modeMan.getSelected()
         let valChange = board.determineTile(board.modeMan.selectMan.thirdOffset[0] + board.originCoords[0], board.modeMan.selectMan.thirdOffset[1] + board.originCoords[1], true)
         for (let i = 0; i < toChange.length; i++) {
@@ -48,7 +41,18 @@ while (true) {
         serveInter.handleObjEvent(events[i])
     }
     serveInter.clearQueue()
-    rightMan.step()
     board.step()
     checkDeletion()
+}
+
+let board: BoardParams.Board = new BoardParams.Board()
+let leftMan = new leftBar.LeftBarManager()
+let rightMan = new rightBar.RightBarManager()
+let serveInter = new ServerInterface.ServerInterface(board)
+serveInter.createLayer()
+
+while (true) {
+    await new Promise(resolve => setTimeout(resolve, 25))
+    runBoardStep()
+    rightMan.step()
 }

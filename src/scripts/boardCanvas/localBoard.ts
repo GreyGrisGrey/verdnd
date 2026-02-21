@@ -178,60 +178,6 @@ export class Board {
         return
     }
     
-    // Draws lines between vertices of the grid.
-    // Currently defunct.
-    drawLineGrid(squareSize: number): void {
-        let currX = this.originCoords[0]
-        while (currX + squareSize < 0) {
-            currX += squareSize
-        }
-        while (currX < this.can.width + 100) {
-            let currY = this.originCoords[1]
-            while (currY + squareSize < 0) {
-                currY += squareSize
-            }
-            while (currY < this.can.height + 100) {
-                if (currX <= this.originCoords[0] && currX + squareSize >= this.originCoords[0]) {
-                    this.ctx.fillStyle = "rgba(100, 100, 100, 0.25)"
-                } else [
-                    this.ctx.fillStyle = "rgba(100, 100, 100, 0.25)"
-                ]
-                this.ctx.fillRect(currX - 1, currY - 1, squareSize, 2)
-                this.ctx.fillRect(currX- 1, currY - 1, 2, squareSize)
-                currY += squareSize
-            }
-            currX += squareSize
-        }
-        return
-    }
-    
-    // Draws the underlying grid of the board. 
-    // Currently defunct.
-    drawUnderGrid(squareSize: number): void {
-        let currX = this.originCoords[0]
-        while (currX + squareSize < 0) {
-            currX += squareSize
-        }
-        while (currX < this.can.width + 100) {
-            let clr = "#333333"
-            let currY = this.originCoords[1]
-            while (currY + squareSize < 0) {
-                currY += squareSize
-            }
-            while (currY < this.can.height + 100) {
-                if (currX <= this.originCoords[0] && currX + squareSize >= this.originCoords[0]) {
-                    this.ctx.fillStyle = "#0000cc"
-                } else [
-                    this.ctx.fillStyle = clr
-                ]
-                this.ctx.fillRect(currX, currY, squareSize, squareSize)
-                currY += squareSize
-            }
-            currX += squareSize
-        }
-        return
-    }
-    
     // Determines which tile/vertex a coordinate pair is located on.
     determineTile(x: number, y: number, vertex: boolean): Array<number> {
         let squareSize = 5 * this.zoomVal
@@ -282,5 +228,11 @@ export class Board {
             return deletion
         }
         return null
+    }
+    
+    changeLayerZ(layerId: number, newVal: number): void {
+        this.layerMap.get(layerId)!.zOrder = newVal
+        this.sortLayers()
+        return
     }
 }

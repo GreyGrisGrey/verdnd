@@ -11,6 +11,7 @@ export class ServerInterface {
     layerIDMap: Map<number, boolean>
     objectIDMap: Map<number, boolean>
     storedObjects: Map<number, any>
+    storedLayers: Map<number, any>
     board: BoardParams.Board
     
     constructor(newBoard: BoardParams.Board) {
@@ -21,6 +22,7 @@ export class ServerInterface {
         this.objectIDMap = new Map()
         this.board = newBoard
         this.storedObjects = new Map()
+        this.storedLayers = new Map()
     }
     
     clearQueue() {
@@ -71,6 +73,8 @@ export class ServerInterface {
                 this.board.addObject(event[3], event[1], this.storedObjects.get(event[3]))
             } else if (event[2] === "MOVE") {
                 this.board.moveLayer(event[1], event[3], event[4])
+            } else if (event[2] === "ZORDER") {
+                this.board.changeLayerZ(event[1], event[3])
             }
         } else if (event[0] === "OBJECT") {
             if (event[2] === "MOVE") {
@@ -138,5 +142,10 @@ export class ServerInterface {
 
     changeObjColour(id: number, newColour: string) {
         this.sendItem(["OBJECT", id, "RECOLOUR", newColour])
+    }
+    
+    flipZOrder(layer1Id: number, layer1Z: number, layer2Id: number, layer2Z: number) {
+        this.sendItem(["LAYER", layer1Id, "ZORDER", layer2Z])
+        this.sendItem(["LAYER", layer2Id, "ZORDER", layer1Z])
     }
 }

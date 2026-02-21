@@ -1,5 +1,6 @@
-import { defineAction } from 'astro:actions';
-import { z } from 'astro/zod';
+import { defineAction } from 'astro:actions'
+import { z } from 'astro/zod'
+import {boardActions} from './boardActions.ts'
 
 export const server = {
   getGreeting: defineAction({
@@ -10,4 +11,5 @@ export const server = {
       return `Hello, ${input.name}!`
     }
   }),
+  boardActions,
 }

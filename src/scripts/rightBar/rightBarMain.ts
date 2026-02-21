@@ -52,8 +52,7 @@ export class RightBarManager {
         return
     }
     
-    async step() {
-        await new Promise(resolve => setTimeout(resolve, 25))
+    step() {
         document.getElementById("rightBar")!.style.height = window.innerHeight - 20 + "px"
         if (this.currActive === "LAYER") {
             this.layerMan.step()
