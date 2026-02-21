@@ -3,7 +3,6 @@ import * as drawMode from "./boardDrawMode.ts"
 import * as tokenMode from "./boardTokenMode.ts"
 import * as selectMode from "./boardSelectMode.ts"
 import * as localBoard from "./localBoard.ts"
-import * as BoardObject from "./boardObject.ts"
 
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off.
@@ -19,6 +18,8 @@ export class ModeManager {
     drawButton: any
     deleteTrigger: boolean
     selectClick: boolean
+    recolourFlag: boolean
+    moveFlag: boolean
     
     constructor(parentBoard: localBoard.Board) {
         this.board = parentBoard
@@ -35,6 +36,8 @@ export class ModeManager {
         this.addEventListeners()
         this.modifyText(this.viewMan)
         this.viewMan.flipListeners(true)
+        this.recolourFlag = false
+        this.moveFlag = false
     }
     
     // Adds event listeners for all modes, as well as some of its own.
@@ -125,6 +128,10 @@ export class ModeManager {
             if (this.drawMan.completeObjCheck) {
                 return this.drawMan.getNewObject()
             }
+        } else if (reason === "CREATE" && this.currMode === "TOKEN") {
+            if (this.tokenMan.newTokenCheck) {
+                return this.tokenMan.getNewObject()
+            }
         }
         return 1
     }
@@ -209,8 +216,23 @@ export class ModeManager {
             this.drawMan.changeColour()
         }
         if (this.selectMan.active) {
-            this.selectMan.editColour()
+            this.recolourFlag = this.checkEditColour()
+            this.moveFlag = this.checkMove()
         }
         return
+    }
+    
+    checkEditColour(): boolean {
+        if (this.selectMan.canEditColour()) {
+            return true
+        }
+        return false
+    }
+    
+    checkMove(): boolean {
+        if (this.selectMan.moveReady) {
+            return true
+        }
+        return false
     }
 }

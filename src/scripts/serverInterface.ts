@@ -1,6 +1,6 @@
-import * as BoardLayer from "./boardLayer.ts"
-import * as BoardParams from "./localBoard.ts"
-import * as BoardObject from "./boardObject.ts"
+import * as BoardLayer from "./boardCanvas/boardLayer.ts"
+import * as BoardParams from "./boardCanvas/localBoard.ts"
+import * as BoardObject from "./boardCanvas/boardObject.ts"
 
 // Class that will handle interfacing with the server.
 // Currently does not do much of anything besides serving as a standin.

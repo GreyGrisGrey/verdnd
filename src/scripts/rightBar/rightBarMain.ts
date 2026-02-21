@@ -3,7 +3,7 @@ import * as Token from "./tokenBarMenu.ts"
 import * as Character from "./characterBarMenu.ts"
 import * as Roll from "./rollBarMenu.ts"
 
-export class rightBarMenu {
+export class RightBarManager {
     layerMan: Layer.LayerMenu
     tokenMan: Token.TokenMenu
     characterMan: Character.CharacterMenu
@@ -17,6 +17,7 @@ export class rightBarMenu {
         this.characterMan = new Character.CharacterMenu()
         this.rollMan = new Roll.RollMenu()
         this.currActive = "NONE"
+        document.getElementById("rightBar")!.style.width = "250px"
         this.addEventListeners()
     }
     
@@ -52,28 +53,22 @@ export class rightBarMenu {
     }
     
     async step() {
-        document.getElementById("rightBar")!.style.width = "250px"
-        while (true) {
-            await new Promise(resolve => setTimeout(resolve, 25))
-            document.getElementById("rightBar")!.style.height = window.innerHeight - 20 + "px"
-            if (this.currActive === "LAYER") {
-                this.layerMan.step()
-            } else if (this.currActive === "ROLL") {
-                this.rollMan.step()
-            }
+        await new Promise(resolve => setTimeout(resolve, 25))
+        document.getElementById("rightBar")!.style.height = window.innerHeight - 20 + "px"
+        if (this.currActive === "LAYER") {
+            this.layerMan.step()
+        } else if (this.currActive === "ROLL") {
+            this.rollMan.step()
         }
     }
     
     setText() {
         if (this.currActive === "LAYER") {
-            document.getElementById("rightPara")!.innerText = this.layerMan.getText()
+            document.getElementById("rightPara")!.innerText = ""
         } else if (this.currActive === "ROLL") {
-            document.getElementById("rightPara")!.innerText = "SCRAW"
+            document.getElementById("rightPara")!.innerText = ""
         } else {
             document.getElementById("rightPara")!.innerText = "WIP"
         }
     }
 }
-
-let currMenu = new rightBarMenu()
-currMenu.step()

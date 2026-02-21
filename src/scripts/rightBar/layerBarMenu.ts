@@ -40,10 +40,6 @@ export class LayerMenu {
         this.layerObj.style.pointerEvents = this.active ? "auto" : "none"
     }
     
-    getText(): string {
-        return ""
-    }
-    
     setMainElements(): void {
         this.layerObj.style.background = "#cccccc"
         this.layerObj.style.visibility = "hidden"

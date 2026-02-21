@@ -123,14 +123,13 @@ export class BoardTokenMode {
         return "Left Click : Create Token\nLeft Click on Token : Select Token\nShift + Left Click : Select Tokens"
     }
     
-    createToken(): void {
+    createToken(): Array<any> {
         let coords = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
         let newTokenObj = ["TOKEN", coords[0], coords[1], parseInt(this.sizeInput.value)]
         newTokenObj.push(document.getElementById("colourSquare")!.style.background)
         newTokenObj.push(this.nameInput.value)
         newTokenObj.push("")
-        this.board.serveInter.createObj(newTokenObj, 0)
-        return
+        return newTokenObj
     }
     
     tryDrawLabel(ctx:any, squareSize:number, offset:Array<number>): void {
@@ -166,5 +165,11 @@ export class BoardTokenMode {
             return new BoardObject.Rect(-1, coords[0], coords[1], sizes[0], sizes[1], "rgb(255, 255, 255, 0.5)")
         }
         return 1
+    }
+    
+    getNewObject(): any {
+        this.getNewHover()
+        this.newTokenCheck = false
+        return this.createToken()
     }
 }

@@ -1,5 +1,4 @@
 import * as localBoard from "./localBoard.ts"
-import * as BoardObject from "./boardObject.ts"
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {
@@ -10,6 +9,7 @@ export class BoardSelectMode {
     selectClick: boolean
     thirdOffset: Array<number>
     currColour: string
+    moveReady: boolean
     
     constructor(parentBoard: localBoard.Board) {
         this.board = parentBoard
@@ -20,6 +20,7 @@ export class BoardSelectMode {
         this.addEventListeners()
         this.thirdOffset = [0, 0]
         this.currColour = "none"
+        this.moveReady = false
     }
     
     flipListeners(setOn: boolean) {
@@ -56,16 +57,10 @@ export class BoardSelectMode {
         
         this.board.can.addEventListener('mouseup', (event) => {
             if (this.active && this.selectClick) {
-                let valChange = this.board.determineTile(this.thirdOffset[0] + this.board.originCoords[0], this.thirdOffset[1] + this.board.originCoords[1], true)
-                if (valChange[0] != 0 || valChange[1] != 0) {
-                    for (let i = 0; i < this.selectedObjects.length; i++) {
-                        this.board.serveInter.moveObj(this.selectedObjects[i].ID, valChange[0], valChange[1])
-                    }
-                }
-                this.selectClick = false
-                this.thirdOffset = [0, 0]
+                this.moveReady = true
                 if (this.selectedObjects.length === 1 && this.selectedObjects[0].objType === "Token") {
                     this.exitOnNextStep = true
+                    this.board.modeMan.moveFlag = true
                 }
             }
         });
@@ -104,12 +99,17 @@ export class BoardSelectMode {
         return
     }
     
-    editColour(): void {
+    canEditColour() {
         if (document.getElementById("colourSquare")!.style.background != this.currColour) {
             this.currColour = document.getElementById("colourSquare")!.style.background
-            for (let i = 0; i < this.selectedObjects.length; i++) {
-                this.board.serveInter.changeObjColour(this.selectedObjects[i].ID, this.currColour)
-            }
+            return true
         }
+        return false
+    }
+    
+    piecesMoved() {
+        this.moveReady = false
+        this.selectClick = false
+        this.thirdOffset = [0, 0]
     }
 }

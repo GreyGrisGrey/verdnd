@@ -1,4 +1,4 @@
-export class colourBox {
+export class ColourBox {
     savedVals: Array<Array<number>>
     currRGBVals: Array<number>
     currRGBString: string
@@ -89,5 +89,3 @@ export class colourBox {
         this.adjBoxes[swapID].style.background = this.getRGBString(this.savedVals[swapID])
     }
 }
-
-let colourPicker = new colourBox()

@@ -1,7 +1,6 @@
 import * as BoardLayer from "./boardLayer.ts"
 import * as BoardObject from "./boardObject.ts"
 import * as modeManager from "./modeManager.ts"
-import * as ServerInterface from "./serverInterface.ts"
 
 // Main class controlling the state of the canvas.
 // Somewhat oversized, may be split up eventually.
@@ -18,7 +17,6 @@ export class Board {
     boardLayers: Array<BoardLayer.BoardLayer>
     layerMap: Map<number, BoardLayer.BoardLayer>
     modeMan: modeManager.ModeManager
-    serveInter: ServerInterface.ServerInterface
     activeLayer: number
     
     constructor() {
@@ -34,8 +32,6 @@ export class Board {
         this.boardLayers = new Array()
         this.layerMap = new Map()
         this.modeMan = new modeManager.ModeManager(this)
-        this.serveInter = new ServerInterface.ServerInterface(this)
-        this.serveInter.createLayer()
         this.activeLayer = 0
     }
     
@@ -264,48 +260,27 @@ export class Board {
         return
     }
     
+    getModeManObject() {
+        return this.modeMan.getObject("CREATE")
+    }
+    
     // Performs a single drawing step.
     async step() {
         if (this.can.width != window.innerWidth) {
             this.can.width = window.innerWidth
             this.can.height = window.innerHeight
         }
-        await new Promise(resolve => setTimeout(resolve, 25));
         this.ctx.clearRect(0, 0, this.can.width, this.can.height)
-        this.contactLayerMenu()
-        let newObj = this.modeMan.getObject("CREATE")
-        if (newObj != 1) {
-            if (this.modeMan.drawMan.shape != "RECTS") {
-                this.serveInter.createObj(this.modeMan.drawMan.getNewObject(), 0)
-            } else {
-                let newSquares = this.modeMan.drawMan.getNewObject()
-                for (let i = 0; i < newSquares.length; i++) {
-                    this.serveInter.createObj(newSquares[i], 0)
-                }
-            }
-        }
-        let events = this.serveInter.getItems()
-        for (let i = 0; i < events.length; i++) {
-            this.serveInter.handleObjEvent(events[i])
-        }
-        this.serveInter.clearQueue()
         this.draw()
-        this.checkDeletion()
     }
     
     // Checks if a deletion request has been made, deletes marked objects if so.
-    checkDeletion(): void {
+    getDeletion(): Array<any> | null {
         if (this.modeMan.deleteTrigger) {
-            let deletions = this.modeMan.getSelected()
-            for (let i = 0; i < deletions.length; i++) {
-                this.serveInter.destroyObj(deletions[i].ID)
-            }
+            let deletion = this.modeMan.getSelected()
             this.modeMan.clearSelected()
+            return deletion
         }
-        return
-    }
-    
-    contactLayerMenu(): void {
-        return
+        return null
     }
 }
