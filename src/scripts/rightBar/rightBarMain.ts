@@ -1,7 +1,7 @@
-import * as Character from './characterBarMenu.ts';
-import * as Layer from './layerBarMenu.ts';
-import * as Roll from './rollBarMenu.ts';
-import * as Token from './tokenBarMenu.ts';
+import { CharacterMenu } from './characterBarMenu.ts';
+import { LayerMenu } from './layerBarMenu.ts';
+import { RollMenu } from './rollBarMenu.ts';
+import { TokenMenu } from './tokenBarMenu.ts';
 import { getRequiredElement } from '../dom.ts';
 
 const rightBar = getRequiredElement('rightBar', HTMLElement);
@@ -20,17 +20,17 @@ export enum RightBarTab {
 }
 
 export class RightBarManager {
-  layerMan: Layer.LayerMenu;
-  tokenMan: Token.TokenMenu;
-  characterMan: Character.CharacterMenu;
-  rollMan: Roll.RollMenu;
+  layerMan: LayerMenu;
+  tokenMan: TokenMenu;
+  characterMan: CharacterMenu;
+  rollMan: RollMenu;
   currActive: RightBarTab;
 
   constructor() {
-    this.layerMan = new Layer.LayerMenu();
-    this.tokenMan = new Token.TokenMenu();
-    this.characterMan = new Character.CharacterMenu();
-    this.rollMan = new Roll.RollMenu();
+    this.layerMan = new LayerMenu();
+    this.tokenMan = new TokenMenu();
+    this.characterMan = new CharacterMenu();
+    this.rollMan = new RollMenu();
     this.currActive = RightBarTab.None;
     rightBar.style.width = '250px';
     this.addEventListeners();

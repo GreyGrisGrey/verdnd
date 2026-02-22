@@ -1,11 +1,11 @@
-import * as drawMode from './boardDrawMode.ts';
-import type * as BoardLayer from './boardLayer.ts';
-import * as BoardObject from './boardObject.ts';
-import * as selectMode from './boardSelectMode.ts';
-import * as tokenMode from './boardTokenMode.ts';
-import * as viewMode from './boardViewMode.ts';
+import { BoardDrawMode } from './boardDrawMode.ts';
+import type { LayerObject } from './boardLayer.ts';
+import { ObjType } from './boardObject.ts';
+import { BoardSelectMode } from './boardSelectMode.ts';
+import { BoardTokenMode } from './boardTokenMode.ts';
+import { BoardViewMode } from './boardViewMode.ts';
 import type { Vec2 } from './coords.ts';
-import type * as localBoard from './localBoard.ts';
+import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 
 const modeParagraph = getRequiredElement('modeParagraph', HTMLElement);
@@ -28,24 +28,24 @@ export enum GetObjectReason {
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off.
 export class ModeManager {
-  board: localBoard.Board;
+  board: Board;
   currMode: Mode;
-  viewMan: viewMode.BoardViewMode;
-  tokenMan: tokenMode.BoardTokenMode;
-  drawMan: drawMode.BoardDrawMode;
-  selectMan: selectMode.BoardSelectMode;
+  viewMan: BoardViewMode;
+  tokenMan: BoardTokenMode;
+  drawMan: BoardDrawMode;
+  selectMan: BoardSelectMode;
   deleteTrigger: boolean;
   selectClick: boolean;
   recolourFlag: boolean;
   moveFlag: boolean;
 
-  constructor(parentBoard: localBoard.Board) {
+  constructor(parentBoard: Board) {
     this.board = parentBoard;
     this.currMode = Mode.View;
-    this.viewMan = new viewMode.BoardViewMode(parentBoard);
-    this.tokenMan = new tokenMode.BoardTokenMode(parentBoard);
-    this.drawMan = new drawMode.BoardDrawMode(parentBoard);
-    this.selectMan = new selectMode.BoardSelectMode(parentBoard);
+    this.viewMan = new BoardViewMode(parentBoard);
+    this.tokenMan = new BoardTokenMode(parentBoard);
+    this.drawMan = new BoardDrawMode(parentBoard);
+    this.selectMan = new BoardSelectMode(parentBoard);
     this.deleteTrigger = false;
     this.selectClick = false;
     this.addEventListeners();
@@ -115,10 +115,10 @@ export class ModeManager {
   // Switches the information bar's text to match the current mode.
   modifyText(
     selectMode:
-      | selectMode.BoardSelectMode
-      | viewMode.BoardViewMode
-      | tokenMode.BoardTokenMode
-      | drawMode.BoardDrawMode,
+      | BoardSelectMode
+      | BoardViewMode
+      | BoardTokenMode
+      | BoardDrawMode,
   ) {
     modeParagraph.innerText = selectMode.getText();
   }
@@ -198,13 +198,12 @@ export class ModeManager {
   }
 
   enterSelected() {
-    let res: (BoardLayer.LayerObject | undefined)[] =
-      this.board.selectObjects();
+    let res: (LayerObject | undefined)[] = this.board.selectObjects();
     if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
       res = [this.tokenMan.currHover];
       this.tokenMan.currHover = undefined;
     } else if (this.currMode === Mode.Token) {
-      res = this.board.selectObjects(BoardObject.ObjType.Token);
+      res = this.board.selectObjects(ObjType.Token);
     }
     const selected = res.filter((obj) => obj !== undefined);
     if (selected.length !== 0) {

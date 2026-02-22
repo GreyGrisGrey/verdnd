@@ -1,33 +1,29 @@
 import type { ColorInstance } from 'color';
 
-import * as BoardLayer from './boardCanvas/boardLayer.ts';
-import * as BoardObject from './boardCanvas/boardObject.ts';
-import type * as BoardParams from './boardCanvas/localBoard.ts';
+import { BoardLayer, type LayerObject } from './boardCanvas/boardLayer.ts';
+import {
+  Circle,
+  Line,
+  Polyline,
+  Rect,
+  Token,
+} from './boardCanvas/boardObject.ts';
+import type { Board } from './boardCanvas/localBoard.ts';
 import type { CreateObjectPayload, ServerEvent } from './objectEvents.ts';
 import { Action, Entity, Shape } from './objectEvents.ts';
 
-function payloadToBoardObject(
-  p: CreateObjectPayload,
-  id: number,
-): BoardLayer.LayerObject {
+function payloadToBoardObject(p: CreateObjectPayload, id: number): LayerObject {
   switch (p.kind) {
     case Shape.Circle:
-      return new BoardObject.Circle(id, p.x, p.y, p.diameter, p.colour);
+      return new Circle(id, p.x, p.y, p.diameter, p.colour);
     case Shape.Rect:
-      return new BoardObject.Rect(id, p.x, p.y, p.width, p.height, p.colour);
+      return new Rect(id, p.x, p.y, p.width, p.height, p.colour);
     case Shape.Token:
-      return new BoardObject.Token(
-        id,
-        p.x,
-        p.y,
-        p.diameter,
-        p.colour,
-        p.name ?? '',
-      );
+      return new Token(id, p.x, p.y, p.diameter, p.colour, p.name ?? '');
     case Shape.Poly:
-      return new BoardObject.Polyline(id, p.x, p.y, p.points, p.colour);
+      return new Polyline(id, p.x, p.y, p.points, p.colour);
     case Shape.Line:
-      return new BoardObject.Line(id, p.x, p.y, p.points, p.colour);
+      return new Line(id, p.x, p.y, p.points, p.colour);
     default: {
       throw new Error('Unknown shape');
     }
@@ -42,11 +38,11 @@ export class ServerInterface {
   heldItems: ServerEvent[];
   layerIDMap: Map<number, boolean>;
   objectIDMap: Map<number, boolean>;
-  storedObjects: Map<number, BoardLayer.LayerObject>;
-  storedLayers: Map<number, BoardLayer.BoardLayer>;
-  board: BoardParams.Board;
+  storedObjects: Map<number, LayerObject>;
+  storedLayers: Map<number, BoardLayer>;
+  board: Board;
 
-  constructor(newBoard: BoardParams.Board) {
+  constructor(newBoard: Board) {
     this.user = 'bwagh';
     this.pass = 'password1';
     this.heldItems = [];
@@ -87,7 +83,7 @@ export class ServerInterface {
     if (event.entity === Entity.Layer) {
       switch (event.action) {
         case Action.Create: {
-          this.board.addLayer(new BoardLayer.BoardLayer(), event.layerId);
+          this.board.addLayer(new BoardLayer(), event.layerId);
           break;
         }
         case Action.Destroy: {

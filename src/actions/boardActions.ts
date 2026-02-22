@@ -1,7 +1,7 @@
-import * as storedBoard from './storedBoard.ts';
+import { StoredBoard } from './storedBoard.ts';
 import { defineAction } from 'astro:actions';
 
-const serveBoard = new storedBoard.StoredBoard();
+const serveBoard = new StoredBoard();
 
 export const boardActions = {
   createLayer: defineAction({

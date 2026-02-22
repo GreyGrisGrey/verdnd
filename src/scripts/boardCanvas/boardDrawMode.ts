@@ -1,25 +1,23 @@
 import Color, { type ColorInstance } from 'color';
 
-import * as BoardObject from './boardObject.ts';
+import { Circle, Line, Polyline, Rect } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
-import type * as localBoard from './localBoard.ts';
+import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colors.ts';
 import { getRequiredElement } from '../dom.ts';
-import type * as objectEvents from '../objectEvents.ts';
+import type { CreateObjectPayload } from '../objectEvents.ts';
 import { Shape } from '../objectEvents.ts';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const modeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
-type DrawObjectResult =
-  | objectEvents.CreateObjectPayload
-  | objectEvents.CreateObjectPayload[];
+type DrawObjectResult = CreateObjectPayload | CreateObjectPayload[];
 
 // Class handling canvas' draw mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardDrawMode {
-  board: localBoard.Board;
+  board: Board;
   active: boolean;
   shape: Shape;
   params: Vec2[];
@@ -29,7 +27,7 @@ export class BoardDrawMode {
   selectMode: boolean;
   selectState: number;
 
-  constructor(parentBoard: localBoard.Board) {
+  constructor(parentBoard: Board) {
     this.board = parentBoard;
     this.active = false;
     this.addEventListeners();
@@ -256,7 +254,7 @@ Backspace : Delete Selected`;
         Math.abs(this.params[1].x - this.params[0].x),
         Math.abs(this.params[1].y - this.params[0].y),
       ];
-      const objects: objectEvents.CreateObjectPayload[] = [];
+      const objects: CreateObjectPayload[] = [];
       if (this.params[1].x < this.params[0].x) {
         sizes[0] += 1;
       }
@@ -333,16 +331,9 @@ Backspace : Delete Selected`;
           sizes.y += 1;
         }
         if (this.selectMode) {
-          return new BoardObject.Rect(
-            -1,
-            coords.x,
-            coords.y,
-            sizes.x,
-            sizes.y,
-            WHITE_50,
-          );
+          return new Rect(-1, coords.x, coords.y, sizes.x, sizes.y, WHITE_50);
         }
-        return new BoardObject.Rect(
+        return new Rect(
           -1,
           coords.x,
           coords.y,
@@ -365,7 +356,7 @@ Backspace : Delete Selected`;
           Math.abs(this.params[0].x - res.x),
           Math.abs(this.params[0].y - res.y),
         );
-        const newObj = new BoardObject.Circle(
+        const newObj = new Circle(
           -1,
           coords.x,
           coords.y,
@@ -376,7 +367,7 @@ Backspace : Delete Selected`;
       }
     } else if (this.params.length >= 2 && this.shape === Shape.Poly) {
       const newParams = this.params.slice(1);
-      const newObj = new BoardObject.Polyline(
+      const newObj = new Polyline(
         -1,
         this.params[0].x,
         this.params[0].y,
@@ -386,7 +377,7 @@ Backspace : Delete Selected`;
       return newObj;
     } else if (this.params.length >= 2 && this.shape === Shape.Line) {
       const newParams = this.params.slice(1);
-      const newObj = new BoardObject.Line(
+      const newObj = new Line(
         -1,
         this.params[0].x,
         this.params[0].y,

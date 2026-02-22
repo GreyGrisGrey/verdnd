@@ -1,6 +1,6 @@
-import * as BoardObject from './boardObject.ts';
+import { Rect, type Token } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
-import type * as localBoard from './localBoard.ts';
+import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colors.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
@@ -16,15 +16,15 @@ const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 // Class handling canvas' token mode.
 // Currently WIP.
 export class BoardTokenMode {
-  board: localBoard.Board;
+  board: Board;
   active: boolean;
   params: Vec2[];
   shift: boolean;
   completeSelectCheck: boolean;
-  currHover?: BoardObject.Token;
+  currHover?: Token;
   newTokenCheck: boolean;
 
-  constructor(parentBoard: localBoard.Board) {
+  constructor(parentBoard: Board) {
     this.board = parentBoard;
     this.active = false;
     this.shift = false;
@@ -221,14 +221,7 @@ export class BoardTokenMode {
       if (res.y < this.params[0].y) {
         sizes[1] += 1;
       }
-      return new BoardObject.Rect(
-        -1,
-        coords.x,
-        coords.y,
-        sizes[0],
-        sizes[1],
-        WHITE_50,
-      );
+      return new Rect(-1, coords.x, coords.y, sizes[0], sizes[1], WHITE_50);
     }
     return 1;
   }

@@ -1,7 +1,7 @@
 import type * as BoardLayer from './boardLayer.ts';
-import * as BoardObject from './boardObject.ts';
+import { ObjType, Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
-import * as modeManager from './modeManager.ts';
+import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colors.ts';
 import { getRequiredElement } from '../dom.ts';
 
@@ -20,7 +20,7 @@ export class Board {
   leftMouseDown: boolean;
   boardLayers: BoardLayer.BoardLayer[];
   layerMap: Map<number, BoardLayer.BoardLayer>;
-  modeMan: modeManager.ModeManager;
+  modeMan: ModeManager;
   activeLayer: number;
 
   constructor() {
@@ -33,7 +33,7 @@ export class Board {
     this.leftMouseDown = false;
     this.boardLayers = [];
     this.layerMap = new Map();
-    this.modeMan = new modeManager.ModeManager(this);
+    this.modeMan = new ModeManager(this);
     this.activeLayer = 0;
   }
 
@@ -163,7 +163,7 @@ export class Board {
   }
 
   // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
-  selectObjects(targetType: BoardObject.ObjType = BoardObject.ObjType.Any) {
+  selectObjects(targetType: ObjType = ObjType.Any) {
     const layer = this.layerMap.get(this.activeLayer);
     if (layer) {
       return layer.selectObjects(this.modeMan.getSelectCoords(), targetType);
@@ -174,11 +174,8 @@ export class Board {
   selectToken(fixedPoint: Vec2[]) {
     const layer = this.layerMap.get(this.activeLayer);
     if (layer) {
-      const selected = layer.selectObjects(
-        fixedPoint,
-        BoardObject.ObjType.Token,
-      )[0];
-      if (selected instanceof BoardObject.Token) {
+      const selected = layer.selectObjects(fixedPoint, ObjType.Token)[0];
+      if (selected instanceof Token) {
         return selected;
       }
     }
@@ -239,9 +236,9 @@ export class Board {
         this.modeMan.selectMan.thirdOffset,
       );
       if (i === this.activeLayer) {
-        const tempObj = this.modeMan.getObject(
-          modeManager.GetObjectReason.Draw,
-        ) as BoardLayer.LayerObject | number;
+        const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as
+          | BoardLayer.LayerObject
+          | number;
         if (tempObj !== 1 && typeof tempObj !== 'number') {
           tempObj.draw(ctx, squareSize, this.originCoords);
         }
@@ -253,7 +250,7 @@ export class Board {
   }
 
   getModeManObject() {
-    return this.modeMan.getObject(modeManager.GetObjectReason.Create);
+    return this.modeMan.getObject(GetObjectReason.Create);
   }
 
   // Performs a single drawing step.

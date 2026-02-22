@@ -1,12 +1,12 @@
 import Color from 'color';
 
-import * as BoardParams from './boardCanvas/localBoard.ts';
+import { Board } from './boardCanvas/localBoard.ts';
 import { getRequiredElement } from './dom.ts';
-import * as leftBar from './leftBar/leftBarMain.ts';
-import type * as objectEvents from './objectEvents.ts';
+import { LeftBarManager } from './leftBar/leftBarMain.ts';
+import type { CreateObjectPayload } from './objectEvents.ts';
 import { Shape } from './objectEvents.ts';
-import * as rightBar from './rightBar/rightBarMain.ts';
-import * as ServerInterface from './serverInterface.ts';
+import { RightBarManager } from './rightBar/rightBarMain.ts';
+import { ServerInterface } from './serverInterface.ts';
 
 const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -43,7 +43,7 @@ function runBoardStep() {
   const newObj = board.getModeManObject();
   if (newObj && newObj !== 1) {
     if (board.modeMan.drawMan.shape !== Shape.Rects) {
-      serveInter.createObj(newObj as objectEvents.CreateObjectPayload, 0);
+      serveInter.createObj(newObj as CreateObjectPayload, 0);
     }
   }
   const events = serveInter.getItems();
@@ -56,10 +56,10 @@ function runBoardStep() {
   checkDeletion();
 }
 
-const board: BoardParams.Board = new BoardParams.Board();
-new leftBar.LeftBarManager(); // const leftMan = new leftBar.LeftBarManager();
-const rightMan = new rightBar.RightBarManager();
-const serveInter = new ServerInterface.ServerInterface(board);
+const board = new Board();
+new LeftBarManager(); // const leftMan = new leftBar.LeftBarManager();
+const rightMan = new RightBarManager();
+const serveInter = new ServerInterface(board);
 serveInter.createLayer();
 
 document.body.style.cursor = 'none';

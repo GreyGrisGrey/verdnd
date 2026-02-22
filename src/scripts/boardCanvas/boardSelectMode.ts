@@ -1,7 +1,7 @@
 import type * as BoardLayer from './boardLayer.ts';
-import * as BoardObject from './boardObject.ts';
+import { ObjType } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
-import type * as localBoard from './localBoard.ts';
+import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -9,7 +9,7 @@ const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {
-  board: localBoard.Board;
+  board: Board;
   active: boolean;
   exitOnNextStep: boolean;
   selectedObjects: BoardLayer.LayerObject[];
@@ -18,7 +18,7 @@ export class BoardSelectMode {
   currColour: string;
   moveReady: boolean;
 
-  constructor(parentBoard: localBoard.Board) {
+  constructor(parentBoard: Board) {
     this.board = parentBoard;
     this.active = false;
     this.selectedObjects = [];
@@ -75,7 +75,7 @@ export class BoardSelectMode {
         this.moveReady = true;
         if (
           this.selectedObjects.length === 1 &&
-          this.selectedObjects[0].objType === BoardObject.ObjType.Token
+          this.selectedObjects[0].objType === ObjType.Token
         ) {
           this.exitOnNextStep = true;
           this.board.modeMan.moveFlag = true;
@@ -112,7 +112,7 @@ export class BoardSelectMode {
       y: offset.y + offset2.y + this.thirdOffset.y,
     };
     for (const candidate of this.selectedObjects) {
-      if (candidate.objType !== BoardObject.ObjType.Token) {
+      if (candidate.objType !== ObjType.Token) {
         if ('drawOutline' in candidate) {
           candidate.drawOutline(ctx, squareSize, outlineOffset);
         }
