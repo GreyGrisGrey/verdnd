@@ -297,7 +297,7 @@ Backspace : Delete Selected`;
   // Returns a temporary board object to display the shape about to be drawn.
   getTempObject() {
     if (!this.active) {
-      return 1;
+      return undefined;
     }
     if (
       this.shape !== Shape.Poly &&
@@ -386,6 +386,6 @@ Backspace : Delete Selected`;
       );
       return newObj;
     }
-    return 1;
+    return undefined;
   }
 }

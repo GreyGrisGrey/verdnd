@@ -239,7 +239,7 @@ export class Board {
         const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as
           | BoardLayer.LayerObject
           | number;
-        if (tempObj !== 1 && typeof tempObj !== 'number') {
+        if (tempObj && typeof tempObj !== 'number') {
           tempObj.draw(ctx, squareSize, this.originCoords);
         }
       }

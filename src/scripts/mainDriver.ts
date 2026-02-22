@@ -41,7 +41,7 @@ function runBoardStep() {
   }
 
   const newObj = board.getModeManObject();
-  if (newObj && newObj !== 1) {
+  if (newObj) {
     if (board.modeMan.drawMan.shape !== Shape.Rects) {
       serveInter.createObj(newObj as CreateObjectPayload, 0);
     }

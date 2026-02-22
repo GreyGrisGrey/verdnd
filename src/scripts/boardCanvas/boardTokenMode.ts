@@ -223,7 +223,7 @@ export class BoardTokenMode {
       }
       return new Rect(-1, coords.x, coords.y, sizes[0], sizes[1], WHITE_50);
     }
-    return 1;
+    return undefined;
   }
 
   getNewObject() {

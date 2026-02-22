@@ -172,7 +172,7 @@ export class ModeManager {
         return this.tokenMan.getNewObject();
       }
     }
-    return 1;
+    return undefined;
   }
 
   // Returns all board objects that are currently selected.
