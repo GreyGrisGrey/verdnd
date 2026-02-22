@@ -1,4 +1,4 @@
-import type * as BoardLayer from './boardLayer.ts';
+import type { BoardLayer, LayerObject } from './boardLayer.ts';
 import { ObjType, Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
@@ -18,8 +18,8 @@ export class Board {
   mouseCoords: Vec2;
   boardBounds: BoardBounds;
   leftMouseDown: boolean;
-  boardLayers: BoardLayer.BoardLayer[];
-  layerMap: Map<number, BoardLayer.BoardLayer>;
+  boardLayers: BoardLayer[];
+  layerMap: Map<number, BoardLayer>;
   modeMan: ModeManager;
   activeLayer: number;
 
@@ -98,7 +98,7 @@ export class Board {
   }
 
   // Adds a new board layer, then sorts the layers.
-  addLayer(newLayer: BoardLayer.BoardLayer, newID: number) {
+  addLayer(newLayer: BoardLayer, newID: number) {
     this.boardLayers.push(newLayer);
     this.layerMap.set(newID, newLayer);
     this.sortLayers();
@@ -147,7 +147,7 @@ export class Board {
   }
 
   // Adds an object to a specified layer.
-  addObject(objID: number, layerID: number, newObject: BoardLayer.LayerObject) {
+  addObject(objID: number, layerID: number, newObject: LayerObject) {
     const layer = this.layerMap.get(layerID);
     if (layer) {
       layer.addObject(newObject, objID);
@@ -237,9 +237,9 @@ export class Board {
       );
       if (i === this.activeLayer) {
         const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as
-          | BoardLayer.LayerObject
-          | number;
-        if (tempObj && typeof tempObj !== 'number') {
+          | LayerObject
+          | undefined;
+        if (tempObj) {
           tempObj.draw(ctx, squareSize, this.originCoords);
         }
       }

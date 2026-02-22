@@ -1,5 +1,5 @@
 import type { Vec2 } from './coords.ts';
-import type * as localBoard from './localBoard.ts';
+import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -8,10 +8,10 @@ const modeButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 // Class handling canvas' view mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardViewMode {
-  board: localBoard.Board;
+  board: Board;
   active: boolean;
 
-  constructor(parentBoard: localBoard.Board) {
+  constructor(parentBoard: Board) {
     this.board = parentBoard;
     this.active = true;
     this.addEventListeners();

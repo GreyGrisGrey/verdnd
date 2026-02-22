@@ -1,4 +1,4 @@
-import type * as BoardLayer from './boardLayer.ts';
+import type { LayerObject } from './boardLayer.ts';
 import { ObjType } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
@@ -12,7 +12,7 @@ export class BoardSelectMode {
   board: Board;
   active: boolean;
   exitOnNextStep: boolean;
-  selectedObjects: BoardLayer.LayerObject[];
+  selectedObjects: LayerObject[];
   selectClick: boolean;
   thirdOffset: Vec2;
   currColour: string;
@@ -94,7 +94,7 @@ export class BoardSelectMode {
     return 'nah';
   }
 
-  setSelected(newObjs: BoardLayer.LayerObject[]) {
+  setSelected(newObjs: LayerObject[]) {
     this.selectedObjects = newObjs;
     for (const obj of this.selectedObjects) {
       obj.setSelected(true);

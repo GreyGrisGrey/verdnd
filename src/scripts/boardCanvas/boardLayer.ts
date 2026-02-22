@@ -1,13 +1,8 @@
-import type * as BoardObject from './boardObject.ts';
+import type { Circle, Line, Polyline, Rect, Token } from './boardObject.ts';
 import { ObjType } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 
-export type LayerObject =
-  | BoardObject.Circle
-  | BoardObject.Line
-  | BoardObject.Polyline
-  | BoardObject.Rect
-  | BoardObject.Token;
+export type LayerObject = Circle | Line | Polyline | Rect | Token;
 
 // Manages a single layer of the board.
 // Currently has little functionality.
