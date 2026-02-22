@@ -1,7 +1,7 @@
-import * as colourBox from "./colourBox.ts"
+import * as colourBox from './colourBox.ts';
 export class LeftBarManager {
-    colourPicker: colourBox.ColourBox
-    constructor() {
-        this.colourPicker = new colourBox.ColourBox()
-    }
+  colourPicker: colourBox.ColourBox;
+  constructor() {
+    this.colourPicker = new colourBox.ColourBox();
+  }
 }

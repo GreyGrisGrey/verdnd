@@ -1,249 +1,400 @@
-import * as localBoard from "./localBoard.ts"
-import * as BoardObject from "./boardObject.ts"
+import Color, { type ColorInstance } from 'color';
+
+import * as BoardObject from './boardObject.ts';
+import type { Vec2 } from './coords.ts';
+import type * as localBoard from './localBoard.ts';
+import { WHITE_50 } from '../colors.ts';
+import { getRequiredElement } from '../dom.ts';
+import type * as objectEvents from '../objectEvents.ts';
+import { Shape } from '../objectEvents.ts';
+
+const can = getRequiredElement('board', HTMLCanvasElement);
+const modeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
+const colourSquare = getRequiredElement('colourSquare', HTMLElement);
+
+type DrawObjectResult =
+  | objectEvents.CreateObjectPayload
+  | objectEvents.CreateObjectPayload[];
 
 // Class handling canvas' draw mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardDrawMode {
-    board: localBoard.Board
-    active: boolean
-    modeButton: any
-    shape: string
-    params: Array<Array<number>>
-    tempObj: any
-    completeObjCheck: boolean
-    activeColour: string
-    selectMode: boolean
-    selectState: number
-    
-    constructor(parentBoard: localBoard.Board) {
-        this.board = parentBoard
-        this.active = false
-        this.modeButton = document.getElementById("drawMenuButton")!
-        this.addEventListeners()
-        this.shape = "RECT"
-        this.params = new Array()
-        this.tempObj = null
-        this.completeObjCheck = false
-        this.activeColour = "#cccccc"
-        this.activeColour = "rgb(255, 255, 255, 0.5)"
-        this.selectMode = false
-        this.selectState = 0
-    }
-    
-    // Changes the active colour to match the colour picker.
-    changeColour(): void {
-        this.activeColour = document.getElementById("colourSquare")!.style.background
-        return
-    }
-    
-    // Flips the active state of the mode and resets key variables.
-    flipListeners(setOn: boolean): void {
-        this.active = setOn
-        this.modeButton.disabled = setOn
-        this.params = new Array()
-        this.selectMode = false
-        this.selectState = 0
-        this.completeObjCheck = false
-        this.tempObj = null
-        return
-    }
-    
-    // Adds all relevant event listeners.
-    addEventListeners(): void {
-        // Handling for switching between drawn shape.
-        document.addEventListener("keydown", (event) => {
-            if (this.active) {
-                this.selectMode = false
-            }
-            if (this.active && this.params.length == 0) {
-                if (event.key === "1") {
-                    this.shape = "RECT"
-                } else if (event.key === "2") {
-                    this.shape = "RECTS"
-                } else if (event.key === "3") {
-                    this.shape = "CIRCLE"
-                } else if (event.key === "4") {
-                    this.shape = "POLY"
-                } else if (event.key === "5") {
-                    this.shape = "LINE"
-                } else if (event.key === "7") {
-                    this.shape = "RECT"
-                    this.selectMode = true
-                }
-                this.params = new Array()
-            } else if (this.active && event.key === "6" && this.params.length > 2 && (this.shape === "POLY" || this.shape === "LINE")) {
-                this.setNewObject()
-            }
-        })
-        
-        this.board.can.addEventListener('mousedown', (event) => {
-            if (this.active) {
-                if (this.shape != "POLY" && this.shape != "LINE") {
-                    this.params.push(this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false))
-                } else if (this.params.length > 0) {
-                    let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], true)
-                    this.params.push([res[0] - this.params[0][0], res[1] - this.params[0][1]])
-                } else {
-                    this.params.push(this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], true))
-                }
-            }
-        })
-        
-        // Seriously suboptimal code for finishing construction of circles and rectangles.
-        this.board.can.addEventListener('mouseup', (event) => {
-            if (this.params.length == 0) {
-                return
-            } else if (this.active && this.selectMode) {
-                let newPos = this.board.determineTile(this.board.mouseCoords[0] + 1, this.board.mouseCoords[1] + 1, false)
-                if (newPos[0] === this.params[0][0] && newPos[1] === this.params[0][1]) {
-                    this.selectState = 1
-                } else {
-                    let newCoords = [0, 0, 0, 0]
-                    newCoords[0] = Math.min(newPos[0], this.params[0][0])
-                    newCoords[1] = Math.min(newPos[1], this.params[0][1])
-                    newCoords[2] = Math.max(newPos[0], this.params[0][0]) + 1
-                    newCoords[3] = Math.max(newPos[1], this.params[0][1]) + 1
-                    this.selectState = 2
-                    this.params = new Array()
-                    this.params.push([newCoords[0], newCoords[1]])
-                    this.params.push([newCoords[2], newCoords[3]])
-                }
-            } else if (this.active && this.shape != "POLY" && this.shape != "LINE") {
-                if (this.shape === "RECT" || this.shape === "RECTS") {
-                    let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
-                    if (res[0] >= this.params[0][0]) {
-                        res[0] += 1
-                    }
-                    if (res[1] >= this.params[0][1]) {
-                        res[1] += 1
-                    }
-                    this.params.push([res[0], res[1]])
-                    this.setNewObject()
-                } else if (this.shape === "CIRCLE") {
-                    let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
-                    if (res[0] >= this.params[0][0]) {
-                        res[0] += 1
-                    }
-                    if (res[1] >= this.params[0][1]) {
-                        res[1] += 1
-                    }
-                    this.params.push([res[0], res[1]])
-                    this.setNewObject()
-                }
-            }
-        })
-    }
-    
-    // Text for the information bar.
-    getText(): string {
-        return "1 : Create Rectangle\n2 : Create Square Style Rectangle" +
-        "\n3 : Create Circle\n4 : Create Polyline\n5 : Create Wall\n6 : Complete Wall/Polyline\n7 : Select" + 
-        "\n8 : Cancel\nBackspace : Delete Selected"
-    }
-    
-    // Finalizes the current object.
-    setNewObject(): void {
-        if (this.shape === "RECT" && this.params.length === 2) {
-            let one = Math.min(this.params[0][0], this.params[1][0])
-            let two = Math.min(this.params[0][1], this.params[1][1])
-            let sizes = [Math.abs(this.params[1][0] - this.params[0][0]), Math.abs(this.params[1][1] - this.params[0][1])]
-            if (this.params[1][0] < this.params[0][0]) {
-                sizes[0] += 1
-            } if (this.params[1][1] < this.params[0][1]) {
-                sizes[1] += 1
-            }
-            this.tempObj = ["RECT", one, two, sizes[0], sizes[1]]
-            this.completeObjCheck = true
-        } else if (this.shape === "CIRCLE" && this.params.length === 2) {
-            let one = Math.min(this.params[0][0], this.params[1][0])
-            let two = Math.min(this.params[0][1], this.params[1][1])
-            let radius = Math.max(Math.abs((this.params[0][0] - this.params[1][0])), Math.abs((this.params[0][1] - this.params[1][1])))
-            this.tempObj = ["CIRCLE", one, two, radius]
-            this.completeObjCheck = true
-        } else if (this.shape === "POLY" && this.params.length > 2) {
-            this.tempObj = ["POLY", this.params[0][0], this.params[0][1], this.params.slice(1)]
-            this.completeObjCheck = true
-        } else if (this.shape === "RECTS" && this.params.length === 2) {
-            let one = Math.min(this.params[0][0], this.params[1][0])
-            let two = Math.min(this.params[0][1], this.params[1][1])
-            let sizes = [Math.abs(this.params[1][0] - this.params[0][0]), Math.abs(this.params[1][1] - this.params[0][1])]
-            let objects = []
-            if (this.params[1][0] < this.params[0][0]) {
-                sizes[0] += 1
-            } if (this.params[1][1] < this.params[0][1]) {
-                sizes[1] += 1
-            }
-            for (let i = 0; i < sizes[0]; i++) {
-                for (let j = 0; j < sizes[1]; j++) {
-                    objects.push(["RECT", one + i, two + j, 1, 1, this.activeColour])
-                }
-            }
-            this.tempObj = objects
-            this.completeObjCheck = true
-        } else if (this.shape === "LINE" && this.params.length > 2) {
-            this.tempObj = ["LINE", this.params[0][0], this.params[0][1], this.params.slice(1)]
-            this.completeObjCheck = true
+  board: localBoard.Board;
+  active: boolean;
+  shape: Shape;
+  params: Vec2[];
+  tempObj?: DrawObjectResult;
+  completeObjCheck: boolean;
+  activeColour: ColorInstance;
+  selectMode: boolean;
+  selectState: number;
+
+  constructor(parentBoard: localBoard.Board) {
+    this.board = parentBoard;
+    this.active = false;
+    this.addEventListeners();
+    this.shape = Shape.Rect;
+    this.params = [];
+    this.tempObj = undefined;
+    this.completeObjCheck = false;
+    this.activeColour = WHITE_50;
+    this.selectMode = false;
+    this.selectState = 0;
+  }
+
+  // Changes the active colour to match the colour picker.
+  changeColour() {
+    this.activeColour = Color(colourSquare.style.background);
+  }
+
+  // Flips the active state of the mode and resets key variables.
+  flipListeners(setOn: boolean) {
+    this.active = setOn;
+    modeButton.disabled = setOn;
+    this.params = [];
+    this.selectMode = false;
+    this.selectState = 0;
+    this.completeObjCheck = false;
+    this.tempObj = undefined;
+  }
+
+  // Adds all relevant event listeners.
+  addEventListeners() {
+    // Handling for switching between drawn shape.
+    document.addEventListener('keydown', (event) => {
+      if (this.active) {
+        this.selectMode = false;
+      }
+      if (this.active && this.params.length === 0) {
+        if (event.key === '1') {
+          this.shape = Shape.Rect;
+        } else if (event.key === '2') {
+          this.shape = Shape.Rects;
+        } else if (event.key === '3') {
+          this.shape = Shape.Circle;
+        } else if (event.key === '4') {
+          this.shape = Shape.Poly;
+        } else if (event.key === '5') {
+          this.shape = Shape.Line;
+        } else if (event.key === '7') {
+          this.shape = Shape.Rect;
+          this.selectMode = true;
         }
-        this.params = new Array()
-        if (this.shape != "RECTS") {
-            this.tempObj.push(this.activeColour)
+        this.params = [];
+      } else if (
+        this.active &&
+        event.key === '6' &&
+        this.params.length > 2 &&
+        (this.shape === Shape.Poly || this.shape === Shape.Line)
+      ) {
+        this.setNewObject();
+      }
+    });
+
+    can.addEventListener('mousedown', () => {
+      if (this.active) {
+        if (this.shape !== Shape.Poly && this.shape !== Shape.Line) {
+          this.params.push(
+            this.board.determineTile(
+              this.board.mouseCoords.x,
+              this.board.mouseCoords.y,
+              false,
+            ),
+          );
+        } else if (this.params.length > 0) {
+          const res = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            true,
+          );
+          this.params.push({
+            x: res.x - this.params[0].x,
+            y: res.y - this.params[0].y,
+          });
+        } else {
+          this.params.push(
+            this.board.determineTile(
+              this.board.mouseCoords.x,
+              this.board.mouseCoords.y,
+              true,
+            ),
+          );
         }
-        return
-    }
-    
-    // Returns the fully constructed shape.
-    getNewObject(): any {
-        this.completeObjCheck = false
-        return this.tempObj
-    }
-    
-    // Returns a temporary board object to display the shape about to be drawn.
-    getTempObject(): any {
-        if (!this.active) {
-            return 1
+      }
+    });
+
+    // Seriously suboptimal code for finishing construction of circles and rectangles.
+    can.addEventListener('mouseup', () => {
+      if (this.params.length === 0) {
+        return;
+      } else if (this.active && this.selectMode) {
+        const newPos = this.board.determineTile(
+          this.board.mouseCoords.x + 1,
+          this.board.mouseCoords.y + 1,
+          false,
+        );
+        if (newPos.x === this.params[0].x && newPos.y === this.params[0].y) {
+          this.selectState = 1;
+        } else {
+          const topLeft: Vec2 = {
+            x: Math.min(newPos.x, this.params[0].x),
+            y: Math.min(newPos.y, this.params[0].y),
+          };
+          const bottomRight: Vec2 = {
+            x: Math.max(newPos.x, this.params[0].x) + 1,
+            y: Math.max(newPos.y, this.params[0].y) + 1,
+          };
+          this.selectState = 2;
+          this.params = [];
+          this.params.push(topLeft);
+          this.params.push(bottomRight);
         }
-        if (this.shape != "POLY" && this.shape != "LINE" && this.params.length >= 1) {
-            let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
-            if (this.shape === "RECT" || this.shape === "RECTS") {
-                let coords = [0, 0]
-                if (res[0] >= this.params[0][0]) {
-                    res[0] += 1
-                }
-                if (res[1] >= this.params[0][1]) {
-                    res[1] += 1
-                }
-                coords = [Math.min(this.params[0][0], res[0]), Math.min(this.params[0][1], res[1])]
-                let sizes = [Math.abs(res[0] - this.params[0][0]), Math.abs(res[1] - this.params[0][1])]
-                if (res[0] < this.params[0][0]) {
-                    sizes[0] += 1
-                } if (res[1] < this.params[0][1]) {
-                    sizes[1] += 1
-                }
-                if (this.selectMode) {
-                    return new BoardObject.Rect(-1, coords[0], coords[1], sizes[0], sizes[1], "rgb(255, 255, 255, 0.5)")
-                }
-                return new BoardObject.Rect(-1, coords[0], coords[1], sizes[0], sizes[1], this.activeColour)
-            } else if (this.shape === "CIRCLE") {
-                if (res[0] >= this.params[0][0]) {
-                    res[0] += 1
-                }
-                if (res[1] >= this.params[0][1]) {
-                    res[1] += 1
-                }
-                let coords = [Math.min(this.params[0][0], res[0]), Math.min(this.params[0][1], res[1])]
-                let radius = Math.max(Math.abs((this.params[0][0] - res[0])), Math.abs((this.params[0][1] - res[1])))
-                let newObj = new BoardObject.Circle(-1, coords[0], coords[1], radius, this.activeColour)
-                return newObj
-            }
-        } else if (this.params.length >= 2 && this.shape === "POLY") {
-            let newParams = this.params.slice(1)
-            let newObj = new BoardObject.Polyline(-1, this.params[0][0], this.params[0][1], newParams, this.activeColour)
-            return newObj
-        } else if (this.params.length >= 2 && this.shape === "LINE") {
-            let newParams = this.params.slice(1)
-            let newObj = new BoardObject.Line(-1, this.params[0][0], this.params[0][1], newParams, this.activeColour)
-            return newObj
+      } else if (
+        this.active &&
+        this.shape !== Shape.Poly &&
+        this.shape !== Shape.Line
+      ) {
+        if (this.shape === Shape.Rect || this.shape === Shape.Rects) {
+          const res = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            false,
+          );
+          if (res.x >= this.params[0].x) {
+            res.x += 1;
+          }
+          if (res.y >= this.params[0].y) {
+            res.y += 1;
+          }
+          this.params.push({ x: res.x, y: res.y });
+          this.setNewObject();
+        } else if (this.shape === Shape.Circle) {
+          const res = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            false,
+          );
+          if (res.x >= this.params[0].x) {
+            res.x += 1;
+          }
+          if (res.y >= this.params[0].y) {
+            res.y += 1;
+          }
+          this.params.push({ x: res.x, y: res.y });
+          this.setNewObject();
         }
-        return 1
+      }
+    });
+  }
+
+  // Text for the information bar.
+  getText() {
+    return `\
+1 : Create Rectangle
+2 : Create Square Style Rectangle
+3 : Create Circle
+4 : Create Polyline
+5 : Create Wall
+6 : Complete Wall/Polyline
+7 : Select
+8 : Cancel
+Backspace : Delete Selected`;
+  }
+
+  // Finalizes the current object.
+  setNewObject() {
+    if (this.shape === Shape.Rect && this.params.length === 2) {
+      const one = Math.min(this.params[0].x, this.params[1].x);
+      const two = Math.min(this.params[0].y, this.params[1].y);
+      const sizes = [
+        Math.abs(this.params[1].x - this.params[0].x),
+        Math.abs(this.params[1].y - this.params[0].y),
+      ];
+      if (this.params[1].x < this.params[0].x) {
+        sizes[0] += 1;
+      }
+      if (this.params[1].y < this.params[0].y) {
+        sizes[1] += 1;
+      }
+      this.tempObj = {
+        kind: Shape.Rect,
+        x: one,
+        y: two,
+        width: sizes[0],
+        height: sizes[1],
+        colour: this.activeColour,
+      };
+      this.completeObjCheck = true;
+    } else if (this.shape === Shape.Circle && this.params.length === 2) {
+      const x = Math.min(this.params[0].x, this.params[1].x);
+      const y = Math.min(this.params[0].y, this.params[1].y);
+      const radius = Math.max(
+        Math.abs(this.params[0].x - this.params[1].x),
+        Math.abs(this.params[0].y - this.params[1].y),
+      );
+      this.tempObj = {
+        kind: Shape.Circle,
+        x,
+        y,
+        diameter: radius,
+        colour: this.activeColour,
+      };
+      this.completeObjCheck = true;
+    } else if (this.shape === Shape.Poly && this.params.length > 2) {
+      this.tempObj = {
+        kind: Shape.Poly,
+        x: this.params[0].x,
+        y: this.params[0].y,
+        points: this.params.slice(1),
+        colour: this.activeColour,
+      };
+      this.completeObjCheck = true;
+    } else if (this.shape === Shape.Rects && this.params.length === 2) {
+      const x = Math.min(this.params[0].x, this.params[1].x);
+      const y = Math.min(this.params[0].y, this.params[1].y);
+      const sizes = [
+        Math.abs(this.params[1].x - this.params[0].x),
+        Math.abs(this.params[1].y - this.params[0].y),
+      ];
+      const objects: objectEvents.CreateObjectPayload[] = [];
+      if (this.params[1].x < this.params[0].x) {
+        sizes[0] += 1;
+      }
+      if (this.params[1].y < this.params[0].y) {
+        sizes[1] += 1;
+      }
+      for (const i of Array.from({ length: sizes[0] }, (_, i) => i)) {
+        for (const j of Array.from({ length: sizes[1] }, (_, j) => j)) {
+          objects.push({
+            kind: Shape.Rect,
+            x: x + i,
+            y: y + j,
+            width: 1,
+            height: 1,
+            colour: this.activeColour,
+          });
+        }
+      }
+      this.tempObj = objects;
+      this.completeObjCheck = true;
+    } else if (this.shape === Shape.Line && this.params.length > 2) {
+      this.tempObj = {
+        kind: Shape.Line,
+        x: this.params[0].x,
+        y: this.params[0].y,
+        points: this.params.slice(1),
+        colour: this.activeColour,
+      };
+      this.completeObjCheck = true;
     }
+    this.params = [];
+  }
+
+  // Returns the fully constructed shape.
+  getNewObject() {
+    this.completeObjCheck = false;
+    return this.tempObj;
+  }
+
+  // Returns a temporary board object to display the shape about to be drawn.
+  getTempObject() {
+    if (!this.active) {
+      return 1;
+    }
+    if (
+      this.shape !== Shape.Poly &&
+      this.shape !== Shape.Line &&
+      this.params.length >= 1
+    ) {
+      const res = this.board.determineTile(
+        this.board.mouseCoords.x,
+        this.board.mouseCoords.y,
+        false,
+      );
+      if (this.shape === Shape.Rect || this.shape === Shape.Rects) {
+        if (res.x >= this.params[0].x) {
+          res.x += 1;
+        }
+        if (res.y >= this.params[0].y) {
+          res.y += 1;
+        }
+        const coords = {
+          x: Math.min(this.params[0].x, res.x),
+          y: Math.min(this.params[0].y, res.y),
+        };
+        const sizes: Vec2 = {
+          x: Math.abs(res.x - this.params[0].x),
+          y: Math.abs(res.y - this.params[0].y),
+        };
+        if (res.x < this.params[0].x) {
+          sizes.x += 1;
+        }
+        if (res.y < this.params[0].y) {
+          sizes.y += 1;
+        }
+        if (this.selectMode) {
+          return new BoardObject.Rect(
+            -1,
+            coords.x,
+            coords.y,
+            sizes.x,
+            sizes.y,
+            WHITE_50,
+          );
+        }
+        return new BoardObject.Rect(
+          -1,
+          coords.x,
+          coords.y,
+          sizes.x,
+          sizes.y,
+          this.activeColour,
+        );
+      } else if (this.shape === Shape.Circle) {
+        if (res.x >= this.params[0].x) {
+          res.x += 1;
+        }
+        if (res.y >= this.params[0].y) {
+          res.y += 1;
+        }
+        const coords: Vec2 = {
+          x: Math.min(this.params[0].x, res.x),
+          y: Math.min(this.params[0].y, res.y),
+        };
+        const radius = Math.max(
+          Math.abs(this.params[0].x - res.x),
+          Math.abs(this.params[0].y - res.y),
+        );
+        const newObj = new BoardObject.Circle(
+          -1,
+          coords.x,
+          coords.y,
+          radius,
+          this.activeColour,
+        );
+        return newObj;
+      }
+    } else if (this.params.length >= 2 && this.shape === Shape.Poly) {
+      const newParams = this.params.slice(1);
+      const newObj = new BoardObject.Polyline(
+        -1,
+        this.params[0].x,
+        this.params[0].y,
+        newParams,
+        this.activeColour,
+      );
+      return newObj;
+    } else if (this.params.length >= 2 && this.shape === Shape.Line) {
+      const newParams = this.params.slice(1);
+      const newObj = new BoardObject.Line(
+        -1,
+        this.params[0].x,
+        this.params[0].y,
+        newParams,
+        this.activeColour,
+      );
+      return newObj;
+    }
+    return 1;
+  }
 }

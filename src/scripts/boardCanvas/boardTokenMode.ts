@@ -1,175 +1,241 @@
-import * as localBoard from "./localBoard.ts"
-import * as BoardObject from "./boardObject.ts"
+import * as BoardObject from './boardObject.ts';
+import type { Vec2 } from './coords.ts';
+import type * as localBoard from './localBoard.ts';
+import { WHITE_50 } from '../colors.ts';
+import { getRequiredElement } from '../dom.ts';
+import { Shape } from '../objectEvents.ts';
+
+const can = getRequiredElement('board', HTMLCanvasElement);
+const modeButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
+const sizeInput = getRequiredElement('tokenSize', HTMLInputElement);
+const nameInput = getRequiredElement('tokenName', HTMLInputElement);
+const sizeLabel = getRequiredElement('tokenSizeLabel', HTMLLabelElement);
+const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
+const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Class handling canvas' token mode.
 // Currently WIP.
 export class BoardTokenMode {
-    board: localBoard.Board
-    active: boolean
-    modeButton: any
-    sizeInput: any
-    nameInput: any
-    sizeLabel: any
-    nameLabel: any
-    params: Array<Array<number>>
-    shift: boolean
-    completeSelectCheck: boolean
-    currHover: BoardObject.Token | null
-    newTokenCheck: boolean
-    
-    constructor(parentBoard: localBoard.Board) {
-        this.board = parentBoard
-        this.active = false
-        this.modeButton = document.getElementById("tokenMenuButton")!
-        this.sizeInput = document.getElementById("tokenSize")!
-        this.nameInput = document.getElementById("tokenName")!
-        this.sizeLabel = document.getElementById("tokenSizeLabel")!
-        this.nameLabel = document.getElementById("tokenNameLabel")!
-        this.shift = false
-        this.newTokenCheck = false
-        this.params = []
-        this.completeSelectCheck = false
-        this.addEventListeners()
-        this.currHover = null
-    }
-    
-    flipListeners(setOn: boolean) {
-        this.active = setOn
-        this.modeButton.disabled = setOn
-        if (setOn) {
-            this.sizeInput.style.visibility = "visible"
-            this.nameInput.style.visibility = "visible"
-            this.sizeLabel.style.visibility = "visible"
-            this.nameLabel.style.visibility = "visible"
-        } else {
-            this.sizeInput.style.visibility = "hidden"
-            this.nameInput.style.visibility = "hidden"
-            this.sizeLabel.style.visibility = "hidden"
-            this.nameLabel.style.visibility = "hidden"
-        }
-    }
-    
-    addEventListeners(): void {
-        this.board.can.addEventListener('mousemove', (event) => {
-            if (this.active) {
-                this.currHover = this.board.selectToken([this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)])
-            }
-        })
-        
-        this.board.can.addEventListener('mousedown', (event) => {
-            if (this.active) {
-                if (!this.shift) {
-                    let res = this.board.selectToken([this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)])
-                    this.currHover = res
-                    if (this.currHover === null) {
-                        this.createToken()
-                        this.newTokenCheck = true
-                    } else {
-                        this.completeSelectCheck = true
-                    }
-                } else {
-                    this.params.push(this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false))
-                }
-            }
-        })
-        
-        this.board.can.addEventListener('mouseup', (event) => {
-            if (this.active) {
-                if (this.shift) {
-                    this.params.push(this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false))
-                    let newCoords: Array<Array<number>> = []
-                    newCoords.push([Math.min(this.params[0][0], this.params[1][0]), Math.min(this.params[0][1], this.params[1][1])])
-                    newCoords.push([Math.max(this.params[0][0], this.params[1][0]) + 1, Math.max(this.params[0][1], this.params[1][1]) + 1])
-                    this.params = newCoords
-                    this.completeSelectCheck = true
-                }
-            }
-        })
-        
-        document.addEventListener("keydown", (event) => {
-            if (this.active && event.key === "Shift") {
-                this.shift = true
-            }
-        })
-        
-        // Should this event listener not check if token mode is active? Probably not, but it causes a bug with single token selection if it does.
-        document.addEventListener("keyup", (event) => {
-            if (event.key === "Shift") {
-                this.shift = false
-            }
-        })
+  board: localBoard.Board;
+  active: boolean;
+  params: Vec2[];
+  shift: boolean;
+  completeSelectCheck: boolean;
+  currHover?: BoardObject.Token;
+  newTokenCheck: boolean;
 
-        this.sizeInput.addEventListener('input', (event) => {
-            if (this.sizeInput.value.length > 3) {
-                this.sizeInput.value = "1"
-            } else {
-                for (let i = 0; i < this.sizeInput.value.length; i++) {
-                    if (this.sizeInput.value.charCodeAt(i) < 48 || this.sizeInput.value.charCodeAt(i) > 57) {
-                        this.sizeInput.value = "1"
-                        break
-                    }
-                }
-                if (parseInt(this.sizeInput.value) < 1) {
-                    this.sizeInput.value = "1"
-                } else if (parseInt(this.sizeInput.value) > 300) {
-                    alert("u have no legitimate need to make a token this big\npls be serious")
-                    this.sizeInput.value = "1"
-                }
-            }
-        })
+  constructor(parentBoard: localBoard.Board) {
+    this.board = parentBoard;
+    this.active = false;
+    this.shift = false;
+    this.newTokenCheck = false;
+    this.params = [];
+    this.completeSelectCheck = false;
+    this.addEventListeners();
+    this.currHover = undefined;
+  }
+
+  flipListeners(setOn: boolean) {
+    this.active = setOn;
+    modeButton.disabled = setOn;
+    if (setOn) {
+      sizeInput.style.visibility = 'visible';
+      nameInput.style.visibility = 'visible';
+      sizeLabel.style.visibility = 'visible';
+      nameLabel.style.visibility = 'visible';
+    } else {
+      sizeInput.style.visibility = 'hidden';
+      nameInput.style.visibility = 'hidden';
+      sizeLabel.style.visibility = 'hidden';
+      nameLabel.style.visibility = 'hidden';
     }
-    
-    getText(): string {
-        return "Left Click : Create Token\nLeft Click on Token : Select Token\nShift + Left Click : Select Tokens"
-    }
-    
-    createToken(): Array<any> {
-        let coords = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
-        let newTokenObj = ["TOKEN", coords[0], coords[1], parseInt(this.sizeInput.value)]
-        newTokenObj.push(document.getElementById("colourSquare")!.style.background)
-        newTokenObj.push(this.nameInput.value)
-        newTokenObj.push("")
-        return newTokenObj
-    }
-    
-    tryDrawLabel(ctx:any, squareSize:number, offset:Array<number>): void {
-        if (this.currHover != null) {
-            this.currHover.drawLabel(ctx, squareSize, offset)
+  }
+
+  addEventListeners() {
+    can.addEventListener('mousemove', () => {
+      if (this.active) {
+        this.currHover = this.board.selectToken([
+          this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            false,
+          ),
+        ]);
+      }
+    });
+
+    can.addEventListener('mousedown', () => {
+      if (this.active) {
+        if (!this.shift) {
+          const res = this.board.selectToken([
+            this.board.determineTile(
+              this.board.mouseCoords.x,
+              this.board.mouseCoords.y,
+              false,
+            ),
+          ]);
+          this.currHover = res;
+          if (this.currHover) {
+            this.createToken();
+            this.newTokenCheck = true;
+          } else {
+            this.completeSelectCheck = true;
+          }
+        } else {
+          this.params.push(
+            this.board.determineTile(
+              this.board.mouseCoords.x,
+              this.board.mouseCoords.y,
+              false,
+            ),
+          );
         }
-        return
-    }
-    
-    getNewHover(): void {
-        if (this.newTokenCheck) {
-            this.currHover = this.board.selectToken([this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)])
+      }
+    });
+
+    can.addEventListener('mouseup', () => {
+      if (this.active) {
+        if (this.shift) {
+          this.params.push(
+            this.board.determineTile(
+              this.board.mouseCoords.x,
+              this.board.mouseCoords.y,
+              false,
+            ),
+          );
+          const newCoords: Vec2[] = [];
+          newCoords.push({
+            x: Math.min(this.params[0].x, this.params[1].x),
+            y: Math.min(this.params[0].y, this.params[1].y),
+          });
+          newCoords.push({
+            x: Math.max(this.params[0].x, this.params[1].x) + 1,
+            y: Math.max(this.params[0].y, this.params[1].y) + 1,
+          });
+          this.params = newCoords;
+          this.completeSelectCheck = true;
         }
-    }
-    
-    getTempObject(): any {
-        if (this.params.length > 0) {
-            let res = this.board.determineTile(this.board.mouseCoords[0], this.board.mouseCoords[1], false)
-            let coords = [0, 0]
-            if (res[0] >= this.params[0][0]) {
-                res[0] += 1
-            }
-            if (res[1] >= this.params[0][1]) {
-                res[1] += 1
-            }
-            coords = [Math.min(this.params[0][0], res[0]), Math.min(this.params[0][1], res[1])]
-            let sizes = [Math.abs(res[0] - this.params[0][0]), Math.abs(res[1] - this.params[0][1])]
-            if (res[0] < this.params[0][0]) {
-                sizes[0] += 1
-            } if (res[1] < this.params[0][1]) {
-                sizes[1] += 1
-            }
-            return new BoardObject.Rect(-1, coords[0], coords[1], sizes[0], sizes[1], "rgb(255, 255, 255, 0.5)")
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (this.active && event.key === 'Shift') {
+        this.shift = true;
+      }
+    });
+
+    // Should this event listener not check if token mode is active? Probably not, but it causes a bug with single token selection if it does.
+    document.addEventListener('keyup', (event) => {
+      if (event.key === 'Shift') {
+        this.shift = false;
+      }
+    });
+
+    sizeInput.addEventListener('input', () => {
+      if (sizeInput.value.length > 3) {
+        sizeInput.value = '1';
+      } else {
+        for (const char of sizeInput.value) {
+          if (char.charCodeAt(0) < 48 || char.charCodeAt(0) > 57) {
+            sizeInput.value = '1';
+            break;
+          }
         }
-        return 1
+        if (parseInt(sizeInput.value, 10) < 1) {
+          sizeInput.value = '1';
+        } else if (parseInt(sizeInput.value, 10) > 300) {
+          alert(
+            'u have no legitimate need to make a token this big\npls be serious',
+          );
+          sizeInput.value = '1';
+        }
+      }
+    });
+  }
+
+  getText() {
+    return 'Left Click : Create Token\nLeft Click on Token : Select Token\nShift + Left Click : Select Tokens';
+  }
+
+  createToken() {
+    const coords = this.board.determineTile(
+      this.board.mouseCoords.x,
+      this.board.mouseCoords.y,
+      false,
+    );
+    return {
+      kind: Shape.Token,
+      x: coords.x,
+      y: coords.y,
+      diameter: parseInt(sizeInput.value, 10),
+      colour: colourSquare.style.background,
+      name: nameInput.value,
+    };
+  }
+
+  tryDrawLabel(
+    ctx: CanvasRenderingContext2D,
+    squareSize: number,
+    offset: Vec2,
+  ) {
+    this.currHover?.drawLabel(ctx, squareSize, offset);
+  }
+
+  getNewHover() {
+    if (this.newTokenCheck) {
+      this.currHover = this.board.selectToken([
+        this.board.determineTile(
+          this.board.mouseCoords.x,
+          this.board.mouseCoords.y,
+          false,
+        ),
+      ]);
     }
-    
-    getNewObject(): any {
-        this.getNewHover()
-        this.newTokenCheck = false
-        return this.createToken()
+  }
+
+  getTempObject() {
+    if (this.params.length > 0) {
+      const res = this.board.determineTile(
+        this.board.mouseCoords.x,
+        this.board.mouseCoords.y,
+        false,
+      );
+      let coords: Vec2 = { x: 0, y: 0 };
+      if (res.x >= this.params[0].x) {
+        res.x += 1;
+      }
+      if (res.y >= this.params[0].y) {
+        res.y += 1;
+      }
+      coords = {
+        x: Math.min(this.params[0].x, res.x),
+        y: Math.min(this.params[0].y, res.y),
+      };
+      const sizes = [
+        Math.abs(res.x - this.params[0].x),
+        Math.abs(res.y - this.params[0].y),
+      ];
+      if (res.x < this.params[0].x) {
+        sizes[0] += 1;
+      }
+      if (res.y < this.params[0].y) {
+        sizes[1] += 1;
+      }
+      return new BoardObject.Rect(
+        -1,
+        coords.x,
+        coords.y,
+        sizes[0],
+        sizes[1],
+        WHITE_50,
+      );
     }
+    return 1;
+  }
+
+  getNewObject() {
+    this.getNewHover();
+    this.newTokenCheck = false;
+    return this.createToken();
+  }
 }
