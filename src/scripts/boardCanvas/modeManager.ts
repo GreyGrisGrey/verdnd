@@ -1,238 +1,277 @@
-import * as viewMode from "./boardViewMode.ts"
-import * as drawMode from "./boardDrawMode.ts"
-import * as tokenMode from "./boardTokenMode.ts"
-import * as selectMode from "./boardSelectMode.ts"
-import * as localBoard from "./localBoard.ts"
+import { BoardDrawMode } from './boardDrawMode.ts';
+import type { LayerObject } from './boardLayer.ts';
+import { ObjType } from './boardObject.ts';
+import { BoardSelectMode } from './boardSelectMode.ts';
+import { BoardTokenMode } from './boardTokenMode.ts';
+import { BoardViewMode } from './boardViewMode.ts';
+import type { Vec2 } from './coords.ts';
+import type { Board } from './localBoard.ts';
+import { getRequiredElement } from '../dom.ts';
+
+const modeParagraph = getRequiredElement('modeParagraph', HTMLElement);
+const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
+const tokenButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
+const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
+const can = getRequiredElement('board', HTMLCanvasElement);
+
+export enum Mode {
+  View = 'VIEW',
+  Draw = 'DRAW',
+  Token = 'TOKEN',
+}
+
+export enum GetObjectReason {
+  Draw = 'DRAW',
+  Create = 'CREATE',
+}
 
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off.
 export class ModeManager {
-    board: localBoard.Board
-    currMode: string
-    viewMan: viewMode.BoardViewMode
-    viewButton: any
-    tokenMan: tokenMode.BoardTokenMode
-    tokenButton: any
-    drawMan: drawMode.BoardDrawMode
-    selectMan: selectMode.BoardSelectMode
-    drawButton: any
-    deleteTrigger: boolean
-    selectClick: boolean
-    recolourFlag: boolean
-    moveFlag: boolean
-    
-    constructor(parentBoard: localBoard.Board) {
-        this.board = parentBoard
-        this.currMode = "VIEW"
-        this.viewMan = new viewMode.BoardViewMode(parentBoard)
-        this.viewButton = document.getElementById("viewMenuButton")!
-        this.tokenMan = new tokenMode.BoardTokenMode(parentBoard)
-        this.tokenButton = document.getElementById("tokenMenuButton")!
-        this.drawMan = new drawMode.BoardDrawMode(parentBoard)
-        this.drawButton = document.getElementById("drawMenuButton")!
-        this.selectMan = new selectMode.BoardSelectMode(parentBoard)
-        this.deleteTrigger = false
-        this.selectClick = false
-        this.addEventListeners()
-        this.modifyText(this.viewMan)
-        this.viewMan.flipListeners(true)
-        this.recolourFlag = false
-        this.moveFlag = false
+  board: Board;
+  currMode: Mode;
+  viewMan: BoardViewMode;
+  tokenMan: BoardTokenMode;
+  drawMan: BoardDrawMode;
+  selectMan: BoardSelectMode;
+  deleteTrigger: boolean;
+  selectClick: boolean;
+  recolourFlag: boolean;
+  moveFlag: boolean;
+
+  constructor(parentBoard: Board) {
+    this.board = parentBoard;
+    this.currMode = Mode.View;
+    this.viewMan = new BoardViewMode(parentBoard);
+    this.tokenMan = new BoardTokenMode(parentBoard);
+    this.drawMan = new BoardDrawMode(parentBoard);
+    this.selectMan = new BoardSelectMode(parentBoard);
+    this.deleteTrigger = false;
+    this.selectClick = false;
+    this.addEventListeners();
+    this.modifyText(this.viewMan);
+    this.viewMan.flipListeners(true);
+    this.recolourFlag = false;
+    this.moveFlag = false;
+  }
+
+  // Adds event listeners for all modes, as well as some of its own.
+  addEventListeners() {
+    viewButton.addEventListener('click', () => {
+      this.currMode = Mode.View;
+      this.viewMan.flipListeners(true);
+      this.tokenMan.flipListeners(false);
+      this.drawMan.flipListeners(false);
+      this.selectMan.flipListeners(false);
+      this.modifyText(this.viewMan);
+    });
+
+    tokenButton.addEventListener('click', () => {
+      this.currMode = Mode.Token;
+      this.viewMan.flipListeners(false);
+      this.tokenMan.flipListeners(true);
+      this.drawMan.flipListeners(false);
+      this.selectMan.flipListeners(false);
+      this.modifyText(this.tokenMan);
+    });
+
+    drawButton.addEventListener('click', () => {
+      this.currMode = Mode.Draw;
+      this.viewMan.flipListeners(false);
+      this.tokenMan.flipListeners(false);
+      this.drawMan.flipListeners(true);
+      this.selectMan.flipListeners(false);
+      this.modifyText(this.drawMan);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Backspace') {
+        this.deleteTrigger = true;
+      }
+    });
+
+    can.addEventListener('mousemove', (event) => {
+      this.board.mouseCoords.x = event.clientX;
+      this.board.mouseCoords.y = event.clientY;
+    });
+
+    can.addEventListener(
+      'mousedown',
+      () => {
+        this.board.leftMouseDown = true;
+      },
+      { capture: true },
+    );
+
+    can.addEventListener(
+      'mouseup',
+      () => {
+        this.board.leftMouseDown = false;
+      },
+      { capture: true },
+    );
+  }
+
+  // Switches the information bar's text to match the current mode.
+  modifyText(
+    selectMode:
+      | BoardSelectMode
+      | BoardViewMode
+      | BoardTokenMode
+      | BoardDrawMode,
+  ) {
+    modeParagraph.innerText = selectMode.getText();
+  }
+
+  // Checks if the user has selected an area of the canvas.
+  hasCompleteSelection() {
+    if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
+      return true;
+    } else if (
+      this.currMode === Mode.Token &&
+      this.tokenMan.completeSelectCheck
+    ) {
+      return true;
     }
-    
-    // Adds event listeners for all modes, as well as some of its own.
-    addEventListeners(): void {
-        this.viewButton.addEventListener('click', (event) => {
-            this.currMode = "VIEW"
-            this.viewMan.flipListeners(true)
-            this.tokenMan.flipListeners(false)
-            this.drawMan.flipListeners(false)
-            this.selectMan.flipListeners(false)
-            this.modifyText(this.viewMan)
-        })
-        
-        this.tokenButton.addEventListener('click', (event) => {
-            this.currMode = "TOKEN"
-            this.viewMan.flipListeners(false)
-            this.tokenMan.flipListeners(true)
-            this.drawMan.flipListeners(false)
-            this.selectMan.flipListeners(false)
-            this.modifyText(this.tokenMan)
-        })
-        
-        this.drawButton.addEventListener('click', (event) => {
-            this.currMode = "DRAW"
-            this.viewMan.flipListeners(false)
-            this.tokenMan.flipListeners(false)
-            this.drawMan.flipListeners(true)
-            this.selectMan.flipListeners(false)
-            this.modifyText(this.drawMan)
-        })
-        
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Backspace") {
-                this.deleteTrigger = true
-            }
-        })
-        
-        this.board.can.addEventListener('mousemove', (event) => {
-            this.board.mouseCoords[0] = event.clientX;
-            this.board.mouseCoords[1] = event.clientY;
-        })
-        
-        this.board.can.addEventListener('mousedown', (event) => {
-            this.board.leftMouseDown = true;
-        }, {capture: true});
-        
-        this.board.can.addEventListener('mouseup', (event) => {
-            this.board.leftMouseDown = false
-        }, {capture: true});
-        return
+    return false;
+  }
+
+  // Retrieves the coordinates corresponding to the currently selected area of the canvas.
+  getSelectCoords() {
+    if (this.currMode === Mode.Draw && this.drawMan.selectState !== 0) {
+      return this.drawMan.params;
+    } else if (
+      this.currMode === Mode.Token &&
+      this.tokenMan.completeSelectCheck
+    ) {
+      return this.tokenMan.params;
     }
-    
-    // Switches the information bar's text to match the current mode.
-    modifyText(selectMode: any): void {
-        document.getElementById("modeParagraph")!.innerText = selectMode.getText()
-        return
+    return [{ x: 0, y: 0 }];
+  }
+
+  // Retrieves the object currently being drawn by the draw mode.
+  getObject(reason: GetObjectReason) {
+    if (reason === GetObjectReason.Draw) {
+      if (this.currMode === Mode.Draw) {
+        return this.drawMan.getTempObject();
+      } else if (this.currMode === Mode.Token) {
+        return this.tokenMan.getTempObject();
+      }
+    } else if (
+      reason === GetObjectReason.Create &&
+      this.currMode === Mode.Draw
+    ) {
+      if (this.drawMan.completeObjCheck) {
+        return this.drawMan.getNewObject();
+      }
+    } else if (
+      reason === GetObjectReason.Create &&
+      this.currMode === Mode.Token
+    ) {
+      if (this.tokenMan.newTokenCheck) {
+        return this.tokenMan.getNewObject();
+      }
     }
-    
-    // Checks if the user has selected an area of the canvas.
-    hasCompleteSelection(): boolean {
-        if (this.currMode === "DRAW" && this.drawMan.selectState > 0) {
-            return true
-        } else if (this.currMode === "TOKEN" && this.tokenMan.completeSelectCheck) {
-            return true
-        }
-        return false
+    return undefined;
+  }
+
+  // Returns all board objects that are currently selected.
+  getSelected() {
+    return this.selectMan.selectedObjects;
+  }
+
+  // Draws all currently selected board objects.
+  // Also ensures those objects are not drawn twice.
+  drawSelected(
+    ctx: CanvasRenderingContext2D,
+    squareSize: number,
+    offset: Vec2,
+    offset2: Vec2,
+  ) {
+    this.selectMan.draw(ctx, squareSize, offset, offset2);
+  }
+
+  // Clears the list of selected objects.
+  clearSelected() {
+    this.deleteTrigger = false;
+    this.exitSelected();
+  }
+
+  enterSelected() {
+    let res: (LayerObject | undefined)[] = this.board.selectObjects();
+    if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
+      res = [this.tokenMan.currHover];
+      this.tokenMan.currHover = undefined;
+    } else if (this.currMode === Mode.Token) {
+      res = this.board.selectObjects(ObjType.Token);
     }
-    
-    // Retrieves the coordinates corresponding to the currently selected area of the canvas.
-    getSelectCoords(): Array<Array<number>> {
-        if (this.currMode === "DRAW" && this.drawMan.selectState != 0) {
-            return this.drawMan.params
-        } else if (this.currMode === "TOKEN" && this.tokenMan.completeSelectCheck) {
-            return this.tokenMan.params
-        }
-        return [[0]]
+    const selected = res.filter((obj) => obj !== undefined);
+    if (selected.length !== 0) {
+      this.selectMan.flipListeners(true);
+      this.selectMan.setSelected(selected);
+      if (this.currMode === Mode.Draw) {
+        this.drawMan.active = false;
+        this.drawMan.selectState = 0;
+        this.drawMan.params = [];
+      } else if (this.currMode === Mode.Token) {
+        this.tokenMan.active = false;
+        this.tokenMan.completeSelectCheck = false;
+        this.tokenMan.params = [];
+      }
+    } else {
+      if (this.currMode === Mode.Draw) {
+        this.drawMan.selectState = 0;
+        this.drawMan.params = [];
+      } else if (this.currMode === Mode.Token) {
+        this.tokenMan.completeSelectCheck = false;
+        this.tokenMan.params = [];
+      }
     }
-    
-    // Retrieves the object currently being drawn by the draw mode.
-    getObject(reason: string): any {
-        if (reason === "DRAW") {
-            if (this.currMode === "DRAW") {
-                return this.drawMan.getTempObject()
-            } else if (this.currMode === "TOKEN") {
-                return this.tokenMan.getTempObject()
-            }
-        } else if (reason === "CREATE" && this.currMode === "DRAW") {
-            if (this.drawMan.completeObjCheck) {
-                return this.drawMan.getNewObject()
-            }
-        } else if (reason === "CREATE" && this.currMode === "TOKEN") {
-            if (this.tokenMan.newTokenCheck) {
-                return this.tokenMan.getNewObject()
-            }
-        }
-        return 1
+  }
+
+  exitSelected() {
+    this.selectMan.flipListeners(false);
+    if (this.currMode === Mode.Draw) {
+      this.drawMan.active = true;
+    } else if (this.currMode === Mode.Token) {
+      this.tokenMan.active = true;
     }
-    
-    // Returns all board objects that are currently selected.
-    getSelected(): Array<any> {
-        return this.selectMan.selectedObjects
+  }
+
+  attemptSelectedSwap() {
+    if (!this.selectMan.active && this.hasCompleteSelection()) {
+      this.enterSelected();
+    } else if (this.selectMan.active && this.selectMan.exitOnNextStep) {
+      this.exitSelected();
     }
-    
-    // Draws all currently selected board objects.
-    // Also ensures those objects are not drawn twice.
-    drawSelected(ctx: any, squareSize: number, offset: Array<number>, offset2: Array<number>): void {
-        this.selectMan.draw(ctx, squareSize, offset, offset2)
-        return
+  }
+
+  step(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+    this.attemptSelectedSwap();
+    if (this.tokenMan.active) {
+      this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
+      this.tokenMan.getNewHover();
     }
-    
-    // Clears the list of selected objects.
-    clearSelected(): void {
-        this.deleteTrigger = false
-        this.exitSelected()
-        return
+    if (this.drawMan.active) {
+      this.drawMan.changeColour();
     }
-    
-    enterSelected(): void {
-        let res = this.board.selectObjects()
-        if (this.currMode === "TOKEN" && this.tokenMan.params.length === 0) {
-            res = [this.tokenMan.currHover]
-            this.tokenMan.currHover = null
-        } else if (this.currMode === "TOKEN") {
-            res = this.board.selectObjects("Token")
-        }
-        if (res.length != 0) {
-            this.selectMan.flipListeners(true)
-            this.selectMan.setSelected(res)
-            if (this.currMode === "DRAW") {
-                this.drawMan.active = false
-                this.drawMan.selectState = 0
-                this.drawMan.params = new Array()
-            } else if (this.currMode === "TOKEN") {
-                this.tokenMan.active = false
-                this.tokenMan.completeSelectCheck = false
-                this.tokenMan.params = new Array()
-            }
-        } else {
-            if (this.currMode === "DRAW") {
-                this.drawMan.selectState = 0
-                this.drawMan.params = new Array()
-            } else if (this.currMode === "TOKEN") {
-                this.tokenMan.completeSelectCheck = false
-                this.tokenMan.params = new Array()
-            }
-        }
-        return
+    if (this.selectMan.active) {
+      this.recolourFlag = this.checkEditColour();
+      this.moveFlag = this.checkMove();
     }
-    
-    exitSelected(): void {
-        this.selectMan.flipListeners(false)
-        if (this.currMode === "DRAW") {
-            this.drawMan.active = true
-        } else if (this.currMode === "TOKEN") {
-            this.tokenMan.active = true
-        }
-        return
+  }
+
+  checkEditColour() {
+    if (this.selectMan.canEditColour()) {
+      return true;
     }
-    
-    attemptSelectedSwap(): void {
-        if (!this.selectMan.active && this.hasCompleteSelection()) {
-            this.enterSelected()
-        } else if (this.selectMan.active && this.selectMan.exitOnNextStep) {
-            this.exitSelected()
-        }
-        return
+    return false;
+  }
+
+  checkMove() {
+    if (this.selectMan.moveReady) {
+      return true;
     }
-    
-    step(ctx:any, squareSize:number, offset:Array<number>): void {
-        this.attemptSelectedSwap()
-        if (this.tokenMan.active) {
-            this.tokenMan.tryDrawLabel(ctx, squareSize, offset)
-            this.tokenMan.getNewHover()
-        }
-        if (this.drawMan.active) {
-            this.drawMan.changeColour()
-        }
-        if (this.selectMan.active) {
-            this.recolourFlag = this.checkEditColour()
-            this.moveFlag = this.checkMove()
-        }
-        return
-    }
-    
-    checkEditColour(): boolean {
-        if (this.selectMan.canEditColour()) {
-            return true
-        }
-        return false
-    }
-    
-    checkMove(): boolean {
-        if (this.selectMan.moveReady) {
-            return true
-        }
-        return false
-    }
+    return false;
+  }
 }

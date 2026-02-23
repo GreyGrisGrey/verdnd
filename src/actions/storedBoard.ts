@@ -1,25 +1,23 @@
-import * as BoardLayer from "/src/scripts/boardCanvas/boardLayer.ts"
-import * as BoardObject from "/src/scripts/boardCanvas/boardObject.ts"
-
 export class StoredBoard {
-    storedObjects: Array<any>
-    storedLayers: Map<number, any>
-    
-    constructor() {
-        this.storedObjects = new Array()
-        this.storedLayers = new Map()
+  // TODO: Make these proper types when we start using them
+  storedObjects: any[];
+  storedLayers: Map<number, [boolean, boolean, number]>;
+
+  constructor() {
+    this.storedObjects = [];
+    this.storedLayers = new Map();
+  }
+
+  createLayer() {
+    let next = 0;
+    while (this.storedLayers.has(next)) {
+      next++;
     }
-    
-    createLayer() {
-        let next = 0
-        while (this.storedLayers.has(next)) {
-            next++
-        }
-        this.storedLayers.set(next, [true, true, 0])
-        return next
-    }
-    
-    getLayers(): Map<number, any> {
-        return this.storedLayers
-    }
+    this.storedLayers.set(next, [true, true, 0]);
+    return next;
+  }
+
+  getLayers() {
+    return this.storedLayers;
+  }
 }

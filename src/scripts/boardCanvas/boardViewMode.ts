@@ -1,65 +1,86 @@
-import * as localBoard from "./localBoard.ts"
+import type { Vec2 } from './coords.ts';
+import type { Board } from './localBoard.ts';
+import { getRequiredElement } from '../dom.ts';
+
+const can = getRequiredElement('board', HTMLCanvasElement);
+const modeButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 
 // Class handling canvas' view mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardViewMode {
-    board: localBoard.Board
-    active: boolean
-    modeButton: any
-    
-    constructor(parentBoard: localBoard.Board) {
-        this.board = parentBoard
-        this.active = true
-        this.modeButton = document.getElementById("viewMenuButton")!
-        this.addEventListeners()
-    }
-    
-    // Flips the active state of the mode.
-    flipListeners(setOn: boolean): void {
-        this.active = setOn
-        this.modeButton.disabled = setOn
-        return
-    }
-    
-    // Adds relevant event listeners
-    addEventListeners(): void {
-        this.board.can.addEventListener('mousemove', (event) => {
-            if (this.active) {
-                let change = [Math.round(this.board.mouseCoords[0] - event.clientX), Math.round(this.board.mouseCoords[1] - event.clientY)]
-                if (this.board.leftMouseDown) {
-                    this.board.moveCamera(change[0], change[1])
-                }
-            }
-        })
-        
-        // Changes the zoom level when scrolled
-        this.board.can.addEventListener('wheel', (event) => {
-            if (this.active) {
-                let old = this.board.zoomVal
-                if (event.deltaY < 0 && this.board.zoomGlobal < this.board.zoomLevels.length - 1) {
-                    this.board.zoomGlobal += 1
-                    this.board.zoomVal = this.board.zoomLevels[this.board.zoomGlobal]
-                    let originDist = [this.board.mouseCoords[0] - this.board.originCoords[0], this.board.mouseCoords[1] - this.board.originCoords[1]]
-                    let goals = [originDist[0] * this.board.zoomVal / old, originDist[1] * this.board.zoomVal / old]
-                    this.board.originCoords[0] -= goals[0] - originDist[0]
-                    this.board.originCoords[1] -= goals[1] - originDist[1]
-                } else if (event.deltaY > 0 && this.board.zoomGlobal > 0) {
-                    this.board.zoomGlobal -= 1
-                    this.board.zoomVal = this.board.zoomLevels[this.board.zoomGlobal]
-                    let originDist = [this.board.mouseCoords[0] - this.board.originCoords[0], this.board.mouseCoords[1] - this.board.originCoords[1]]
-                    let goals = [originDist[0] * this.board.zoomVal / old, originDist[1] * this.board.zoomVal / old]
-                    this.board.originCoords[0] -= goals[0] - originDist[0]
-                    this.board.originCoords[1] -= goals[1] - originDist[1]
-                }
-                this.board.originCoords[0] = Math.round(this.board.originCoords[0] * 10000) / 10000
-                this.board.originCoords[1] = Math.round(this.board.originCoords[1] * 10000) / 10000
-            }
-        });
-        return
-    }
-    
-    // Text for the information bar.
-    getText(): string {
-        return "Scroll : Zoom\nLeft Click + Drag : Pan"
-    }
+  board: Board;
+  active: boolean;
+
+  constructor(parentBoard: Board) {
+    this.board = parentBoard;
+    this.active = true;
+    this.addEventListeners();
+  }
+
+  // Flips the active state of the mode.
+  flipListeners(setOn: boolean) {
+    this.active = setOn;
+    modeButton.disabled = setOn;
+  }
+
+  // Adds relevant event listeners
+  addEventListeners() {
+    can.addEventListener('mousemove', (event) => {
+      if (this.active) {
+        const change: Vec2 = {
+          x: Math.round(this.board.mouseCoords.x - event.clientX),
+          y: Math.round(this.board.mouseCoords.y - event.clientY),
+        };
+        if (this.board.leftMouseDown) {
+          this.board.moveCamera(change.x, change.y);
+        }
+      }
+    });
+
+    // Changes the zoom level when scrolled
+    can.addEventListener('wheel', (event) => {
+      if (this.active) {
+        const old = this.board.zoomVal;
+        if (
+          event.deltaY < 0 &&
+          this.board.zoomGlobal < this.board.zoomLevels.length - 1
+        ) {
+          this.board.zoomGlobal += 1;
+          this.board.zoomVal = this.board.zoomLevels[this.board.zoomGlobal];
+          const originDist: Vec2 = {
+            x: this.board.mouseCoords.x - this.board.originCoords.x,
+            y: this.board.mouseCoords.y - this.board.originCoords.y,
+          };
+          const goals: Vec2 = {
+            x: (originDist.x * this.board.zoomVal) / old,
+            y: (originDist.y * this.board.zoomVal) / old,
+          };
+          this.board.originCoords.x -= goals.x - originDist.x;
+          this.board.originCoords.y -= goals.y - originDist.y;
+        } else if (event.deltaY > 0 && this.board.zoomGlobal > 0) {
+          this.board.zoomGlobal -= 1;
+          this.board.zoomVal = this.board.zoomLevels[this.board.zoomGlobal];
+          const originDist: Vec2 = {
+            x: this.board.mouseCoords.x - this.board.originCoords.x,
+            y: this.board.mouseCoords.y - this.board.originCoords.y,
+          };
+          const goals: Vec2 = {
+            x: (originDist.x * this.board.zoomVal) / old,
+            y: (originDist.y * this.board.zoomVal) / old,
+          };
+          this.board.originCoords.x -= goals.x - originDist.x;
+          this.board.originCoords.y -= goals.y - originDist.y;
+        }
+        this.board.originCoords.x =
+          Math.round(this.board.originCoords.x * 10000) / 10000;
+        this.board.originCoords.y =
+          Math.round(this.board.originCoords.y * 10000) / 10000;
+      }
+    });
+  }
+
+  // Text for the information bar.
+  getText() {
+    return 'Scroll : Zoom\nLeft Click + Drag : Pan';
+  }
 }

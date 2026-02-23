@@ -1,5 +1,1 @@
-export class CharacterMenu {
-    constructor() {
-        
-    }
-}
+export class CharacterMenu {}
