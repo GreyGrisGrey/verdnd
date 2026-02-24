@@ -12,76 +12,76 @@ const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 
 export enum RightBarTab {
-  None = 'NONE',
-  Layer = 'LAYER',
-  Token = 'TOKEN',
-  Roll = 'ROLL',
-  Character = 'CHARACTER',
+    None = 'NONE',
+    Layer = 'LAYER',
+    Token = 'TOKEN',
+    Roll = 'ROLL',
+    Character = 'CHARACTER',
 }
 
 export class RightBarManager {
-  layerMan: LayerMenu;
-  tokenMan: TokenMenu;
-  characterMan: CharacterMenu;
-  rollMan: RollMenu;
-  currActive: RightBarTab;
+    layerMan: LayerMenu;
+    tokenMan: TokenMenu;
+    characterMan: CharacterMenu;
+    rollMan: RollMenu;
+    currActive: RightBarTab;
 
-  constructor() {
-    this.layerMan = new LayerMenu();
-    this.tokenMan = new TokenMenu();
-    this.characterMan = new CharacterMenu();
-    this.rollMan = new RollMenu();
-    this.currActive = RightBarTab.None;
-    rightBar.style.width = '250px';
-    this.addEventListeners();
-  }
-
-  addEventListeners() {
-    layerTab.addEventListener('click', () => {
-      this.layerMan.toggleActive(true);
-      this.rollMan.toggleActive(false);
-      this.currActive = RightBarTab.Layer;
-      this.setText();
-    });
-
-    tokenTab.addEventListener('click', () => {
-      this.layerMan.toggleActive(false);
-      this.rollMan.toggleActive(false);
-      this.currActive = RightBarTab.Token;
-      this.setText();
-    });
-
-    rollTab.addEventListener('click', () => {
-      this.layerMan.toggleActive(false);
-      this.rollMan.toggleActive(true);
-      this.currActive = RightBarTab.Roll;
-      this.setText();
-    });
-
-    characterTab.addEventListener('click', () => {
-      this.layerMan.toggleActive(false);
-      this.rollMan.toggleActive(false);
-      this.currActive = RightBarTab.Character;
-      this.setText();
-    });
-  }
-
-  step() {
-    rightBar.style.height = `${window.innerHeight - 20}px`;
-    if (this.currActive === RightBarTab.Layer) {
-      this.layerMan.step();
-    } else if (this.currActive === RightBarTab.Roll) {
-      this.rollMan.step();
+    constructor() {
+        this.layerMan = new LayerMenu();
+        this.tokenMan = new TokenMenu();
+        this.characterMan = new CharacterMenu();
+        this.rollMan = new RollMenu();
+        this.currActive = RightBarTab.None;
+        rightBar.style.width = '250px';
+        this.addEventListeners();
     }
-  }
 
-  setText() {
-    if (this.currActive === RightBarTab.Layer) {
-      rightPara.innerText = '';
-    } else if (this.currActive === RightBarTab.Roll) {
-      rightPara.innerText = '';
-    } else {
-      rightPara.innerText = 'WIP';
+    addEventListeners() {
+        layerTab.addEventListener('click', () => {
+            this.layerMan.toggleActive(true);
+            this.rollMan.toggleActive(false);
+            this.currActive = RightBarTab.Layer;
+            this.setText();
+        });
+
+        tokenTab.addEventListener('click', () => {
+            this.layerMan.toggleActive(false);
+            this.rollMan.toggleActive(false);
+            this.currActive = RightBarTab.Token;
+            this.setText();
+        });
+
+        rollTab.addEventListener('click', () => {
+            this.layerMan.toggleActive(false);
+            this.rollMan.toggleActive(true);
+            this.currActive = RightBarTab.Roll;
+            this.setText();
+        });
+
+        characterTab.addEventListener('click', () => {
+            this.layerMan.toggleActive(false);
+            this.rollMan.toggleActive(false);
+            this.currActive = RightBarTab.Character;
+            this.setText();
+        });
     }
-  }
+
+    step() {
+        rightBar.style.height = `${window.innerHeight - 20}px`;
+        if (this.currActive === RightBarTab.Layer) {
+            this.layerMan.step();
+        } else if (this.currActive === RightBarTab.Roll) {
+            this.rollMan.step();
+        }
+    }
+
+    setText() {
+        if (this.currActive === RightBarTab.Layer) {
+            rightPara.innerText = '';
+        } else if (this.currActive === RightBarTab.Roll) {
+            rightPara.innerText = '';
+        } else {
+            rightPara.innerText = 'WIP';
+        }
+    }
 }

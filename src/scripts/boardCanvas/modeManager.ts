@@ -15,263 +15,263 @@ const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 
 export enum Mode {
-  View = 'VIEW',
-  Draw = 'DRAW',
-  Token = 'TOKEN',
+    View = 'VIEW',
+    Draw = 'DRAW',
+    Token = 'TOKEN',
 }
 
 export enum GetObjectReason {
-  Draw = 'DRAW',
-  Create = 'CREATE',
+    Draw = 'DRAW',
+    Create = 'CREATE',
 }
 
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off.
 export class ModeManager {
-  board: Board;
-  currMode: Mode;
-  viewMan: BoardViewMode;
-  tokenMan: BoardTokenMode;
-  drawMan: BoardDrawMode;
-  selectMan: BoardSelectMode;
-  deleteTrigger: boolean;
-  selectClick: boolean;
-  recolourFlag: boolean;
-  moveFlag: boolean;
+    board: Board;
+    currMode: Mode;
+    viewMan: BoardViewMode;
+    tokenMan: BoardTokenMode;
+    drawMan: BoardDrawMode;
+    selectMan: BoardSelectMode;
+    deleteTrigger: boolean;
+    selectClick: boolean;
+    recolourFlag: boolean;
+    moveFlag: boolean;
 
-  constructor(parentBoard: Board) {
-    this.board = parentBoard;
-    this.currMode = Mode.View;
-    this.viewMan = new BoardViewMode(parentBoard);
-    this.tokenMan = new BoardTokenMode(parentBoard);
-    this.drawMan = new BoardDrawMode(parentBoard);
-    this.selectMan = new BoardSelectMode(parentBoard);
-    this.deleteTrigger = false;
-    this.selectClick = false;
-    this.addEventListeners();
-    this.modifyText(this.viewMan);
-    this.viewMan.flipListeners(true);
-    this.recolourFlag = false;
-    this.moveFlag = false;
-  }
+    constructor(parentBoard: Board) {
+        this.board = parentBoard;
+        this.currMode = Mode.View;
+        this.viewMan = new BoardViewMode(parentBoard);
+        this.tokenMan = new BoardTokenMode(parentBoard);
+        this.drawMan = new BoardDrawMode(parentBoard);
+        this.selectMan = new BoardSelectMode(parentBoard);
+        this.deleteTrigger = false;
+        this.selectClick = false;
+        this.addEventListeners();
+        this.modifyText(this.viewMan);
+        this.viewMan.flipListeners(true);
+        this.recolourFlag = false;
+        this.moveFlag = false;
+    }
 
-  // Adds event listeners for all modes, as well as some of its own.
-  addEventListeners() {
-    viewButton.addEventListener('click', () => {
-      this.currMode = Mode.View;
-      this.viewMan.flipListeners(true);
-      this.tokenMan.flipListeners(false);
-      this.drawMan.flipListeners(false);
-      this.selectMan.flipListeners(false);
-      this.modifyText(this.viewMan);
-    });
+    // Adds event listeners for all modes, as well as some of its own.
+    addEventListeners() {
+        viewButton.addEventListener('click', () => {
+            this.currMode = Mode.View;
+            this.viewMan.flipListeners(true);
+            this.tokenMan.flipListeners(false);
+            this.drawMan.flipListeners(false);
+            this.selectMan.flipListeners(false);
+            this.modifyText(this.viewMan);
+        });
 
-    tokenButton.addEventListener('click', () => {
-      this.currMode = Mode.Token;
-      this.viewMan.flipListeners(false);
-      this.tokenMan.flipListeners(true);
-      this.drawMan.flipListeners(false);
-      this.selectMan.flipListeners(false);
-      this.modifyText(this.tokenMan);
-    });
+        tokenButton.addEventListener('click', () => {
+            this.currMode = Mode.Token;
+            this.viewMan.flipListeners(false);
+            this.tokenMan.flipListeners(true);
+            this.drawMan.flipListeners(false);
+            this.selectMan.flipListeners(false);
+            this.modifyText(this.tokenMan);
+        });
 
-    drawButton.addEventListener('click', () => {
-      this.currMode = Mode.Draw;
-      this.viewMan.flipListeners(false);
-      this.tokenMan.flipListeners(false);
-      this.drawMan.flipListeners(true);
-      this.selectMan.flipListeners(false);
-      this.modifyText(this.drawMan);
-    });
+        drawButton.addEventListener('click', () => {
+            this.currMode = Mode.Draw;
+            this.viewMan.flipListeners(false);
+            this.tokenMan.flipListeners(false);
+            this.drawMan.flipListeners(true);
+            this.selectMan.flipListeners(false);
+            this.modifyText(this.drawMan);
+        });
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Backspace') {
-        this.deleteTrigger = true;
-      }
-    });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Backspace') {
+                this.deleteTrigger = true;
+            }
+        });
 
-    can.addEventListener('mousemove', (event) => {
-      this.board.mouseCoords.x = event.clientX;
-      this.board.mouseCoords.y = event.clientY;
-    });
+        can.addEventListener('mousemove', (event) => {
+            this.board.mouseCoords.x = event.clientX;
+            this.board.mouseCoords.y = event.clientY;
+        });
 
-    can.addEventListener(
-      'mousedown',
-      () => {
-        this.board.leftMouseDown = true;
-      },
-      { capture: true },
-    );
+        can.addEventListener(
+            'mousedown',
+            () => {
+                this.board.leftMouseDown = true;
+            },
+            { capture: true },
+        );
 
-    can.addEventListener(
-      'mouseup',
-      () => {
-        this.board.leftMouseDown = false;
-      },
-      { capture: true },
-    );
-  }
+        can.addEventListener(
+            'mouseup',
+            () => {
+                this.board.leftMouseDown = false;
+            },
+            { capture: true },
+        );
+    }
 
-  // Switches the information bar's text to match the current mode.
-  modifyText(
-    selectMode:
-      | BoardSelectMode
-      | BoardViewMode
-      | BoardTokenMode
-      | BoardDrawMode,
-  ) {
-    modeParagraph.innerText = selectMode.getText();
-  }
-
-  // Checks if the user has selected an area of the canvas.
-  hasCompleteSelection() {
-    if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
-      return true;
-    } else if (
-      this.currMode === Mode.Token &&
-      this.tokenMan.completeSelectCheck
+    // Switches the information bar's text to match the current mode.
+    modifyText(
+        selectMode:
+            | BoardSelectMode
+            | BoardViewMode
+            | BoardTokenMode
+            | BoardDrawMode,
     ) {
-      return true;
+        modeParagraph.innerText = selectMode.getText();
     }
-    return false;
-  }
 
-  // Retrieves the coordinates corresponding to the currently selected area of the canvas.
-  getSelectCoords() {
-    if (this.currMode === Mode.Draw && this.drawMan.selectState !== 0) {
-      return this.drawMan.params;
-    } else if (
-      this.currMode === Mode.Token &&
-      this.tokenMan.completeSelectCheck
+    // Checks if the user has selected an area of the canvas.
+    hasCompleteSelection() {
+        if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
+            return true;
+        } else if (
+            this.currMode === Mode.Token &&
+            this.tokenMan.completeSelectCheck
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    // Retrieves the coordinates corresponding to the currently selected area of the canvas.
+    getSelectCoords() {
+        if (this.currMode === Mode.Draw && this.drawMan.selectState !== 0) {
+            return this.drawMan.params;
+        } else if (
+            this.currMode === Mode.Token &&
+            this.tokenMan.completeSelectCheck
+        ) {
+            return this.tokenMan.params;
+        }
+        return [{ x: 0, y: 0 }];
+    }
+
+    // Retrieves the object currently being drawn by the draw mode.
+    getObject(reason: GetObjectReason) {
+        if (reason === GetObjectReason.Draw) {
+            if (this.currMode === Mode.Draw) {
+                return this.drawMan.getTempObject();
+            } else if (this.currMode === Mode.Token) {
+                return this.tokenMan.getTempObject();
+            }
+        } else if (
+            reason === GetObjectReason.Create &&
+            this.currMode === Mode.Draw
+        ) {
+            if (this.drawMan.completeObjCheck) {
+                return this.drawMan.getNewObject();
+            }
+        } else if (
+            reason === GetObjectReason.Create &&
+            this.currMode === Mode.Token
+        ) {
+            if (this.tokenMan.newTokenCheck) {
+                return this.tokenMan.getNewObject();
+            }
+        }
+        return undefined;
+    }
+
+    // Returns all board objects that are currently selected.
+    getSelected() {
+        return this.selectMan.selectedObjects;
+    }
+
+    // Draws all currently selected board objects.
+    // Also ensures those objects are not drawn twice.
+    drawSelected(
+        ctx: CanvasRenderingContext2D,
+        squareSize: number,
+        offset: Vec2,
+        offset2: Vec2,
     ) {
-      return this.tokenMan.params;
+        this.selectMan.draw(ctx, squareSize, offset, offset2);
     }
-    return [{ x: 0, y: 0 }];
-  }
 
-  // Retrieves the object currently being drawn by the draw mode.
-  getObject(reason: GetObjectReason) {
-    if (reason === GetObjectReason.Draw) {
-      if (this.currMode === Mode.Draw) {
-        return this.drawMan.getTempObject();
-      } else if (this.currMode === Mode.Token) {
-        return this.tokenMan.getTempObject();
-      }
-    } else if (
-      reason === GetObjectReason.Create &&
-      this.currMode === Mode.Draw
-    ) {
-      if (this.drawMan.completeObjCheck) {
-        return this.drawMan.getNewObject();
-      }
-    } else if (
-      reason === GetObjectReason.Create &&
-      this.currMode === Mode.Token
-    ) {
-      if (this.tokenMan.newTokenCheck) {
-        return this.tokenMan.getNewObject();
-      }
+    // Clears the list of selected objects.
+    clearSelected() {
+        this.deleteTrigger = false;
+        this.exitSelected();
     }
-    return undefined;
-  }
 
-  // Returns all board objects that are currently selected.
-  getSelected() {
-    return this.selectMan.selectedObjects;
-  }
+    enterSelected() {
+        let res: (LayerObject | undefined)[] = this.board.selectObjects();
+        if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
+            res = [this.tokenMan.currHover];
+            this.tokenMan.currHover = undefined;
+        } else if (this.currMode === Mode.Token) {
+            res = this.board.selectObjects(ObjType.Token);
+        }
+        const selected = res.filter((obj) => obj !== undefined);
+        if (selected.length !== 0) {
+            this.selectMan.flipListeners(true);
+            this.selectMan.setSelected(selected);
+            if (this.currMode === Mode.Draw) {
+                this.drawMan.active = false;
+                this.drawMan.selectState = 0;
+                this.drawMan.params = [];
+            } else if (this.currMode === Mode.Token) {
+                this.tokenMan.active = false;
+                this.tokenMan.completeSelectCheck = false;
+                this.tokenMan.params = [];
+            }
+        } else {
+            if (this.currMode === Mode.Draw) {
+                this.drawMan.selectState = 0;
+                this.drawMan.params = [];
+            } else if (this.currMode === Mode.Token) {
+                this.tokenMan.completeSelectCheck = false;
+                this.tokenMan.params = [];
+            }
+        }
+    }
 
-  // Draws all currently selected board objects.
-  // Also ensures those objects are not drawn twice.
-  drawSelected(
-    ctx: CanvasRenderingContext2D,
-    squareSize: number,
-    offset: Vec2,
-    offset2: Vec2,
-  ) {
-    this.selectMan.draw(ctx, squareSize, offset, offset2);
-  }
+    exitSelected() {
+        this.selectMan.flipListeners(false);
+        if (this.currMode === Mode.Draw) {
+            this.drawMan.active = true;
+        } else if (this.currMode === Mode.Token) {
+            this.tokenMan.active = true;
+        }
+    }
 
-  // Clears the list of selected objects.
-  clearSelected() {
-    this.deleteTrigger = false;
-    this.exitSelected();
-  }
+    attemptSelectedSwap() {
+        if (!this.selectMan.active && this.hasCompleteSelection()) {
+            this.enterSelected();
+        } else if (this.selectMan.active && this.selectMan.exitOnNextStep) {
+            this.exitSelected();
+        }
+    }
 
-  enterSelected() {
-    let res: (LayerObject | undefined)[] = this.board.selectObjects();
-    if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
-      res = [this.tokenMan.currHover];
-      this.tokenMan.currHover = undefined;
-    } else if (this.currMode === Mode.Token) {
-      res = this.board.selectObjects(ObjType.Token);
+    step(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+        this.attemptSelectedSwap();
+        if (this.tokenMan.active) {
+            this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
+            this.tokenMan.getNewHover();
+        }
+        if (this.drawMan.active) {
+            this.drawMan.changeColour();
+        }
+        if (this.selectMan.active) {
+            this.recolourFlag = this.checkEditColour();
+            this.moveFlag = this.checkMove();
+        }
     }
-    const selected = res.filter((obj) => obj !== undefined);
-    if (selected.length !== 0) {
-      this.selectMan.flipListeners(true);
-      this.selectMan.setSelected(selected);
-      if (this.currMode === Mode.Draw) {
-        this.drawMan.active = false;
-        this.drawMan.selectState = 0;
-        this.drawMan.params = [];
-      } else if (this.currMode === Mode.Token) {
-        this.tokenMan.active = false;
-        this.tokenMan.completeSelectCheck = false;
-        this.tokenMan.params = [];
-      }
-    } else {
-      if (this.currMode === Mode.Draw) {
-        this.drawMan.selectState = 0;
-        this.drawMan.params = [];
-      } else if (this.currMode === Mode.Token) {
-        this.tokenMan.completeSelectCheck = false;
-        this.tokenMan.params = [];
-      }
-    }
-  }
 
-  exitSelected() {
-    this.selectMan.flipListeners(false);
-    if (this.currMode === Mode.Draw) {
-      this.drawMan.active = true;
-    } else if (this.currMode === Mode.Token) {
-      this.tokenMan.active = true;
+    checkEditColour() {
+        if (this.selectMan.canEditColour()) {
+            return true;
+        }
+        return false;
     }
-  }
 
-  attemptSelectedSwap() {
-    if (!this.selectMan.active && this.hasCompleteSelection()) {
-      this.enterSelected();
-    } else if (this.selectMan.active && this.selectMan.exitOnNextStep) {
-      this.exitSelected();
+    checkMove() {
+        if (this.selectMan.moveReady) {
+            return true;
+        }
+        return false;
     }
-  }
-
-  step(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-    this.attemptSelectedSwap();
-    if (this.tokenMan.active) {
-      this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
-      this.tokenMan.getNewHover();
-    }
-    if (this.drawMan.active) {
-      this.drawMan.changeColour();
-    }
-    if (this.selectMan.active) {
-      this.recolourFlag = this.checkEditColour();
-      this.moveFlag = this.checkMove();
-    }
-  }
-
-  checkEditColour() {
-    if (this.selectMan.canEditColour()) {
-      return true;
-    }
-    return false;
-  }
-
-  checkMove() {
-    if (this.selectMan.moveReady) {
-      return true;
-    }
-    return false;
-  }
 }

@@ -3,155 +3,155 @@ import type { ColorInstance } from 'color';
 import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {
-  Rect = 'RECT',
-  Rects = 'RECTS',
-  Circle = 'CIRCLE',
-  Poly = 'POLY',
-  Line = 'LINE',
-  Token = 'TOKEN',
+    Rect = 'RECT',
+    Rects = 'RECTS',
+    Circle = 'CIRCLE',
+    Poly = 'POLY',
+    Line = 'LINE',
+    Token = 'TOKEN',
 }
 
 export enum Entity {
-  Layer = 'LAYER',
-  Object = 'OBJECT',
+    Layer = 'LAYER',
+    Object = 'OBJECT',
 }
 
 export enum Action {
-  Create = 'CREATE',
-  Destroy = 'DESTROY',
-  Move = 'MOVE',
-  Add = 'ADD',
-  Remove = 'REMOVE',
-  Recolour = 'RECOLOUR',
-  ZOrder = 'ZORDER',
+    Create = 'CREATE',
+    Destroy = 'DESTROY',
+    Move = 'MOVE',
+    Add = 'ADD',
+    Remove = 'REMOVE',
+    Recolour = 'RECOLOUR',
+    ZOrder = 'ZORDER',
 }
 
 export interface RectCreatePayload {
-  kind: Shape.Rect;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  colour: ColorInstance;
+    kind: Shape.Rect;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    colour: ColorInstance;
 }
 
 export interface CircleCreatePayload {
-  kind: Shape.Circle;
-  x: number;
-  y: number;
-  diameter: number;
-  colour: ColorInstance;
+    kind: Shape.Circle;
+    x: number;
+    y: number;
+    diameter: number;
+    colour: ColorInstance;
 }
 
 export interface TokenCreatePayload {
-  kind: Shape.Token;
-  x: number;
-  y: number;
-  diameter: number;
-  colour: ColorInstance;
-  name: string;
+    kind: Shape.Token;
+    x: number;
+    y: number;
+    diameter: number;
+    colour: ColorInstance;
+    name: string;
 }
 
 export interface PolyCreatePayload {
-  kind: Shape.Poly;
-  x: number;
-  y: number;
-  points: Vec2[];
-  colour: ColorInstance;
+    kind: Shape.Poly;
+    x: number;
+    y: number;
+    points: Vec2[];
+    colour: ColorInstance;
 }
 
 export interface LineCreatePayload {
-  kind: Shape.Line;
-  x: number;
-  y: number;
-  points: Vec2[];
-  colour: ColorInstance;
+    kind: Shape.Line;
+    x: number;
+    y: number;
+    points: Vec2[];
+    colour: ColorInstance;
 }
 
 export type CreateObjectPayload =
-  | CircleCreatePayload
-  | LineCreatePayload
-  | PolyCreatePayload
-  | RectCreatePayload
-  | TokenCreatePayload;
+    | CircleCreatePayload
+    | LineCreatePayload
+    | PolyCreatePayload
+    | RectCreatePayload
+    | TokenCreatePayload;
 
 export interface LayerCreateEvent {
-  entity: Entity.Layer;
-  action: Action.Create;
-  layerId: number;
+    entity: Entity.Layer;
+    action: Action.Create;
+    layerId: number;
 }
 
 export interface LayerDestroyEvent {
-  entity: Entity.Layer;
-  action: Action.Destroy;
-  layerId: number;
+    entity: Entity.Layer;
+    action: Action.Destroy;
+    layerId: number;
 }
 
 export interface LayerMoveEvent {
-  entity: Entity.Layer;
-  action: Action.Move;
-  layerId: number;
-  x: number;
-  y: number;
+    entity: Entity.Layer;
+    action: Action.Move;
+    layerId: number;
+    x: number;
+    y: number;
 }
 
 export interface LayerAddObjectEvent {
-  entity: Entity.Layer;
-  action: Action.Add;
-  layerId: number;
-  objectId: number;
+    entity: Entity.Layer;
+    action: Action.Add;
+    layerId: number;
+    objectId: number;
 }
 
 export interface LayerRemoveObjectEvent {
-  entity: Entity.Layer;
-  action: Action.Remove;
-  layerId: number;
-  objectId: number;
+    entity: Entity.Layer;
+    action: Action.Remove;
+    layerId: number;
+    objectId: number;
 }
 
 export interface ObjectCreateEvent {
-  entity: Entity.Object;
-  action: Action.Create;
-  objectId: number;
-  object: CreateObjectPayload;
+    entity: Entity.Object;
+    action: Action.Create;
+    objectId: number;
+    object: CreateObjectPayload;
 }
 
 export interface ObjectMoveEvent {
-  entity: Entity.Object;
-  action: Action.Move;
-  objectId: number;
-  x: number;
-  y: number;
+    entity: Entity.Object;
+    action: Action.Move;
+    objectId: number;
+    x: number;
+    y: number;
 }
 
 export interface ObjectDestroyEvent {
-  entity: Entity.Object;
-  action: Action.Destroy;
-  objectId: number;
+    entity: Entity.Object;
+    action: Action.Destroy;
+    objectId: number;
 }
 
 export interface ObjectRecolourEvent {
-  entity: Entity.Object;
-  action: Action.Recolour;
-  objectId: number;
-  colour: ColorInstance;
+    entity: Entity.Object;
+    action: Action.Recolour;
+    objectId: number;
+    colour: ColorInstance;
 }
 
 export interface LayerZOrderEvent {
-  entity: Entity.Layer;
-  action: Action.ZOrder;
-  layerId: number;
-  newZOrder: number;
+    entity: Entity.Layer;
+    action: Action.ZOrder;
+    layerId: number;
+    newZOrder: number;
 }
 
 export type ServerEvent =
-  | LayerAddObjectEvent
-  | LayerCreateEvent
-  | LayerDestroyEvent
-  | LayerMoveEvent
-  | LayerRemoveObjectEvent
-  | ObjectCreateEvent
-  | ObjectDestroyEvent
-  | ObjectMoveEvent
-  | ObjectRecolourEvent
-  | LayerZOrderEvent;
+    | LayerAddObjectEvent
+    | LayerCreateEvent
+    | LayerDestroyEvent
+    | LayerMoveEvent
+    | LayerRemoveObjectEvent
+    | ObjectCreateEvent
+    | ObjectDestroyEvent
+    | ObjectMoveEvent
+    | ObjectRecolourEvent
+    | LayerZOrderEvent;
