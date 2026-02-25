@@ -49,34 +49,34 @@ export class BoardLayer {
     }
 
     // Adds a new board object, then sorts the board objects.
-    addObject(newObj: LayerObject, newID: number) {
+    addObject(newObj: LayerObject, newId: number) {
         this.heldObjects.push(newObj);
-        this.heldMap.set(newID, newObj);
+        this.heldMap.set(newId, newObj);
         this.sortObjects();
     }
 
     // Removes a board object.
-    removeObject(removeID: number) {
-        const toRemove = this.heldMap.get(removeID);
+    removeObject(removeId: number) {
+        const toRemove = this.heldMap.get(removeId);
         if (!toRemove) {
-            alert('Error no object with such ID exists to remove');
+            alert('Error no object with such Id exists to remove');
             return false;
         }
         const removeIndex = this.heldObjects.indexOf(toRemove);
-        if (!this.heldMap.delete(removeID)) {
-            alert('Error no object with such ID exists to remove');
+        if (!this.heldMap.delete(removeId)) {
+            alert('Error no object with such Id exists to remove');
             return false;
         }
         this.heldObjects.splice(removeIndex, 1);
         this.sortObjects();
-        this.heldMap.delete(removeID);
+        this.heldMap.delete(removeId);
         return true;
     }
 
     // Attempts to move a board object.
-    // If no board object with a corresponding ID exists, returns false, otherwise true.
-    moveObject(moveID: number, moveX: number, moveY: number) {
-        const targetObj = this.heldMap.get(moveID);
+    // If no board object with a corresponding Id exists, returns false, otherwise true.
+    moveObject(moveId: number, moveX: number, moveY: number) {
+        const targetObj = this.heldMap.get(moveId);
         if (!targetObj) {
             return false;
         }
@@ -91,18 +91,20 @@ export class BoardLayer {
         offset: Vec2,
         thirdOffset: Vec2 = { x: 0, y: 0 },
     ) {
-        const localOffset: Vec2 = {
-            x: offset.x + this.layerOffset.x,
-            y: offset.y + this.layerOffset.y,
-        };
-        for (const obj of this.heldObjects) {
-            if (obj.selected) {
-                obj.draw(ctx, squareSize, {
-                    x: localOffset.x + thirdOffset.x,
-                    y: localOffset.y + thirdOffset.y,
-                });
-            } else {
-                obj.draw(ctx, squareSize, localOffset);
+        if (this.GMVisible) {
+            const localOffset: Vec2 = {
+                x: offset.x + this.layerOffset.x,
+                y: offset.y + this.layerOffset.y,
+            };
+            for (const obj of this.heldObjects) {
+                if (obj.selected) {
+                    obj.draw(ctx, squareSize, {
+                        x: localOffset.x + thirdOffset.x,
+                        y: localOffset.y + thirdOffset.y,
+                    });
+                } else {
+                    obj.draw(ctx, squareSize, localOffset);
+                }
             }
         }
     }

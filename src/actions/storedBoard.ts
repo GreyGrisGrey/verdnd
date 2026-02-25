@@ -1,21 +1,35 @@
 import type {
     CreateObjectPayload,
     ServerEvent,
+    ObjectCreateEvent,
 } from '../scripts/objectEvents.ts';
 
 import type { LayerState } from '../scripts/rightBar/layerBarMenu.ts';
 
+
 export class StoredBoard {
     // TODO: Make these proper types when we start using them
-    storedObjects: any[];
+    storedObjects: Map<number, CreateObjectPayload>;
     storedLayers: Map<number, LayerState>;
 
     constructor() {
-        this.storedObjects = [];
+        this.storedObjects = new Map();
         this.storedLayers = new Map();
     }
 
-    createObject(newObj: CreateObjectPayload) {}
+    createObject(newObj: ObjectCreateEvent) {
+        let next = 0;
+        while (this.storedObjects.has(next)) {
+            next++;
+        }
+        console.log(newObj)
+        this.storedObjects.set(next, newObj.object);
+        return next;
+    }
+    
+    getObjects() {
+        return this.storedObjects;
+    }
 
     createLayer() {
         let next = 0;

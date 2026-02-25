@@ -8,6 +8,7 @@ import { Shape } from './objectEvents.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { ServerInterface } from './serverInterface.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
+import { payloadToBoardObject } from './serverInterface.ts';
 
 const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -21,7 +22,13 @@ function checkDeletion() {
     }
 }
 
-function runBoardStep() {
+function constructObject(newObj: CreateObjectPayload) {
+    if (newObj.kind === Shape.Poly) {
+        
+    }
+}
+
+async function runBoardStep() {
     if (board.modeMan.moveFlag) {
         const toChange = board.modeMan.getSelected();
         const valChange = board.determineTile(
@@ -43,17 +50,17 @@ function runBoardStep() {
             );
         }
     }
-
-    const newObj = board.getModeManObject();
-    if (newObj) {
-        if (board.modeMan.drawMan.shape !== Shape.Rects) {
-            serveInter.createObj(newObj as CreateObjectPayload, 0);
+    
+    const { data, error } = await serveInter.getObjects()
+    if (data) {
+        for (const [key, val] of data) {
+            const res = board.getLayer(val.layerId)
+            if (res && !res.heldMap.has(key)) {
+                res.addObject(payloadToBoardObject(val, key), key)
+            }
         }
     }
-    const events = serveInter.getItems();
-    for (const event of events) {
-        serveInter.handleObjEvent(event);
-    }
+    
     serveInter.clearQueue();
     rightMan.step();
     board.step();
@@ -82,6 +89,7 @@ const rightMan = new RightBarManager();
 const serveInter = new ServerInterface(board);
 let counter = 0;
 setUp();
+
 
 async function mainLoop() {
     runBoardStep();

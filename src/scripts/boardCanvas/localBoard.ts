@@ -109,6 +109,10 @@ export class Board {
         this.layerMap.set(newID, newLayer);
         this.sortLayers();
     }
+    
+    getLayer(layerID: number) {
+        return this.layerMap.get(layerID)
+    }
 
     // Removes a new board layer, then sorts the layers.
     // Returns false if the provided layer is not found.
@@ -256,10 +260,6 @@ export class Board {
         this.drawPointGrid(squareSize);
         this.drawMousePointer();
         this.modeMan.step(ctx, squareSize, this.originCoords);
-    }
-
-    getModeManObject() {
-        return this.modeMan.getObject(GetObjectReason.Create);
     }
 
     // Performs a single drawing step.

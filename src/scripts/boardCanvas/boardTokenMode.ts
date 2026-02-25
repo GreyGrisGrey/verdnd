@@ -3,7 +3,8 @@ import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Shape } from '../objectEvents.ts';
+import { Action, Entity, Shape } from '../objectEvents.ts';
+import { actions } from 'astro:actions';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const modeButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
@@ -158,19 +159,24 @@ export class BoardTokenMode {
     }
 
     createToken() {
-        const coords = this.board.determineTile(
-            this.board.mouseCoords.x,
-            this.board.mouseCoords.y,
-            false,
-        );
-        return {
-            kind: Shape.Token,
-            x: coords.x,
-            y: coords.y,
-            diameter: parseInt(sizeInput.value, 10),
-            colour: colourSquare.style.background,
-            name: nameInput.value,
-        };
+        if (nameInput.value && sizeInput.value) {
+            const coords = this.board.determineTile(
+                this.board.mouseCoords.x,
+                this.board.mouseCoords.y,
+                false,
+            );
+            actions.boardActions.createObject({entity: Entity.Object,
+                action: Action.Create,
+                object: {
+                    kind: Shape.Token,
+                    x: coords.x,
+                    y: coords.y,
+                    diameter: parseInt(sizeInput.value, 10),
+                    colour: colourSquare.style.background,
+                    name: nameInput.value,
+                    layerId: this.board.activeLayer
+            }})
+        }
     }
 
     tryDrawLabel(

@@ -10,10 +10,10 @@ import {
     Token,
 } from './boardCanvas/boardObject.ts';
 import type { Board } from './boardCanvas/localBoard.ts';
-import type { CreateObjectPayload, ServerEvent } from './objectEvents.ts';
+import type { CreateObjectPayload, ServerEvent, ObjectCreateEvent } from './objectEvents.ts';
 import { Action, Entity, Shape } from './objectEvents.ts';
 
-function payloadToBoardObject(p: CreateObjectPayload, id: number): LayerObject {
+export function payloadToBoardObject(p: CreateObjectPayload, id: number): LayerObject {
     switch (p.kind) {
         case Shape.Circle:
             return new Circle(id, p.x, p.y, p.diameter, p.colour);
@@ -58,13 +58,6 @@ export class ServerInterface {
         let curr = 0;
         while (this.layerIDMap.has(curr)) curr++;
         this.layerIDMap.set(curr, true);
-        return curr;
-    }
-
-    private getNextObjectID(): number {
-        let curr = 0;
-        while (this.objectIDMap.has(curr)) curr++;
-        this.objectIDMap.set(curr, true);
         return curr;
     }
 
@@ -208,22 +201,6 @@ export class ServerInterface {
         });
     }
 
-    createObj(payload: CreateObjectPayload, targetLayer: number) {
-        const objectId = this.getNextObjectID();
-        this.sendItem({
-            entity: Entity.Object,
-            action: Action.Create,
-            objectId,
-            object: payload,
-        });
-        this.sendItem({
-            entity: Entity.Layer,
-            action: Action.Add,
-            layerId: targetLayer,
-            objectId,
-        });
-    }
-
     destroyObj(id: number) {
         this.sendItem({
             entity: Entity.Object,
@@ -259,5 +236,9 @@ export class ServerInterface {
             layerId: layer2Id,
             newZOrder: layer1Z,
         });
+    }
+    
+    async getObjects() {
+        return await actions.boardActions.getObjects()
     }
 }

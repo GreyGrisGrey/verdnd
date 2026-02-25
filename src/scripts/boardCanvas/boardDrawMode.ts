@@ -6,7 +6,8 @@ import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type { CreateObjectPayload } from '../objectEvents.ts';
-import { Shape } from '../objectEvents.ts';
+import { Action, Entity, Shape } from '../objectEvents.ts';
+import { actions } from 'astro:actions';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const modeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
@@ -21,7 +22,6 @@ export class BoardDrawMode {
     active: boolean;
     shape: Shape;
     params: Vec2[];
-    tempObj?: DrawObjectResult;
     completeObjCheck: boolean;
     activeColour: ColorInstance;
     selectMode: boolean;
@@ -33,7 +33,6 @@ export class BoardDrawMode {
         this.addEventListeners();
         this.shape = Shape.Rect;
         this.params = [];
-        this.tempObj = undefined;
         this.completeObjCheck = false;
         this.activeColour = WHITE_50;
         this.selectMode = false;
@@ -53,7 +52,6 @@ export class BoardDrawMode {
         this.selectMode = false;
         this.selectState = 0;
         this.completeObjCheck = false;
-        this.tempObj = undefined;
     }
 
     // Adds all relevant event listeners.
@@ -86,6 +84,8 @@ export class BoardDrawMode {
                 (this.shape === Shape.Poly || this.shape === Shape.Line)
             ) {
                 this.setNewObject();
+            } else if (this.active && event.key === "8") {
+                this.params = [];
             }
         });
 
@@ -202,8 +202,9 @@ export class BoardDrawMode {
 Backspace : Delete Selected`;
     }
 
-    // Finalizes the current object.
+    // Finalizes the current object and sends it to the server.
     setNewObject() {
+        let tempObj: CreateObjectPayload
         if (this.shape === Shape.Rect && this.params.length === 2) {
             const one = Math.min(this.params[0].x, this.params[1].x);
             const two = Math.min(this.params[0].y, this.params[1].y);
@@ -217,13 +218,14 @@ Backspace : Delete Selected`;
             if (this.params[1].y < this.params[0].y) {
                 sizes[1] += 1;
             }
-            this.tempObj = {
+            tempObj = {
                 kind: Shape.Rect,
                 x: one,
                 y: two,
                 width: sizes[0],
                 height: sizes[1],
-                colour: this.activeColour,
+                colour: colourSquare.style.background,
+                layerId: this.board.activeLayer
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Circle && this.params.length === 2) {
@@ -233,68 +235,46 @@ Backspace : Delete Selected`;
                 Math.abs(this.params[0].x - this.params[1].x),
                 Math.abs(this.params[0].y - this.params[1].y),
             );
-            this.tempObj = {
+            tempObj = {
                 kind: Shape.Circle,
                 x,
                 y,
                 diameter: radius,
-                colour: this.activeColour,
+                colour: colourSquare.style.background,
+                layerId: this.board.activeLayer
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Poly && this.params.length > 2) {
-            this.tempObj = {
+            tempObj = {
                 kind: Shape.Poly,
                 x: this.params[0].x,
                 y: this.params[0].y,
                 points: this.params.slice(1),
-                colour: this.activeColour,
+                colour: colourSquare.style.background,
+                layerId: this.board.activeLayer
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Rects && this.params.length === 2) {
-            const x = Math.min(this.params[0].x, this.params[1].x);
-            const y = Math.min(this.params[0].y, this.params[1].y);
-            const sizes = [
-                Math.abs(this.params[1].x - this.params[0].x),
-                Math.abs(this.params[1].y - this.params[0].y),
-            ];
-            const objects: CreateObjectPayload[] = [];
-            if (this.params[1].x < this.params[0].x) {
-                sizes[0] += 1;
-            }
-            if (this.params[1].y < this.params[0].y) {
-                sizes[1] += 1;
-            }
-            for (const i of Array.from({ length: sizes[0] }, (_, i) => i)) {
-                for (const j of Array.from({ length: sizes[1] }, (_, j) => j)) {
-                    objects.push({
-                        kind: Shape.Rect,
-                        x: x + i,
-                        y: y + j,
-                        width: 1,
-                        height: 1,
-                        colour: this.activeColour,
-                    });
-                }
-            }
-            this.tempObj = objects;
-            this.completeObjCheck = true;
+            // this object type is not needed we'll be removing that
+            return
         } else if (this.shape === Shape.Line && this.params.length > 2) {
-            this.tempObj = {
+            tempObj = {
                 kind: Shape.Line,
                 x: this.params[0].x,
                 y: this.params[0].y,
                 points: this.params.slice(1),
-                colour: this.activeColour,
+                colour: colourSquare.style.background,
+                layerId: this.board.activeLayer
             };
+            
             this.completeObjCheck = true;
+        } else {
+            return
         }
+        actions.boardActions.createObject({entity: Entity.Object,
+                        action: Action.Create,
+                        object: tempObj})
         this.params = [];
-    }
-
-    // Returns the fully constructed shape.
-    getNewObject() {
-        this.completeObjCheck = false;
-        return this.tempObj;
     }
 
     // Returns a temporary board object to display the shape about to be drawn.

@@ -32,7 +32,8 @@ export interface RectCreatePayload {
     y: number;
     width: number;
     height: number;
-    colour: ColorInstance;
+    colour: ColorInstance | string;
+    layerId: number;
 }
 
 export interface CircleCreatePayload {
@@ -40,7 +41,8 @@ export interface CircleCreatePayload {
     x: number;
     y: number;
     diameter: number;
-    colour: ColorInstance;
+    colour: ColorInstance | string;
+    layerId: number;
 }
 
 export interface TokenCreatePayload {
@@ -48,8 +50,9 @@ export interface TokenCreatePayload {
     x: number;
     y: number;
     diameter: number;
-    colour: ColorInstance;
+    colour: ColorInstance | string;
     name: string;
+    layerId: number;
 }
 
 export interface PolyCreatePayload {
@@ -57,7 +60,8 @@ export interface PolyCreatePayload {
     x: number;
     y: number;
     points: Vec2[];
-    colour: ColorInstance;
+    colour: ColorInstance | string;
+    layerId: number;
 }
 
 export interface LineCreatePayload {
@@ -65,7 +69,8 @@ export interface LineCreatePayload {
     x: number;
     y: number;
     points: Vec2[];
-    colour: ColorInstance;
+    colour: ColorInstance | string;
+    layerId: number;
 }
 
 export type CreateObjectPayload =
@@ -112,7 +117,6 @@ export interface LayerRemoveObjectEvent {
 export interface ObjectCreateEvent {
     entity: Entity.Object;
     action: Action.Create;
-    objectId: number;
     object: CreateObjectPayload;
 }
 

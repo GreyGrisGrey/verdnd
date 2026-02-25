@@ -157,20 +157,6 @@ export class ModeManager {
             } else if (this.currMode === Mode.Token) {
                 return this.tokenMan.getTempObject();
             }
-        } else if (
-            reason === GetObjectReason.Create &&
-            this.currMode === Mode.Draw
-        ) {
-            if (this.drawMan.completeObjCheck) {
-                return this.drawMan.getNewObject();
-            }
-        } else if (
-            reason === GetObjectReason.Create &&
-            this.currMode === Mode.Token
-        ) {
-            if (this.tokenMan.newTokenCheck) {
-                return this.tokenMan.getNewObject();
-            }
         }
         return undefined;
     }
