@@ -1,66 +1,66 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
-  "files": {
-    "ignoreUnknown": false
-  },
-  "formatter": {
-    "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 4
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "suspicious": {
-        "useAwait": "on"
-      }
-    }
-  },
-  "css": {
-    "parser": {
-      "tailwindDirectives": true
-    }
-  },
-  "javascript": {
+    "$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": false
+    },
     "formatter": {
-      "quoteStyle": "single"
-    }
-  },
-  "assist": {
-    "enabled": true,
-    "actions": {
-      "source": {
-        "organizeImports": {
-          "level": "on",
-          "options": {
-            "groups": [
-              [
-                "core-js/**",
-                "regenerator-runtime/**",
-                "**/tracer",
-                "**/shims/**",
-                "reflect-metadata/**",
-                "dd-trace/**",
-                "express-http-context/**"
-              ],
-              ":BLANK_LINE:",
-              ":NODE:",
-              ":BLANK_LINE:",
-              ":PACKAGE:",
-              ":BLANK_LINE:",
-              "@/**",
-              ":BLANK_LINE:",
-              "./**"
-            ]
-          }
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "suspicious": {
+                "useAwait": "on"
+            }
         }
-      }
+    },
+    "css": {
+        "parser": {
+            "tailwindDirectives": true
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single"
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": {
+                    "level": "on",
+                    "options": {
+                        "groups": [
+                            [
+                                "core-js/**",
+                                "regenerator-runtime/**",
+                                "**/tracer",
+                                "**/shims/**",
+                                "reflect-metadata/**",
+                                "dd-trace/**",
+                                "express-http-context/**"
+                            ],
+                            ":BLANK_LINE:",
+                            ":NODE:",
+                            ":BLANK_LINE:",
+                            ":PACKAGE:",
+                            ":BLANK_LINE:",
+                            "@/**",
+                            ":BLANK_LINE:",
+                            "./**"
+                        ]
+                    }
+                }
+            }
+        }
     }
-  }
 }

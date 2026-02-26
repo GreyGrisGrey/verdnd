@@ -164,3 +164,5 @@ export type ServerEvent =
     | ObjectMoveEvent
     | ObjectRecolourEvent
     | LayerZOrderEvent;
+
+export type ObjectChangeEvent = ObjectCreateEvent | ObjectDestroyEvent;

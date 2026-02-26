@@ -165,7 +165,8 @@ export class BoardTokenMode {
                 this.board.mouseCoords.y,
                 false,
             );
-            actions.boardActions.createObject({entity: Entity.Object,
+            actions.boardActions.createObject({
+                entity: Entity.Object,
                 action: Action.Create,
                 object: {
                     kind: Shape.Token,
@@ -174,8 +175,9 @@ export class BoardTokenMode {
                     diameter: parseInt(sizeInput.value, 10),
                     colour: colourSquare.style.background,
                     name: nameInput.value,
-                    layerId: this.board.activeLayer
-            }})
+                    layerId: this.board.activeLayer,
+                },
+            });
         }
     }
 

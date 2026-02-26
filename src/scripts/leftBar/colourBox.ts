@@ -128,8 +128,12 @@ export class ColourBox {
             RGBSliders[component].value = this.currColour.blue().toString();
             RGBTexts[component].value = this.currColour.blue().toString();
         } else if (component === 'alpha') {
-            RGBSliders[component].value = (this.currColour.alpha() * 100).toString();
-            RGBTexts[component].value = (this.currColour.alpha() * 100).toString();
+            RGBSliders[component].value = (
+                this.currColour.alpha() * 100
+            ).toString();
+            RGBTexts[component].value = (
+                this.currColour.alpha() * 100
+            ).toString();
         }
     }
 

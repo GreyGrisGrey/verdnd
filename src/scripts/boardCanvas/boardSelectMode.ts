@@ -74,8 +74,8 @@ export class BoardSelectMode {
 
         can.addEventListener('mouseup', () => {
             if (this.active && this.selectClick) {
-                this.moveObjects()
-                this.selectClick = false
+                this.moveObjects();
+                this.selectClick = false;
                 if (
                     this.selectedObjects.length === 1 &&
                     this.selectedObjects[0].objType === Shape.Token
@@ -91,31 +91,48 @@ export class BoardSelectMode {
             } else if (this.active && event.key === 'Backspace') {
                 const idList: number[] = [];
                 for (const obj of this.selectedObjects) {
-                    idList.push(obj.objectId)
+                    idList.push(obj.objectId);
                 }
-                actions.boardActions.destroyObjects(idList)
-                this.exitOnNextStep = true
+                actions.boardActions.destroyObjects(idList);
+                this.exitOnNextStep = true;
             }
         });
     }
-    
+
     moveObjects() {
         const point = this.board.determineTile(
-                    this.board.originCoords.x + this.thirdOffset.x,
-                    this.board.originCoords.y + this.thirdOffset.y,
-                    true,
-                );
+            this.board.originCoords.x + this.thirdOffset.x,
+            this.board.originCoords.y + this.thirdOffset.y,
+            true,
+        );
         for (const i of this.selectedObjects) {
             actions.boardActions.moveObject({
                 entity: Entity.Object,
                 action: Action.Move,
                 objectId: i.objectId,
                 x: point.x,
-                y: point.y
-            })
+                y: point.y,
+            });
+            i.move(point.x, point.y);
         }
-        this.thirdOffset.x = 0
-        this.thirdOffset.y = 0
+        this.thirdOffset.x = 0;
+        this.thirdOffset.y = 0;
+    }
+
+    recolour() {
+        if (this.currColour !== colourSquare.style.background) {
+            this.currColour = colourSquare.style.background;
+            const recolourList = [];
+            for (const obj of this.selectedObjects) {
+                recolourList.push({
+                    entity: Entity.Object,
+                    action: Action.Recolour,
+                    objectId: obj.objectId,
+                    colour: this.currColour,
+                });
+            }
+            actions.boardActions.recolourObjects(recolourList);
+        }
     }
 
     getText() {

@@ -1,19 +1,35 @@
 import type {
     CreateObjectPayload,
-    ServerEvent,
-    ObjectCreateEvent, ObjectMoveEvent
+    ObjectCreateEvent,
+    ObjectMoveEvent,
+    ObjectChangeEvent,
+    ObjectRecolourEvent,
 } from '../scripts/objectEvents.ts';
 import { Action, Entity, Shape } from '../scripts/objectEvents.ts';
-import { Circle, Line, Polyline, Rect, Token } from '../scripts/boardCanvas/boardObject.ts';
-import type { BoardObject } from '../scripts/boardCanvas/boardObject.ts';
 
 import type { LayerState } from '../scripts/rightBar/layerBarMenu.ts';
 
-import Color from 'color';
+function comparePayloads(
+    serveObj: CreateObjectPayload,
+    cliObj: CreateObjectPayload,
+) {
+    if (serveObj.kind !== cliObj.kind) {
+        return false;
+    }
+    if (
+        serveObj.x !== cliObj.x ||
+        serveObj.y !== cliObj.y ||
+        serveObj.colour !== cliObj.colour ||
+        serveObj.layerId !== cliObj.layerId
+    ) {
+        return false;
+    }
+    return true;
+}
 
 export class StoredBoard {
-    storedObjects: Map<number, ObjectCreateEvent>
-    storedStrings: Map<number, string>
+    storedObjects: Map<number, ObjectCreateEvent>;
+    storedStrings: Map<number, string>;
     storedLayers: Map<number, LayerState>;
     recentCreation: any[];
     lastTime: number;
@@ -25,47 +41,35 @@ export class StoredBoard {
         this.recentCreation = [];
         this.lastTime = 0;
     }
-    
-    stringifyObjectPayload(obj: CreateObjectPayload) {
-        if (obj.kind === Shape.Rect) {
-            return Shape.Rect + obj.x + ":" + obj.y + ":" + obj.width + ":" + obj.height + obj.colour + obj.layerId
-        } else if (obj.kind === Shape.Circle || obj.kind === Shape.Token) {
-            let retString = obj.kind + obj.x + ":" + obj.y + ":" + obj.diameter + obj.colour + obj.layerId
-            if (obj.kind === Shape.Token) {
-                retString += obj.name
+
+    compareObjects(clientObjs: CreateObjectPayload[]) {
+        const result: ObjectChangeEvent[] = [];
+        for (const val of clientObjs) {
+            const res = this.compareObject(val);
+            if (res) {
+                result.push(res);
             }
-            return retString
-        } else {
-            let retString = obj.kind + obj.x + ":" + obj.y + obj.colour + obj.layerId
-            for (const i of obj.points) {
-                retString += ":" + i.x + ":" + i.y
-            }
-            return retString
         }
+        return result;
     }
-    
-    compareObjects(clientObjs: Map<number, CreateObjectPayload>) {
-        const result: Map<number, CreateObjectPayload | null> = new Map()
-        for (const [key, val] of clientObjs) {
-            const bools = this.compareObject(Number(key), val)
-            if (!bools[0] && bools[1]) {
-                result.set(Number(key), this.storedObjects.get(Number(key))!.object)
-            } else if (!bools[0]) {
-                result.set(Number(key), null)
-            }
+
+    compareObject(clientObj: CreateObjectPayload) {
+        const obj = this.storedObjects.get(clientObj.objectId!);
+        if (!obj) {
+            return {
+                entity: Entity.Object,
+                action: Action.Destroy,
+                objectId: clientObj.objectId!,
+            };
         }
-        return Object.fromEntries(result)
-    }
-    
-    compareObject(key: number, clientObj: CreateObjectPayload): boolean[] {
-        if (!this.storedObjects.has(key)) {
-            return [false, false]
+        if (comparePayloads(obj.object, clientObj)) {
+            return null;
         }
-        const localObj = this.storedObjects.get(key)!.object
-        if (this.stringifyObjectPayload(localObj) === this.stringifyObjectPayload(clientObj)) {
-            return [true, true]
-        }
-        return [false, true]
+        return {
+            entity: Entity.Object,
+            action: Action.Create,
+            object: obj.object,
+        };
     }
 
     createObject(newObj: ObjectCreateEvent) {
@@ -73,22 +77,21 @@ export class StoredBoard {
         while (this.storedObjects.has(next)) {
             next++;
         }
-        newObj.object.objectId = next
+        newObj.object.objectId = next;
         this.storedObjects.set(next, newObj);
-        this.recentCreation.push([next, newObj.object])
-        if (this.recentCreation.length === 4) {
-            this.recentCreation.slice(1)
+        this.recentCreation.push(newObj.object);
+        if (this.recentCreation.length >= 4) {
+            this.recentCreation = this.recentCreation.slice(1);
         }
         return next;
     }
-    
-    getObjects(): Map<number, ObjectCreateEvent>  {
-        return this.storedObjects
+
+    getObjects(): Map<number, ObjectCreateEvent> {
+        return this.storedObjects;
     }
-    
+
     getNewObjects() {
-        console.log(this.recentCreation)
-        return this.recentCreation
+        return this.recentCreation;
     }
 
     createLayer() {
@@ -108,18 +111,41 @@ export class StoredBoard {
     getLayers() {
         return this.storedLayers;
     }
-    
+
     destroyObjects(targetIds: number[]) {
         for (const id of targetIds) {
-            this.storedObjects.delete(id)
+            if (this.storedObjects.has(id)) {
+                this.storedObjects.delete(id);
+                this.deleteRecentId(id);
+            }
         }
     }
-    
-    moveObject(event: ObjectMoveEvent){
-        const targetObj = this.storedObjects.get(event.objectId)
+
+    deleteRecentId(targetId: number) {
+        for (let i = 0; i < 3; i++) {
+            if (
+                this.recentCreation.length > i &&
+                this.recentCreation[i].objectId === targetId
+            ) {
+                this.recentCreation.splice(i, 1);
+            }
+        }
+    }
+
+    moveObject(event: ObjectMoveEvent) {
+        const targetObj = this.storedObjects.get(event.objectId);
         if (targetObj) {
-            targetObj.object.x += event.x
-            targetObj.object.y += event.y
+            targetObj.object.x += event.x;
+            targetObj.object.y += event.y;
+        }
+    }
+
+    recolourObjects(events: ObjectRecolourEvent[]) {
+        for (const event of events) {
+            const targetObj = this.storedObjects.get(event.objectId);
+            if (targetObj) {
+                targetObj.object.colour = event.colour;
+            }
         }
     }
 }

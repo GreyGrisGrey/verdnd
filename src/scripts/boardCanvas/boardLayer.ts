@@ -1,5 +1,5 @@
 import type { BoardObject } from './boardObject.ts';
-import { Shape } from'../objectEvents.ts';
+import { Shape } from '../objectEvents.ts';
 import type { Vec2 } from './coords.ts';
 
 // Manages a single layer of the board.
@@ -116,14 +116,14 @@ export class BoardLayer {
     // Selects all objects on the layer that match the corresponding coordinates.
     // If one coordinate point is provided, checks if said point is contained within the object.
     // If two points are provided, checks if each object's center is contained within the produced rectangle.
-    selectObjects(selectCoords: Vec2[], matchType: string = "any") {
+    selectObjects(selectCoords: Vec2[], matchType: string = 'any') {
         const acceptable: BoardObject[] = [];
         for (const candidate of this.heldObjects) {
             if (
                 selectCoords.length === 1 &&
                 'isPointInside' in candidate &&
                 candidate.isPointInside(selectCoords[0]) &&
-                (candidate.objType === matchType || matchType === "any")
+                (candidate.objType === matchType || matchType === 'any')
             ) {
                 acceptable.push(candidate);
                 break;
@@ -133,7 +133,7 @@ export class BoardLayer {
                     selectCoords[0],
                     selectCoords[1],
                 ) &&
-                (candidate.objType === matchType || matchType === "any")
+                (candidate.objType === matchType || matchType === 'any')
             ) {
                 acceptable.push(candidate);
             }

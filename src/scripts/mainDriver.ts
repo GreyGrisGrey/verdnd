@@ -1,49 +1,47 @@
-import Color from 'color';
-
 import { Board } from './boardCanvas/localBoard.ts';
 import { getRequiredElement } from './dom.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
-import type { CreateObjectPayload } from './objectEvents.ts';
-import { Shape } from './objectEvents.ts';
+import type { CreateObjectPayload, ObjectChangeEvent } from './objectEvents.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { ServerInterface } from './serverInterface.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { payloadToBoardObject } from './serverInterface.ts';
 import { actions } from 'astro:actions';
+import { Action, Entity, Shape } from '../scripts/objectEvents.ts';
 
 const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
 async function runBoardStep() {
-    serveInter.clearQueue();
     rightMan.step();
     board.step();
 }
 
 async function syncServer() {
-    const checkMap: Map<number, CreateObjectPayload> = new Map()
+    const checkList: CreateObjectPayload[] = [];
     for (const [key, val] of board.objectMap) {
-        checkMap.set(key, val.payloadFromObject())
+        checkList.push(val.payloadFromObject());
     }
-    const {data, error} = await actions.boardActions.checkIds(Object.fromEntries(checkMap))
+    const { data, error } = await actions.boardActions.checkIds(checkList);
     if (data) {
-        const map = new Map(Object.entries(data))
-        for (const [key, val] of map) {
-            if (val) {
-                board.objectMap.get(Number(key))!.updateFromPayload(val)
+        for (const val of data) {
+            if (val.action === Action.Create) {
+                board.objectMap
+                    .get(val.object.objectId!)!
+                    .updateFromPayload(val.object);
             } else {
-                board.removeObject(Number(key))
+                board.removeObject(val.objectId);
             }
         }
     }
-    getRecent()
+    getRecent();
 }
 
 async function getRecent() {
-    const {data, error} = await actions.boardActions.getRecents()
+    const { data, error } = await actions.boardActions.getRecents();
     if (data) {
         for (const obj of data) {
-            if (!board.objectMap.has(obj[0])) {
-                board.addObject(obj[0], 0, payloadToBoardObject(obj[1]))
+            if (!board.objectMap.has(obj.objectId)) {
+                board.addObject(obj.objectId, 0, payloadToBoardObject(obj));
             }
         }
     }
@@ -69,14 +67,18 @@ async function setUpObjects() {
     let { data, error } = await actions.boardActions.getObjects();
     if (data) {
         for (const [key, val] of data) {
-            board.addObject(val.object.objectId!, 0, payloadToBoardObject(val.object));
+            board.addObject(
+                val.object.objectId!,
+                0,
+                payloadToBoardObject(val.object),
+            );
         }
     }
 }
 
 async function setUp() {
-    setUpLayers()
-    setUpObjects()
+    setUpLayers();
+    setUpObjects();
 }
 
 const board = new Board();
@@ -86,11 +88,11 @@ const serveInter = new ServerInterface(board, rightMan);
 setUp();
 let counter = 0;
 
-
 async function mainLoop() {
-    if (counter == 3) {
+    if (counter == 10) {
         counter = 0;
-        await syncServer()
+        await syncServer();
+        board.modeMan.clearTemp();
     }
     runBoardStep();
     rightMan.step();

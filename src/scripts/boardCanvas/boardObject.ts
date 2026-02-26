@@ -3,13 +3,17 @@ import type { ColorInstance } from 'color';
 import type { Vec2 } from './coords.ts';
 import { BLACK, GOLD, GRAY, GRAY_LIGHT } from '../colours.ts';
 
-
-import { Shape } from'../objectEvents.ts';
+import { Shape } from '../objectEvents.ts';
 
 export type BoardObject = Circle | Line | Polyline | Rect | Token;
 
-import type { CreateObjectPayload } from '../objectEvents.ts';
-import type {CircleCreatePayload, LineCreatePayload, PolyCreatePayload, RectCreatePayload, TokenCreatePayload} from '../objectEvents.ts'
+import type {
+    CircleCreatePayload,
+    LineCreatePayload,
+    PolyCreatePayload,
+    RectCreatePayload,
+    TokenCreatePayload,
+} from '../objectEvents.ts';
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
@@ -25,8 +29,13 @@ export class BoardObjectBase {
     selected: boolean;
     layerId: number;
 
-    constructor(id: number, x: number, y: number, colour: ColorInstance | string) {
-        this.objectId = id;
+    constructor(
+        objId: number,
+        x: number,
+        y: number,
+        colour: ColorInstance | string,
+    ) {
+        this.objectId = objId;
         this.zOrder = 0;
         this.location = { x, y };
         this.colour = colour;
@@ -183,7 +192,7 @@ export class Token extends BoardObjectBase {
             y: this.location.y + this.diameter / 2,
         };
     }
-    
+
     payloadFromObject(): TokenCreatePayload {
         return {
             kind: Shape.Token,
@@ -193,16 +202,16 @@ export class Token extends BoardObjectBase {
             colour: this.colour,
             name: this.name,
             layerId: this.layerId,
-            objectId: this.objectId
-        }
+            objectId: this.objectId,
+        };
     }
-    
+
     updateFromPayload(newSetting: TokenCreatePayload) {
-        this.location.x = newSetting.x
-        this.location.y = newSetting.y
-        this.diameter = newSetting.diameter
-        this.colour = newSetting.colour
-        this.layerId = newSetting.layerId
+        this.location.x = newSetting.x;
+        this.location.y = newSetting.y;
+        this.diameter = newSetting.diameter;
+        this.colour = newSetting.colour;
+        this.layerId = newSetting.layerId;
     }
 }
 
@@ -270,7 +279,7 @@ export class Rect extends BoardObjectBase {
             y: this.location.y + this.size.y / 2,
         };
     }
-    
+
     payloadFromObject(): RectCreatePayload {
         return {
             kind: Shape.Rect,
@@ -280,17 +289,17 @@ export class Rect extends BoardObjectBase {
             height: this.size.y,
             colour: this.colour,
             layerId: this.layerId,
-            objectId: this.objectId
-        }
+            objectId: this.objectId,
+        };
     }
-    
+
     updateFromPayload(newSetting: RectCreatePayload) {
-        this.location.x = newSetting.x
-        this.location.y = newSetting.y
-        this.size.x = newSetting.width
-        this.size.y = newSetting.height
-        this.colour = newSetting.colour
-        this.layerId = newSetting.layerId
+        this.location.x = newSetting.x;
+        this.location.y = newSetting.y;
+        this.size.x = newSetting.width;
+        this.size.y = newSetting.height;
+        this.colour = newSetting.colour;
+        this.layerId = newSetting.layerId;
     }
 }
 
@@ -389,8 +398,8 @@ export class Circle extends BoardObjectBase {
             y: this.location.y + this.diameter / 2,
         };
     }
-    
-    payloadFromObject() : CircleCreatePayload {
+
+    payloadFromObject(): CircleCreatePayload {
         return {
             kind: Shape.Circle,
             x: this.location.x,
@@ -398,16 +407,16 @@ export class Circle extends BoardObjectBase {
             diameter: this.diameter,
             colour: this.colour,
             layerId: this.layerId,
-            objectId: this.objectId
-        }
+            objectId: this.objectId,
+        };
     }
-    
+
     updateFromPayload(newSetting: CircleCreatePayload) {
-        this.location.x = newSetting.x
-        this.location.y = newSetting.y
-        this.diameter = newSetting.diameter
-        this.colour = newSetting.colour
-        this.layerId = newSetting.layerId
+        this.location.x = newSetting.x;
+        this.location.y = newSetting.y;
+        this.diameter = newSetting.diameter;
+        this.colour = newSetting.colour;
+        this.layerId = newSetting.layerId;
     }
 }
 
@@ -503,7 +512,7 @@ export class Polyline extends BoardObjectBase {
             y: (bottomRight.y + topLeft.y) / 2 + this.location.y,
         };
     }
-    
+
     payloadFromObject(): PolyCreatePayload {
         return {
             kind: Shape.Poly,
@@ -512,16 +521,16 @@ export class Polyline extends BoardObjectBase {
             points: this.points,
             colour: this.colour,
             layerId: this.layerId,
-            objectId: this.objectId
-        }
+            objectId: this.objectId,
+        };
     }
-    
+
     updateFromPayload(newSetting: PolyCreatePayload) {
-        this.location.x = newSetting.x
-        this.location.y = newSetting.y
-        this.points = newSetting.points
-        this.colour = newSetting.colour
-        this.layerId = newSetting.layerId
+        this.location.x = newSetting.x;
+        this.location.y = newSetting.y;
+        this.points = newSetting.points;
+        this.colour = newSetting.colour;
+        this.layerId = newSetting.layerId;
     }
 }
 
@@ -580,7 +589,7 @@ export class Line extends BoardObjectBase {
             y: (bottomRight.y + topLeft.y) / 2 + this.location.y,
         };
     }
-    
+
     payloadFromObject(): LineCreatePayload {
         return {
             kind: Shape.Line,
@@ -589,15 +598,15 @@ export class Line extends BoardObjectBase {
             points: this.points,
             colour: this.colour,
             layerId: this.layerId,
-            objectId: this.objectId
-        }
+            objectId: this.objectId,
+        };
     }
-    
+
     updateFromPayload(newSetting: LineCreatePayload) {
-        this.location.x = newSetting.x
-        this.location.y = newSetting.y
-        this.points = newSetting.points
-        this.colour = newSetting.colour
-        this.layerId = newSetting.layerId
+        this.location.x = newSetting.x;
+        this.location.y = newSetting.y;
+        this.points = newSetting.points;
+        this.colour = newSetting.colour;
+        this.layerId = newSetting.layerId;
     }
 }

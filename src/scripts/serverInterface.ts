@@ -1,7 +1,7 @@
 import type { ColorInstance } from 'color';
 import Color from 'color';
 import { actions } from 'astro:actions';
-import { RightBarManager } from './rightBar/rightBarMain.ts'
+import { RightBarManager } from './rightBar/rightBarMain.ts';
 
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import type { BoardObject } from './boardCanvas/boardObject.ts';
@@ -13,7 +13,11 @@ import {
     Token,
 } from './boardCanvas/boardObject.ts';
 import type { Board } from './boardCanvas/localBoard.ts';
-import type { CreateObjectPayload, ServerEvent, ObjectCreateEvent } from './objectEvents.ts';
+import type {
+    CreateObjectPayload,
+    ServerEvent,
+    ObjectCreateEvent,
+} from './objectEvents.ts';
 import { Action, Entity, Shape } from './objectEvents.ts';
 
 export function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
@@ -23,7 +27,14 @@ export function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
         case Shape.Rect:
             return new Rect(p.objectId!, p.x, p.y, p.width, p.height, p.colour);
         case Shape.Token:
-            return new Token(p.objectId!, p.x, p.y, p.diameter, p.colour, p.name ?? '');
+            return new Token(
+                p.objectId!,
+                p.x,
+                p.y,
+                p.diameter,
+                p.colour,
+                p.name ?? '',
+            );
         case Shape.Poly:
             return new Polyline(p.objectId!, p.x, p.y, p.points, p.colour);
         case Shape.Line:
@@ -56,7 +67,7 @@ export class ServerInterface {
         this.board = newBoard;
         this.storedObjects = new Map();
         this.storedLayers = new Map();
-        this.rightMan = rightMan
+        this.rightMan = rightMan;
     }
 
     private getNextLayerID(): number {
@@ -86,8 +97,16 @@ export class ServerInterface {
         if (event.entity === Entity.Layer) {
             switch (event.action) {
                 case Action.Create: {
-                    this.board.addLayer(new BoardLayer(0, true, true), event.layerId);
-                    this.rightMan.addLayer({gmVisible: true, playerVisible: true, zOrder: 0, id: event.layerId})
+                    this.board.addLayer(
+                        new BoardLayer(0, true, true),
+                        event.layerId,
+                    );
+                    this.rightMan.addLayer({
+                        gmVisible: true,
+                        playerVisible: true,
+                        zOrder: 0,
+                        id: event.layerId,
+                    });
                     break;
                 }
                 case Action.Destroy: {
@@ -130,10 +149,10 @@ export class ServerInterface {
                     break;
                 }
                 case Action.Create: {
-                    const newObj = payloadToBoardObject(
-                        event.object
-                    );
-                    this.board.getLayer(event.object.layerId)!.addObject(newObj, event.object.objectId!)
+                    const newObj = payloadToBoardObject(event.object);
+                    this.board
+                        .getLayer(event.object.layerId)!
+                        .addObject(newObj, event.object.objectId!);
                     this.storedObjects.set(event.object.objectId!, newObj);
                     break;
                 }
@@ -243,8 +262,8 @@ export class ServerInterface {
             newZOrder: layer1Z,
         });
     }
-    
+
     async getObjects() {
-        return await actions.boardActions.getObjects()
+        return await actions.boardActions.getObjects();
     }
 }

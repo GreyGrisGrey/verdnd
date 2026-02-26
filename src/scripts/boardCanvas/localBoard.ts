@@ -1,11 +1,11 @@
 import type { BoardLayer } from './boardLayer.ts';
-import type { BoardObject } from './boardObject.ts'
+import type { BoardObject } from './boardObject.ts';
 import { Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Shape } from'../objectEvents.ts';
+import { Shape } from '../objectEvents.ts';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
@@ -113,19 +113,19 @@ export class Board {
         this.layerMap.set(newID, newLayer);
         this.sortLayers();
     }
-    
+
     getLayer(layerID: number) {
-        return this.layerMap.get(layerID)
+        return this.layerMap.get(layerID);
     }
-    
+
     getObjectById(objectId: number) {
         for (const [key, val] of this.layerMap) {
-            const obj = val.heldMap.get(objectId)
+            const obj = val.heldMap.get(objectId);
             if (obj) {
-                return obj
+                return obj;
             }
         }
-        return null
+        return null;
     }
 
     // Removes a new board layer, then sorts the layers.
@@ -154,7 +154,7 @@ export class Board {
 
     // Deletes an object based on the ID of the object and the layer it belongs on.
     removeObject(objId: number, layerId: number = -1) {
-        this.objectMap.delete(objId)
+        this.objectMap.delete(objId);
         if (layerId === -1) {
             for (const layer of this.boardLayers) {
                 if (layer.removeObject(objId)) {
@@ -174,7 +174,7 @@ export class Board {
     // Adds an object to a specified layer.
     addObject(objId: number, layerId: number, newObject: BoardObject) {
         const layer = this.layerMap.get(layerId);
-        this.objectMap.set(objId, newObject)
+        this.objectMap.set(objId, newObject);
         if (layer) {
             layer.addObject(newObject, objId);
         }

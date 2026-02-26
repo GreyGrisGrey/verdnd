@@ -1,6 +1,6 @@
 import { BoardDrawMode } from './boardDrawMode.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Shape } from'../objectEvents.ts';
+import { Shape } from '../objectEvents.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardTokenMode } from './boardTokenMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
@@ -149,6 +149,12 @@ export class ModeManager {
         return undefined;
     }
 
+    clearTemp() {
+        if (this.currMode === Mode.Draw) {
+            this.drawMan.clearObject();
+        }
+    }
+
     // Returns all board objects that are currently selected.
     getSelected() {
         return this.selectMan.selectedObjects;
@@ -224,6 +230,9 @@ export class ModeManager {
         if (this.tokenMan.active) {
             this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
             this.tokenMan.getNewHover();
+        }
+        if (this.selectMan.active) {
+            this.selectMan.recolour();
         }
     }
 }

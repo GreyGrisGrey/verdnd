@@ -113,7 +113,7 @@ export class LayerMenu {
         this.moveLayers();
         this.resizeLayerBoxes();
     }
-    
+
     addNewLayer(layer: LayerState) {
         this.currNum = layer.id!;
         this.constructLayer(layer);

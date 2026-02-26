@@ -1,5 +1,3 @@
-import Color, { type ColorInstance } from 'color';
-
 import { Circle, Line, Polyline, Rect } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
@@ -13,8 +11,6 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const modeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
-type DrawObjectResult = CreateObjectPayload | CreateObjectPayload[];
-
 // Class handling canvas' draw mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardDrawMode {
@@ -25,6 +21,8 @@ export class BoardDrawMode {
     completeObjCheck: boolean;
     selectMode: boolean;
     selectState: number;
+    tempObject: CreateObjectPayload | null;
+    stickTemp: boolean;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -35,6 +33,8 @@ export class BoardDrawMode {
         this.completeObjCheck = false;
         this.selectMode = false;
         this.selectState = 0;
+        this.tempObject = null;
+        this.stickTemp = false;
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -77,7 +77,7 @@ export class BoardDrawMode {
                 (this.shape === Shape.Poly || this.shape === Shape.Line)
             ) {
                 this.setNewObject();
-            } else if (this.active && event.key === "8") {
+            } else if (this.active && event.key === '8') {
                 this.params = [];
             }
         });
@@ -197,7 +197,7 @@ Backspace : Delete Selected`;
 
     // Finalizes the current object and sends it to the server.
     setNewObject() {
-        let tempObj: CreateObjectPayload
+        let tempObj: CreateObjectPayload;
         if (this.shape === Shape.Rect && this.params.length === 2) {
             const one = Math.min(this.params[0].x, this.params[1].x);
             const two = Math.min(this.params[0].y, this.params[1].y);
@@ -218,7 +218,7 @@ Backspace : Delete Selected`;
                 width: sizes[0],
                 height: sizes[1],
                 colour: colourSquare.style.background,
-                layerId: this.board.activeLayer
+                layerId: this.board.activeLayer,
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Circle && this.params.length === 2) {
@@ -234,7 +234,7 @@ Backspace : Delete Selected`;
                 y,
                 diameter: radius,
                 colour: colourSquare.style.background,
-                layerId: this.board.activeLayer
+                layerId: this.board.activeLayer,
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Poly && this.params.length > 2) {
@@ -244,12 +244,12 @@ Backspace : Delete Selected`;
                 y: this.params[0].y,
                 points: this.params.slice(1),
                 colour: colourSquare.style.background,
-                layerId: this.board.activeLayer
+                layerId: this.board.activeLayer,
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Rects && this.params.length === 2) {
             // this object type is not needed we'll be removing that
-            return
+            return;
         } else if (this.shape === Shape.Line && this.params.length > 2) {
             tempObj = {
                 kind: Shape.Line,
@@ -257,23 +257,40 @@ Backspace : Delete Selected`;
                 y: this.params[0].y,
                 points: this.params.slice(1),
                 colour: colourSquare.style.background,
-                layerId: this.board.activeLayer
+                layerId: this.board.activeLayer,
             };
-            
+
             this.completeObjCheck = true;
         } else {
-            return
+            return;
         }
-        actions.boardActions.createObject({entity: Entity.Object,
-                        action: Action.Create,
-                        object: tempObj})
+        actions.boardActions.createObject({
+            entity: Entity.Object,
+            action: Action.Create,
+            object: tempObj,
+        });
         this.params = [];
+        this.tempObject = tempObj;
+        this.stickTemp = true;
     }
 
     // Returns a temporary board object to display the shape about to be drawn.
     getTempObject() {
         if (!this.active) {
             return undefined;
+        }
+        if (this.tempObject !== null) {
+            if (this.tempObject.kind === Shape.Rect) {
+                return new Rect(
+                    -1,
+                    this.tempObject.x,
+                    this.tempObject.y,
+                    this.tempObject.width,
+                    this.tempObject.height,
+                    this.tempObject.colour,
+                );
+            }
+            return this.tempObject;
         }
         if (
             this.shape !== Shape.Poly &&
@@ -370,5 +387,12 @@ Backspace : Delete Selected`;
             return newObj;
         }
         return undefined;
+    }
+
+    clearObject() {
+        if (!this.stickTemp) {
+            this.tempObject = null;
+        }
+        this.stickTemp = false;
     }
 }
