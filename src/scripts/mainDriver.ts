@@ -24,6 +24,7 @@ async function syncServer() {
     const { data, error } = await actions.boardActions.checkIds(checkList);
     if (data) {
         for (const val of data) {
+            console.log(val)
             if (val.action === Action.Create) {
                 board.objectMap
                     .get(val.object.objectId!)!
@@ -34,6 +35,17 @@ async function syncServer() {
         }
     }
     getRecent();
+    updateLayers();
+}
+
+async function updateLayers() {
+    const { data, error } = await actions.boardActions.getLayers();
+    if (data) {
+        rightMan.layerMan.handleNewLayers(data);
+        for (const [key, val] of data) {
+            board.addLayer(val);
+        }
+    }
 }
 
 async function getRecent() {
@@ -41,7 +53,7 @@ async function getRecent() {
     if (data) {
         for (const obj of data) {
             if (!board.objectMap.has(obj.objectId)) {
-                board.addObject(obj.objectId, 0, payloadToBoardObject(obj));
+                board.addObject(obj.layerId, payloadToBoardObject(obj));
             }
         }
     }
@@ -52,10 +64,7 @@ async function setUpLayers() {
     if (data && data.size != 0) {
         rightMan.layerMan.handleNewLayers(data);
         for (const [key, val] of data) {
-            board.addLayer(
-                new BoardLayer(val.zOrder, val.gmVisible, val.playerVisible),
-                key,
-            );
+            board.addLayer(val);
         }
     } else {
         rightMan.layerMan.createLayer();
@@ -68,8 +77,7 @@ async function setUpObjects() {
     if (data) {
         for (const [key, val] of data) {
             board.addObject(
-                val.object.objectId!,
-                0,
+                val.object.layerId!,
                 payloadToBoardObject(val.object),
             );
         }
@@ -77,23 +85,28 @@ async function setUpObjects() {
 }
 
 async function setUp() {
-    setUpLayers();
-    setUpObjects();
+    await setUpLayers();
+    await setUpObjects();
+}
+
+function updateActiveLayer() {
+    board.activeLayer = rightMan.layerMan.currSelect
 }
 
 const board = new Board();
 new LeftBarManager();
 const rightMan = new RightBarManager();
 const serveInter = new ServerInterface(board, rightMan);
-setUp();
+await setUp();
 let counter = 0;
 
 async function mainLoop() {
     if (counter == 10) {
         counter = 0;
-        await syncServer();
+        syncServer();
         board.modeMan.clearTemp();
     }
+    updateActiveLayer()
     runBoardStep();
     rightMan.step();
     counter++;

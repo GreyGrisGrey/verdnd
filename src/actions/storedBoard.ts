@@ -33,6 +33,9 @@ export class StoredBoard {
     storedLayers: Map<number, LayerState>;
     recentCreation: any[];
     lastTime: number;
+    lockMainWrite: boolean;
+    lockRecentWrite: boolean;
+    lockLayerWrite: boolean;
 
     constructor() {
         this.storedObjects = new Map();
@@ -40,6 +43,9 @@ export class StoredBoard {
         this.storedStrings = new Map();
         this.recentCreation = [];
         this.lastTime = 0;
+        this.lockMainWrite = false;
+        this.lockRecentWrite = false;
+        this.lockLayerWrite = false;
     }
 
     compareObjects(clientObjs: CreateObjectPayload[]) {
@@ -72,7 +78,11 @@ export class StoredBoard {
         };
     }
 
-    createObject(newObj: ObjectCreateEvent) {
+    async createObject(newObj: ObjectCreateEvent) {
+        await this.waitForMain();
+        this.lockMainWrite = true;
+        await this.waitForRecent();
+        this.lockRecentWrite = true;
         let next = 0;
         while (this.storedObjects.has(next)) {
             next++;
@@ -83,10 +93,13 @@ export class StoredBoard {
         if (this.recentCreation.length >= 4) {
             this.recentCreation = this.recentCreation.slice(1);
         }
+        this.lockMainWrite = false;
+        this.lockRecentWrite = false;
         return next;
     }
 
     getObjects(): Map<number, ObjectCreateEvent> {
+        console.log(this.storedObjects)
         return this.storedObjects;
     }
 
@@ -94,7 +107,9 @@ export class StoredBoard {
         return this.recentCreation;
     }
 
-    createLayer() {
+    async createLayer() {
+        await this.waitForLayer();
+        this.lockLayerWrite = true;
         let next = 0;
         while (this.storedLayers.has(next)) {
             next++;
@@ -105,6 +120,7 @@ export class StoredBoard {
             playerVisible: true,
             zOrder: next,
         });
+        this.lockLayerWrite = false;
         return next;
     }
 
@@ -112,13 +128,19 @@ export class StoredBoard {
         return this.storedLayers;
     }
 
-    destroyObjects(targetIds: number[]) {
+    async destroyObjects(targetIds: number[]) {
+        await this.waitForMain();
+        this.lockMainWrite = true;
+        await this.waitForRecent();
+        this.lockRecentWrite = true;
         for (const id of targetIds) {
             if (this.storedObjects.has(id)) {
                 this.storedObjects.delete(id);
                 this.deleteRecentId(id);
             }
         }
+        this.lockMainWrite = false;
+        this.lockRecentWrite = false;
     }
 
     deleteRecentId(targetId: number) {
@@ -131,21 +153,57 @@ export class StoredBoard {
             }
         }
     }
-
-    moveObject(event: ObjectMoveEvent) {
-        const targetObj = this.storedObjects.get(event.objectId);
-        if (targetObj) {
-            targetObj.object.x += event.x;
-            targetObj.object.y += event.y;
+    
+    async moveObjects(events: ObjectMoveEvent[]) {
+        await this.waitForMain();
+        this.lockMainWrite = true;
+        for (const event of events) {
+            const targetObj = this.storedObjects.get(event.objectId);
+            if (targetObj) {
+                targetObj.object.x += event.x;
+                targetObj.object.y += event.y;
+            }
         }
+        this.lockMainWrite = false;
     }
 
-    recolourObjects(events: ObjectRecolourEvent[]) {
+    async recolourObjects(events: ObjectRecolourEvent[]) {
+        await this.waitForMain();
+        this.lockMainWrite = true;
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
                 targetObj.object.colour = event.colour;
             }
         }
+        this.lockMainWrite = false;
+    }
+    
+    async waitForRecent() {
+        while (this.lockRecentWrite) {
+            await new Promise(resolve => setTimeout(resolve, 1));
+        }
+    }
+    
+    async waitForMain() {
+        while (this.lockMainWrite) {
+            await new Promise(resolve => setTimeout(resolve, 1));
+        }
+    }
+    
+    async waitForLayer() {
+        while (this.lockLayerWrite) {
+            await new Promise(resolve => setTimeout(resolve, 1));
+        }
+    }
+    
+    async updateLayer(input: LayerState) {
+        await this.waitForLayer()
+        this.lockLayerWrite = true
+        const targetObj = this.storedLayers.get(input.id)
+        if (targetObj) {
+            this.storedLayers.set(input.id, input)
+        }
+        this.lockLayerWrite = false
     }
 }

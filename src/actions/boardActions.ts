@@ -44,10 +44,10 @@ export const boardActions = {
         },
     }),
 
-    moveObject: defineAction({
+    moveObjects: defineAction({
         // biome-ignore lint/suspicious/useAwait: handler signature must be async for defineAction
-        handler: async (input: ObjectMoveEvent) => {
-            return serveBoard.moveObject(input);
+        handler: async (input: ObjectMoveEvent[]) => {
+            return serveBoard.moveObjects(input);
         },
     }),
 
@@ -69,6 +69,13 @@ export const boardActions = {
         // biome-ignore lint/suspicious/useAwait: handler signature must be async for defineAction
         handler: async (input) => {
             return serveBoard.recolourObjects(input);
+        },
+    }),
+    
+    updateLayer: defineAction({
+        // biome-ignore lint/suspicious/useAwait: handler signature must be async for defineAction
+        handler: async (input) => {
+            return serveBoard.updateLayer(input);
         },
     }),
 };

@@ -105,16 +105,18 @@ export class BoardSelectMode {
             this.board.originCoords.y + this.thirdOffset.y,
             true,
         );
+        const moveList = [];
         for (const i of this.selectedObjects) {
-            actions.boardActions.moveObject({
+            moveList.push({
                 entity: Entity.Object,
                 action: Action.Move,
                 objectId: i.objectId,
                 x: point.x,
                 y: point.y,
-            });
+            })
             i.move(point.x, point.y);
         }
+        actions.boardActions.moveObjects(moveList)
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;
     }
@@ -130,6 +132,7 @@ export class BoardSelectMode {
                     objectId: obj.objectId,
                     colour: this.currColour,
                 });
+                obj.setColour(this.currColour)
             }
             actions.boardActions.recolourObjects(recolourList);
         }

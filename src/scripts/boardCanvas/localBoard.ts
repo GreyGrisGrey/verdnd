@@ -1,4 +1,4 @@
-import type { BoardLayer } from './boardLayer.ts';
+import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
 import { Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
@@ -6,6 +6,7 @@ import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
+import type { LayerState } from '../rightBar/layerBarMenu.ts';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
@@ -108,10 +109,19 @@ export class Board {
     }
 
     // Adds a new board layer, then sorts the layers.
-    addLayer(newLayer: BoardLayer, newID: number) {
-        this.boardLayers.push(newLayer);
-        this.layerMap.set(newID, newLayer);
-        this.sortLayers();
+    addLayer(newLayer: LayerState) {
+        if (newLayer.id === undefined) {
+            return
+        }
+        const currLayer = this.layerMap.get(newLayer.id!)
+        if (currLayer) {
+            currLayer.updateVis(newLayer.playerVisible, newLayer.gmVisible)
+        } else {
+            const toAdd = new BoardLayer(newLayer.zOrder, newLayer.gmVisible, newLayer.playerVisible)
+            this.layerMap.set(newLayer.id!, toAdd)
+            this.boardLayers.push(toAdd)
+            this.boardLayers.sort()
+        }
     }
 
     getLayer(layerID: number) {
@@ -172,11 +182,11 @@ export class Board {
     }
 
     // Adds an object to a specified layer.
-    addObject(objId: number, layerId: number, newObject: BoardObject) {
+    addObject(layerId: number, newObject: BoardObject) {
         const layer = this.layerMap.get(layerId);
-        this.objectMap.set(objId, newObject);
+        this.objectMap.set(newObject.objectId, newObject);
         if (layer) {
-            layer.addObject(newObject, objId);
+            layer.addObject(newObject, newObject.objectId);
         }
     }
 

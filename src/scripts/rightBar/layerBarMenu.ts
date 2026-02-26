@@ -23,7 +23,6 @@ export class LayerMenu {
     layerMap: Map<number, LayerState>;
     layerObj: HTMLElement;
     boxHeight: number;
-    currNum: number;
     currSelect: number;
     tempButtonObj: HTMLElement;
 
@@ -37,7 +36,6 @@ export class LayerMenu {
         this.layerMap = new Map();
         rightBar.append(this.layerObj);
         this.boxHeight = 50;
-        this.currNum = 0;
         this.currSelect = 0;
         this.tempButtonObj = document.createElement('input');
         this.setMainElements();
@@ -69,14 +67,14 @@ export class LayerMenu {
         firstCheck.innerText = 'GM\nVis';
         firstCheck.style.width = '50px';
         firstCheck.style.position = 'absolute';
-        firstCheck.style.left = '137px';
+        firstCheck.style.left = '187px';
         firstCheck.style.textAlign = 'center';
 
         const secondCheck = document.createElement('p');
         secondCheck.innerText = 'Player\nVis';
         secondCheck.style.width = '50px';
         secondCheck.style.position = 'absolute';
-        secondCheck.style.left = '187px';
+        secondCheck.style.left = '137px';
         secondCheck.style.textAlign = 'center';
 
         this.tempButtonObj.type = 'button';
@@ -102,12 +100,22 @@ export class LayerMenu {
     createLayer() {
         actions.boardActions.createLayer();
     }
+    
+    updateLayer(key: number, val: LayerState) {
+        const toUpdate = this.layerMap.get(key)!
+        toUpdate.gmVisible = val.gmVisible
+        toUpdate.playerVisible = val.playerVisible
+        toUpdate.zOrder = val.zOrder
+        toUpdate.element!.children[1].checked = val.playerVisible
+        toUpdate.element!.children[2].checked = val.gmVisible
+    }
 
     handleNewLayers(newLayers: Map<number, LayerState>) {
         for (const [key, val] of newLayers) {
             if (!this.layerMap.has(key)) {
-                this.currNum = key;
                 this.constructLayer(val);
+            } else {
+                this.updateLayer(key, val)
             }
         }
         this.moveLayers();
@@ -115,7 +123,6 @@ export class LayerMenu {
     }
 
     addNewLayer(layer: LayerState) {
-        this.currNum = layer.id!;
         this.constructLayer(layer);
         this.moveLayers();
         this.resizeLayerBoxes();
@@ -126,7 +133,8 @@ export class LayerMenu {
         const newText = document.createElement('p');
         const checkVisibleAll = document.createElement('input');
         const checkVisibleGM = document.createElement('input');
-        this.layerMap.set(this.currNum, {
+        this.layerMap.set(buildData.id!, {
+            id: buildData.id,
             gmVisible: buildData.gmVisible,
             playerVisible: buildData.playerVisible,
             zOrder: buildData.zOrder,
@@ -150,20 +158,20 @@ export class LayerMenu {
         checkVisibleAll.style.position = 'absolute';
         checkVisibleAll.style.top = '15px';
         checkVisibleAll.style.left = '150px';
-        checkVisibleAll.checked = true;
+        checkVisibleAll.checked = buildData.playerVisible;
+        checkVisibleAll.id = "check1";
 
         checkVisibleGM.type = 'checkbox';
         checkVisibleGM.style.position = 'absolute';
         checkVisibleGM.style.top = '15px';
         checkVisibleGM.style.left = '200px';
-        checkVisibleGM.checked = true;
+        checkVisibleGM.checked = buildData.gmVisible;
 
         this.layerObj.append(newBox);
         newBox.append(newText);
         newBox.append(checkVisibleAll);
         newBox.append(checkVisibleGM);
         this.currElements.push(newBox);
-        this.currNum++;
 
         newBox.addEventListener('mousedown', () => {
             if (this.active) {
@@ -173,6 +181,28 @@ export class LayerMenu {
                     this.exitCurrSelect();
                     this.currSelect = parseInt(newText.innerText.slice(6), 10);
                 }
+            }
+        });
+        
+        checkVisibleGM.addEventListener('mousedown', () => {
+            if (this.active) {
+                actions.boardActions.updateLayer({
+                    id: buildData.id,
+                    gmVisible: !checkVisibleGM.checked,
+                    playerVisible: checkVisibleAll.checked,
+                    zOrder: buildData.zOrder,
+                })
+            }
+        });
+        
+        checkVisibleAll.addEventListener('mousedown', () => {
+            if (this.active) {
+                actions.boardActions.updateLayer({
+                    id: buildData.id,
+                    gmVisible: checkVisibleGM.checked,
+                    playerVisible: !checkVisibleAll.checked,
+                    zOrder: buildData.zOrder,
+                })
             }
         });
     }

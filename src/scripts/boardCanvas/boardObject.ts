@@ -54,7 +54,7 @@ export class BoardObjectBase {
         return this.location;
     }
 
-    setColour(newColour: ColorInstance) {
+    setColour(newColour: ColorInstance | string) {
         this.colour = newColour;
     }
 
