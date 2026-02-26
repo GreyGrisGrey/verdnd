@@ -31,8 +31,8 @@ export class RollMenu {
 
     constructor() {
         this.textBox = document.createElement('textarea');
-        this.textBox.style.visibility = "hidden";
-        chatBox.style.visibility = "hidden";
+        this.textBox.style.visibility = 'hidden';
+        chatBox.style.visibility = 'hidden';
         chatBox.style.pointerEvents = 'none';
         this.textBox.style.pointerEvents = 'none';
         this.currChats = [];
@@ -47,62 +47,70 @@ export class RollMenu {
         chatBox.append(this.textBox);
         chatBox.style.background = GRAY.toString();
     }
-    
+
     setRollElements() {
-        let count = 0
+        let count = 0;
         for (const i of [3, 4, 6, 8, 10, 12, 20, 100, 101]) {
             const newBox = document.createElement('div');
-            rollBox.append(newBox)
-            newBox.style.position = "absolute"
-            newBox.style.width = "100px"
-            newBox.style.height = "20px"
-            newBox.style.top = count * 30 + 5 + "px"
-            newBox.style.left = "10px"
+            rollBox.append(newBox);
+            newBox.style.position = 'absolute';
+            newBox.style.width = '100px';
+            newBox.style.height = '20px';
+            newBox.style.top = count * 30 + 5 + 'px';
+            newBox.style.left = '10px';
             if (i !== 3 && i !== 101) {
                 const newText = document.createElement('p');
                 const setCount = document.createElement('input');
                 const roll = document.createElement('input');
-                
+
                 roll.type = 'button';
-                
-                newBox.append(newText)
-                newBox.append(setCount)
-                newBox.append(roll)
-                
-                newText.style.position = "absolute"
-                newText.style.width = "30px"
-                newText.style.height = "20px"
-                newText.style.top = "-13px"
-                newText.style.left = "0px"
-                newText.innerText = "Roll";
-                
-                setCount.style.position = "absolute"
-                setCount.style.width = "40px"
-                setCount.style.height = "20px"
-                setCount.style.top = "0px"
-                setCount.style.left = "30px"
-                
-                roll.style.position = "absolute"
-                roll.style.width = "50px"
-                roll.style.height = "20px"
-                roll.style.left = "80px"
-                roll.style.top = "3px"
+
+                newBox.append(newText);
+                newBox.append(setCount);
+                newBox.append(roll);
+
+                newText.style.position = 'absolute';
+                newText.style.width = '30px';
+                newText.style.height = '20px';
+                newText.style.top = '-13px';
+                newText.style.left = '0px';
+                newText.innerText = 'Roll';
+
+                setCount.style.position = 'absolute';
+                setCount.style.width = '40px';
+                setCount.style.height = '20px';
+                setCount.style.top = '0px';
+                setCount.style.left = '30px';
+
+                roll.style.position = 'absolute';
+                roll.style.width = '50px';
+                roll.style.height = '20px';
+                roll.style.left = '80px';
+                roll.style.top = '3px';
                 roll.value = `D${i}`;
-                
+
                 setCount.addEventListener('input', () => {
-                    if (Number(setCount.value) && Math.abs(Number(setCount.value)) < 9999) {
-                        this.modifier = Number(setCount.value)
+                    if (
+                        Number(setCount.value) &&
+                        Math.abs(Number(setCount.value)) < 9999
+                    ) {
+                        this.modifier = Number(setCount.value);
                     } else if (Number(setCount.value) > 0) {
-                        setCount.value = "9999"
+                        setCount.value = '9999';
                     } else if (Number(setCount.value)) {
-                        setCount.value = "-9999"
+                        setCount.value = '-9999';
                     } else {
-                        setCount.value = "0"
+                        setCount.value = '0';
                     }
                 });
-                
+
                 roll.addEventListener('click', () => {
-                    this.constructPayload(i, Number(setCount.value), false, false)
+                    this.constructPayload(
+                        i,
+                        Number(setCount.value),
+                        false,
+                        false,
+                    );
                 });
             } else if (i === 3) {
                 const rollAdv = document.createElement('input');
@@ -111,64 +119,67 @@ export class RollMenu {
                 rollDis.type = 'button';
                 rollAdv.value = 'Roll 2d20 (Adv)';
                 rollDis.value = 'Roll 2d20 (Disadv)';
-                newBox.append(rollAdv)
-                newBox.append(rollDis)
-                
-                rollAdv.style.position = "absolute"
-                rollAdv.style.width = "100px"
-                rollAdv.style.height = "20px"
-                rollAdv.style.left = "0px"
-                rollAdv.style.top = "3px"
-                
-                rollDis.style.position = "absolute"
-                rollDis.style.width = "120px"
-                rollDis.style.height = "20px"
-                rollDis.style.left = "110px"
-                rollDis.style.top = "3px"
-                
+                newBox.append(rollAdv);
+                newBox.append(rollDis);
+
+                rollAdv.style.position = 'absolute';
+                rollAdv.style.width = '100px';
+                rollAdv.style.height = '20px';
+                rollAdv.style.left = '0px';
+                rollAdv.style.top = '3px';
+
+                rollDis.style.position = 'absolute';
+                rollDis.style.width = '120px';
+                rollDis.style.height = '20px';
+                rollDis.style.left = '110px';
+                rollDis.style.top = '3px';
+
                 rollAdv.addEventListener('click', () => {
-                    this.constructPayload(20, 2, true, false)
+                    this.constructPayload(20, 2, true, false);
                 });
-                
+
                 rollDis.addEventListener('click', () => {
-                    this.constructPayload(20, 2, false, true)
+                    this.constructPayload(20, 2, false, true);
                 });
             } else if (i === 101) {
                 const newText = document.createElement('p');
                 const setCount = document.createElement('input');
-                
-                newBox.append(newText)
-                newBox.append(setCount)
-                
-                newText.style.position = "absolute"
-                newText.style.width = "30px"
-                newText.style.height = "20px"
-                newText.style.top = "-13px"
-                newText.style.left = "0px"
-                newText.innerText = "Mod";
-                
-                setCount.style.position = "absolute"
-                setCount.style.width = "40px"
-                setCount.style.height = "20px"
-                setCount.style.top = "0px"
-                setCount.style.left = "30px"
-                
+
+                newBox.append(newText);
+                newBox.append(setCount);
+
+                newText.style.position = 'absolute';
+                newText.style.width = '30px';
+                newText.style.height = '20px';
+                newText.style.top = '-13px';
+                newText.style.left = '0px';
+                newText.innerText = 'Mod';
+
+                setCount.style.position = 'absolute';
+                setCount.style.width = '40px';
+                setCount.style.height = '20px';
+                setCount.style.top = '0px';
+                setCount.style.left = '30px';
+
                 setCount.addEventListener('input', () => {
-                    if (Number(setCount.value) && Math.abs(Number(setCount.value)) < 9999) {
-                        this.modifier = Number(setCount.value)
+                    if (
+                        Number(setCount.value) &&
+                        Math.abs(Number(setCount.value)) < 9999
+                    ) {
+                        this.modifier = Number(setCount.value);
                     } else if (Number(setCount.value) > 0) {
-                        setCount.value = "9999"
-                        this.modifier = 9999
+                        setCount.value = '9999';
+                        this.modifier = 9999;
                     } else if (Number(setCount.value)) {
-                        setCount.value = "-9999"
-                        this.modifier = -9999
+                        setCount.value = '-9999';
+                        this.modifier = -9999;
                     } else {
-                        setCount.value = "1"
-                        this.modifier = 1
+                        setCount.value = '1';
+                        this.modifier = 1;
                     }
                 });
             }
-            count++
+            count++;
         }
     }
 
@@ -193,76 +204,95 @@ export class RollMenu {
                 this.textBox.style.width = `${w - 30}px`;
             }
         }
-        const {data, error} = await actions.rollActions.getDice()
+        const { data, error } = await actions.rollActions.getDice();
         if (data) {
-            this.updateChats(data.map, data.start)
+            this.updateChats(data.map, data.start);
         }
     }
-    
+
     constructChats() {
         for (let i = 0; i < 50; i++) {
-            this.constructChat(i)
+            this.constructChat(i);
         }
     }
-    
+
     constructChat(currIndex: number) {
         const newBox = document.createElement('div');
         const newText = document.createElement('p');
-        chatBox.append(newBox)
-        newBox.append(newText)
-        newBox.style.position = "absolute"
-        newBox.style.bottom = currIndex * 30 + 10 + "px"
-        newBox.style.left = "10px"
-        newBox.style.width = "100px"
-        newBox.style.height = "30px"
-        
-        newText.style.position = "absolute"
-        newText.style.width = "100px"
-        newText.style.height = "30px"
-        this.currChats.push(newText)
+        chatBox.append(newBox);
+        newBox.append(newText);
+        newBox.style.position = 'absolute';
+        newBox.style.bottom = currIndex * 30 + 10 + 'px';
+        newBox.style.left = '10px';
+        newBox.style.width = '100px';
+        newBox.style.height = '30px';
+
+        newText.style.position = 'absolute';
+        newText.style.width = '100px';
+        newText.style.height = '30px';
+        this.currChats.push(newText);
     }
-    
+
     updateChats(data: Map<number, DicePayload>, startIndex: number) {
-        let currIndex = startIndex
+        let currIndex = startIndex;
         let curr = 0;
         while (currIndex != (startIndex + 1) % 50) {
-            currIndex = (currIndex + 49) % 50
+            currIndex = (currIndex + 49) % 50;
             if (data.has(currIndex)) {
-                this.updateChat(data.get(currIndex)!, curr)
+                this.updateChat(data.get(currIndex)!, curr);
             }
-            curr++
+            curr++;
         }
     }
-    
+
     updateChat(dataLine: DicePayload, currIndex: number) {
-        this.currChats[currIndex].innerText = `Rolled ${dataLine.result}`
-        this.currChats[currIndex].style.visibility = "visible"
+        this.currChats[currIndex].innerText = `Rolled ${dataLine.result}`;
+        this.currChats[currIndex].style.visibility = 'visible';
     }
-    
-    constructPayload(diceSize: number, diceCount: number, advantage: boolean, disadvantage: boolean) {
-        let currLoad = {four: 0, six: 0, eight: 0, ten: 0, twelve: 0, twenty: 0, hundred: 0, dropLow: 0, dropHigh: 0, singleDice: true, singleNum: diceSize, modifier: this.modifier, result: 0}
+
+    constructPayload(
+        diceSize: number,
+        diceCount: number,
+        advantage: boolean,
+        disadvantage: boolean,
+    ) {
+        let currLoad = {
+            four: 0,
+            six: 0,
+            eight: 0,
+            ten: 0,
+            twelve: 0,
+            twenty: 0,
+            hundred: 0,
+            dropLow: 0,
+            dropHigh: 0,
+            singleDice: true,
+            singleNum: diceSize,
+            modifier: this.modifier,
+            result: 0,
+        };
         switch (diceSize) {
             case 4:
-                currLoad.four = diceCount
+                currLoad.four = diceCount;
             case 6:
-                currLoad.six = diceCount
+                currLoad.six = diceCount;
             case 8:
-                currLoad.eight = diceCount
+                currLoad.eight = diceCount;
             case 10:
-                currLoad.ten = diceCount
+                currLoad.ten = diceCount;
             case 12:
-                currLoad.twelve = diceCount
+                currLoad.twelve = diceCount;
             case 20:
-                currLoad.twenty = diceCount
+                currLoad.twenty = diceCount;
             case 100:
-                currLoad.hundred = diceCount
+                currLoad.hundred = diceCount;
         }
         if (advantage) {
-            currLoad.dropHigh = 1
+            currLoad.dropHigh = 1;
         }
         if (disadvantage) {
-            currLoad.dropLow = 1
+            currLoad.dropLow = 1;
         }
-        actions.rollActions.roll(currLoad)
+        actions.rollActions.roll(currLoad);
     }
 }

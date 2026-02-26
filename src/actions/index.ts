@@ -5,5 +5,6 @@ import { rollActions } from './rollActions.ts';
 import { defineAction } from 'astro:actions';
 
 export const server = {
-    boardActions, rollActions
+    boardActions,
+    rollActions,
 };

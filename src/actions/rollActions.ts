@@ -1,8 +1,8 @@
 import { defineAction } from 'astro:actions';
 
-import { StoredDice } from './diceStore.ts'
+import { StoredDice } from './diceStore.ts';
 
-const diceObj = new StoredDice()
+const diceObj = new StoredDice();
 
 export const rollActions = {
     roll: defineAction({
@@ -11,7 +11,7 @@ export const rollActions = {
             return diceObj.rollDice(input);
         },
     }),
-        
+
     getDice: defineAction({
         // biome-ignore lint/suspicious/useAwait: handler signature must be async for defineAction
         handler: async () => {
