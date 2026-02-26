@@ -99,7 +99,6 @@ export class StoredBoard {
     }
 
     getObjects(): Map<number, ObjectCreateEvent> {
-        console.log(this.storedObjects)
         return this.storedObjects;
     }
 
@@ -153,7 +152,7 @@ export class StoredBoard {
             }
         }
     }
-    
+
     async moveObjects(events: ObjectMoveEvent[]) {
         await this.waitForMain();
         this.lockMainWrite = true;
@@ -178,32 +177,32 @@ export class StoredBoard {
         }
         this.lockMainWrite = false;
     }
-    
+
     async waitForRecent() {
         while (this.lockRecentWrite) {
-            await new Promise(resolve => setTimeout(resolve, 1));
+            await new Promise((resolve) => setTimeout(resolve, 1));
         }
     }
-    
+
     async waitForMain() {
         while (this.lockMainWrite) {
-            await new Promise(resolve => setTimeout(resolve, 1));
+            await new Promise((resolve) => setTimeout(resolve, 1));
         }
     }
-    
+
     async waitForLayer() {
         while (this.lockLayerWrite) {
-            await new Promise(resolve => setTimeout(resolve, 1));
+            await new Promise((resolve) => setTimeout(resolve, 1));
         }
     }
-    
+
     async updateLayer(input: LayerState) {
-        await this.waitForLayer()
-        this.lockLayerWrite = true
-        const targetObj = this.storedLayers.get(input.id)
+        await this.waitForLayer();
+        this.lockLayerWrite = true;
+        const targetObj = this.storedLayers.get(input.id);
         if (targetObj) {
-            this.storedLayers.set(input.id, input)
+            this.storedLayers.set(input.id, input);
         }
-        this.lockLayerWrite = false
+        this.lockLayerWrite = false;
     }
 }

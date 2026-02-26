@@ -111,16 +111,20 @@ export class Board {
     // Adds a new board layer, then sorts the layers.
     addLayer(newLayer: LayerState) {
         if (newLayer.id === undefined) {
-            return
+            return;
         }
-        const currLayer = this.layerMap.get(newLayer.id!)
+        const currLayer = this.layerMap.get(newLayer.id!);
         if (currLayer) {
-            currLayer.updateVis(newLayer.playerVisible, newLayer.gmVisible)
+            currLayer.updateVis(newLayer.playerVisible, newLayer.gmVisible);
         } else {
-            const toAdd = new BoardLayer(newLayer.zOrder, newLayer.gmVisible, newLayer.playerVisible)
-            this.layerMap.set(newLayer.id!, toAdd)
-            this.boardLayers.push(toAdd)
-            this.boardLayers.sort()
+            const toAdd = new BoardLayer(
+                newLayer.zOrder,
+                newLayer.gmVisible,
+                newLayer.playerVisible,
+            );
+            this.layerMap.set(newLayer.id!, toAdd);
+            this.boardLayers.push(toAdd);
+            this.boardLayers.sort();
         }
     }
 

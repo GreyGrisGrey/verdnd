@@ -100,14 +100,14 @@ export class LayerMenu {
     createLayer() {
         actions.boardActions.createLayer();
     }
-    
+
     updateLayer(key: number, val: LayerState) {
-        const toUpdate = this.layerMap.get(key)!
-        toUpdate.gmVisible = val.gmVisible
-        toUpdate.playerVisible = val.playerVisible
-        toUpdate.zOrder = val.zOrder
-        toUpdate.element!.children[1].checked = val.playerVisible
-        toUpdate.element!.children[2].checked = val.gmVisible
+        const toUpdate = this.layerMap.get(key)!;
+        toUpdate.gmVisible = val.gmVisible;
+        toUpdate.playerVisible = val.playerVisible;
+        toUpdate.zOrder = val.zOrder;
+        toUpdate.element!.children[1].checked = val.playerVisible;
+        toUpdate.element!.children[2].checked = val.gmVisible;
     }
 
     handleNewLayers(newLayers: Map<number, LayerState>) {
@@ -115,7 +115,7 @@ export class LayerMenu {
             if (!this.layerMap.has(key)) {
                 this.constructLayer(val);
             } else {
-                this.updateLayer(key, val)
+                this.updateLayer(key, val);
             }
         }
         this.moveLayers();
@@ -159,7 +159,7 @@ export class LayerMenu {
         checkVisibleAll.style.top = '15px';
         checkVisibleAll.style.left = '150px';
         checkVisibleAll.checked = buildData.playerVisible;
-        checkVisibleAll.id = "check1";
+        checkVisibleAll.id = 'check1';
 
         checkVisibleGM.type = 'checkbox';
         checkVisibleGM.style.position = 'absolute';
@@ -183,7 +183,7 @@ export class LayerMenu {
                 }
             }
         });
-        
+
         checkVisibleGM.addEventListener('mousedown', () => {
             if (this.active) {
                 actions.boardActions.updateLayer({
@@ -191,10 +191,10 @@ export class LayerMenu {
                     gmVisible: !checkVisibleGM.checked,
                     playerVisible: checkVisibleAll.checked,
                     zOrder: buildData.zOrder,
-                })
+                });
             }
         });
-        
+
         checkVisibleAll.addEventListener('mousedown', () => {
             if (this.active) {
                 actions.boardActions.updateLayer({
@@ -202,7 +202,7 @@ export class LayerMenu {
                     gmVisible: checkVisibleGM.checked,
                     playerVisible: !checkVisibleAll.checked,
                     zOrder: buildData.zOrder,
-                })
+                });
             }
         });
     }

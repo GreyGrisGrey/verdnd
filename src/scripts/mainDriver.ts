@@ -12,7 +12,6 @@ import { Action, Entity, Shape } from '../scripts/objectEvents.ts';
 const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
 async function runBoardStep() {
-    rightMan.step();
     board.step();
 }
 
@@ -24,7 +23,7 @@ async function syncServer() {
     const { data, error } = await actions.boardActions.checkIds(checkList);
     if (data) {
         for (const val of data) {
-            console.log(val)
+            console.log(val);
             if (val.action === Action.Create) {
                 board.objectMap
                     .get(val.object.objectId!)!
@@ -90,7 +89,7 @@ async function setUp() {
 }
 
 function updateActiveLayer() {
-    board.activeLayer = rightMan.layerMan.currSelect
+    board.activeLayer = rightMan.layerMan.currSelect;
 }
 
 const board = new Board();
@@ -101,14 +100,16 @@ await setUp();
 let counter = 0;
 
 async function mainLoop() {
-    if (counter == 10) {
-        counter = 0;
+    if (counter % 10 === 0) {
         syncServer();
         board.modeMan.clearTemp();
     }
-    updateActiveLayer()
+    if (counter % 100 === 0) {
+        rightMan.step();
+        counter = 1;
+    }
+    updateActiveLayer();
     runBoardStep();
-    rightMan.step();
     counter++;
 
     requestAnimationFrame(mainLoop);

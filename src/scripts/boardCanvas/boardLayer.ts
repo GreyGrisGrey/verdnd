@@ -20,10 +20,10 @@ export class BoardLayer {
         this.playerVisible = newPlayer;
         this.layerOffset = { x: 0, y: 0 };
     }
-    
+
     updateVis(newPlayer: boolean, newGM: boolean) {
-        this.GMVisible = newGM
-        this.playerVisible = newPlayer
+        this.GMVisible = newGM;
+        this.playerVisible = newPlayer;
     }
 
     // Sorts the board objects based on zOrder.
