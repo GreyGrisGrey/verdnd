@@ -3,12 +3,12 @@ import type { ColorInstance } from 'color';
 import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {
-    Rect = 'RECT',
-    Rects = 'RECTS',
-    Circle = 'CIRCLE',
-    Poly = 'POLY',
-    Line = 'LINE',
-    Token = 'TOKEN',
+    Rect = 'Rect',
+    Rects = 'Rects',
+    Circle = 'Circle',
+    Poly = 'Polyline',
+    Line = 'Line',
+    Token = 'Token',
 }
 
 export enum Entity {
@@ -34,6 +34,7 @@ export interface RectCreatePayload {
     height: number;
     colour: ColorInstance | string;
     layerId: number;
+    objectId?: number;
 }
 
 export interface CircleCreatePayload {
@@ -43,6 +44,7 @@ export interface CircleCreatePayload {
     diameter: number;
     colour: ColorInstance | string;
     layerId: number;
+    objectId?: number;
 }
 
 export interface TokenCreatePayload {
@@ -53,6 +55,7 @@ export interface TokenCreatePayload {
     colour: ColorInstance | string;
     name: string;
     layerId: number;
+    objectId?: number;
 }
 
 export interface PolyCreatePayload {
@@ -62,6 +65,7 @@ export interface PolyCreatePayload {
     points: Vec2[];
     colour: ColorInstance | string;
     layerId: number;
+    objectId?: number;
 }
 
 export interface LineCreatePayload {
@@ -71,6 +75,7 @@ export interface LineCreatePayload {
     points: Vec2[];
     colour: ColorInstance | string;
     layerId: number;
+    objectId?: number;
 }
 
 export type CreateObjectPayload =

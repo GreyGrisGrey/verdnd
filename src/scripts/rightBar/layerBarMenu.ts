@@ -113,6 +113,13 @@ export class LayerMenu {
         this.moveLayers();
         this.resizeLayerBoxes();
     }
+    
+    addNewLayer(layer: LayerState) {
+        this.currNum = layer.id!;
+        this.constructLayer(layer);
+        this.moveLayers();
+        this.resizeLayerBoxes();
+    }
 
     constructLayer(buildData: LayerState) {
         const newBox = document.createElement('div');

@@ -23,7 +23,6 @@ export class BoardDrawMode {
     shape: Shape;
     params: Vec2[];
     completeObjCheck: boolean;
-    activeColour: ColorInstance;
     selectMode: boolean;
     selectState: number;
 
@@ -34,14 +33,8 @@ export class BoardDrawMode {
         this.shape = Shape.Rect;
         this.params = [];
         this.completeObjCheck = false;
-        this.activeColour = WHITE_50;
         this.selectMode = false;
         this.selectState = 0;
-    }
-
-    // Changes the active colour to match the colour picker.
-    changeColour() {
-        this.activeColour = Color(colourSquare.style.background);
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -329,7 +322,7 @@ Backspace : Delete Selected`;
                     coords.y,
                     sizes.x,
                     sizes.y,
-                    this.activeColour,
+                    colourSquare.style.background,
                 );
             } else if (this.shape === Shape.Circle) {
                 if (res.x >= this.params[0].x) {
@@ -351,7 +344,7 @@ Backspace : Delete Selected`;
                     coords.x,
                     coords.y,
                     radius,
-                    this.activeColour,
+                    colourSquare.style.background,
                 );
                 return newObj;
             }
@@ -362,7 +355,7 @@ Backspace : Delete Selected`;
                 this.params[0].x,
                 this.params[0].y,
                 newParams,
-                this.activeColour,
+                colourSquare.style.background,
             );
             return newObj;
         } else if (this.params.length >= 2 && this.shape === Shape.Line) {
@@ -372,7 +365,7 @@ Backspace : Delete Selected`;
                 this.params[0].x,
                 this.params[0].y,
                 newParams,
-                this.activeColour,
+                colourSquare.style.background,
             );
             return newObj;
         }

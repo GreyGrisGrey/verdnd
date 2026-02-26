@@ -1,8 +1,9 @@
-import type { LayerObject } from './boardLayer.ts';
-import { ObjType } from './boardObject.ts';
+import type { BoardObject } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
+import { Action, Entity, Shape } from '../objectEvents.ts';
+import { actions } from 'astro:actions';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
@@ -12,11 +13,10 @@ export class BoardSelectMode {
     board: Board;
     active: boolean;
     exitOnNextStep: boolean;
-    selectedObjects: LayerObject[];
+    selectedObjects: BoardObject[];
     selectClick: boolean;
     thirdOffset: Vec2;
     currColour: string;
-    moveReady: boolean;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -27,7 +27,6 @@ export class BoardSelectMode {
         this.addEventListeners();
         this.thirdOffset = { x: 0, y: 0 };
         this.currColour = 'none';
-        this.moveReady = false;
     }
 
     flipListeners(setOn: boolean) {
@@ -75,13 +74,13 @@ export class BoardSelectMode {
 
         can.addEventListener('mouseup', () => {
             if (this.active && this.selectClick) {
-                this.moveReady = true;
+                this.moveObjects()
+                this.selectClick = false
                 if (
                     this.selectedObjects.length === 1 &&
-                    this.selectedObjects[0].objType === ObjType.Token
+                    this.selectedObjects[0].objType === Shape.Token
                 ) {
                     this.exitOnNextStep = true;
-                    this.board.modeMan.moveFlag = true;
                 }
             }
         });
@@ -89,15 +88,41 @@ export class BoardSelectMode {
         document.addEventListener('keydown', (event) => {
             if (this.active && event.key === 'Escape') {
                 this.exitOnNextStep = true;
+            } else if (this.active && event.key === 'Backspace') {
+                const idList: number[] = [];
+                for (const obj of this.selectedObjects) {
+                    idList.push(obj.objectId)
+                }
+                actions.boardActions.destroyObjects(idList)
+                this.exitOnNextStep = true
             }
         });
+    }
+    
+    moveObjects() {
+        const point = this.board.determineTile(
+                    this.board.originCoords.x + this.thirdOffset.x,
+                    this.board.originCoords.y + this.thirdOffset.y,
+                    true,
+                );
+        for (const i of this.selectedObjects) {
+            actions.boardActions.moveObject({
+                entity: Entity.Object,
+                action: Action.Move,
+                objectId: i.objectId,
+                x: point.x,
+                y: point.y
+            })
+        }
+        this.thirdOffset.x = 0
+        this.thirdOffset.y = 0
     }
 
     getText() {
         return 'nah';
     }
 
-    setSelected(newObjs: LayerObject[]) {
+    setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
@@ -115,7 +140,7 @@ export class BoardSelectMode {
             y: offset.y + offset2.y + this.thirdOffset.y,
         };
         for (const candidate of this.selectedObjects) {
-            if (candidate.objType !== ObjType.Token) {
+            if (candidate.objType !== Shape.Token) {
                 if ('drawOutline' in candidate) {
                     candidate.drawOutline(ctx, squareSize, outlineOffset);
                 }
@@ -128,19 +153,5 @@ export class BoardSelectMode {
                 candidate.selected = true;
             }
         }
-    }
-
-    canEditColour() {
-        if (colourSquare.style.background !== this.currColour) {
-            this.currColour = colourSquare.style.background;
-            return true;
-        }
-        return false;
-    }
-
-    piecesMoved() {
-        this.moveReady = false;
-        this.selectClick = false;
-        this.thirdOffset = { x: 0, y: 0 };
     }
 }

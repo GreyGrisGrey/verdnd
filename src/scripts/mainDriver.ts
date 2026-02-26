@@ -9,66 +9,48 @@ import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { ServerInterface } from './serverInterface.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { payloadToBoardObject } from './serverInterface.ts';
+import { actions } from 'astro:actions';
 
 const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
-function checkDeletion() {
-    const deletions = board.getDeletion();
-    if (deletions !== undefined) {
-        for (const obj of deletions) {
-            serveInter.destroyObj(obj.ID);
-        }
-        board.modeMan.clearSelected();
-    }
-}
-
-function constructObject(newObj: CreateObjectPayload) {
-    if (newObj.kind === Shape.Poly) {
-        
-    }
-}
-
 async function runBoardStep() {
-    if (board.modeMan.moveFlag) {
-        const toChange = board.modeMan.getSelected();
-        const valChange = board.determineTile(
-            board.modeMan.selectMan.thirdOffset.x + board.originCoords.x,
-            board.modeMan.selectMan.thirdOffset.y + board.originCoords.y,
-            true,
-        );
-        for (const obj of toChange) {
-            serveInter.moveObj(obj.ID, valChange.x, valChange.y);
-        }
-        board.modeMan.selectMan.piecesMoved();
-    }
-    if (board.modeMan.recolourFlag) {
-        const toChange = board.modeMan.getSelected();
-        for (const obj of toChange) {
-            serveInter.changeObjColour(
-                obj.ID,
-                Color(colorSquare.style.background),
-            );
-        }
-    }
-    
-    const { data, error } = await serveInter.getObjects()
-    if (data) {
-        for (const [key, val] of data) {
-            const res = board.getLayer(val.layerId)
-            if (res && !res.heldMap.has(key)) {
-                res.addObject(payloadToBoardObject(val, key), key)
-            }
-        }
-    }
-    
     serveInter.clearQueue();
     rightMan.step();
     board.step();
-    checkDeletion();
 }
 
-async function setUp() {
-    const { data, error } = await serveInter.getAllLayers();
+async function syncServer() {
+    const checkMap: Map<number, CreateObjectPayload> = new Map()
+    for (const [key, val] of board.objectMap) {
+        checkMap.set(key, val.payloadFromObject())
+    }
+    const {data, error} = await actions.boardActions.checkIds(Object.fromEntries(checkMap))
+    if (data) {
+        const map = new Map(Object.entries(data))
+        for (const [key, val] of map) {
+            if (val) {
+                board.objectMap.get(Number(key))!.updateFromPayload(val)
+            } else {
+                board.removeObject(Number(key))
+            }
+        }
+    }
+    getRecent()
+}
+
+async function getRecent() {
+    const {data, error} = await actions.boardActions.getRecents()
+    if (data) {
+        for (const obj of data) {
+            if (!board.objectMap.has(obj[0])) {
+                board.addObject(obj[0], 0, payloadToBoardObject(obj[1]))
+            }
+        }
+    }
+}
+
+async function setUpLayers() {
+    let { data, error } = await actions.boardActions.getLayers();
     if (data && data.size != 0) {
         rightMan.layerMan.handleNewLayers(data);
         for (const [key, val] of data) {
@@ -83,36 +65,35 @@ async function setUp() {
     }
 }
 
+async function setUpObjects() {
+    let { data, error } = await actions.boardActions.getObjects();
+    if (data) {
+        for (const [key, val] of data) {
+            board.addObject(val.object.objectId!, 0, payloadToBoardObject(val.object));
+        }
+    }
+}
+
+async function setUp() {
+    setUpLayers()
+    setUpObjects()
+}
+
 const board = new Board();
 new LeftBarManager();
 const rightMan = new RightBarManager();
-const serveInter = new ServerInterface(board);
-let counter = 0;
+const serveInter = new ServerInterface(board, rightMan);
 setUp();
+let counter = 0;
 
 
 async function mainLoop() {
+    if (counter == 3) {
+        counter = 0;
+        await syncServer()
+    }
     runBoardStep();
     rightMan.step();
-    if (counter == 10) {
-        const { data, error } = await serveInter.getAllLayers();
-        if (data) {
-            rightMan.layerMan.handleNewLayers(data);
-            for (const [key, val] of data) {
-                if (!board.layerMap.has(key)) {
-                    board.addLayer(
-                        new BoardLayer(
-                            val.zOrder,
-                            val.gmVisible,
-                            val.playerVisible,
-                        ),
-                        key,
-                    );
-                }
-            }
-        }
-        counter = 0;
-    }
     counter++;
 
     requestAnimationFrame(mainLoop);

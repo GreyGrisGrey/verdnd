@@ -1,9 +1,11 @@
-import type { BoardLayer, LayerObject } from './boardLayer.ts';
-import { ObjType, Token } from './boardObject.ts';
+import type { BoardLayer } from './boardLayer.ts';
+import type { BoardObject } from './boardObject.ts'
+import { Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
+import { Shape } from'../objectEvents.ts';
 
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
@@ -20,6 +22,7 @@ export class Board {
     leftMouseDown: boolean;
     boardLayers: BoardLayer[];
     layerMap: Map<number, BoardLayer>;
+    objectMap: Map<number, BoardObject>;
     modeMan: ModeManager;
     activeLayer: number;
 
@@ -33,6 +36,7 @@ export class Board {
         this.leftMouseDown = false;
         this.boardLayers = [];
         this.layerMap = new Map();
+        this.objectMap = new Map();
         this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
     }
@@ -113,6 +117,16 @@ export class Board {
     getLayer(layerID: number) {
         return this.layerMap.get(layerID)
     }
+    
+    getObjectById(objectId: number) {
+        for (const [key, val] of this.layerMap) {
+            const obj = val.heldMap.get(objectId)
+            if (obj) {
+                return obj
+            }
+        }
+        return null
+    }
 
     // Removes a new board layer, then sorts the layers.
     // Returns false if the provided layer is not found.
@@ -139,28 +153,30 @@ export class Board {
     }
 
     // Deletes an object based on the ID of the object and the layer it belongs on.
-    removeObject(objID: number, layerID: number = -1) {
-        if (layerID === -1) {
+    removeObject(objId: number, layerId: number = -1) {
+        this.objectMap.delete(objId)
+        if (layerId === -1) {
             for (const layer of this.boardLayers) {
-                if (layer.removeObject(objID)) {
+                if (layer.removeObject(objId)) {
                     return true;
                 }
             }
             return false;
         } else {
-            const layer = this.layerMap.get(layerID);
+            const layer = this.layerMap.get(layerId);
             if (layer) {
-                layer.removeObject(objID);
+                layer.removeObject(objId);
             }
             return true;
         }
     }
 
     // Adds an object to a specified layer.
-    addObject(objID: number, layerID: number, newObject: LayerObject) {
-        const layer = this.layerMap.get(layerID);
+    addObject(objId: number, layerId: number, newObject: BoardObject) {
+        const layer = this.layerMap.get(layerId);
+        this.objectMap.set(objId, newObject)
         if (layer) {
-            layer.addObject(newObject, objID);
+            layer.addObject(newObject, objId);
         }
     }
 
@@ -173,7 +189,7 @@ export class Board {
     }
 
     // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
-    selectObjects(targetType: ObjType = ObjType.Any) {
+    selectObjects(targetType: string = 'any') {
         const layer = this.layerMap.get(this.activeLayer);
         if (layer) {
             return layer.selectObjects(
@@ -187,7 +203,7 @@ export class Board {
     selectToken(fixedPoint: Vec2[]) {
         const layer = this.layerMap.get(this.activeLayer);
         if (layer) {
-            const selected = layer.selectObjects(fixedPoint, ObjType.Token)[0];
+            const selected = layer.selectObjects(fixedPoint, Shape.Token)[0];
             if (selected instanceof Token) {
                 return selected;
             }
@@ -250,7 +266,7 @@ export class Board {
             );
             if (i === this.activeLayer) {
                 const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as
-                    | LayerObject
+                    | BoardObject
                     | undefined;
                 if (tempObj) {
                     tempObj.draw(ctx, squareSize, this.originCoords);
@@ -270,16 +286,6 @@ export class Board {
         }
         ctx.clearRect(0, 0, can.width, can.height);
         this.draw();
-    }
-
-    // Checks if a deletion request has been made, deletes marked objects if so.
-    getDeletion() {
-        if (this.modeMan.deleteTrigger) {
-            const deletion = this.modeMan.getSelected();
-            this.modeMan.clearSelected();
-            return deletion;
-        }
-        return undefined;
     }
 
     changeLayerZ(layerId: number, newVal: number): void {

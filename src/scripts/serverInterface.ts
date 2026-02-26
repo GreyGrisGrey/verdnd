@@ -1,7 +1,10 @@
 import type { ColorInstance } from 'color';
+import Color from 'color';
 import { actions } from 'astro:actions';
+import { RightBarManager } from './rightBar/rightBarMain.ts'
 
-import { BoardLayer, type LayerObject } from './boardCanvas/boardLayer.ts';
+import { BoardLayer } from './boardCanvas/boardLayer.ts';
+import type { BoardObject } from './boardCanvas/boardObject.ts';
 import {
     Circle,
     Line,
@@ -13,18 +16,18 @@ import type { Board } from './boardCanvas/localBoard.ts';
 import type { CreateObjectPayload, ServerEvent, ObjectCreateEvent } from './objectEvents.ts';
 import { Action, Entity, Shape } from './objectEvents.ts';
 
-export function payloadToBoardObject(p: CreateObjectPayload, id: number): LayerObject {
+export function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
     switch (p.kind) {
         case Shape.Circle:
-            return new Circle(id, p.x, p.y, p.diameter, p.colour);
+            return new Circle(p.objectId!, p.x, p.y, p.diameter, p.colour);
         case Shape.Rect:
-            return new Rect(id, p.x, p.y, p.width, p.height, p.colour);
+            return new Rect(p.objectId!, p.x, p.y, p.width, p.height, p.colour);
         case Shape.Token:
-            return new Token(id, p.x, p.y, p.diameter, p.colour, p.name ?? '');
+            return new Token(p.objectId!, p.x, p.y, p.diameter, p.colour, p.name ?? '');
         case Shape.Poly:
-            return new Polyline(id, p.x, p.y, p.points, p.colour);
+            return new Polyline(p.objectId!, p.x, p.y, p.points, p.colour);
         case Shape.Line:
-            return new Line(id, p.x, p.y, p.points, p.colour);
+            return new Line(p.objectId!, p.x, p.y, p.points, p.colour);
         default: {
             throw new Error('Unknown shape');
         }
@@ -39,11 +42,12 @@ export class ServerInterface {
     heldItems: ServerEvent[];
     layerIDMap: Map<number, boolean>;
     objectIDMap: Map<number, boolean>;
-    storedObjects: Map<number, LayerObject>;
+    storedObjects: Map<number, BoardObject>;
     storedLayers: Map<number, BoardLayer>;
+    rightMan: RightBarManager;
     board: Board;
 
-    constructor(newBoard: Board) {
+    constructor(newBoard: Board, rightMan: RightBarManager) {
         this.user = 'bwagh';
         this.pass = 'password1';
         this.heldItems = [];
@@ -52,6 +56,7 @@ export class ServerInterface {
         this.board = newBoard;
         this.storedObjects = new Map();
         this.storedLayers = new Map();
+        this.rightMan = rightMan
     }
 
     private getNextLayerID(): number {
@@ -81,7 +86,8 @@ export class ServerInterface {
         if (event.entity === Entity.Layer) {
             switch (event.action) {
                 case Action.Create: {
-                    this.board.addLayer(new BoardLayer(), event.layerId);
+                    this.board.addLayer(new BoardLayer(0, true, true), event.layerId);
+                    this.rightMan.addLayer({gmVisible: true, playerVisible: true, zOrder: 0, id: event.layerId})
                     break;
                 }
                 case Action.Destroy: {
@@ -117,7 +123,7 @@ export class ServerInterface {
         } else if (event.entity === Entity.Object) {
             switch (event.action) {
                 case Action.Move: {
-                    const obj = this.storedObjects.get(event.objectId);
+                    const obj = this.board.getObjectById(event.objectId);
                     if (obj) {
                         obj.move(event.x, event.y);
                     }
@@ -125,10 +131,10 @@ export class ServerInterface {
                 }
                 case Action.Create: {
                     const newObj = payloadToBoardObject(
-                        event.object,
-                        event.objectId,
+                        event.object
                     );
-                    this.storedObjects.set(event.objectId, newObj);
+                    this.board.getLayer(event.object.layerId)!.addObject(newObj, event.object.objectId!)
+                    this.storedObjects.set(event.object.objectId!, newObj);
                     break;
                 }
                 case Action.Destroy: {

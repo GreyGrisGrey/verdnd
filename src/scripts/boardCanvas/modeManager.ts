@@ -1,6 +1,6 @@
 import { BoardDrawMode } from './boardDrawMode.ts';
-import type { LayerObject } from './boardLayer.ts';
-import { ObjType } from './boardObject.ts';
+import type { BoardObject } from './boardObject.ts';
+import { Shape } from'../objectEvents.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardTokenMode } from './boardTokenMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
@@ -34,10 +34,7 @@ export class ModeManager {
     tokenMan: BoardTokenMode;
     drawMan: BoardDrawMode;
     selectMan: BoardSelectMode;
-    deleteTrigger: boolean;
     selectClick: boolean;
-    recolourFlag: boolean;
-    moveFlag: boolean;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -46,13 +43,10 @@ export class ModeManager {
         this.tokenMan = new BoardTokenMode(parentBoard);
         this.drawMan = new BoardDrawMode(parentBoard);
         this.selectMan = new BoardSelectMode(parentBoard);
-        this.deleteTrigger = false;
         this.selectClick = false;
         this.addEventListeners();
         this.modifyText(this.viewMan);
         this.viewMan.flipListeners(true);
-        this.recolourFlag = false;
-        this.moveFlag = false;
     }
 
     // Adds event listeners for all modes, as well as some of its own.
@@ -82,12 +76,6 @@ export class ModeManager {
             this.drawMan.flipListeners(true);
             this.selectMan.flipListeners(false);
             this.modifyText(this.drawMan);
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Backspace') {
-                this.deleteTrigger = true;
-            }
         });
 
         can.addEventListener('mousemove', (event) => {
@@ -179,17 +167,16 @@ export class ModeManager {
 
     // Clears the list of selected objects.
     clearSelected() {
-        this.deleteTrigger = false;
         this.exitSelected();
     }
 
     enterSelected() {
-        let res: (LayerObject | undefined)[] = this.board.selectObjects();
+        let res: (BoardObject | undefined)[] = this.board.selectObjects();
         if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
             res = [this.tokenMan.currHover];
             this.tokenMan.currHover = undefined;
         } else if (this.currMode === Mode.Token) {
-            res = this.board.selectObjects(ObjType.Token);
+            res = this.board.selectObjects(Shape.Token);
         }
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {
@@ -238,26 +225,5 @@ export class ModeManager {
             this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
             this.tokenMan.getNewHover();
         }
-        if (this.drawMan.active) {
-            this.drawMan.changeColour();
-        }
-        if (this.selectMan.active) {
-            this.recolourFlag = this.checkEditColour();
-            this.moveFlag = this.checkMove();
-        }
-    }
-
-    checkEditColour() {
-        if (this.selectMan.canEditColour()) {
-            return true;
-        }
-        return false;
-    }
-
-    checkMove() {
-        if (this.selectMan.moveReady) {
-            return true;
-        }
-        return false;
     }
 }

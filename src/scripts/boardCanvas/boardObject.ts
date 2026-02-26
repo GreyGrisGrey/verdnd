@@ -3,30 +3,30 @@ import type { ColorInstance } from 'color';
 import type { Vec2 } from './coords.ts';
 import { BLACK, GOLD, GRAY, GRAY_LIGHT } from '../colours.ts';
 
-export enum ObjType {
-    Token = 'Token',
-    Rect = 'Rect',
-    Circle = 'Circle',
-    Polyline = 'Polyline',
-    Line = 'Line',
-    Any = 'Any',
-}
+
+import { Shape } from'../objectEvents.ts';
+
+export type BoardObject = Circle | Line | Polyline | Rect | Token;
+
+import type { CreateObjectPayload } from '../objectEvents.ts';
+import type {CircleCreatePayload, LineCreatePayload, PolyCreatePayload, RectCreatePayload, TokenCreatePayload} from '../objectEvents.ts'
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
 // Future plans to include more specific subclasses
-export class BoardObject {
-    ID: number;
+export class BoardObjectBase {
+    objectId: number;
     zOrder: number;
     location: Vec2;
-    colour: ColorInstance;
+    colour: ColorInstance | string;
     hasImage: boolean;
     imagePath: string;
     centerPoint: Vec2;
     selected: boolean;
+    layerId: number;
 
-    constructor(id: number, x: number, y: number, colour: ColorInstance) {
-        this.ID = id;
+    constructor(id: number, x: number, y: number, colour: ColorInstance | string) {
+        this.objectId = id;
         this.zOrder = 0;
         this.location = { x, y };
         this.colour = colour;
@@ -34,6 +34,7 @@ export class BoardObject {
         this.imagePath = '';
         this.centerPoint = { x: 0, y: 0 };
         this.selected = false;
+        this.layerId = 0;
     }
 
     // Moves the object a set amount
@@ -77,18 +78,18 @@ export class BoardObject {
 }
 
 // Subclass for token objects.
-export class Token extends BoardObject {
+export class Token extends BoardObjectBase {
     owner: string;
     diameter: number;
     name: string;
-    objType: ObjType;
+    objType: Shape;
 
     constructor(
         id: number,
         x: number,
         y: number,
         diam: number,
-        colour: ColorInstance,
+        colour: ColorInstance | string,
         name: string = '',
         owner: string = '',
     ) {
@@ -96,7 +97,7 @@ export class Token extends BoardObject {
         this.owner = owner;
         this.diameter = diam;
         this.name = name;
-        this.objType = ObjType.Token;
+        this.objType = Shape.Token;
         this.setCenter();
     }
 
@@ -182,12 +183,33 @@ export class Token extends BoardObject {
             y: this.location.y + this.diameter / 2,
         };
     }
+    
+    payloadFromObject(): TokenCreatePayload {
+        return {
+            kind: Shape.Token,
+            x: this.location.x,
+            y: this.location.y,
+            diameter: this.diameter,
+            colour: this.colour,
+            name: this.name,
+            layerId: this.layerId,
+            objectId: this.objectId
+        }
+    }
+    
+    updateFromPayload(newSetting: TokenCreatePayload) {
+        this.location.x = newSetting.x
+        this.location.y = newSetting.y
+        this.diameter = newSetting.diameter
+        this.colour = newSetting.colour
+        this.layerId = newSetting.layerId
+    }
 }
 
 // Subclass for rectangle objects.
-export class Rect extends BoardObject {
+export class Rect extends BoardObjectBase {
     size: Vec2;
-    objType: ObjType;
+    objType: Shape;
 
     constructor(
         id: number,
@@ -195,11 +217,11 @@ export class Rect extends BoardObject {
         y: number,
         xSize: number,
         ySize: number,
-        colour: ColorInstance,
+        colour: ColorInstance | string,
     ) {
         super(id, x, y, colour);
         this.size = { x: xSize, y: ySize };
-        this.objType = ObjType.Rect;
+        this.objType = Shape.Rect;
         this.setCenter();
     }
 
@@ -248,23 +270,45 @@ export class Rect extends BoardObject {
             y: this.location.y + this.size.y / 2,
         };
     }
+    
+    payloadFromObject(): RectCreatePayload {
+        return {
+            kind: Shape.Rect,
+            x: this.location.x,
+            y: this.location.y,
+            width: this.size.x,
+            height: this.size.y,
+            colour: this.colour,
+            layerId: this.layerId,
+            objectId: this.objectId
+        }
+    }
+    
+    updateFromPayload(newSetting: RectCreatePayload) {
+        this.location.x = newSetting.x
+        this.location.y = newSetting.y
+        this.size.x = newSetting.width
+        this.size.y = newSetting.height
+        this.colour = newSetting.colour
+        this.layerId = newSetting.layerId
+    }
 }
 
 // Subclass for circle objects.
-export class Circle extends BoardObject {
+export class Circle extends BoardObjectBase {
     diameter: number;
-    objType: ObjType;
+    objType: Shape;
 
     constructor(
         id: number,
         x: number,
         y: number,
         diam: number,
-        colour: ColorInstance,
+        colour: ColorInstance | string,
     ) {
         super(id, x, y, colour);
         this.diameter = diam;
-        this.objType = ObjType.Circle;
+        this.objType = Shape.Circle;
         this.setCenter();
     }
 
@@ -345,12 +389,32 @@ export class Circle extends BoardObject {
             y: this.location.y + this.diameter / 2,
         };
     }
+    
+    payloadFromObject() : CircleCreatePayload {
+        return {
+            kind: Shape.Circle,
+            x: this.location.x,
+            y: this.location.y,
+            diameter: this.diameter,
+            colour: this.colour,
+            layerId: this.layerId,
+            objectId: this.objectId
+        }
+    }
+    
+    updateFromPayload(newSetting: CircleCreatePayload) {
+        this.location.x = newSetting.x
+        this.location.y = newSetting.y
+        this.diameter = newSetting.diameter
+        this.colour = newSetting.colour
+        this.layerId = newSetting.layerId
+    }
 }
 
 // Subclass for polyline objects.
-export class Polyline extends BoardObject {
+export class Polyline extends BoardObjectBase {
     points: Vec2[];
-    objType: ObjType;
+    objType: Shape;
     currPath: Path2D;
     currPathSpecs: Array<number>;
     ctx?: CanvasRenderingContext2D;
@@ -360,11 +424,11 @@ export class Polyline extends BoardObject {
         x: number,
         y: number,
         structure: Vec2[],
-        colour: ColorInstance,
+        colour: ColorInstance | string,
     ) {
         super(id, x, y, colour);
         this.points = structure;
-        this.objType = ObjType.Polyline;
+        this.objType = Shape.Poly;
         this.currPath = new Path2D();
         this.currPathSpecs = [0, 0, 0];
         this.ctx = undefined;
@@ -439,23 +503,43 @@ export class Polyline extends BoardObject {
             y: (bottomRight.y + topLeft.y) / 2 + this.location.y,
         };
     }
+    
+    payloadFromObject(): PolyCreatePayload {
+        return {
+            kind: Shape.Poly,
+            x: this.location.x,
+            y: this.location.y,
+            points: this.points,
+            colour: this.colour,
+            layerId: this.layerId,
+            objectId: this.objectId
+        }
+    }
+    
+    updateFromPayload(newSetting: PolyCreatePayload) {
+        this.location.x = newSetting.x
+        this.location.y = newSetting.y
+        this.points = newSetting.points
+        this.colour = newSetting.colour
+        this.layerId = newSetting.layerId
+    }
 }
 
 // Subclass for handling line objects.
-export class Line extends BoardObject {
+export class Line extends BoardObjectBase {
     points: Vec2[];
-    objType: ObjType;
+    objType: Shape;
 
     constructor(
         id: number,
         x: number,
         y: number,
         structure: Vec2[],
-        colour: ColorInstance,
+        colour: ColorInstance | string,
     ) {
         super(id, x, y, colour);
         this.points = structure;
-        this.objType = ObjType.Line;
+        this.objType = Shape.Line;
         this.setCenter();
     }
 
@@ -495,5 +579,25 @@ export class Line extends BoardObject {
             x: (bottomRight.x + topLeft.x) / 2 + this.location.x,
             y: (bottomRight.y + topLeft.y) / 2 + this.location.y,
         };
+    }
+    
+    payloadFromObject(): LineCreatePayload {
+        return {
+            kind: Shape.Line,
+            x: this.location.x,
+            y: this.location.y,
+            points: this.points,
+            colour: this.colour,
+            layerId: this.layerId,
+            objectId: this.objectId
+        }
+    }
+    
+    updateFromPayload(newSetting: LineCreatePayload) {
+        this.location.x = newSetting.x
+        this.location.y = newSetting.y
+        this.points = newSetting.points
+        this.colour = newSetting.colour
+        this.layerId = newSetting.layerId
     }
 }

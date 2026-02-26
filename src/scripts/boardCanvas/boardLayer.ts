@@ -1,15 +1,13 @@
-import type { Circle, Line, Polyline, Rect, Token } from './boardObject.ts';
-import { ObjType } from './boardObject.ts';
+import type { BoardObject } from './boardObject.ts';
+import { Shape } from'../objectEvents.ts';
 import type { Vec2 } from './coords.ts';
-
-export type LayerObject = Circle | Line | Polyline | Rect | Token;
 
 // Manages a single layer of the board.
 // Currently has little functionality.
 export class BoardLayer {
     layerOffset: Vec2;
-    heldObjects: LayerObject[];
-    heldMap: Map<number, LayerObject>;
+    heldObjects: BoardObject[];
+    heldMap: Map<number, BoardObject>;
     zOrder: number;
     GMVisible: boolean;
     playerVisible: boolean;
@@ -26,10 +24,10 @@ export class BoardLayer {
     // Sorts the board objects based on zOrder.
     sortObjects() {
         this.heldObjects = this.heldObjects.sort((n1, n2) => {
-            if (n1.objType === ObjType.Token && n2.objType !== ObjType.Token) {
+            if (n1.objType === Shape.Token && n2.objType !== Shape.Token) {
                 return 1;
             }
-            if (n1.objType !== ObjType.Token && n2.objType === ObjType.Token) {
+            if (n1.objType !== Shape.Token && n2.objType === Shape.Token) {
                 return -1;
             }
             if (n1.selected && !n2.selected) {
@@ -49,7 +47,7 @@ export class BoardLayer {
     }
 
     // Adds a new board object, then sorts the board objects.
-    addObject(newObj: LayerObject, newId: number) {
+    addObject(newObj: BoardObject, newId: number) {
         this.heldObjects.push(newObj);
         this.heldMap.set(newId, newObj);
         this.sortObjects();
@@ -118,14 +116,14 @@ export class BoardLayer {
     // Selects all objects on the layer that match the corresponding coordinates.
     // If one coordinate point is provided, checks if said point is contained within the object.
     // If two points are provided, checks if each object's center is contained within the produced rectangle.
-    selectObjects(selectCoords: Vec2[], matchType: ObjType = ObjType.Any) {
-        const acceptable: LayerObject[] = [];
+    selectObjects(selectCoords: Vec2[], matchType: string = "any") {
+        const acceptable: BoardObject[] = [];
         for (const candidate of this.heldObjects) {
             if (
                 selectCoords.length === 1 &&
                 'isPointInside' in candidate &&
                 candidate.isPointInside(selectCoords[0]) &&
-                (candidate.objType === matchType || matchType === ObjType.Any)
+                (candidate.objType === matchType || matchType === "any")
             ) {
                 acceptable.push(candidate);
                 break;
@@ -135,7 +133,7 @@ export class BoardLayer {
                     selectCoords[0],
                     selectCoords[1],
                 ) &&
-                (candidate.objType === matchType || matchType === ObjType.Any)
+                (candidate.objType === matchType || matchType === "any")
             ) {
                 acceptable.push(candidate);
             }
