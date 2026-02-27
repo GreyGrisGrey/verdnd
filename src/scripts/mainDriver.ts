@@ -78,7 +78,7 @@ async function getRecent() {
     const { data, error } = await actions.boardActions.getRecents();
     if (data) {
         for (const obj of data) {
-            if (!board.objectMap.has(obj.objectId)) {
+            if (!board.objectMap.has(obj.objectId!)) {
                 board.addObject(obj.layerId, payloadToBoardObject(obj));
             }
         }
