@@ -120,7 +120,7 @@ function updateActiveLayer() {
 
 async function mainLoop() {
     if (counter % 10 === 0) {
-        syncServer();
+        await syncServer();
         board.modeMan.clearTemp();
     }
     if (counter % 100 === 0) {

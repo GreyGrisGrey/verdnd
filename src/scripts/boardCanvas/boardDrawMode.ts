@@ -275,6 +275,7 @@ export class BoardDrawMode {
             return undefined;
         }
         if (this.tempObject !== null) {
+            alert("not null")
             if (this.tempObject.kind === Shape.Rect) {
                 return new Rect(
                     -1,
@@ -393,6 +394,7 @@ export class BoardDrawMode {
                 newParams,
                 colourSquare.style.background,
             );
+            alert("halte")
             return newObj;
         } else if (this.params.length >= 2 && this.shape === Shape.Line) {
             const newParams = this.params.slice(1);
