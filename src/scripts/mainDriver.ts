@@ -94,7 +94,6 @@ async function setUpLayers() {
         }
     } else {
         rightMan.layerMan.createLayer();
-        board.addLayer(new BoardLayer(0, true, true), 0);
     }
 }
 
@@ -120,11 +119,11 @@ function updateActiveLayer() {
 }
 
 async function mainLoop() {
-    if (counter % 10 === 0) {
+    if (counter % 1000 === 0) {
         syncServer();
         board.modeMan.clearTemp();
     }
-    if (counter % 100 === 0) {
+    if (counter % 10000 === 0) {
         rightMan.step();
         counter = 1;
     }
