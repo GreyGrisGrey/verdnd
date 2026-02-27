@@ -222,16 +222,16 @@ Backspace : Delete Selected`;
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Circle && this.params.length === 2) {
-            const x = Math.min(this.params[0].x, this.params[1].x);
-            const y = Math.min(this.params[0].y, this.params[1].y);
+            const newX = Math.min(this.params[0].x, this.params[1].x);
+            const newY = Math.min(this.params[0].y, this.params[1].y);
             const radius = Math.max(
                 Math.abs(this.params[0].x - this.params[1].x),
                 Math.abs(this.params[0].y - this.params[1].y),
             );
             tempObj = {
                 kind: Shape.Circle,
-                x,
-                y,
+                x: newX,
+                y: newY,
                 diameter: radius,
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
@@ -289,6 +289,30 @@ Backspace : Delete Selected`;
                     this.tempObject.height,
                     this.tempObject.colour,
                 );
+            } else if (this.tempObject.kind === Shape.Circle) {
+                return new Circle(
+                    -1,
+                    this.tempObject.x,
+                    this.tempObject.y,
+                    this.tempObject.diameter,
+                    this.tempObject.colour,
+                )
+            } else if (this.tempObject.kind === Shape.Poly) {
+                return new Polyline(
+                    -1,
+                    this.tempObject.x,
+                    this.tempObject.y,
+                    this.tempObject.points,
+                    this.tempObject.colour,
+                )
+            } else if (this.tempObject.kind === Shape.Line) {
+                return new Line(
+                    -1,
+                    this.tempObject.x,
+                    this.tempObject.y,
+                    this.tempObject.points,
+                    this.tempObject.colour,
+                )
             }
             return this.tempObject;
         }

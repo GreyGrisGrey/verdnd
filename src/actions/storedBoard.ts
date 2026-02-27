@@ -5,7 +5,7 @@ import type {
     ObjectChangeEvent,
     ObjectRecolourEvent,
 } from '../scripts/objectEvents.ts';
-import { Action, Entity, Shape } from '../scripts/objectEvents.ts';
+import { Action, Entity } from '../scripts/objectEvents.ts';
 
 import type { LayerState } from '../scripts/rightBar/layerBarMenu.ts';
 

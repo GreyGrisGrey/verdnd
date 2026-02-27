@@ -1,4 +1,4 @@
-import { GRAY } from '../colours.ts';
+import { GREY } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { actions } from 'astro:actions';
 
@@ -45,7 +45,7 @@ export class RollMenu {
 
     setMainElements() {
         chatBox.append(this.textBox);
-        chatBox.style.background = GRAY.toString();
+        chatBox.style.background = GREY.toString();
     }
 
     setRollElements() {
@@ -210,7 +210,7 @@ export class RollMenu {
         }
     }
 
-    constructChats() {
+    async constructChats() {
         for (let i = 0; i < 50; i++) {
             this.constructChat(i);
         }

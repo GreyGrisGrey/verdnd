@@ -1,4 +1,4 @@
-import { GRAY, RED } from '../colours.ts';
+import { GREY, RED } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { actions } from 'astro:actions';
 
@@ -49,7 +49,7 @@ export class LayerMenu {
     }
 
     setMainElements() {
-        this.layerObj.style.background = GRAY.toString();
+        this.layerObj.style.background = GREY.toString();
         this.layerObj.style.visibility = 'hidden';
         this.layerObj.style.fontSize = '14px';
 
@@ -223,7 +223,7 @@ export class LayerMenu {
     exitCurrSelect() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {
-            layer.element.style.background = GRAY.toString();
+            layer.element.style.background = GREY.toString();
         }
     }
 

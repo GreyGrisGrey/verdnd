@@ -1,15 +1,43 @@
 import { Board } from './boardCanvas/localBoard.ts';
-import { getRequiredElement } from './dom.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
-import type { CreateObjectPayload, ObjectChangeEvent } from './objectEvents.ts';
+import type { CreateObjectPayload } from './objectEvents.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
-import { ServerInterface } from './serverInterface.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
-import { payloadToBoardObject } from './serverInterface.ts';
 import { actions } from 'astro:actions';
-import { Action, Entity, Shape } from '../scripts/objectEvents.ts';
+import { Action, Shape } from '../scripts/objectEvents.ts';
+import type { BoardObject } from './boardCanvas/boardObject.ts';
+import {
+    Circle,
+    Line,
+    Polyline,
+    Rect,
+    Token,
+} from './boardCanvas/boardObject.ts';
 
-const colorSquare = getRequiredElement('colourSquare', HTMLElement);
+function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
+    switch (p.kind) {
+        case Shape.Circle:
+            return new Circle(p.objectId!, p.x, p.y, p.diameter, p.colour);
+        case Shape.Rect:
+            return new Rect(p.objectId!, p.x, p.y, p.width, p.height, p.colour);
+        case Shape.Token:
+            return new Token(
+                p.objectId!,
+                p.x,
+                p.y,
+                p.diameter,
+                p.colour,
+                p.name ?? '',
+            );
+        case Shape.Poly:
+            return new Polyline(p.objectId!, p.x, p.y, p.points, p.colour);
+        case Shape.Line:
+            return new Line(p.objectId!, p.x, p.y, p.points, p.colour);
+        default: {
+            throw new Error('Unknown shape');
+        }
+    }
+}
 
 async function runBoardStep() {
     board.step();
@@ -23,7 +51,6 @@ async function syncServer() {
     const { data, error } = await actions.boardActions.checkIds(checkList);
     if (data) {
         for (const val of data) {
-            console.log(val);
             if (val.action === Action.Create) {
                 board.objectMap
                     .get(val.object.objectId!)!
@@ -92,13 +119,6 @@ function updateActiveLayer() {
     board.activeLayer = rightMan.layerMan.currSelect;
 }
 
-const board = new Board();
-new LeftBarManager();
-const rightMan = new RightBarManager();
-const serveInter = new ServerInterface(board, rightMan);
-await setUp();
-let counter = 0;
-
 async function mainLoop() {
     if (counter % 10 === 0) {
         syncServer();
@@ -114,5 +134,12 @@ async function mainLoop() {
 
     requestAnimationFrame(mainLoop);
 }
+
+
+const board = new Board();
+new LeftBarManager();
+const rightMan = new RightBarManager();
+await setUp();
+let counter = 0;
 
 requestAnimationFrame(mainLoop);

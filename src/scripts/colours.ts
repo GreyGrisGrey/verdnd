@@ -1,7 +1,7 @@
 import Color from 'color';
 
-export const GRAY = Color('#cccccc');
-export const GRAY_LIGHT = Color('#eeeeee');
+export const GREY = Color('#cccccc');
+export const GREY_LIGHT = Color('#eeeeee');
 export const RED = Color('#cc0000');
 export const BLUE = Color('#0000cc');
 export const GOLD = Color('#ffd500');

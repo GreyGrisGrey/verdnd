@@ -1,7 +1,7 @@
 import type { ColorInstance } from 'color';
 
 import type { Vec2 } from './coords.ts';
-import { BLACK, GOLD, GRAY, GRAY_LIGHT } from '../colours.ts';
+import { BLACK, GOLD, GREY, GREY_LIGHT } from '../colours.ts';
 
 import { Shape } from '../objectEvents.ts';
 
@@ -92,6 +92,9 @@ export class Token extends BoardObjectBase {
     diameter: number;
     name: string;
     objType: Shape;
+    currPathSpecs: Array<number>;
+    currPath: Path2D;
+    currOutPath: Path2D;
 
     constructor(
         id: number,
@@ -107,49 +110,65 @@ export class Token extends BoardObjectBase {
         this.diameter = diam;
         this.name = name;
         this.objType = Shape.Token;
+        this.currPathSpecs = [0, 0, 0];
+        this.currPath = new Path2D();
+        this.currOutPath = new Path2D();
         this.setCenter();
     }
 
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        const coords: Vec2 = {
-            x:
-                this.location.x * squareSize +
-                offset.x +
-                (squareSize * this.diameter) / 2,
-            y:
-                this.location.y * squareSize +
-                offset.y +
-                (squareSize * this.diameter) / 2,
-        };
-        ctx.beginPath();
-        ctx.arc(
-            coords.x,
-            coords.y,
-            (this.diameter * squareSize) / 2,
-            0,
-            2 * Math.PI,
-            false,
-        );
-        ctx.fillStyle = this.selected ? GOLD.toString() : GRAY.toString();
-        ctx.fill();
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.arc(
-            coords.x,
-            coords.y,
-            (this.diameter * squareSize) / 2 - 2,
-            0,
-            2 * Math.PI,
-            false,
-        );
+        if (
+            squareSize !== this.currPathSpecs[0] ||
+            offset.x !== this.currPathSpecs[1] ||
+            offset.y !== this.currPathSpecs[2]
+        ) {
+            const coords: Vec2 = {
+                x:
+                    this.location.x * squareSize +
+                    offset.x +
+                    (squareSize * this.diameter) / 2,
+                y:
+                    this.location.y * squareSize +
+                    offset.y +
+                    (squareSize * this.diameter) / 2,
+            };
+            
+            this.currOutPath = new Path2D();
+            this.currOutPath.arc(
+                coords.x,
+                coords.y,
+                (this.diameter * squareSize) / 2,
+                0,
+                2 * Math.PI,
+                false,
+            );
+            this.currOutPath.closePath();
+            
+            this.currPath = new Path2D();
+            this.currPath.arc(
+                coords.x,
+                coords.y,
+                (this.diameter * squareSize) / 2 - 2,
+                0,
+                2 * Math.PI,
+                false,
+            );
+            this.currPath.closePath();
+            
+            this.currPathSpecs = [squareSize, offset.x, offset.y];
+        }
+        
+        ctx.strokeStyle = this.selected ? GOLD.toString() : GREY.toString();
+        ctx.lineWidth = 4;
+        ctx.stroke(this.currOutPath);
+        
         ctx.fillStyle = this.colour.toString();
-        ctx.fill();
-        ctx.closePath();
+        ctx.fill(this.currPath);
     }
 
     drawLabel(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         ctx.font = '20px serif';
-        ctx.fillStyle = GRAY_LIGHT.toString();
+        ctx.fillStyle = GREY_LIGHT.toString();
         ctx.textAlign = 'center';
         const textSize = ctx.measureText(this.name).width;
         ctx.fillRect(
@@ -236,7 +255,13 @@ export class Rect extends BoardObjectBase {
 
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         if (this.selected) {
-            this.drawOutline(ctx, squareSize, offset);
+            ctx.strokeStyle = GOLD.toString();
+            ctx.strokeRect(
+                this.location.x * squareSize + offset.x - 2,
+                this.location.y * squareSize + offset.y - 2,
+                this.size.x * squareSize + 4,
+                this.size.y * squareSize + 4,
+            );
         }
         ctx.fillStyle = this.colour.toString();
         ctx.fillRect(
@@ -244,20 +269,6 @@ export class Rect extends BoardObjectBase {
             this.location.y * squareSize + offset.y,
             this.size.x * squareSize,
             this.size.y * squareSize,
-        );
-    }
-
-    drawOutline(
-        ctx: CanvasRenderingContext2D,
-        squareSize: number,
-        offset: Vec2,
-    ) {
-        ctx.fillStyle = GOLD.toString();
-        ctx.fillRect(
-            this.location.x * squareSize + offset.x - 2,
-            this.location.y * squareSize + offset.y - 2,
-            this.size.x * squareSize + 4,
-            this.size.y * squareSize + 4,
         );
     }
 
@@ -307,6 +318,8 @@ export class Rect extends BoardObjectBase {
 export class Circle extends BoardObjectBase {
     diameter: number;
     objType: Shape;
+    currPathSpecs: Array<number>;
+    currPath: Path2D;
 
     constructor(
         id: number,
@@ -318,64 +331,46 @@ export class Circle extends BoardObjectBase {
         super(id, x, y, colour);
         this.diameter = diam;
         this.objType = Shape.Circle;
+        this.currPathSpecs = [0, 0, 0];
+        this.currPath = new Path2D();
         this.setCenter();
     }
 
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        if (this.selected) {
-            this.drawOutline(ctx, squareSize, offset);
+        if (
+            squareSize !== this.currPathSpecs[0] ||
+            offset.x !== this.currPathSpecs[1] ||
+            offset.y !== this.currPathSpecs[2]
+        ) {
+            const coords: Vec2 = {
+                x:
+                    this.location.x * squareSize +
+                    offset.x +
+                    (squareSize * this.diameter) / 2,
+                y:
+                    this.location.y * squareSize +
+                    offset.y +
+                    (squareSize * this.diameter) / 2,
+            };
+            this.currPath = new Path2D();
+            this.currPath.arc(
+                coords.x,
+                coords.y,
+                (this.diameter * squareSize) / 2,
+                0,
+                2 * Math.PI,
+                false,
+            );
+            this.currPathSpecs = [squareSize, offset.x, offset.y];
+            this.currPath.closePath();
         }
-        const coords: Vec2 = {
-            x:
-                this.location.x * squareSize +
-                offset.x +
-                (squareSize * this.diameter) / 2,
-            y:
-                this.location.y * squareSize +
-                offset.y +
-                (squareSize * this.diameter) / 2,
-        };
-        ctx.beginPath();
-        ctx.arc(
-            coords.x,
-            coords.y,
-            (this.diameter * squareSize) / 2,
-            0,
-            2 * Math.PI,
-            false,
-        );
+        if (this.selected) {
+            ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = 4;
+            ctx.stroke(this.currPath);
+        }
         ctx.fillStyle = this.colour.toString();
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    drawOutline(
-        ctx: CanvasRenderingContext2D,
-        squareSize: number,
-        offset: Vec2,
-    ) {
-        const coords: Vec2 = {
-            x:
-                this.location.x * squareSize +
-                offset.x +
-                (squareSize * this.diameter) / 2,
-            y:
-                this.location.y * squareSize +
-                offset.y +
-                (squareSize * this.diameter) / 2,
-        };
-        ctx.beginPath();
-        ctx.arc(
-            coords.x,
-            coords.y,
-            (this.diameter * squareSize) / 2 + 2,
-            0,
-            2 * Math.PI,
-            false,
-        );
-        ctx.fillStyle = GOLD.toString();
-        ctx.fill();
-        ctx.closePath();
+        ctx.fill(this.currPath);
     }
 
     isPointInside(point: Vec2) {
@@ -465,17 +460,12 @@ export class Polyline extends BoardObjectBase {
             this.currPath.closePath();
         }
         if (this.selected) {
-            this.drawOutline(ctx);
+            ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = 4;
+            ctx.stroke(this.currPath);
         }
         ctx.fillStyle = this.colour.toString();
         ctx.fill(this.currPath);
-        this.ctx = ctx;
-    }
-
-    drawOutline(ctx: CanvasRenderingContext2D) {
-        ctx.strokeStyle = GOLD.toString();
-        ctx.lineWidth = 4;
-        ctx.stroke(this.currPath);
         this.ctx = ctx;
     }
 
