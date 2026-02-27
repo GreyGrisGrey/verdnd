@@ -21,12 +21,13 @@ export class BoardSelectMode {
     constructor(parentBoard: Board) {
         this.board = parentBoard;
         this.active = false;
-        this.selectedObjects = [];
         this.exitOnNextStep = false;
+        this.selectedObjects = [];
         this.selectClick = false;
-        this.addEventListeners();
         this.thirdOffset = { x: 0, y: 0 };
         this.currColour = 'none';
+
+        this.addEventListeners();
     }
 
     flipListeners(setOn: boolean) {
@@ -146,32 +147,6 @@ export class BoardSelectMode {
         this.selectedObjects = newObjs;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
-        }
-    }
-
-    draw(
-        ctx: CanvasRenderingContext2D,
-        squareSize: number,
-        offset: Vec2,
-        offset2: Vec2,
-    ) {
-        const outlineOffset: Vec2 = {
-            x: offset.x + offset2.x + this.thirdOffset.x,
-            y: offset.y + offset2.y + this.thirdOffset.y,
-        };
-        for (const candidate of this.selectedObjects) {
-            if (candidate.objType !== Shape.Token) {
-                if ('drawOutline' in candidate) {
-                    candidate.drawOutline(ctx, squareSize, outlineOffset);
-                }
-                candidate.draw(ctx, squareSize, outlineOffset);
-                candidate.selected = true;
-            } else {
-                if ('drawOutline' in candidate) {
-                    candidate.drawOutline(ctx, squareSize, outlineOffset);
-                }
-                candidate.selected = true;
-            }
         }
     }
 }

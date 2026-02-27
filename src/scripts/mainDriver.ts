@@ -135,7 +135,6 @@ async function mainLoop() {
     requestAnimationFrame(mainLoop);
 }
 
-
 const board = new Board();
 new LeftBarManager();
 const rightMan = new RightBarManager();

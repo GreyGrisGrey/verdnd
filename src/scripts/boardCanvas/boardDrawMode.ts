@@ -27,7 +27,6 @@ export class BoardDrawMode {
     constructor(parentBoard: Board) {
         this.board = parentBoard;
         this.active = false;
-        this.addEventListeners();
         this.shape = Shape.Rect;
         this.params = [];
         this.completeObjCheck = false;
@@ -35,6 +34,8 @@ export class BoardDrawMode {
         this.selectState = 0;
         this.tempObject = null;
         this.stickTemp = false;
+
+        this.addEventListeners();
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -58,26 +59,24 @@ export class BoardDrawMode {
                 if (event.key === '1') {
                     this.shape = Shape.Rect;
                 } else if (event.key === '2') {
-                    this.shape = Shape.Rects;
-                } else if (event.key === '3') {
                     this.shape = Shape.Circle;
-                } else if (event.key === '4') {
+                } else if (event.key === '3') {
                     this.shape = Shape.Poly;
-                } else if (event.key === '5') {
+                } else if (event.key === '4') {
                     this.shape = Shape.Line;
-                } else if (event.key === '7') {
+                } else if (event.key === '6') {
                     this.shape = Shape.Rect;
                     this.selectMode = true;
                 }
                 this.params = [];
             } else if (
                 this.active &&
-                event.key === '6' &&
+                event.key === '5' &&
                 this.params.length > 2 &&
                 (this.shape === Shape.Poly || this.shape === Shape.Line)
             ) {
                 this.setNewObject();
-            } else if (this.active && event.key === '8') {
+            } else if (this.active && event.key === '7') {
                 this.params = [];
             }
         });
@@ -148,7 +147,7 @@ export class BoardDrawMode {
                 this.shape !== Shape.Poly &&
                 this.shape !== Shape.Line
             ) {
-                if (this.shape === Shape.Rect || this.shape === Shape.Rects) {
+                if (this.shape === Shape.Rect) {
                     const res = this.board.determineTile(
                         this.board.mouseCoords.x,
                         this.board.mouseCoords.y,
@@ -184,15 +183,14 @@ export class BoardDrawMode {
     // Text for the information bar.
     getText() {
         return `\
-1 : Create Rectangle
-2 : Create Square Style Rectangle
-3 : Create Circle
-4 : Create Polyline
-5 : Create Wall
-6 : Complete Wall/Polyline
-7 : Select
-8 : Cancel
-Backspace : Delete Selected`;
+        1 : Create Rectangle
+        2 : Create Circle
+        3 : Create Polyline
+        4 : Create Wall
+        5 : Complete Wall/Polyline
+        6 : Select
+        7 : Cancel
+        Backspace : Delete Selected`;
     }
 
     // Finalizes the current object and sends it to the server.
@@ -247,9 +245,6 @@ Backspace : Delete Selected`;
                 layerId: this.board.activeLayer,
             };
             this.completeObjCheck = true;
-        } else if (this.shape === Shape.Rects && this.params.length === 2) {
-            // this object type is not needed we'll be removing that
-            return;
         } else if (this.shape === Shape.Line && this.params.length > 2) {
             tempObj = {
                 kind: Shape.Line,
@@ -296,7 +291,7 @@ Backspace : Delete Selected`;
                     this.tempObject.y,
                     this.tempObject.diameter,
                     this.tempObject.colour,
-                )
+                );
             } else if (this.tempObject.kind === Shape.Poly) {
                 return new Polyline(
                     -1,
@@ -304,7 +299,7 @@ Backspace : Delete Selected`;
                     this.tempObject.y,
                     this.tempObject.points,
                     this.tempObject.colour,
-                )
+                );
             } else if (this.tempObject.kind === Shape.Line) {
                 return new Line(
                     -1,
@@ -312,7 +307,7 @@ Backspace : Delete Selected`;
                     this.tempObject.y,
                     this.tempObject.points,
                     this.tempObject.colour,
-                )
+                );
             }
             return this.tempObject;
         }
@@ -326,7 +321,7 @@ Backspace : Delete Selected`;
                 this.board.mouseCoords.y,
                 false,
             );
-            if (this.shape === Shape.Rect || this.shape === Shape.Rects) {
+            if (this.shape === Shape.Rect) {
                 if (res.x >= this.params[0].x) {
                     res.x += 1;
                 }

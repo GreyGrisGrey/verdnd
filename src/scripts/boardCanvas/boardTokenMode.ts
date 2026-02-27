@@ -28,12 +28,12 @@ export class BoardTokenMode {
     constructor(parentBoard: Board) {
         this.board = parentBoard;
         this.active = false;
-        this.shift = false;
-        this.newTokenCheck = false;
         this.params = [];
+        this.shift = false;
         this.completeSelectCheck = false;
-        this.addEventListeners();
         this.currHover = undefined;
+        this.newTokenCheck = false;
+        this.addEventListeners();
     }
 
     flipListeners(setOn: boolean) {

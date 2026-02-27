@@ -13,15 +13,15 @@ export class BoardLayer {
     playerVisible: boolean;
 
     constructor(newOrder: number, newGM: boolean, newPlayer: boolean) {
+        this.layerOffset = { x: 0, y: 0 };
         this.heldObjects = [];
         this.heldMap = new Map();
         this.zOrder = newOrder;
         this.GMVisible = newGM;
         this.playerVisible = newPlayer;
-        this.layerOffset = { x: 0, y: 0 };
     }
 
-    updateVis(newPlayer: boolean, newGM: boolean) {
+    updateVis(newGM: boolean, newPlayer: boolean) {
         this.GMVisible = newGM;
         this.playerVisible = newPlayer;
     }

@@ -160,17 +160,6 @@ export class ModeManager {
         return this.selectMan.selectedObjects;
     }
 
-    // Draws all currently selected board objects.
-    // Also ensures those objects are not drawn twice.
-    drawSelected(
-        ctx: CanvasRenderingContext2D,
-        squareSize: number,
-        offset: Vec2,
-        offset2: Vec2,
-    ) {
-        this.selectMan.draw(ctx, squareSize, offset, offset2);
-    }
-
     // Clears the list of selected objects.
     clearSelected() {
         this.exitSelected();

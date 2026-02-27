@@ -41,8 +41,8 @@ export class BoardObjectBase {
         this.colour = colour;
         this.hasImage = false;
         this.imagePath = '';
-        this.centerPoint = { x: 0, y: 0 };
         this.selected = false;
+        this.centerPoint = { x: 0, y: 0 };
         this.layerId = 0;
     }
 
@@ -132,7 +132,7 @@ export class Token extends BoardObjectBase {
                     offset.y +
                     (squareSize * this.diameter) / 2,
             };
-            
+
             this.currOutPath = new Path2D();
             this.currOutPath.arc(
                 coords.x,
@@ -143,7 +143,7 @@ export class Token extends BoardObjectBase {
                 false,
             );
             this.currOutPath.closePath();
-            
+
             this.currPath = new Path2D();
             this.currPath.arc(
                 coords.x,
@@ -154,14 +154,14 @@ export class Token extends BoardObjectBase {
                 false,
             );
             this.currPath.closePath();
-            
+
             this.currPathSpecs = [squareSize, offset.x, offset.y];
         }
-        
+
         ctx.strokeStyle = this.selected ? GOLD.toString() : GREY.toString();
         ctx.lineWidth = 4;
         ctx.stroke(this.currOutPath);
-        
+
         ctx.fillStyle = this.colour.toString();
         ctx.fill(this.currPath);
     }
@@ -256,6 +256,7 @@ export class Rect extends BoardObjectBase {
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         if (this.selected) {
             ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = 4;
             ctx.strokeRect(
                 this.location.x * squareSize + offset.x - 2,
                 this.location.y * squareSize + offset.y - 2,

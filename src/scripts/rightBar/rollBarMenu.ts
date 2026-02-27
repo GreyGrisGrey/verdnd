@@ -31,13 +31,13 @@ export class RollMenu {
 
     constructor() {
         this.textBox = document.createElement('textarea');
+        this.active = false;
+        this.modifier = 0;
+        this.currChats = [];
         this.textBox.style.visibility = 'hidden';
+        this.textBox.style.pointerEvents = 'none';
         chatBox.style.visibility = 'hidden';
         chatBox.style.pointerEvents = 'none';
-        this.textBox.style.pointerEvents = 'none';
-        this.currChats = [];
-        this.modifier = 0;
-        this.active = false;
         this.setMainElements();
         this.setRollElements();
         this.constructChats();

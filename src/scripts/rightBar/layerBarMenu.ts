@@ -2,15 +2,13 @@ import { GREY, RED } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { actions } from 'astro:actions';
 
-// const { data, error } = await actions.coinItems.getCoin();
-
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 
 export interface LayerState {
     gmVisible: boolean;
     playerVisible: boolean;
     zOrder: number;
-    id?: number;
+    id: number;
     element?: HTMLElement;
 }
 
@@ -30,11 +28,10 @@ export class LayerMenu {
         this.active = false;
         this.button = getRequiredElement('layerTab', HTMLElement);
         this.layers = [];
+        this.descObj = getRequiredElement('descLayerObj', HTMLElement);
         this.currElements = [];
-        this.layerObj = document.createElement('div');
-        this.descObj = document.createElement('div');
         this.layerMap = new Map();
-        rightBar.append(this.layerObj);
+        this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);
         this.boxHeight = 50;
         this.currSelect = 0;
         this.tempButtonObj = document.createElement('input');
@@ -56,7 +53,6 @@ export class LayerMenu {
         this.descObj.style.border = 'solid black';
         this.descObj.style.height = `${this.boxHeight}px`;
         this.descObj.style.width = '250px';
-        this.layerObj.style.fontSize = '14px';
 
         const numText = document.createElement('p');
         numText.innerText = 'Layer #';
@@ -84,7 +80,6 @@ export class LayerMenu {
         this.tempButtonObj.style.left = '50px';
         this.tempButtonObj.style.top = '0px';
 
-        this.layerObj.append(this.descObj);
         this.layerObj.append(this.tempButtonObj);
         this.descObj.append(numText);
         this.descObj.append(firstCheck);

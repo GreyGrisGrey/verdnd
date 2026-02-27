@@ -29,7 +29,6 @@ function comparePayloads(
 
 export class StoredBoard {
     storedObjects: Map<number, ObjectCreateEvent>;
-    storedStrings: Map<number, string>;
     storedLayers: Map<number, LayerState>;
     recentCreation: any[];
     lastTime: number;
@@ -40,7 +39,6 @@ export class StoredBoard {
     constructor() {
         this.storedObjects = new Map();
         this.storedLayers = new Map();
-        this.storedStrings = new Map();
         this.recentCreation = [];
         this.lastTime = 0;
         this.lockMainWrite = false;
@@ -59,7 +57,7 @@ export class StoredBoard {
         return result;
     }
 
-    compareObject(clientObj: CreateObjectPayload) {
+    compareObject(clientObj: CreateObjectPayload): ObjectChangeEvent | null {
         const obj = this.storedObjects.get(clientObj.objectId!);
         if (!obj) {
             return {

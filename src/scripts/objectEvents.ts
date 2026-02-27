@@ -4,7 +4,6 @@ import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {
     Rect = 'Rect',
-    Rects = 'Rects',
     Circle = 'Circle',
     Poly = 'Polyline',
     Line = 'Line',

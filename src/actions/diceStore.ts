@@ -1,8 +1,8 @@
 import type { DicePayload } from '../scripts/rightBar/rollBarMenu.ts';
 
 export class StoredDice {
-    prevMapping: Map<number, DicePayload>;
     currIndex: number;
+    prevMapping: Map<number, DicePayload>;
     diceLock: boolean;
 
     constructor() {
