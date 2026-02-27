@@ -119,11 +119,11 @@ function updateActiveLayer() {
 }
 
 async function mainLoop() {
-    if (counter % 1000 === 0) {
+    if (counter % 10 === 0) {
         syncServer();
         board.modeMan.clearTemp();
     }
-    if (counter % 10000 === 0) {
+    if (counter % 100 === 0) {
         rightMan.step();
         counter = 1;
     }

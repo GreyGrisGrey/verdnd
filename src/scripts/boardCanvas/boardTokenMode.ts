@@ -159,6 +159,8 @@ export class BoardTokenMode {
     }
 
     createToken() {
+        alert("CREATING TOKEN")
+        alert(nameInput.value)
         if (nameInput.value && sizeInput.value) {
             const coords = this.board.determineTile(
                 this.board.mouseCoords.x,

@@ -55,6 +55,7 @@ export class BoardSelectMode {
         });
 
         can.addEventListener('mousedown', (event) => {
+            alert("aaaaa")
             if (this.active) {
                 const point = this.board.determineTile(
                     event.clientX,
