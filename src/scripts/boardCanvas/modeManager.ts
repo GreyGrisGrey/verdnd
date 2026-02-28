@@ -35,6 +35,7 @@ export class ModeManager {
     drawMan: BoardDrawMode;
     selectMan: BoardSelectMode;
     selectClick: boolean;
+    selectInstruct: HTMLElement
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -43,10 +44,12 @@ export class ModeManager {
         this.tokenMan = new BoardTokenMode(parentBoard);
         this.drawMan = new BoardDrawMode(parentBoard);
         this.selectMan = new BoardSelectMode(parentBoard);
+        this.selectInstruct = document.getElementById('selectInstruct')!
         this.selectClick = false;
         this.addEventListeners();
         this.modifyText(this.viewMan);
         this.viewMan.flipListeners(true);
+        this.selectInstruct.style.visibility = 'hidden';
     }
 
     // Adds event listeners for all modes, as well as some of its own.
@@ -58,6 +61,7 @@ export class ModeManager {
             this.drawMan.flipListeners(false);
             this.selectMan.flipListeners(false);
             this.modifyText(this.viewMan);
+            this.selectInstruct.style.visibility = 'hidden';
         });
 
         tokenButton.addEventListener('click', () => {
@@ -67,6 +71,7 @@ export class ModeManager {
             this.drawMan.flipListeners(false);
             this.selectMan.flipListeners(false);
             this.modifyText(this.tokenMan);
+            this.selectInstruct.style.visibility = 'visible';
         });
 
         drawButton.addEventListener('click', () => {
@@ -76,6 +81,7 @@ export class ModeManager {
             this.drawMan.flipListeners(true);
             this.selectMan.flipListeners(false);
             this.modifyText(this.drawMan);
+            this.selectInstruct.style.visibility = 'visible';
         });
 
         can.addEventListener('mousemove', (event) => {

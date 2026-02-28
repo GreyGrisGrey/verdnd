@@ -1,8 +1,33 @@
 <div class="canvasContainer">
+  <div id="loadBlock">
+  <h1 id="loadText">Loading</h1>
+  </div>
+  <script>
+  document.getElementById('loadText').style.left = window.innerWidth/2 - 50 + "px";
+  document.getElementById('loadText').style.top = window.innerHeight/2 - 20 + "px";
+  document.getElementById('loadBlock').style.width = window.innerWidth + "px";
+  document.getElementById('loadBlock').style.height = window.innerHeight + "px";
+  </script>
   <canvas id="board"></canvas>
 </div>
 
 <style>
+  #loadBlock {
+    background: #222222;
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 2000px;
+    height: 2000px;
+    z-index: 9;
+  }
+  #loadText {
+    position: absolute;
+    color: #3333dd;
+    left: 500px;
+    top: 300px;
+    z-index: 9;
+  }
   #board {
     background: #444444;
     position: absolute;

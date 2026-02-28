@@ -40,6 +40,8 @@ export class BoardTokenMode {
         this.active = setOn;
         modeButton.disabled = setOn;
         if (setOn) {
+            sizeInput.value = '1';
+            nameInput.value = 'Gremlin';
             sizeInput.style.visibility = 'visible';
             nameInput.style.visibility = 'visible';
             sizeLabel.style.visibility = 'visible';

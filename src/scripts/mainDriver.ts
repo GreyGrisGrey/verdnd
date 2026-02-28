@@ -120,21 +120,24 @@ function updateActiveLayer() {
 }
 
 async function mainLoop() {
-    if (counter % 10 === 0) {
+    if (counter % 25 === 0) {
         syncServer();
         board.modeMan.clearTemp();
     }
-    if (counter % 100 === 0) {
+    if (counter % 25 === 0) {
         rightMan.step();
         counter = 1;
     }
     updateActiveLayer();
     runBoardStep();
     counter++;
-
+    if (counter === 2) {
+        loadWall.style.visibility = 'hidden';
+    }
     requestAnimationFrame(mainLoop);
 }
 
+const loadWall = document.getElementById('loadBlock')!;
 const board = new Board();
 new LeftBarManager();
 const rightMan = new RightBarManager();

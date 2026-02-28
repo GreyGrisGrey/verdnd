@@ -228,13 +228,13 @@ export class Board {
     // Draws points at the vertices of the tiles for.
     drawPointGrid(squareSize: number) {
         let currX = this.originCoords.x;
-        while (currX + squareSize < 0) {
-            currX += squareSize;
+        while (currX + squareSize > 0) {
+            currX -= squareSize;
         }
         while (currX < can.width + 100) {
             let currY = this.originCoords.y;
-            while (currY + squareSize < 0) {
-                currY += squareSize;
+            while (currY + squareSize > 0) {
+                currY -= squareSize;
             }
             while (currY < can.height + 100) {
                 if (

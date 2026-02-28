@@ -5,6 +5,15 @@
 </div>
 
 <div class="modeExplain" id="modeExplainations">
+  <h1 id="INSTRUCTIONS">
+  KEY BINDS
+  </h1>
+  <p id="selectInstruct">
+  While objects are selected:<br>Use colour box above to recolour<br>
+  Click and drag objects to move<br>
+  Escape: Unselect<br>
+  Backspace: Delete all selected
+  </p>
   <p id="modeParagraph">
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -73,6 +82,15 @@
   .modeButton:disabled {
     background-color: rgba(150, 150, 150, 1);
   }
+  
+  #INSTRUCTIONS {
+    position: absolute;
+    left: 70px;
+    font-size: 20px;
+    font-weight: 800;
+    pointer-events: auto;
+  }
+
 
   #modeMenuID {
     background-color: rgba(200, 200, 200, 0.5);
@@ -85,7 +103,12 @@
     height: 150px;
     pointer-events: none;
   }
-
+  
+  #selectInstruct {
+    position: absolute;
+    left: 10px;
+    top: 20px;
+  }
   .modeExplain {
     background-color: rgba(200, 200, 200, 0.5);
     border: solid black;

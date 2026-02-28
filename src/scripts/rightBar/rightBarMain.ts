@@ -33,9 +33,11 @@ export class RightBarManager {
         this.tokenMan = new TokenMenu();
         this.characterMan = new CharacterMenu();
         this.rollMan = new RollMenu();
-        this.currActive = RightBarTab.None;
+        this.currActive = RightBarTab.Layer;
         rightBar.style.width = '250px';
         this.addEventListeners();
+        this.layerMan.toggleActive(true);
+        this.setText();
     }
 
     addEventListeners() {

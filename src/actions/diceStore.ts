@@ -42,15 +42,14 @@ export class StoredDice {
                 let results = [];
                 while (mainDice[1] > 0) {
                     results.push(
-                        (Math.round(Math.random() * 10000) % mainDice[0]) + 1,
+                        (Math.ceil(Math.random() * 10000) % mainDice[0]),
                     );
                     mainDice[1]--;
                 }
                 while (mainDice[1] < 0) {
                     results.push(
                         -(
-                            (Math.round(Math.random() * 10000) % mainDice[0]) +
-                            1
+                            (Math.ceil(Math.random() * 10000) % mainDice[0])
                         ),
                     );
                     mainDice[1]++;

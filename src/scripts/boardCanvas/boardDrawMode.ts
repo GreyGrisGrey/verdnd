@@ -189,8 +189,7 @@ export class BoardDrawMode {
         4 : Create Wall
         5 : Complete Wall/Polyline
         6 : Select
-        7 : Cancel
-        Backspace : Delete Selected`;
+        7 : Cancel Draw`;
     }
 
     // Finalizes the current object and sends it to the server.

@@ -81,6 +81,7 @@ export class RollMenu {
                 setCount.style.height = '20px';
                 setCount.style.top = '0px';
                 setCount.style.left = '30px';
+                setCount.value = '1';
 
                 roll.style.position = 'absolute';
                 roll.style.width = '50px';
@@ -160,6 +161,7 @@ export class RollMenu {
                 setCount.style.height = '20px';
                 setCount.style.top = '0px';
                 setCount.style.left = '30px';
+                setCount.value = '0';
 
                 setCount.addEventListener('input', () => {
                     if (
@@ -191,6 +193,9 @@ export class RollMenu {
         colBox.style.pointerEvents = this.active ? 'none' : 'auto';
         chatBox.style.visibility = this.active ? 'visible' : 'hidden';
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
+        for (const text of this.currChats) {
+            text.style.visibility = this.active ? 'visible' : 'hidden';
+        }
     }
 
     async step() {

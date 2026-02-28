@@ -105,6 +105,9 @@ export class StoredBoard {
     }
 
     async createLayer() {
+        if (this.storedLayers.size >= 11) {
+            return -1;
+        }
         await this.waitForLayer();
         this.lockLayerWrite = true;
         let next = 0;

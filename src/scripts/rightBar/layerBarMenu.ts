@@ -77,8 +77,9 @@ export class LayerMenu {
         this.tempButtonObj.value = 'Make layer';
         this.tempButtonObj.style.width = '190px';
         this.tempButtonObj.style.position = 'absolute';
-        this.tempButtonObj.style.left = '50px';
-        this.tempButtonObj.style.top = '0px';
+        this.tempButtonObj.style.left = '0px';
+        this.tempButtonObj.style.bottom = '0px';
+        this.tempButtonObj.style.height = '50px';
 
         this.layerObj.append(this.tempButtonObj);
         this.descObj.append(numText);
@@ -213,6 +214,7 @@ export class LayerMenu {
         for (const el of this.currElements) {
             el.style.width = w;
         }
+        this.tempButtonObj.style.width = `${parseInt(this.layerObj.style.width, 10)}px`;
     }
 
     exitCurrSelect() {
