@@ -55,7 +55,7 @@ async function syncServer() {
                 board.objectMap
                     .get(val.object.objectId!)!
                     .updateFromPayload(val.object);
-            } else {
+            } else if (val.action === Action.Destroy) {
                 board.removeObject(val.objectId);
             }
         }

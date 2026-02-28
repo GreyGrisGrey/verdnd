@@ -9,11 +9,13 @@
         "astro": "astro"
     },
     "dependencies": {
+        "@astrojs/cloudflare": "^12.6.12",
         "@astrojs/node": "^9.5.4",
         "astro": "^5.17.1",
         "color": "^5.0.3"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.4.4"
+        "@biomejs/biome": "^2.4.4",
+        "wrangler": "^4.69.0"
     }
 }

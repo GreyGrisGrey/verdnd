@@ -1,0 +1,24 @@
+{
+	"main": "dist/_worker.js/index.js",
+	"name": "greybox-siteman",
+	"compatibility_date": "2026-02-28",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": "./dist"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "board",
+			"database_name": "board",
+			"database_id": "e25d4fca-71e7-4c69-b087-d57f94d71b62",
+			"remote": true
+		}
+	]
+}
