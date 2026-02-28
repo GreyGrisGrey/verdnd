@@ -1,12 +1,17 @@
-import { GetCommand, PutCommand, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import type { DicePayload } from '../scripts/rightBar/rollBarMenu.ts';
-import { ddb, DICE_TABLE, META_TABLE } from './dynamo.ts';
-
-const META_KEY = 'counters';
-const DICE_BUFFER_SIZE = 50;
 
 export class StoredDice {
-    async rollDice(newDice: DicePayload): Promise<number | undefined> {
+    currIndex: number;
+    prevMapping: Map<number, DicePayload>;
+    diceLock: boolean;
+
+    constructor() {
+        this.currIndex = 0;
+        this.prevMapping = new Map();
+        this.diceLock = false;
+    }
+
+    rollDice(newDice: DicePayload) {
         let result = newDice.modifier;
         if (newDice.singleDice) {
             const mainDice = [newDice.singleNum, 0];
@@ -59,49 +64,31 @@ export class StoredDice {
                     currIndex++;
                 }
                 newDice.result = result;
-                await this.recordDice(newDice);
+                this.recordDice(newDice);
                 return result;
             }
         } else {
             //WIP
-            await this.recordDice(newDice);
+            this.recordDice(newDice);
             return result;
         }
     }
 
-    async recordDice(newDice: DicePayload): Promise<void> {
-        const metaRes = await ddb.send(
-            new UpdateCommand({
-                TableName: META_TABLE,
-                Key: { key: META_KEY },
-                UpdateExpression: 'ADD nextDiceIndex :one',
-                ExpressionAttributeValues: { ':one': 1 },
-                ReturnValues: 'UPDATED_NEW',
-            }),
-        );
-        const index =
-            ((metaRes.Attributes!.nextDiceIndex as number) - 1) % DICE_BUFFER_SIZE;
-        await ddb.send(
-            new PutCommand({
-                TableName: DICE_TABLE,
-                Item: { index, ...newDice },
-            }),
-        );
+    async recordDice(newDice: DicePayload) {
+        await this.waitDiceLock();
+        this.diceLock = true;
+        this.prevMapping.set(this.currIndex, newDice);
+        this.currIndex = (this.currIndex + 1) % 50;
+        this.diceLock = false;
     }
 
-    async getDice(): Promise<{ start: number; map: Map<number, DicePayload> }> {
-        const [metaRes, scanRes] = await Promise.all([
-            ddb.send(new GetCommand({ TableName: META_TABLE, Key: { key: META_KEY } })),
-            ddb.send(new ScanCommand({ TableName: DICE_TABLE })),
-        ]);
-
-        const start =
-            ((metaRes.Item?.nextDiceIndex as number) ?? 0) % DICE_BUFFER_SIZE;
-        const map = new Map<number, DicePayload>();
-        for (const item of scanRes.Items ?? []) {
-            const { index, ...payload } = item;
-            map.set(index as number, payload as DicePayload);
+    async waitDiceLock() {
+        while (this.diceLock) {
+            await new Promise((resolve) => setTimeout(resolve, 1));
         }
-        return { start, map };
+    }
+
+    getDice() {
+        return { start: this.currIndex, map: this.prevMapping };
     }
 }
