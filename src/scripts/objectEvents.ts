@@ -1,5 +1,4 @@
-import type { ColorInstance } from 'color';
-
+import type { ColInst } from 'colours.ts';
 import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {
@@ -31,7 +30,7 @@ export interface RectCreatePayload {
     y: number;
     width: number;
     height: number;
-    colour: ColorInstance | string;
+    colour: ColInst | string;
     layerId: number;
     objectId?: number;
 }
@@ -41,7 +40,7 @@ export interface CircleCreatePayload {
     x: number;
     y: number;
     diameter: number;
-    colour: ColorInstance | string;
+    colour: ColInst | string;
     layerId: number;
     objectId?: number;
 }
@@ -51,7 +50,7 @@ export interface TokenCreatePayload {
     x: number;
     y: number;
     diameter: number;
-    colour: ColorInstance | string;
+    colour: ColInst | string;
     name: string;
     layerId: number;
     objectId?: number;
@@ -62,7 +61,7 @@ export interface PolyCreatePayload {
     x: number;
     y: number;
     points: Vec2[];
-    colour: ColorInstance | string;
+    colour: ColInst | string;
     layerId: number;
     objectId?: number;
 }
@@ -72,7 +71,7 @@ export interface LineCreatePayload {
     x: number;
     y: number;
     points: Vec2[];
-    colour: ColorInstance | string;
+    colour: ColInst | string;
     layerId: number;
     objectId?: number;
 }
@@ -142,7 +141,7 @@ export interface ObjectRecolourEvent {
     entity: Entity.Object;
     action: Action.Recolour;
     objectId: number;
-    colour: ColorInstance;
+    colour: ColInst;
 }
 
 export interface LayerZOrderEvent {

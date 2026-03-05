@@ -1,9 +1,8 @@
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-
 const can = getRequiredElement('board', HTMLCanvasElement);
-const modeButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
+const viewModeButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 
 // Class handling canvas' view mode.
 // I do not like this, but it was the cleanest way I could think to do the job.
@@ -20,7 +19,7 @@ export class BoardViewMode {
     // Flips the active state of the mode.
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        modeButton.disabled = setOn;
+        viewModeButton.disabled = setOn;
     }
 
     // Adds relevant event listeners

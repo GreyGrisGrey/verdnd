@@ -5,10 +5,8 @@ import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type { CreateObjectPayload } from '../objectEvents.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
-import { actions } from 'astro:actions';
-
 const can = getRequiredElement('board', HTMLCanvasElement);
-const modeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
+const drawModeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Class handling canvas' draw mode.
@@ -41,7 +39,7 @@ export class BoardDrawMode {
     // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        modeButton.disabled = setOn;
+        drawModeButton.disabled = setOn;
         this.params = [];
         this.selectMode = false;
         this.selectState = 0;
@@ -258,7 +256,7 @@ export class BoardDrawMode {
         } else {
             return;
         }
-        actions.boardActions.createObject({
+        this.board.serveInter.createObject({
             entity: Entity.Object,
             action: Action.Create,
             object: tempObj,

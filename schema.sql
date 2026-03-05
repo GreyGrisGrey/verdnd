@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS Objects (objectId INTEGER PRIMARY KEY, kind TEXT, x INTEGER, y INTEGER, colour TEXT, points TEXT, width INTEGER, height INTEGER, diameter INTEGER, layerId INTEGER);
-CREATE TABLE IF NOT EXISTS Layers (layerId INTEGER PRIMARY KEY, gmVisible BOOLEAN, playerVisible BOOLEAN, zOrder INTEGER);
-CREATE TABLE IF NOT EXISTS Roll (rollId INTEGER PRIMARY KEY, four INTEGER, six INTEGER, eight INTEGER, ten INTEGER, twelve INTEGER, twenty INTEGER, hundred INTEGER, dropLow INTEGER, dropHigh INTEGER, singleDice BOOLEAN, singleNum INTEGER, modifier INTEGER, result INTEGER);
-INSERT INTO Layers (layerId, gmVisible, playerVisible, zOrder) VALUES (0, true, true, 0);

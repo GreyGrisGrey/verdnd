@@ -2,8 +2,6 @@ import { Board } from './boardCanvas/localBoard.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import type { CreateObjectPayload } from './objectEvents.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
-import { BoardLayer } from './boardCanvas/boardLayer.ts';
-import { actions } from 'astro:actions';
 import { Action, Shape } from '../scripts/objectEvents.ts';
 import type { BoardObject } from './boardCanvas/boardObject.ts';
 import {
@@ -13,6 +11,12 @@ import {
     Rect,
     Token,
 } from './boardCanvas/boardObject.ts';
+import { tempStore } from "./serveInter.ts"
+const serveInter = new tempStore();
+const loadWall = document.getElementById('loadBlock')!;
+const board = new Board(serveInter);
+const rightMan = new RightBarManager(serveInter);
+const leftMan = new LeftBarManager();
 
 function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
     switch (p.kind) {
@@ -48,13 +52,14 @@ async function syncServer() {
     for (const [key, val] of board.objectMap) {
         checkList.push(val.payloadFromObject());
     }
-    const { data, error } = await actions.boardActions.checkIds(checkList);
+    const data = serveInter.compareObjects(checkList);
     if (data) {
         for (const val of data) {
             if (val.action === Action.Create) {
+                // note : not too sure about this "as any" chief
                 board.objectMap
                     .get(val.object.objectId!)!
-                    .updateFromPayload(val.object);
+                    .updateFromPayload((val as any).object);
             } else if (val.action === Action.Destroy) {
                 board.removeObject(val.objectId);
             }
@@ -65,7 +70,7 @@ async function syncServer() {
 }
 
 async function updateLayers() {
-    const { data, error } = await actions.boardActions.getLayers();
+    const data = serveInter.getLayers();
     if (data) {
         rightMan.layerMan.handleNewLayers(data);
         for (const [key, val] of data) {
@@ -75,7 +80,7 @@ async function updateLayers() {
 }
 
 async function getRecent() {
-    const { data, error } = await actions.boardActions.getRecents();
+    const data = serveInter.getNewObjects();
     if (data) {
         for (const obj of data) {
             if (!board.objectMap.has(obj.objectId)) {
@@ -86,7 +91,7 @@ async function getRecent() {
 }
 
 async function setUpLayers() {
-    let { data, error } = await actions.boardActions.getLayers();
+    const data = serveInter.getLayers();
     if (data && data.size != 0) {
         rightMan.layerMan.handleNewLayers(data);
         for (const [key, val] of data) {
@@ -94,12 +99,15 @@ async function setUpLayers() {
         }
     } else {
         rightMan.layerMan.createLayer();
-        board.addLayer(new BoardLayer(0, true, true), 0);
+        board.addLayer({gmVisible: true,
+    playerVisible: true,
+    zOrder: 0,
+    id: 0});
     }
 }
 
 async function setUpObjects() {
-    let { data, error } = await actions.boardActions.getObjects();
+    const data = serveInter.getObjects();
     if (data) {
         for (const [key, val] of data) {
             board.addObject(
@@ -137,11 +145,7 @@ async function mainLoop() {
     requestAnimationFrame(mainLoop);
 }
 
-const loadWall = document.getElementById('loadBlock')!;
-const board = new Board();
-new LeftBarManager();
-const rightMan = new RightBarManager();
-await setUp();
+setUp();
 let counter = 0;
 
 requestAnimationFrame(mainLoop);

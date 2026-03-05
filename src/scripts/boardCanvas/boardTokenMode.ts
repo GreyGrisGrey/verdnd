@@ -4,10 +4,8 @@ import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
-import { actions } from 'astro:actions';
-
 const can = getRequiredElement('board', HTMLCanvasElement);
-const modeButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
+const tokenModeButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
 const sizeInput = getRequiredElement('tokenSize', HTMLInputElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const sizeLabel = getRequiredElement('tokenSizeLabel', HTMLLabelElement);
@@ -38,7 +36,7 @@ export class BoardTokenMode {
 
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        modeButton.disabled = setOn;
+        tokenModeButton.disabled = setOn;
         if (setOn) {
             sizeInput.value = '1';
             nameInput.value = 'Gremlin';
@@ -167,7 +165,7 @@ export class BoardTokenMode {
                 this.board.mouseCoords.y,
                 false,
             );
-            actions.boardActions.createObject({
+            this.board.serveInter.createObject({
                 entity: Entity.Object,
                 action: Action.Create,
                 object: {

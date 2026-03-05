@@ -7,7 +7,6 @@ import { BoardViewMode } from './boardViewMode.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-
 const modeParagraph = getRequiredElement('modeParagraph', HTMLElement);
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const tokenButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);

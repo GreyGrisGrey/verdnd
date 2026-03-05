@@ -1,12 +1,7 @@
-import type { ColorInstance } from 'color';
-
+import type { ColInst } from '../colours.ts';
 import type { Vec2 } from './coords.ts';
 import { BLACK, GOLD, GREY, GREY_LIGHT } from '../colours.ts';
-
 import { Shape } from '../objectEvents.ts';
-
-export type BoardObject = Circle | Line | Polyline | Rect | Token;
-
 import type {
     CircleCreatePayload,
     LineCreatePayload,
@@ -15,6 +10,8 @@ import type {
     TokenCreatePayload,
 } from '../objectEvents.ts';
 
+export type BoardObject = Circle | Line | Polyline | Rect | Token;
+
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
 // Future plans to include more specific subclasses
@@ -22,7 +19,7 @@ export class BoardObjectBase {
     objectId: number;
     zOrder: number;
     location: Vec2;
-    colour: ColorInstance | string;
+    colour: ColInst | string;
     hasImage: boolean;
     imagePath: string;
     centerPoint: Vec2;
@@ -33,7 +30,7 @@ export class BoardObjectBase {
         objId: number,
         x: number,
         y: number,
-        colour: ColorInstance | string,
+        colour: ColInst | string,
     ) {
         this.objectId = objId;
         this.zOrder = 0;
@@ -54,7 +51,7 @@ export class BoardObjectBase {
         return this.location;
     }
 
-    setColour(newColour: ColorInstance | string) {
+    setColour(newColour: ColInst | string) {
         this.colour = newColour;
     }
 
@@ -101,7 +98,7 @@ export class Token extends BoardObjectBase {
         x: number,
         y: number,
         diam: number,
-        colour: ColorInstance | string,
+        colour: ColInst | string,
         name: string = '',
         owner: string = '',
     ) {
@@ -245,7 +242,7 @@ export class Rect extends BoardObjectBase {
         y: number,
         xSize: number,
         ySize: number,
-        colour: ColorInstance | string,
+        colour: ColInst | string,
     ) {
         super(id, x, y, colour);
         this.size = { x: xSize, y: ySize };
@@ -327,7 +324,7 @@ export class Circle extends BoardObjectBase {
         x: number,
         y: number,
         diam: number,
-        colour: ColorInstance | string,
+        colour: ColInst | string,
     ) {
         super(id, x, y, colour);
         this.diameter = diam;
@@ -429,7 +426,7 @@ export class Polyline extends BoardObjectBase {
         x: number,
         y: number,
         structure: Vec2[],
-        colour: ColorInstance | string,
+        colour: ColInst | string,
     ) {
         super(id, x, y, colour);
         this.points = structure;
@@ -535,7 +532,7 @@ export class Line extends BoardObjectBase {
         x: number,
         y: number,
         structure: Vec2[],
-        colour: ColorInstance | string,
+        colour: ColInst | string,
     ) {
         super(id, x, y, colour);
         this.points = structure;

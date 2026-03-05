@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+</head>
+
+<body>
+    <slot />
+
+
+    <title>Gameboard</title>
+
+    <div id="modeMenuID">
+        <button class="modeButton" id="viewMenuButton" disabled>View</button>
+        <button class="modeButton" id="tokenMenuButton">Token</button>
+        <button class="modeButton" id="drawMenuButton">Draw</button>
+    </div>
+
+    <div id="rightBar">
+        <p id="rightPara">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+
+        <button class="rightTab" id="rollTab">Roll</button>
+        <button class="rightTab" id="tokenTab">T</button>
+        <button class="rightTab" id="layerTab">Layers</button>
+        <button class="rightTab" id="characterTab">C</button>
+
+        <div id="chatBox"></div>
+        <div id="layerLayerObj">
+            <div id="descLayerObj"></div>
+        </div>
+    </div>
+
+    <style>
+        #chatBox {
+            position: absolute;
+        }
+    </style>
+    <div id="leftBar">
+        <div id="colContainer">
+            <input type="range" id="redColSlide" min="0" max="255" />
+            <label class="colLabel" id="redLabel">R</label>
+            <input type="text" id="redColText" />
+            <input type="range" id="greenColSlide" min="0" max="255" />
+            <label class="colLabel" id="greenLabel">G</label>
+            <input type="text" id="greenColText" />
+            <input type="range" id="blueColSlide" min="0" max="255" />
+            <label class="colLabel" id="blueLabel">B</label>
+            <input type="text" id="blueColText" />
+            <input type="range" id="opacColSlide" min="0" max="100" />
+            <label class="colLabel" id="opacLabel">O</label>
+            <input type="text" id="opacColText" />
+            <canvas id="colourSquare"></canvas>
+
+            <button class="colorTab" id="col1"> </button>
+            <button class="colorTab" id="col2"> </button>
+            <button class="colorTab" id="col3"> </button>
+            <button class="colorTab" id="col4"> </button>
+            <button class="colorTab" id="col5"> </button>
+            <button class="colorTab" id="col6"> </button>
+        </div>
+
+        <div id="rollContainer">
+        </div>
+    </div>
+
+    <style>
+        .colLabel {
+            position: absolute;
+            left: 10px;
+        }
+
+        #redLabel {
+            top: 45px;
+        }
+
+        #greenLabel {
+            top: 75px;
+        }
+
+        #blueLabel {
+            top: 105px;
+        }
+
+        #opacLabel {
+            top: 135px;
+        }
+
+        #colContainer {
+            pointer-events: auto;
+        }
+
+        .colorTab {
+            background-color: rgba(200, 200, 200, 0.5);
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            top: 8px;
+            border: solid black;
+        }
+
+        #leftBar {
+            background-color: rgba(200, 200, 200, 0.5);
+            position: absolute;
+            bottom: 480px;
+            left: 10px;
+            width: 250px;
+            height: 280px;
+            border: solid black;
+            pointer-events: none;
+        }
+
+        #redColSlide {
+            position: absolute;
+            top: 45px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #redColText {
+            position: absolute;
+            top: 45px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #greenColSlide {
+            position: absolute;
+            top: 75px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #greenColText {
+            position: absolute;
+            top: 75px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #blueColSlide {
+            position: absolute;
+            top: 105px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #blueColText {
+            position: absolute;
+            top: 105px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #opacColSlide {
+            position: absolute;
+            top: 135px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #opacColText {
+            position: absolute;
+            top: 135px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #colourSquare {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 230px;
+            height: 100px;
+            background-color: rgba(200, 0, 0, 1);
+        }
+    </style>
+
+    <style>
+        #rollContainer {
+            visibility: hidden;
+        }
+    </style>
+
+    <style>
+        .rightTab {
+            background-color: rgba(200, 200, 200, 0.5);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            top: 10px;
+            left: -50px;
+            width: 50px;
+            height: 30px;
+            pointer-events: auto;
+        }
+
+        #tokenTab {
+            top: 50px;
+            visibility: hidden;
+        }
+
+        #layerTab {
+            top: 50px;
+            left: -50px;
+        }
+
+        #characterTab {
+            top: 130px;
+            visibility: hidden;
+        }
+
+        #rollTab {
+            top: 10px;
+            left: -50px;
+        }
+
+        #rightBar {
+            background-color: rgba(200, 200, 200, 0.5);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            bottom: 10px;
+            right: 10px;
+            width: 250px;
+            height: 300px;
+            pointer-events: none;
+        }
+
+        #rightPara {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+    </style>
+
+
+    <div class="modeExplain" id="modeExplainations">
+        <h1 id="INSTRUCTIONS">
+            KEY BINDS
+        </h1>
+        <p id="selectInstruct">
+            While objects are selected:<br>Use colour box above to recolour<br>
+            Click and drag objects to move<br>
+            Escape: Unselect<br>
+            Backspace: Delete all selected
+        </p>
+        <p id="modeParagraph">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+
+        <div id="tokenMenuItems">
+            <input type="text" id="tokenSize" />
+            <input type="text" id="tokenName" />
+            <label id="tokenNameLabel">Name</label>
+            <label id="tokenSizeLabel">Size</label>
+        </div>
+    </div>
+
+    <div class="canvasContainer">
+        <div id="loadBlock">
+            <h1 id="loadText">Loading</h1>
+        </div>
+        <script>
+            document.getElementById('loadText').style.left = window.innerWidth / 2 - 50 + "px";
+            document.getElementById('loadText').style.top = window.innerHeight / 2 - 20 + "px";
+            document.getElementById('loadBlock').style.width = window.innerWidth + "px";
+            document.getElementById('loadBlock').style.height = window.innerHeight + "px";
+        </script>
+        <canvas id="board"></canvas>
+    </div>
+
+    <script src="./out.js"></script>
+
+    <style>
+        #loadBlock {
+            background: #222222;
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            width: 2000px;
+            height: 2000px;
+            z-index: 9;
+        }
+
+        #loadText {
+            position: absolute;
+            color: #3333dd;
+            left: 500px;
+            top: 300px;
+            z-index: 9;
+        }
+
+        #board {
+            background: #444444;
+            position: absolute;
+            z-index: 0;
+            left: 0px;
+            top: 0px;
+        }
+    </style>
+
+
+    <style>
+        #tokenMenuItems {
+            background: rgba(200, 200, 200, 1);
+            width: 250px;
+            height: 50px;
+            position: absolute;
+            top: 150px;
+            left: 0px;
+            visibility: hidden;
+        }
+
+        #tokenSize {
+            position: absolute;
+            left: 60px;
+            width: 100px;
+            pointer-events: auto;
+        }
+
+        #tokenNameLabel {
+            position: absolute;
+            left: 10px;
+            width: 100px;
+            top: 27px;
+        }
+
+        #tokenSizeLabel {
+            position: absolute;
+            left: 10px;
+            width: 100px;
+            top: 2px;
+        }
+
+        #tokenName {
+            position: absolute;
+            left: 60px;
+            width: 100px;
+            top: 25px;
+            pointer-events: auto;
+        }
+
+        .modeButton {
+            background: rgba(200, 200, 200, 1);
+            z-index: 3;
+            width: 250px;
+            height: 50px;
+            pointer-events: auto;
+        }
+
+        .modeButton:disabled {
+            background-color: rgba(150, 150, 150, 1);
+        }
+
+        #INSTRUCTIONS {
+            position: absolute;
+            left: 70px;
+            font-size: 20px;
+            font-weight: 800;
+            pointer-events: auto;
+        }
+
+
+        #modeMenuID {
+            background-color: rgba(200, 200, 200, 0.5);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            bottom: 10px;
+            left: 10px;
+            width: 250px;
+            height: 150px;
+            pointer-events: none;
+        }
+
+        #selectInstruct {
+            position: absolute;
+            left: 10px;
+            top: 20px;
+        }
+
+        .modeExplain {
+            background-color: rgba(200, 200, 200, 0.5);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            bottom: 170px;
+            left: 10px;
+            width: 250px;
+            height: 300px;
+            pointer-events: none;
+        }
+
+        #modeParagraph {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+    </style>
+
+</body>
+
+</html>
+
+<style>
+    html,
+    body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>

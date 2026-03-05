@@ -1,5 +1,27 @@
 {
-    "extends": "astro/tsconfigs/strict",
-    "include": [".astro/types.d.ts", "**/*"],
-    "exclude": ["dist"]
+    "compilerOptions": {
+        "module": "es6",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "lib": [
+            "ES2024",
+            "ES6",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "target": "ES2024",
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "scripts": {
+        "build": "webpack --mode=production",
+        "start": "webpack serve --mode=development",
+        "watch": "webpack --watch"
+    }
 }

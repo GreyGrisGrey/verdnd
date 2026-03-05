@@ -6,8 +6,8 @@ import type {
     ObjectRecolourEvent,
 } from '../scripts/objectEvents.ts';
 import { Action, Entity } from '../scripts/objectEvents.ts';
-
 import type { LayerState } from '../scripts/rightBar/layerBarMenu.ts';
+import type { DicePayload } from '../scripts/rightBar/rollBarMenu.ts';
 
 function comparePayloads(
     serveObj: CreateObjectPayload,
@@ -27,36 +27,103 @@ function comparePayloads(
     return true;
 }
 
-export class StoredBoard {
+export class tempStore {
     storedObjects: Map<number, ObjectCreateEvent>;
     storedLayers: Map<number, LayerState>;
     recentCreation: any[];
-    lastTime: number;
-    lockMainWrite: boolean;
-    lockRecentWrite: boolean;
-    lockLayerWrite: boolean;
-
+    currIndex: number;
+    prevMapping: Map<number, DicePayload>;
+    
     constructor() {
         this.storedObjects = new Map();
         this.storedLayers = new Map();
         this.recentCreation = [];
-        this.lastTime = 0;
-        this.lockMainWrite = false;
-        this.lockRecentWrite = false;
-        this.lockLayerWrite = false;
+        this.currIndex = 0;
+        this.prevMapping = new Map();
     }
-
-    compareObjects(clientObjs: CreateObjectPayload[]) {
-        const result: ObjectChangeEvent[] = [];
-        for (const val of clientObjs) {
-            const res = this.compareObject(val);
-            if (res) {
-                result.push(res);
+    
+    rollDice(newDice: DicePayload) {
+        let result = newDice.modifier;
+        if (newDice.singleDice) {
+            const mainDice = [newDice.singleNum, 0];
+            switch (newDice.singleNum) {
+                case 4:
+                    mainDice[1] = newDice.four;
+                    break;
+                case 6:
+                    mainDice[1] = newDice.six;
+                    break;
+                case 8:
+                    mainDice[1] = newDice.eight;
+                    break;
+                case 10:
+                    mainDice[1] = newDice.ten;
+                    break;
+                case 12:
+                    mainDice[1] = newDice.twelve;
+                    break;
+                case 20:
+                    mainDice[1] = newDice.twenty;
+                    break;
+                case 100:
+                    mainDice[1] = newDice.hundred;
+                    break;
             }
+            if (newDice.dropLow + newDice.dropHigh < mainDice[1]) {
+                let results = [];
+                while (mainDice[1] > 0) {
+                    results.push(
+                        (Math.ceil(Math.random() * 10000) % mainDice[0]),
+                    );
+                    mainDice[1]--;
+                }
+                while (mainDice[1] < 0) {
+                    results.push(
+                        -(
+                            (Math.ceil(Math.random() * 10000) % mainDice[0])
+                        ),
+                    );
+                    mainDice[1]++;
+                }
+                results = results.sort(function (curr, next) {
+                    return next - curr;
+                });
+                let currIndex = newDice.dropLow;
+                while (currIndex < results.length - newDice.dropHigh) {
+                    result += results[currIndex];
+                    currIndex++;
+                }
+                newDice.result = result;
+                this.recordDice(newDice);
+                return result;
+            }
+        } else {
+            //WIP
+            this.recordDice(newDice);
+            return result;
         }
-        return result;
     }
 
+    async recordDice(newDice: DicePayload) {
+        this.prevMapping.set(this.currIndex, newDice);
+        this.currIndex = (this.currIndex + 1) % 50;
+    }
+
+    getDice() {
+        return { start: this.currIndex, map: this.prevMapping };
+    }
+    
+    compareObjects(clientObjs: CreateObjectPayload[]) {
+            const result: ObjectChangeEvent[] = [];
+            for (const val of clientObjs) {
+                const res = this.compareObject(val);
+                if (res) {
+                    result.push(res);
+                }
+            }
+            return result;
+        }
+    
     compareObject(clientObj: CreateObjectPayload): ObjectChangeEvent | null {
         const obj = this.storedObjects.get(clientObj.objectId!);
         if (!obj) {
@@ -77,10 +144,6 @@ export class StoredBoard {
     }
 
     async createObject(newObj: ObjectCreateEvent) {
-        await this.waitForMain();
-        this.lockMainWrite = true;
-        await this.waitForRecent();
-        this.lockRecentWrite = true;
         let next = 0;
         while (this.storedObjects.has(next)) {
             next++;
@@ -91,8 +154,6 @@ export class StoredBoard {
         if (this.recentCreation.length >= 4) {
             this.recentCreation = this.recentCreation.slice(1);
         }
-        this.lockMainWrite = false;
-        this.lockRecentWrite = false;
         return next;
     }
 
@@ -108,8 +169,6 @@ export class StoredBoard {
         if (this.storedLayers.size >= 11) {
             return -1;
         }
-        await this.waitForLayer();
-        this.lockLayerWrite = true;
         let next = 0;
         while (this.storedLayers.has(next)) {
             next++;
@@ -120,7 +179,6 @@ export class StoredBoard {
             playerVisible: true,
             zOrder: next,
         });
-        this.lockLayerWrite = false;
         return next;
     }
 
@@ -129,18 +187,12 @@ export class StoredBoard {
     }
 
     async destroyObjects(targetIds: number[]) {
-        await this.waitForMain();
-        this.lockMainWrite = true;
-        await this.waitForRecent();
-        this.lockRecentWrite = true;
         for (const id of targetIds) {
             if (this.storedObjects.has(id)) {
                 this.storedObjects.delete(id);
                 this.deleteRecentId(id);
             }
         }
-        this.lockMainWrite = false;
-        this.lockRecentWrite = false;
     }
 
     deleteRecentId(targetId: number) {
@@ -155,8 +207,6 @@ export class StoredBoard {
     }
 
     async moveObjects(events: ObjectMoveEvent[]) {
-        await this.waitForMain();
-        this.lockMainWrite = true;
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
@@ -164,46 +214,21 @@ export class StoredBoard {
                 targetObj.object.y += event.y;
             }
         }
-        this.lockMainWrite = false;
     }
 
     async recolourObjects(events: ObjectRecolourEvent[]) {
-        await this.waitForMain();
-        this.lockMainWrite = true;
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
                 targetObj.object.colour = event.colour;
             }
         }
-        this.lockMainWrite = false;
-    }
-
-    async waitForRecent() {
-        while (this.lockRecentWrite) {
-            await new Promise((resolve) => setTimeout(resolve, 1));
-        }
-    }
-
-    async waitForMain() {
-        while (this.lockMainWrite) {
-            await new Promise((resolve) => setTimeout(resolve, 1));
-        }
-    }
-
-    async waitForLayer() {
-        while (this.lockLayerWrite) {
-            await new Promise((resolve) => setTimeout(resolve, 1));
-        }
     }
 
     async updateLayer(input: LayerState) {
-        await this.waitForLayer();
-        this.lockLayerWrite = true;
         const targetObj = this.storedLayers.get(input.id);
         if (targetObj) {
             this.storedLayers.set(input.id, input);
         }
-        this.lockLayerWrite = false;
     }
 }

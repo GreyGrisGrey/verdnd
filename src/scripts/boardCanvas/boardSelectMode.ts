@@ -3,8 +3,6 @@ import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
-import { actions } from 'astro:actions';
-
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -94,7 +92,7 @@ export class BoardSelectMode {
                 for (const obj of this.selectedObjects) {
                     idList.push(obj.objectId);
                 }
-                actions.boardActions.destroyObjects(idList);
+                this.board.serveInter.destroyObjects(idList);
                 this.exitOnNextStep = true;
             }
         });
@@ -117,7 +115,7 @@ export class BoardSelectMode {
             });
             i.move(point.x, point.y);
         }
-        actions.boardActions.moveObjects(moveList);
+        this.board.serveInter.moveObjects((moveList as any));
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;
     }
@@ -135,7 +133,7 @@ export class BoardSelectMode {
                 });
                 obj.setColour(this.currColour);
             }
-            actions.boardActions.recolourObjects(recolourList);
+            this.board.serveInter.recolourObjects((recolourList as any));
         }
     }
 

@@ -1,7 +1,6 @@
 import { GREY } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { actions } from 'astro:actions';
-
+import { tempStore } from "../serveInter.ts"
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const rollBox = getRequiredElement('rollContainer', HTMLElement);
@@ -28,8 +27,9 @@ export class RollMenu {
     active: boolean;
     modifier: number;
     currChats: HTMLElement[];
+    serveInter: tempStore;
 
-    constructor() {
+    constructor(server: tempStore) {
         this.textBox = document.createElement('textarea');
         this.active = false;
         this.modifier = 0;
@@ -41,6 +41,7 @@ export class RollMenu {
         this.setMainElements();
         this.setRollElements();
         this.constructChats();
+        this.serveInter = server;
     }
 
     setMainElements() {
@@ -209,7 +210,7 @@ export class RollMenu {
                 this.textBox.style.width = `${w - 30}px`;
             }
         }
-        const { data, error } = await actions.rollActions.getDice();
+        const data = this.serveInter.getDice();
         if (data) {
             this.updateChats(data.map, data.start);
         }
@@ -298,6 +299,6 @@ export class RollMenu {
         if (disadvantage) {
             currLoad.dropLow = 1;
         }
-        actions.rollActions.roll(currLoad);
+        this.serveInter.rollDice(currLoad);
     }
 }

@@ -1,3 +1,4 @@
+
 export function getRequiredElement<T extends HTMLElement>(
     id: string,
     elementType: { new (): T },

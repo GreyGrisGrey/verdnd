@@ -7,7 +7,7 @@ import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
 import type { LayerState } from '../rightBar/layerBarMenu.ts';
-
+import { tempStore } from "../serveInter.ts"
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
@@ -26,8 +26,9 @@ export class Board {
     objectMap: Map<number, BoardObject>;
     modeMan: ModeManager;
     activeLayer: number;
+    serveInter: tempStore;
 
-    constructor() {
+    constructor(server: tempStore) {
         this.zoomGlobal = 3;
         this.zoomLevels = [4, 6, 8, 10, 13, 16, 20, 24, 28, 32];
         this.zoomVal = this.zoomLevels[this.zoomGlobal];
@@ -40,6 +41,7 @@ export class Board {
         this.objectMap = new Map();
         this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
+        this.serveInter = server;
     }
 
     // Test function for pointer drawing.

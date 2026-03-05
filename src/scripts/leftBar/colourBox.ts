@@ -1,7 +1,6 @@
-import type { ColorInstance } from 'color';
-import Color from 'color';
-
+import { ColInst } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
+const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
 type ColourComponent = 'red' | 'green' | 'blue' | 'alpha';
 const colourComponents: ColourComponent[] = ['red', 'green', 'blue', 'alpha'];
@@ -18,11 +17,10 @@ const RGBTexts: Record<ColourComponent, HTMLInputElement> = {
     blue: getRequiredElement('blueColText', HTMLInputElement),
     alpha: getRequiredElement('opacColText', HTMLInputElement),
 };
-const colorSquare = getRequiredElement('colourSquare', HTMLElement);
 
 export class ColourBox {
-    savedColours: ColorInstance[];
-    currColour: ColorInstance;
+    savedColours: ColInst[];
+    currColour: ColInst;
     currRGBString: string;
     mainBox: HTMLElement;
     adjBoxes: HTMLElement[];
@@ -31,14 +29,14 @@ export class ColourBox {
 
     constructor() {
         this.savedColours = [
-            Color([255, 0, 0, 1]),
-            Color([0, 255, 0, 1]),
-            Color([0, 0, 255, 1]),
-            Color([50, 50, 50, 1]),
-            Color([150, 150, 150, 1]),
-            Color([255, 255, 255, 1]),
+            new ColInst(255, 0, 0, 100),
+            new ColInst(0, 255, 0, 100),
+            new ColInst(0, 0, 255, 100),
+            new ColInst(50, 50, 50, 100),
+            new ColInst(150, 150, 150, 100),
+            new ColInst(255, 255, 255, 100),
         ];
-        this.currColour = Color([120, 120, 120, 1]);
+        this.currColour = new ColInst(120, 120, 120, 100);
         this.currRGBString = `rgba(${120}, ${120}, ${120}, ${1})`;
         this.mainBox = colorSquare;
         this.adjBoxes = [];
@@ -58,13 +56,13 @@ export class ColourBox {
             RGBSliders[component].addEventListener('input', () => {
                 const value = parseInt(RGBSliders[component].value, 10);
                 if (component === 'red') {
-                    this.currColour = this.currColour.red(value);
+                    this.currColour.setR(value);
                 } else if (component === 'green') {
-                    this.currColour = this.currColour.green(value);
+                    this.currColour.setG(value);
                 } else if (component === 'blue') {
-                    this.currColour = this.currColour.blue(value);
+                    this.currColour.setB(value);
                 } else if (component === 'alpha') {
-                    this.currColour = this.currColour.alpha(value / 100);
+                    this.currColour.setA(value);
                 }
                 this.changeCurrColour();
             });
@@ -72,13 +70,13 @@ export class ColourBox {
             RGBTexts[component].addEventListener('input', () => {
                 const value = parseInt(RGBTexts[component].value, 10);
                 if (component === 'red') {
-                    this.currColour = this.currColour.red(value);
+                    this.currColour.setR(value);
                 } else if (component === 'green') {
-                    this.currColour = this.currColour.green(value);
+                    this.currColour.setG(value);
                 } else if (component === 'blue') {
-                    this.currColour = this.currColour.blue(value);
+                    this.currColour.setB(value);
                 } else if (component === 'alpha') {
-                    this.currColour = this.currColour.alpha(value / 100);
+                    this.currColour.setA(value);
                 }
                 this.changeCurrColour();
             });
@@ -119,20 +117,20 @@ export class ColourBox {
 
     matchInput(component: ColourComponent) {
         if (component === 'red') {
-            RGBSliders[component].value = this.currColour.red().toString();
-            RGBTexts[component].value = this.currColour.red().toString();
+            RGBSliders[component].value = this.currColour.red.toString();
+            RGBTexts[component].value = this.currColour.red.toString();
         } else if (component === 'green') {
-            RGBSliders[component].value = this.currColour.green().toString();
-            RGBTexts[component].value = this.currColour.green().toString();
+            RGBSliders[component].value = this.currColour.green.toString();
+            RGBTexts[component].value = this.currColour.green.toString();
         } else if (component === 'blue') {
-            RGBSliders[component].value = this.currColour.blue().toString();
-            RGBTexts[component].value = this.currColour.blue().toString();
+            RGBSliders[component].value = this.currColour.blue.toString();
+            RGBTexts[component].value = this.currColour.blue.toString();
         } else if (component === 'alpha') {
             RGBSliders[component].value = (
-                this.currColour.alpha() * 100
+                this.currColour.alpha
             ).toString();
             RGBTexts[component].value = (
-                this.currColour.alpha() * 100
+                this.currColour.alpha
             ).toString();
         }
     }

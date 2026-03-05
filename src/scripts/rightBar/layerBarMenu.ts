@@ -1,7 +1,6 @@
 import { GREY, RED } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { actions } from 'astro:actions';
-
+import { tempStore } from "../serveInter.ts"
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 
 export interface LayerState {
@@ -23,9 +22,11 @@ export class LayerMenu {
     boxHeight: number;
     currSelect: number;
     tempButtonObj: HTMLElement;
+    serveInter: tempStore;
 
-    constructor() {
+    constructor(server: tempStore) {
         this.active = false;
+        this.serveInter = server;
         this.button = getRequiredElement('layerTab', HTMLElement);
         this.layers = [];
         this.descObj = getRequiredElement('descLayerObj', HTMLElement);
@@ -73,8 +74,8 @@ export class LayerMenu {
         secondCheck.style.left = '137px';
         secondCheck.style.textAlign = 'center';
 
-        this.tempButtonObj.type = 'button';
-        this.tempButtonObj.value = 'Make layer';
+        (this.tempButtonObj as any).type = 'button';
+        (this.tempButtonObj as any).value = 'Make layer';
         this.tempButtonObj.style.width = '190px';
         this.tempButtonObj.style.position = 'absolute';
         this.tempButtonObj.style.left = '0px';
@@ -94,7 +95,7 @@ export class LayerMenu {
     }
 
     createLayer() {
-        actions.boardActions.createLayer();
+        this.serveInter.createLayer();
     }
 
     updateLayer(key: number, val: LayerState) {
@@ -102,8 +103,8 @@ export class LayerMenu {
         toUpdate.gmVisible = val.gmVisible;
         toUpdate.playerVisible = val.playerVisible;
         toUpdate.zOrder = val.zOrder;
-        toUpdate.element!.children[1].checked = val.playerVisible;
-        toUpdate.element!.children[2].checked = val.gmVisible;
+        (toUpdate.element!.children[1] as any).checked = val.playerVisible;
+        (toUpdate.element!.children[2] as any).checked = val.gmVisible;
     }
 
     handleNewLayers(newLayers: Map<number, LayerState>) {
@@ -182,7 +183,7 @@ export class LayerMenu {
 
         checkVisibleGM.addEventListener('mousedown', () => {
             if (this.active) {
-                actions.boardActions.updateLayer({
+                this.serveInter.updateLayer({
                     id: buildData.id,
                     gmVisible: !checkVisibleGM.checked,
                     playerVisible: checkVisibleAll.checked,
@@ -193,7 +194,7 @@ export class LayerMenu {
 
         checkVisibleAll.addEventListener('mousedown', () => {
             if (this.active) {
-                actions.boardActions.updateLayer({
+                this.serveInter.updateLayer({
                     id: buildData.id,
                     gmVisible: checkVisibleGM.checked,
                     playerVisible: !checkVisibleAll.checked,
@@ -220,14 +221,14 @@ export class LayerMenu {
     exitCurrSelect() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {
-            layer.element.style.background = GREY.toString();
+            layer.element!.style.background = GREY.toString();
         }
     }
 
     step() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {
-            layer.element.style.background = RED.toString();
+            layer.element!.style.background = RED.toString();
         }
         if (this.layerObj.style.width !== rightBar.style.width) {
             this.layerObj.style.width = rightBar.style.width;
