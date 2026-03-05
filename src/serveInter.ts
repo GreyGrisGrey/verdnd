@@ -4,10 +4,10 @@ import type {
     ObjectMoveEvent,
     ObjectChangeEvent,
     ObjectRecolourEvent,
-} from '../scripts/objectEvents.ts';
-import { Action, Entity } from '../scripts/objectEvents.ts';
-import type { LayerState } from '../scripts/rightBar/layerBarMenu.ts';
-import type { DicePayload } from '../scripts/rightBar/rollBarMenu.ts';
+} from './objectEvents.ts';
+import { Action, Entity } from './objectEvents.ts';
+import type { LayerState } from './rightBar/layerBarMenu.ts';
+import type { DicePayload } from './rightBar/rollBarMenu.ts';
 
 function comparePayloads(
     serveObj: CreateObjectPayload,

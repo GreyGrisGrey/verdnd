@@ -4,8 +4,6 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "noEmit": true,
-        "allowImportingTsExtensions": true,
         "lib": [
             "ES2024",
             "ES6",
@@ -15,13 +13,8 @@
         "target": "ES2024",
     },
     "include": [
-        "src/**/*.ts"
+        "out.ts"
     ],
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "scripts": {
-        "build": "webpack --mode=production",
-        "start": "webpack serve --mode=development",
-        "watch": "webpack --watch"
-    }
 }

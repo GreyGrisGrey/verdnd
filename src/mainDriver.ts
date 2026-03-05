@@ -2,7 +2,7 @@ import { Board } from './boardCanvas/localBoard.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import type { CreateObjectPayload } from './objectEvents.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
-import { Action, Shape } from '../scripts/objectEvents.ts';
+import { Action, Shape } from './objectEvents.ts';
 import type { BoardObject } from './boardCanvas/boardObject.ts';
 import {
     Circle,

@@ -34,32 +34,32 @@ def splitFile(filePath):
         currIndex += 1
     return res
 
-items = listdir("C:/greybox/verdDnD/src/scripts")
+items = listdir("C:/greybox/verdDnD/src")
 files = []
 dirs = []
 currIndex = 0
 while (currIndex < len(items)):
     nextItem = items[currIndex].split(".")
     if (len(nextItem) == 1):
-        newItems = listdir("C:/greybox/verdDnD/src/scripts/" + items[currIndex])
+        newItems = listdir("C:/greybox/verdDnD/src/" + items[currIndex])
         for i in newItems:
             items.append(items[currIndex] + "/" + i)
-        dirs.append("C:/greybox/verdDnD/src/scripts/" + items[currIndex])
+        dirs.append("C:/greybox/verdDnD/src/" + items[currIndex])
     elif (nextItem[1] == "ts"):
-        files.append("C:/greybox/verdDnD/src/scripts/" + items[currIndex])
+        files.append("C:/greybox/verdDnD/src/" + items[currIndex])
     currIndex += 1
 
 constDict = {}
 codeBlock = ""
 
 for i in files:
-    if i != "C:/greybox/verdDnD/src/scripts/mainDriver.ts":
+    if i != "C:/greybox/verdDnD/src/mainDriver.ts":
         res = splitFile(i)
         for j in res[0]:
             constDict[j] = True
         codeBlock += res[1]
 
-res = splitFile("C:/greybox/verdDnD/src/scripts/mainDriver.ts")
+res = splitFile("C:/greybox/verdDnD/src/mainDriver.ts")
 for j in res[0]:
     constDict[j] = True
 

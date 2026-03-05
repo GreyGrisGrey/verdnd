@@ -1,3 +1,3 @@
 python compile.py
-tsc out.ts
+call tsc -p tsconfig.json
 start index.html

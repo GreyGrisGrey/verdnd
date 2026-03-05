@@ -1,4 +1,4 @@
-import type { ColInst } from 'colours.ts';
+import type { ColInst } from './colours.ts';
 import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {

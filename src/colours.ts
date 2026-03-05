@@ -27,6 +27,10 @@ export class ColInst {
     setA(newA: number) {
         this.alpha = newA
     }
+    
+    toString(): string {
+        return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`
+    }
 }
 
 export const GREY = '#cccccc';
