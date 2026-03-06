@@ -1,16 +1,44 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Token } from './boardObject.ts';
+import { Circle,
+    Line,
+    Polyline,
+    Rect,Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
 import type { LayerState } from '../rightBar/layerBarMenu.ts';
-import { tempStore } from "../serveInter.ts"
+import { tempStore } from "../serveInter.ts";
+import { CreateObjectPayload } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
+function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
+    switch (p.kind) {
+        case Shape.Circle:
+            return new Circle(p.objectId!, p.x, p.y, p.diameter, p.colour);
+        case Shape.Rect:
+            return new Rect(p.objectId!, p.x, p.y, p.width, p.height, p.colour);
+        case Shape.Token:
+            return new Token(
+                p.objectId!,
+                p.x,
+                p.y,
+                p.diameter,
+                p.colour,
+                p.name ?? '',
+            );
+        case Shape.Poly:
+            return new Polyline(p.objectId!, p.x, p.y, p.points, p.colour);
+        case Shape.Line:
+            return new Line(p.objectId!, p.x, p.y, p.points, p.colour);
+        default: {
+            throw new Error('Unknown shape');
+        }
+    }
+}
 // Main class controlling the state of the canvas.
 // Somewhat oversized, may be split up eventually.
 export class Board {
@@ -188,11 +216,19 @@ export class Board {
     }
 
     // Adds an object to a specified layer.
-    addObject(layerId: number, newObject: BoardObject) {
+    addObject(layerId: number, newObject: CreateObjectPayload) {
         const layer = this.layerMap.get(layerId);
-        this.objectMap.set(newObject.objectId, newObject);
+        const currObj = this.objectMap.get(newObject.objectId!)
+        if (!layer) {
+            return
+        } else if (currObj) {
+            currObj.updateFromPayload((newObject as any))
+            return
+        }
+        const addObj = payloadToBoardObject(newObject);
+        this.objectMap.set(addObj.objectId, addObj);
         if (layer) {
-            layer.addObject(newObject, newObject.objectId);
+            layer.addObject(addObj, addObj.objectId);
         }
     }
 

@@ -212,7 +212,7 @@ export class RollMenu {
         }
         const data = this.serveInter.getDice();
         if (data) {
-            this.updateChats(data.map, data.start);
+            this.updateChats(data);
         }
     }
 
@@ -239,20 +239,18 @@ export class RollMenu {
         this.currChats.push(newText);
     }
 
-    updateChats(data: Map<number, DicePayload>, startIndex: number) {
-        let currIndex = startIndex;
-        let curr = 0;
-        while (currIndex != (startIndex + 1) % 50) {
-            currIndex = (currIndex + 49) % 50;
-            if (data.has(currIndex)) {
-                this.updateChat(data.get(currIndex)!, curr);
+    updateChats(data: Map<number, number>) {
+        console.log(data)
+        for (const [key, val] of data) {
+            const targetNum = data.size - (key + 1)
+            if (targetNum < 50 && targetNum >= 0) {
+                this.updateChat(val, targetNum);
             }
-            curr++;
         }
     }
 
-    updateChat(dataLine: DicePayload, currIndex: number) {
-        this.currChats[currIndex].innerText = `Rolled ${dataLine.result}`;
+    updateChat(dataLine: number, currIndex: number) {
+        this.currChats[currIndex].innerText = `Rolled ${dataLine}`;
         this.currChats[currIndex].style.visibility = 'visible';
     }
 
@@ -293,10 +291,10 @@ export class RollMenu {
             case 100:
                 currLoad.hundred = diceCount;
         }
-        if (advantage) {
+        if (disadvantage) {
             currLoad.dropHigh = 1;
         }
-        if (disadvantage) {
+        if (advantage) {
             currLoad.dropLow = 1;
         }
         this.serveInter.rollDice(currLoad);
