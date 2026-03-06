@@ -5,7 +5,7 @@ import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {
     Rect = 'RECT',
-    Circle = 'CIRCLE',
+    Ellipse = 'ELLIPSE',
     Polyline = 'POLYLINE',
     Line = 'LINE',
     Token = 'TOKEN',
@@ -35,21 +35,11 @@ export interface LayerState {
 }
 
 export interface RectCreatePayload {
-    kind: Shape.Rect;
+    kind: Shape.Rect | Shape.Ellipse;
     x: number;
     y: number;
     width: number;
     height: number;
-    colour: ColInst | string;
-    layerId: number;
-    objectId: number;
-}
-
-export interface CircleCreatePayload {
-    kind: Shape.Circle;
-    x: number;
-    y: number;
-    diameter: number;
     colour: ColInst | string;
     layerId: number;
     objectId: number;
@@ -77,7 +67,6 @@ export interface PolyCreatePayload {
 }
 
 export type ObjectCreatePayload =
-    | CircleCreatePayload
     | PolyCreatePayload
     | RectCreatePayload
     | TokenCreatePayload;

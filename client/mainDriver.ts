@@ -12,7 +12,7 @@ serveInter.setBoard(board);
 // The order of events up there is unfortunately quite important.
 // Try not to poke it too much.
 
-// Updates the board based on the server interface.
+// Updates the board and right menu based on the server interface.
 function syncServer() {
     updateLayers();
     updateObjects();
@@ -37,10 +37,6 @@ function updateLayers() {
     }
 }
 
-function updateActiveLayer() {
-    board.activeLayer = rightMan.layerMan.currSelect;
-}
-
 async function mainLoop() {
     if (board.layerMap.size === 0) {
         counter = 0;
@@ -56,7 +52,7 @@ async function mainLoop() {
         }
         counter = 1;
     }
-    updateActiveLayer();
+    board.activeLayer = rightMan.layerMan.currSelect;
     board.step();
     counter++;
     if (counter === 5) {

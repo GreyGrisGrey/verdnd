@@ -1,7 +1,7 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Circle, Polyline, Rect, Token } from './boardObject.ts';
-import type { BoardBounds, Vec2 } from './coords.ts';
+import { Box, Polyline, Token } from './boardObject.ts';
+import type { Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
@@ -13,10 +13,17 @@ const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
-        case Shape.Circle:
-            return new Circle(p.objectId, p.x, p.y, p.diameter, p.colour);
+        case Shape.Ellipse:
         case Shape.Rect:
-            return new Rect(p.objectId, p.x, p.y, p.width, p.height, p.colour);
+            return new Box(
+                p.objectId,
+                p.x,
+                p.y,
+                p.width,
+                p.height,
+                p.colour,
+                p.kind,
+            );
         case Shape.Token:
             return new Token(
                 p.objectId,
@@ -41,6 +48,7 @@ function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
         }
     }
 }
+
 // Main class controlling the state of the canvas.
 // Somewhat oversized, may be split up eventually.
 export class Board {
@@ -49,7 +57,6 @@ export class Board {
     zoomVal: number;
     originCoords: Vec2;
     mouseCoords: Vec2;
-    boardBounds: BoardBounds;
     leftMouseDown: boolean;
     boardLayers: BoardLayer[];
     layerMap: Map<number, BoardLayer>;
@@ -64,7 +71,6 @@ export class Board {
         this.zoomVal = this.zoomLevels[this.zoomGlobal];
         this.originCoords = { x: 0, y: 0 };
         this.mouseCoords = { x: 0, y: 0 };
-        this.boardBounds = { minX: -200, maxX: 200, minY: -200, maxY: 200 };
         this.leftMouseDown = false;
         this.boardLayers = [];
         this.layerMap = new Map();
@@ -94,37 +100,10 @@ export class Board {
         ctx.closePath();
     }
 
-    // Ensures camera is kept within the board boundaries.
-    bindCamera() {
-        if (
-            this.originCoords.x <
-            (this.boardBounds.minX - 100) * this.zoomVal
-        ) {
-            this.originCoords.x = (this.boardBounds.minX - 100) * this.zoomVal;
-        } else if (
-            this.originCoords.x >
-            (this.boardBounds.maxX + 100) * this.zoomVal
-        ) {
-            this.originCoords.x = (this.boardBounds.maxX + 100) * this.zoomVal;
-        }
-        if (
-            this.originCoords.y <
-            (this.boardBounds.minY - 100) * this.zoomVal
-        ) {
-            this.originCoords.y = (this.boardBounds.minY - 100) * this.zoomVal;
-        } else if (
-            this.originCoords.y >
-            (this.boardBounds.maxY + 100) * this.zoomVal
-        ) {
-            this.originCoords.y = (this.boardBounds.maxY + 100) * this.zoomVal;
-        }
-    }
-
     // Updates the center of the camera, subject to the boundaries of the board.
     moveCamera(xMod: number, yMod: number) {
         this.originCoords.x -= xMod;
         this.originCoords.y -= yMod;
-        this.bindCamera();
     }
 
     // Sorts held board layers by zOrder.

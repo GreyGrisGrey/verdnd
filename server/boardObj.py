@@ -28,20 +28,12 @@ class boardObj:
     def toString(self):
         if self.active == False:
             return json.dumps({"entity": "OBJECT", "action": "DESTROY", "objectId": self.objectId})
-        if self.kind == "RECT":
+        if self.kind == "RECT" or self.kind == "ELLIPSE":
             return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
                                "width": self.width, 
                                "height": self.height, 
-                               "colour": self.colour, 
-                               "layerId": self.layerId,
-                               "objectId": self.objectId}})
-        elif self.kind == "CIRCLE":
-            return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
-                               "x": self.x, 
-                               "y": self.y, 
-                               "diameter": self.diameter,
                                "colour": self.colour, 
                                "layerId": self.layerId,
                                "objectId": self.objectId}})

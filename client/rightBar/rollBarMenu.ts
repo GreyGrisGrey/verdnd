@@ -7,17 +7,10 @@ const rollBox = getRequiredElement('rollContainer', HTMLElement);
 const colBox = getRequiredElement('colContainer', HTMLElement);
 
 export interface DicePayload {
-    four: number;
-    six: number;
-    eight: number;
-    ten: number;
-    twelve: number;
-    twenty: number;
-    hundred: number;
-    dropLow: number;
-    dropHigh: number;
-    singleDice: boolean;
-    singleNum: number;
+    diceSize: number;
+    diceCount: number;
+    advantage: boolean;
+    disadvantage: boolean;
     modifier: number;
     result: number;
 }
@@ -196,6 +189,7 @@ export class RollMenu {
     // Also toggles if the colour menu is active or not. Extremely dubious.
     toggleActive(newAct: boolean) {
         this.active = newAct;
+        this.step();
         rollBox.style.visibility = this.active ? 'visible' : 'hidden';
         rollBox.style.pointerEvents = this.active ? 'auto' : 'none';
         colBox.style.visibility = this.active ? 'hidden' : 'visible';
@@ -267,8 +261,7 @@ export class RollMenu {
         this.currChats[currIndex].style.visibility = 'visible';
     }
 
-    // Constructs a dice roll payload out of the current state of the left roll menu, plus some parameters from the button that called this.
-    // Very unclean. Will be fixed.
+    // Constructs a new roll payload and sends it to the backend.
     constructPayload(
         diceSize: number,
         diceCount: number,
@@ -276,42 +269,13 @@ export class RollMenu {
         disadvantage: boolean,
     ) {
         let currLoad = {
-            four: 0,
-            six: 0,
-            eight: 0,
-            ten: 0,
-            twelve: 0,
-            twenty: 0,
-            hundred: 0,
-            dropLow: 0,
-            dropHigh: 0,
-            singleDice: true,
-            singleNum: diceSize,
+            diceSize: diceSize,
+            diceCount: diceCount,
+            advantage: advantage,
+            disadvantage: disadvantage,
             modifier: this.modifier,
             result: 0,
         };
-        switch (diceSize) {
-            case 4:
-                currLoad.four = diceCount;
-            case 6:
-                currLoad.six = diceCount;
-            case 8:
-                currLoad.eight = diceCount;
-            case 10:
-                currLoad.ten = diceCount;
-            case 12:
-                currLoad.twelve = diceCount;
-            case 20:
-                currLoad.twenty = diceCount;
-            case 100:
-                currLoad.hundred = diceCount;
-        }
-        if (disadvantage) {
-            currLoad.dropHigh = 1;
-        }
-        if (advantage) {
-            currLoad.dropLow = 1;
-        }
         this.serveInter.rollDice(currLoad);
     }
 }

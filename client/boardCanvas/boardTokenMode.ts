@@ -1,4 +1,4 @@
-import { Rect, type Token } from './boardObject.ts';
+import { Box, type Token } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
@@ -229,13 +229,14 @@ export class BoardTokenMode {
             if (res.y < this.params[0].y) {
                 sizes[1] += 1;
             }
-            return new Rect(
+            return new Box(
                 -1,
                 coords.x,
                 coords.y,
                 sizes[0],
                 sizes[1],
                 WHITE_50,
+                Shape.Rect,
             );
         }
         return undefined;

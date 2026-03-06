@@ -1,4 +1,4 @@
-import { Circle, Polyline, Rect } from './boardObject.ts';
+import { Polyline, Box } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
@@ -7,6 +7,14 @@ import type { ObjectCreatePayload } from '../objectEvents.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
+
+function rectangleFromPoints(point1: Vec2, point2: Vec2) {
+    const x = Math.min(point1.x, point2.x);
+    const y = Math.min(point1.y, point2.y);
+    const width = Math.max(point1.x, point2.x) - x + 1;
+    const height = Math.max(point1.y, point2.y) - y + 1;
+    return [x, y, width, height];
+}
 
 // Class handling canvas' draw mode.
 export class BoardDrawMode {
@@ -54,7 +62,7 @@ export class BoardDrawMode {
                 if (event.key === '1') {
                     this.shape = Shape.Rect;
                 } else if (event.key === '2') {
-                    this.shape = Shape.Circle;
+                    this.shape = Shape.Ellipse;
                 } else if (event.key === '3') {
                     this.shape = Shape.Polyline;
                 } else if (event.key === '4') {
@@ -145,35 +153,13 @@ export class BoardDrawMode {
                 this.shape !== Shape.Polyline &&
                 this.shape !== Shape.Line
             ) {
-                if (this.shape === Shape.Rect) {
-                    const res = this.board.determineTile(
-                        this.board.mouseCoords.x,
-                        this.board.mouseCoords.y,
-                        false,
-                    );
-                    if (res.x >= this.params[0].x) {
-                        res.x += 1;
-                    }
-                    if (res.y >= this.params[0].y) {
-                        res.y += 1;
-                    }
-                    this.params.push({ x: res.x, y: res.y });
-                    this.setNewObject();
-                } else if (this.shape === Shape.Circle) {
-                    const res = this.board.determineTile(
-                        this.board.mouseCoords.x,
-                        this.board.mouseCoords.y,
-                        false,
-                    );
-                    if (res.x >= this.params[0].x) {
-                        res.x += 1;
-                    }
-                    if (res.y >= this.params[0].y) {
-                        res.y += 1;
-                    }
-                    this.params.push({ x: res.x, y: res.y });
-                    this.setNewObject();
-                }
+                const res = this.board.determineTile(
+                    this.board.mouseCoords.x,
+                    this.board.mouseCoords.y,
+                    false,
+                );
+                this.params.push({ x: res.x, y: res.y });
+                this.setNewObject();
             }
         });
     }
@@ -182,7 +168,7 @@ export class BoardDrawMode {
     getText() {
         return `\
         1 : Create Rectangle
-        2 : Create Circle
+        2 : Create Ellipse
         3 : Create Polyline
         4 : Create Wall
         5 : Complete Wall/Polyline
@@ -193,42 +179,17 @@ export class BoardDrawMode {
     // Finalizes the current object and sends it to the server.
     setNewObject() {
         let tempObj: ObjectCreatePayload;
-        if (this.shape === Shape.Rect && this.params.length === 2) {
-            const one = Math.min(this.params[0].x, this.params[1].x);
-            const two = Math.min(this.params[0].y, this.params[1].y);
-            const sizes = [
-                Math.abs(this.params[1].x - this.params[0].x),
-                Math.abs(this.params[1].y - this.params[0].y),
-            ];
-            if (this.params[1].x < this.params[0].x) {
-                sizes[0] += 1;
-            }
-            if (this.params[1].y < this.params[0].y) {
-                sizes[1] += 1;
-            }
+        if (
+            (this.shape === Shape.Rect || this.shape === Shape.Ellipse) &&
+            this.params.length === 2
+        ) {
+            const res = rectangleFromPoints(this.params[0], this.params[1]);
             tempObj = {
-                kind: Shape.Rect,
-                x: one,
-                y: two,
-                width: sizes[0],
-                height: sizes[1],
-                colour: colourSquare.style.background,
-                layerId: this.board.activeLayer,
-                objectId: -1,
-            };
-            this.completeObjCheck = true;
-        } else if (this.shape === Shape.Circle && this.params.length === 2) {
-            const newX = Math.min(this.params[0].x, this.params[1].x);
-            const newY = Math.min(this.params[0].y, this.params[1].y);
-            const radius = Math.max(
-                Math.abs(this.params[0].x - this.params[1].x),
-                Math.abs(this.params[0].y - this.params[1].y),
-            );
-            tempObj = {
-                kind: Shape.Circle,
-                x: newX,
-                y: newY,
-                diameter: radius,
+                kind: this.shape,
+                x: res[0],
+                y: res[1],
+                width: res[2],
+                height: res[3],
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
@@ -267,22 +228,18 @@ export class BoardDrawMode {
             return undefined;
         }
         if (this.tempObject !== null) {
-            if (this.tempObject.kind === Shape.Rect) {
-                return new Rect(
+            if (
+                this.tempObject.kind === Shape.Rect ||
+                this.tempObject.kind === Shape.Ellipse
+            ) {
+                return new Box(
                     -1,
                     this.tempObject.x,
                     this.tempObject.y,
                     this.tempObject.width,
                     this.tempObject.height,
                     this.tempObject.colour,
-                );
-            } else if (this.tempObject.kind === Shape.Circle) {
-                return new Circle(
-                    -1,
-                    this.tempObject.x,
-                    this.tempObject.y,
-                    this.tempObject.diameter,
-                    this.tempObject.colour,
+                    this.tempObject.kind,
                 );
             } else if (
                 this.tempObject.kind === Shape.Polyline ||
@@ -309,68 +266,20 @@ export class BoardDrawMode {
                 this.board.mouseCoords.y,
                 false,
             );
-            if (this.shape === Shape.Rect) {
-                if (res.x >= this.params[0].x) {
-                    res.x += 1;
-                }
-                if (res.y >= this.params[0].y) {
-                    res.y += 1;
-                }
-                const coords = {
-                    x: Math.min(this.params[0].x, res.x),
-                    y: Math.min(this.params[0].y, res.y),
-                };
-                const sizes: Vec2 = {
-                    x: Math.abs(res.x - this.params[0].x),
-                    y: Math.abs(res.y - this.params[0].y),
-                };
-                if (res.x < this.params[0].x) {
-                    sizes.x += 1;
-                }
-                if (res.y < this.params[0].y) {
-                    sizes.y += 1;
-                }
-                if (this.selectMode) {
-                    return new Rect(
-                        -1,
-                        coords.x,
-                        coords.y,
-                        sizes.x,
-                        sizes.y,
-                        WHITE_50,
-                    );
-                }
-                return new Rect(
+            if (this.shape === Shape.Rect || this.shape === Shape.Ellipse) {
+                const res2 = rectangleFromPoints(this.params[0], res);
+                const col = this.selectMode
+                    ? WHITE_50
+                    : colourSquare.style.background;
+                return new Box(
                     -1,
-                    coords.x,
-                    coords.y,
-                    sizes.x,
-                    sizes.y,
-                    colourSquare.style.background,
+                    res2[0],
+                    res2[1],
+                    res2[2],
+                    res2[3],
+                    col,
+                    this.shape,
                 );
-            } else if (this.shape === Shape.Circle) {
-                if (res.x >= this.params[0].x) {
-                    res.x += 1;
-                }
-                if (res.y >= this.params[0].y) {
-                    res.y += 1;
-                }
-                const coords: Vec2 = {
-                    x: Math.min(this.params[0].x, res.x),
-                    y: Math.min(this.params[0].y, res.y),
-                };
-                const radius = Math.max(
-                    Math.abs(this.params[0].x - res.x),
-                    Math.abs(this.params[0].y - res.y),
-                );
-                const newObj = new Circle(
-                    -1,
-                    coords.x,
-                    coords.y,
-                    radius,
-                    colourSquare.style.background,
-                );
-                return newObj;
             }
         } else if (
             this.params.length >= 2 &&

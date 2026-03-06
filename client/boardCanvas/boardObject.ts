@@ -3,13 +3,12 @@ import type { Vec2 } from './coords.ts';
 import { BLACK, GOLD, GREY, GREY_LIGHT } from '../colours.ts';
 import { Shape } from '../objectEvents.ts';
 import type {
-    CircleCreatePayload,
     PolyCreatePayload,
     RectCreatePayload,
     TokenCreatePayload,
 } from '../objectEvents.ts';
 
-export type BoardObject = Circle | Polyline | Rect | Token;
+export type BoardObject = Polyline | Box | Token;
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
@@ -236,9 +235,11 @@ export class Token extends BoardObjectBase {
 }
 
 // Subclass for rectangle objects.
-export class Rect extends BoardObjectBase {
+export class Box extends BoardObjectBase {
     size: Vec2;
-    objType: Shape;
+    objType: Shape.Rect | Shape.Ellipse;
+    currPathSpecs: Array<number>;
+    currPath: Path2D;
 
     constructor(
         id: number,
@@ -247,14 +248,25 @@ export class Rect extends BoardObjectBase {
         xSize: number,
         ySize: number,
         colour: ColInst | string,
+        kind: Shape.Rect | Shape.Ellipse,
     ) {
         super(id, x, y, colour);
         this.size = { x: xSize, y: ySize };
-        this.objType = Shape.Rect;
+        this.objType = kind;
+        this.currPathSpecs = [0, 0, 0];
+        this.currPath = new Path2D();
         this.setCenter();
     }
 
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+        if (this.objType === Shape.Rect) {
+            this.drawRect(ctx, squareSize, offset);
+        } else {
+            this.drawEllipse(ctx, squareSize, offset);
+        }
+    }
+
+    drawRect(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         if (this.selected) {
             ctx.strokeStyle = GOLD.toString();
             ctx.lineWidth = 4;
@@ -274,6 +286,48 @@ export class Rect extends BoardObjectBase {
             Math.round(this.size.x * squareSize),
             Math.round(this.size.y * squareSize),
         );
+    }
+
+    drawEllipse(
+        ctx: CanvasRenderingContext2D,
+        squareSize: number,
+        offset: Vec2,
+    ) {
+        if (
+            squareSize !== this.currPathSpecs[0] ||
+            offset.x !== this.currPathSpecs[1] ||
+            offset.y !== this.currPathSpecs[2]
+        ) {
+            const coords: Vec2 = {
+                x:
+                    this.location.x * squareSize +
+                    offset.x +
+                    (squareSize * this.size.x) / 2,
+                y:
+                    this.location.y * squareSize +
+                    offset.y +
+                    (squareSize * this.size.y) / 2,
+            };
+            this.currPath = new Path2D();
+            this.currPath.ellipse(
+                coords.x,
+                coords.y,
+                (this.size.x * squareSize) / 2,
+                (this.size.y * squareSize) / 2,
+                0,
+                0,
+                2 * Math.PI,
+            );
+            this.currPathSpecs = [squareSize, offset.x, offset.y];
+            this.currPath.closePath();
+        }
+        if (this.selected) {
+            ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = 4;
+            ctx.stroke(this.currPath);
+        }
+        ctx.fillStyle = this.colour.toString();
+        ctx.fill(this.currPath);
     }
 
     isPointInside(point: Vec2) {
@@ -297,7 +351,7 @@ export class Rect extends BoardObjectBase {
 
     payloadFromObject(): RectCreatePayload {
         return {
-            kind: Shape.Rect,
+            kind: this.objType,
             x: this.location.x,
             y: this.location.y,
             width: this.size.x,
@@ -313,107 +367,6 @@ export class Rect extends BoardObjectBase {
         this.location.y = newSetting.y;
         this.size.x = newSetting.width;
         this.size.y = newSetting.height;
-        this.colour = newSetting.colour;
-        this.layerId = newSetting.layerId;
-    }
-}
-
-// Subclass for circle objects.
-export class Circle extends BoardObjectBase {
-    diameter: number;
-    objType: Shape;
-    currPathSpecs: Array<number>;
-    currPath: Path2D;
-
-    constructor(
-        id: number,
-        x: number,
-        y: number,
-        diam: number,
-        colour: ColInst | string,
-    ) {
-        super(id, x, y, colour);
-        this.diameter = diam;
-        this.objType = Shape.Circle;
-        this.currPathSpecs = [0, 0, 0];
-        this.currPath = new Path2D();
-        this.setCenter();
-    }
-
-    draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        if (
-            squareSize !== this.currPathSpecs[0] ||
-            offset.x !== this.currPathSpecs[1] ||
-            offset.y !== this.currPathSpecs[2]
-        ) {
-            const coords: Vec2 = {
-                x:
-                    this.location.x * squareSize +
-                    offset.x +
-                    (squareSize * this.diameter) / 2,
-                y:
-                    this.location.y * squareSize +
-                    offset.y +
-                    (squareSize * this.diameter) / 2,
-            };
-            this.currPath = new Path2D();
-            this.currPath.arc(
-                coords.x,
-                coords.y,
-                (this.diameter * squareSize) / 2,
-                0,
-                2 * Math.PI,
-                false,
-            );
-            this.currPathSpecs = [squareSize, offset.x, offset.y];
-            this.currPath.closePath();
-        }
-        if (this.selected) {
-            ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 4;
-            ctx.stroke(this.currPath);
-        }
-        ctx.fillStyle = this.colour.toString();
-        ctx.fill(this.currPath);
-    }
-
-    isPointInside(point: Vec2) {
-        const adj = Math.abs(
-            this.location.x + this.diameter / 2 - point.x - 0.5,
-        );
-        const opp = Math.abs(
-            this.location.y + this.diameter / 2 - point.y - 0.5,
-        );
-        const distance = Math.sqrt(adj * adj + opp * opp);
-        if (distance <= this.diameter / 2) {
-            return true;
-        }
-        return false;
-    }
-
-    setCenter() {
-        this.centerPoint = {
-            x: this.location.x + this.diameter / 2,
-            y: this.location.y + this.diameter / 2,
-        };
-    }
-
-    payloadFromObject(): CircleCreatePayload {
-        return {
-            kind: Shape.Circle,
-            x: this.location.x,
-            y: this.location.y,
-            diameter: this.diameter,
-            colour: this.colour,
-            layerId: this.layerId,
-            objectId: this.objectId,
-        };
-    }
-
-    updateFromPayload(newSetting: CircleCreatePayload) {
-        this.location.x = newSetting.x;
-        this.location.y = newSetting.y;
-        this.diameter = newSetting.diameter;
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
     }
