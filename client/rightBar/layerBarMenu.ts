@@ -1,15 +1,8 @@
 import { GREY, RED } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
+import { LayerState } from '../objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
-
-export interface LayerState {
-    gmVisible: boolean;
-    playerVisible: boolean;
-    zOrder: number;
-    id: number;
-    element?: HTMLElement;
-}
 
 export class LayerMenu {
     active: boolean;

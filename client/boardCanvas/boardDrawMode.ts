@@ -3,7 +3,7 @@ import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import type { CreateObjectPayload } from '../objectEvents.ts';
+import type { ObjectCreatePayload } from '../objectEvents.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
@@ -17,7 +17,7 @@ export class BoardDrawMode {
     completeObjCheck: boolean;
     selectMode: boolean;
     selectState: number;
-    tempObject: CreateObjectPayload | null;
+    tempObject: ObjectCreatePayload | null;
     stickTemp: boolean;
 
     constructor(parentBoard: Board) {
@@ -56,7 +56,7 @@ export class BoardDrawMode {
                 } else if (event.key === '2') {
                     this.shape = Shape.Circle;
                 } else if (event.key === '3') {
-                    this.shape = Shape.Poly;
+                    this.shape = Shape.Polyline;
                 } else if (event.key === '4') {
                     this.shape = Shape.Line;
                 } else if (event.key === '6') {
@@ -68,7 +68,7 @@ export class BoardDrawMode {
                 this.active &&
                 event.key === '5' &&
                 this.params.length > 2 &&
-                (this.shape === Shape.Poly || this.shape === Shape.Line)
+                (this.shape === Shape.Polyline || this.shape === Shape.Line)
             ) {
                 this.setNewObject();
             } else if (this.active && event.key === '7') {
@@ -78,7 +78,10 @@ export class BoardDrawMode {
 
         can.addEventListener('mousedown', () => {
             if (this.active) {
-                if (this.shape !== Shape.Poly && this.shape !== Shape.Line) {
+                if (
+                    this.shape !== Shape.Polyline &&
+                    this.shape !== Shape.Line
+                ) {
                     this.params.push(
                         this.board.determineTile(
                             this.board.mouseCoords.x,
@@ -139,7 +142,7 @@ export class BoardDrawMode {
                 }
             } else if (
                 this.active &&
-                this.shape !== Shape.Poly &&
+                this.shape !== Shape.Polyline &&
                 this.shape !== Shape.Line
             ) {
                 if (this.shape === Shape.Rect) {
@@ -189,7 +192,7 @@ export class BoardDrawMode {
 
     // Finalizes the current object and sends it to the server.
     setNewObject() {
-        let tempObj: CreateObjectPayload;
+        let tempObj: ObjectCreatePayload;
         if (this.shape === Shape.Rect && this.params.length === 2) {
             const one = Math.min(this.params[0].x, this.params[1].x);
             const two = Math.min(this.params[0].y, this.params[1].y);
@@ -232,7 +235,7 @@ export class BoardDrawMode {
             };
             this.completeObjCheck = true;
         } else if (
-            (this.shape === Shape.Poly || this.shape === Shape.Line) &&
+            (this.shape === Shape.Polyline || this.shape === Shape.Line) &&
             this.params.length > 2
         ) {
             tempObj = {
@@ -282,7 +285,7 @@ export class BoardDrawMode {
                     this.tempObject.colour,
                 );
             } else if (
-                this.tempObject.kind === Shape.Poly ||
+                this.tempObject.kind === Shape.Polyline ||
                 this.tempObject.kind === Shape.Line
             ) {
                 return new Polyline(
@@ -297,7 +300,7 @@ export class BoardDrawMode {
             return this.tempObject;
         }
         if (
-            this.shape !== Shape.Poly &&
+            this.shape !== Shape.Polyline &&
             this.shape !== Shape.Line &&
             this.params.length >= 1
         ) {
@@ -371,7 +374,7 @@ export class BoardDrawMode {
             }
         } else if (
             this.params.length >= 2 &&
-            (this.shape === Shape.Poly || this.shape === Shape.Line)
+            (this.shape === Shape.Polyline || this.shape === Shape.Line)
         ) {
             const newParams = this.params.slice(1);
             const newObj = new Polyline(

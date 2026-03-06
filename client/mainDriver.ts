@@ -8,6 +8,7 @@ const board = new Board(serveInter);
 const rightMan = new RightBarManager(serveInter);
 const leftMan = new LeftBarManager();
 
+serveInter.setBoard(board);
 async function runBoardStep() {
     board.step();
 }

@@ -2,11 +2,11 @@ import type { ColInst } from './colours.ts';
 import type { Vec2 } from './boardCanvas/coords.ts';
 
 export enum Shape {
-    Rect = 'Rect',
-    Circle = 'Circle',
-    Poly = 'Polyline',
-    Line = 'Line',
-    Token = 'Token',
+    Rect = 'RECT',
+    Circle = 'CIRCLE',
+    Polyline = 'POLYLINE',
+    Line = 'LINE',
+    Token = 'TOKEN',
 }
 
 export enum Entity {
@@ -22,6 +22,14 @@ export enum Action {
     Remove = 'REMOVE',
     Recolour = 'RECOLOUR',
     ZOrder = 'ZORDER',
+}
+
+export interface LayerState {
+    gmVisible: boolean;
+    playerVisible: boolean;
+    zOrder: number;
+    id: number;
+    element?: HTMLElement;
 }
 
 export interface RectCreatePayload {
@@ -57,7 +65,7 @@ export interface TokenCreatePayload {
 }
 
 export interface PolyCreatePayload {
-    kind: Shape.Poly | Shape.Line;
+    kind: Shape.Polyline | Shape.Line;
     x: number;
     y: number;
     points: Vec2[];
@@ -66,7 +74,7 @@ export interface PolyCreatePayload {
     objectId: number;
 }
 
-export type CreateObjectPayload =
+export type ObjectCreatePayload =
     | CircleCreatePayload
     | PolyCreatePayload
     | RectCreatePayload
@@ -109,7 +117,7 @@ export interface LayerRemoveObjectEvent {
 export interface ObjectCreateEvent {
     entity: Entity.Object;
     action: Action.Create;
-    object: CreateObjectPayload;
+    object: ObjectCreatePayload;
 }
 
 export interface ObjectMoveEvent {

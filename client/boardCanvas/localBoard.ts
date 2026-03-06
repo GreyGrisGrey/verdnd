@@ -6,13 +6,12 @@ import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
-import type { LayerState } from '../rightBar/layerBarMenu.ts';
 import { tempStore } from '../serveInter.ts';
-import { CreateObjectPayload } from '../objectEvents.ts';
+import { ObjectCreatePayload, LayerState } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
-function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
+function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
         case Shape.Circle:
             return new Circle(p.objectId, p.x, p.y, p.diameter, p.colour);
@@ -28,7 +27,7 @@ function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
                 p.name ?? '',
             );
         case Shape.Line:
-        case Shape.Poly:
+        case Shape.Polyline:
             return new Polyline(
                 p.objectId,
                 p.x,
@@ -161,8 +160,8 @@ export class Board {
         }
     }
 
-    getLayer(layerID: number) {
-        return this.layerMap.get(layerID);
+    getLayer(layerId: number) {
+        return this.layerMap.get(layerId);
     }
 
     getObjectById(objectId: number) {
@@ -191,20 +190,12 @@ export class Board {
         return true;
     }
 
-    // Moves an object based on the ID of just the object.
-    moveObject(objID: number, layerID: number, moveX: number, moveY: number) {
-        const layer = this.layerMap.get(layerID);
-        if (layer) {
-            layer.moveObject(objID, moveX, moveY);
-        }
-    }
-
-    // Deletes an object based on the ID of the object and the layer it belongs on.
-    removeObject(objId: number, layerId: number = -1) {
-        this.objectMap.delete(objId);
+    // Deletes an object based on the Id of the object and the layer it belongs on.
+    removeObject(objectId: number, layerId: number = -1) {
+        this.objectMap.delete(objectId);
         if (layerId === -1) {
             for (const layer of this.boardLayers) {
-                if (layer.removeObject(objId)) {
+                if (layer.removeObject(objectId)) {
                     return true;
                 }
             }
@@ -212,14 +203,14 @@ export class Board {
         } else {
             const layer = this.layerMap.get(layerId);
             if (layer) {
-                layer.removeObject(objId);
+                layer.removeObject(objectId);
             }
             return true;
         }
     }
 
     // Adds an object to a specified layer.
-    addObject(layerId: number, newObject: CreateObjectPayload) {
+    addObject(layerId: number, newObject: ObjectCreatePayload) {
         const layer = this.layerMap.get(layerId);
         const currObj = this.objectMap.get(newObject.objectId!);
         if (!layer) {

@@ -1,19 +1,21 @@
 import type {
-    CreateObjectPayload,
+    ObjectCreatePayload,
     ObjectCreateEvent,
     ObjectMoveEvent,
     ObjectRecolourEvent,
+    LayerState,
 } from './objectEvents.ts';
-import type { LayerState } from './rightBar/layerBarMenu.ts';
 import type { DicePayload } from './rightBar/rollBarMenu.ts';
+import { Board } from './boardCanvas/localBoard.ts';
 
 export class tempStore {
-    storedObjects: Map<number, CreateObjectPayload>;
+    storedObjects: Map<number, ObjectCreatePayload>;
     storedLayers: Map<number, LayerState>;
     recentCreation: any[];
     currIndex: number;
     prevMapping: Map<number, number>;
     socket: WebSocket;
+    board: Board | null;
 
     constructor() {
         this.storedObjects = new Map();
@@ -22,6 +24,8 @@ export class tempStore {
         this.currIndex = 0;
         this.prevMapping = new Map();
         this.socket = new WebSocket('ws://47.55.46.138:4322/');
+        this.board = null;
+
         this.socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);
             if (message.entity === 'LAYER') {
@@ -31,7 +35,10 @@ export class tempStore {
                     message.action === 'DESTROY' &&
                     this.storedObjects.has(message.objectId)
                 ) {
-                    this.storedObjects.delete(message.object.objectId);
+                    this.storedObjects.delete(message.objectId);
+                    if (this.board) {
+                        this.board.removeObject(message.objectId);
+                    }
                 } else {
                     this.storedObjects.set(
                         message.object.objectId,
@@ -43,6 +50,10 @@ export class tempStore {
                 this.prevMapping.set(message.index, message.result);
             }
         });
+    }
+
+    setBoard(newBoard: Board) {
+        this.board = newBoard;
     }
 
     ping() {
@@ -63,7 +74,7 @@ export class tempStore {
         return -1;
     }
 
-    getObjects(): Map<number, CreateObjectPayload> {
+    getObjects(): Map<number, ObjectCreatePayload> {
         return this.storedObjects;
     }
 
@@ -94,8 +105,13 @@ export class tempStore {
     async destroyObjects(targetIds: number[]) {
         for (const id of targetIds) {
             if (this.storedObjects.has(id)) {
-                this.storedObjects.delete(id);
-                this.deleteRecentId(id);
+                this.socket.send(
+                    JSON.stringify({
+                        entity: 'OBJECT',
+                        action: 'DESTROY',
+                        objectId: id,
+                    }),
+                );
             }
         }
     }

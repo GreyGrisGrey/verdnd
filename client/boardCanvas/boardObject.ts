@@ -25,8 +25,13 @@ export class BoardObjectBase {
     selected: boolean;
     layerId: number;
 
-    constructor(objId: number, x: number, y: number, colour: ColInst | string) {
-        this.objectId = objId;
+    constructor(
+        objectId: number,
+        x: number,
+        y: number,
+        colour: ColInst | string,
+    ) {
+        this.objectId = objectId;
         this.zOrder = 0;
         this.location = { x, y };
         this.colour = colour;
@@ -410,7 +415,7 @@ export class Circle extends BoardObjectBase {
 // Subclass for polyline objects.
 export class Polyline extends BoardObjectBase {
     points: Vec2[];
-    objType: Shape.Poly | Shape.Line;
+    objType: Shape.Polyline | Shape.Line;
     currPath: Path2D;
     currPathSpecs: Array<number>;
     ctx?: CanvasRenderingContext2D;
@@ -421,9 +426,9 @@ export class Polyline extends BoardObjectBase {
         y: number,
         structure: Vec2[],
         colour: ColInst | string,
-        shape: Shape.Poly | Shape.Line,
+        shape: Shape.Polyline | Shape.Line,
     ) {
-        if (shape !== Shape.Poly && shape !== Shape.Line) {
+        if (shape !== Shape.Polyline && shape !== Shape.Line) {
             throw new TypeError(
                 'Attempted construction of Polyline object with non-line shape.',
             );
@@ -462,7 +467,7 @@ export class Polyline extends BoardObjectBase {
             ctx.lineWidth = 4;
             ctx.stroke(this.currPath);
         }
-        if (this.objType === Shape.Poly) {
+        if (this.objType === Shape.Polyline) {
             ctx.fillStyle = this.colour.toString();
             ctx.fill(this.currPath);
         } else {

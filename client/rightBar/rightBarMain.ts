@@ -3,7 +3,7 @@ import { LayerMenu } from './layerBarMenu.ts';
 import { RollMenu } from './rollBarMenu.ts';
 import { TokenMenu } from './tokenBarMenu.ts';
 import { getRequiredElement } from '../dom.ts';
-import type { LayerState } from './layerBarMenu.ts';
+import type { LayerState } from '../objectEvents.ts';
 import { tempStore } from '../serveInter.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const rightPara = getRequiredElement('rightPara', HTMLElement);

@@ -76,17 +76,6 @@ export class BoardLayer {
         return true;
     }
 
-    // Attempts to move a board object.
-    // If no board object with a corresponding Id exists, returns false, otherwise true.
-    moveObject(moveId: number, moveX: number, moveY: number) {
-        const targetObj = this.heldMap.get(moveId);
-        if (!targetObj) {
-            return false;
-        }
-        targetObj.move(moveX, moveY);
-        return true;
-    }
-
     // Draws each board object on the layer.
     drawLayer(
         ctx: CanvasRenderingContext2D,

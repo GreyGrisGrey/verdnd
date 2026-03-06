@@ -1,13 +1,13 @@
 import json
 
 class boardObj:
-    def __init__(self, kind, x, y, col, layer, Id, points = [], diameter = 0, width = 0, height = 0, name = ""):
+    def __init__(self, kind, x, y, col, layer, id, points = [], diameter = 0, width = 0, height = 0, name = ""):
         self.kind = kind
         self.x = x
         self.y = y
         self.colour = col
         self.layerId = layer
-        self.objectId = Id
+        self.objectId = id
         self.points = points
         self.diameter = diameter
         self.width = width
@@ -28,7 +28,7 @@ class boardObj:
     def toString(self):
         if self.active == False:
             return json.dumps({"entity": "OBJECT", "action": "DESTROY", "objectId": self.objectId})
-        if self.kind == "Rect":
+        if self.kind == "RECT":
             return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
@@ -37,7 +37,7 @@ class boardObj:
                                "colour": self.colour, 
                                "layerId": self.layerId,
                                "objectId": self.objectId}})
-        elif self.kind == "Circle":
+        elif self.kind == "CIRCLE":
             return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
@@ -45,7 +45,7 @@ class boardObj:
                                "colour": self.colour, 
                                "layerId": self.layerId,
                                "objectId": self.objectId}})
-        elif self.kind == "Token":
+        elif self.kind == "TOKEN":
             return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
@@ -54,15 +54,7 @@ class boardObj:
                                "colour": self.colour, 
                                "layerId": self.layerId,
                                "objectId": self.objectId}})
-        elif self.kind == "Polyline":
-            return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
-                               "x": self.x, 
-                               "y": self.y, 
-                               "points": self.points,
-                               "colour": self.colour, 
-                               "layerId": self.layerId,
-                               "objectId": self.objectId}})
-        elif self.kind == "Line":
+        elif self.kind == "POLYLINE" or self.kind == "LINE":
             return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 

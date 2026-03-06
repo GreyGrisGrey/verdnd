@@ -56,23 +56,23 @@ def handleObj(newJson):
 
 def constructObj(newJson, id):
     print(newJson)
-    if newJson["kind"] == "Rect":
+    if newJson["kind"] == "RECT":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
                         width = newJson["width"], height = newJson["height"])
-    if newJson["kind"] == "Circle":
+    if newJson["kind"] == "CIRCLE":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
                         diameter = newJson["diameter"])
-    if newJson["kind"] == "Polyline":
+    if newJson["kind"] == "POLYLINE":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
                         points = newJson["points"])
-    if newJson["kind"] == "Line":
+    if newJson["kind"] == "LINE":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
                         points = newJson["points"])
-    if newJson["kind"] == "Token":
+    if newJson["kind"] == "TOKEN":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
                         diameter = newJson["diameter"], name = newJson["name"])
