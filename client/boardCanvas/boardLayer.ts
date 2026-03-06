@@ -30,10 +30,10 @@ export class BoardLayer {
     // Sorts the board objects based on zOrder.
     sortObjects() {
         this.heldObjects = this.heldObjects.sort((n1, n2) => {
-            if (n1.objType === Shape.Token && n2.objType !== Shape.Token) {
+            if (n1.shape === Shape.Token && n2.shape !== Shape.Token) {
                 return 1;
             }
-            if (n1.objType !== Shape.Token && n2.objType === Shape.Token) {
+            if (n1.shape !== Shape.Token && n2.shape === Shape.Token) {
                 return -1;
             }
             if (n1.selected && !n2.selected) {
@@ -118,7 +118,7 @@ export class BoardLayer {
                 selectCoords.length === 1 &&
                 'isPointInside' in candidate &&
                 candidate.isPointInside(selectCoords[0]) &&
-                (candidate.objType === matchType || matchType === 'any')
+                (candidate.shape === matchType || matchType === 'any')
             ) {
                 acceptable.push(candidate);
                 break;
@@ -128,7 +128,7 @@ export class BoardLayer {
                     selectCoords[0],
                     selectCoords[1],
                 ) &&
-                (candidate.objType === matchType || matchType === 'any')
+                (candidate.shape === matchType || matchType === 'any')
             ) {
                 acceptable.push(candidate);
             }

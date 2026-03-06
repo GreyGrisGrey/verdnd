@@ -25,24 +25,13 @@ export class RollMenu {
     serveInter: tempStore;
 
     constructor(server: tempStore) {
-        this.textBox = document.createElement('textarea');
+        this.textBox = getRequiredElement('chatBoxTextBox', HTMLElement);
         this.active = false;
         this.modifier = 0;
         this.currChats = [];
-        this.textBox.style.visibility = 'hidden';
-        this.textBox.style.pointerEvents = 'none';
-        chatBox.style.visibility = 'hidden';
-        chatBox.style.pointerEvents = 'none';
-        this.setMainElements();
         this.setRollElements();
         this.constructChats();
         this.serveInter = server;
-    }
-
-    // Updates the main elements of the menu. Also questionable, why is this not in a style element.
-    setMainElements() {
-        chatBox.append(this.textBox);
-        chatBox.style.background = GREY.toString();
     }
 
     // Constructs the HTML elements corresponding to each roll option.

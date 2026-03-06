@@ -30,8 +30,12 @@ export class LayerMenu {
         this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);
         this.boxHeight = 50;
         this.currSelect = 0;
-        this.tempButtonObj = document.createElement('input');
-        this.setMainElements();
+        this.tempButtonObj = getRequiredElement('tempButtonObj', HTMLElement);
+        this.tempButtonObj.addEventListener('mousedown', () => {
+            if (this.active) {
+                this.createLayer();
+            }
+        });
         this.moveLayers();
     }
 
@@ -40,51 +44,6 @@ export class LayerMenu {
         this.active = newAct;
         this.layerObj.style.visibility = this.active ? 'visible' : 'hidden';
         this.layerObj.style.pointerEvents = this.active ? 'auto' : 'none';
-    }
-
-    // Modifies and styles the main elements of the page.
-    // Why is this here and not in a style element? I don't know.
-    // TODO - Fix that.
-    setMainElements() {
-        this.descObj.style.height = `${this.boxHeight}px`;
-
-        const numText = document.createElement('p');
-        numText.innerText = 'Layer #';
-        numText.style.position = 'absolute';
-        numText.style.left = '10px';
-
-        const firstCheck = document.createElement('p');
-        firstCheck.innerText = 'GM\nVis';
-        firstCheck.style.width = '50px';
-        firstCheck.style.position = 'absolute';
-        firstCheck.style.left = '187px';
-        firstCheck.style.textAlign = 'center';
-
-        const secondCheck = document.createElement('p');
-        secondCheck.innerText = 'Player\nVis';
-        secondCheck.style.width = '50px';
-        secondCheck.style.position = 'absolute';
-        secondCheck.style.left = '137px';
-        secondCheck.style.textAlign = 'center';
-
-        (this.tempButtonObj as any).type = 'button';
-        (this.tempButtonObj as any).value = 'Make layer';
-        this.tempButtonObj.style.width = '190px';
-        this.tempButtonObj.style.position = 'absolute';
-        this.tempButtonObj.style.left = '0px';
-        this.tempButtonObj.style.bottom = '0px';
-        this.tempButtonObj.style.height = '50px';
-
-        this.layerObj.append(this.tempButtonObj);
-        this.descObj.append(numText);
-        this.descObj.append(firstCheck);
-        this.descObj.append(secondCheck);
-
-        this.tempButtonObj.addEventListener('mousedown', () => {
-            if (this.active) {
-                this.createLayer();
-            }
-        });
     }
 
     // Calls the server interface to create a new layer.

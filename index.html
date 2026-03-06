@@ -19,29 +19,27 @@
     </div>
 
     <div id="rightBar">
-        <p id="rightPara">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
 
         <button class="rightTab" id="rollTab">Roll</button>
         <button class="rightTab" id="tokenTab">T</button>
         <button class="rightTab" id="layerTab">Layers</button>
         <button class="rightTab" id="characterTab">C</button>
 
-        <div id="chatBox"></div>
+        <div id="chatBox">
+            <textarea id="chatBoxTextBox"></textarea>
+        </div>
         <div id="layerLayerObj">
-            <div id="descLayerObj"></div>
+            <div id="descLayerObj">
+                <p id="descLayerObjNumText">Layer #</p>
+                <p id="descLayerObjFirstCheck">GM<br>Vis</p>
+                <p id="descLayerObjSecondCheck">Player<br>Vis</p>
+            </div>
+            <button id="tempButtonObj">Make Layer</button>
         </div>
     </div>
     <style>
         #layerLayerObj {
             background-color: #cccccc;
-            border: solid black;
             font-size: 14px;
             visibility: hidden;
         }
@@ -49,12 +47,49 @@
         #descLayerObj {
             border: solid black;
             width: 250px;
+            height: 50px;
+        }
+
+        #descLayerObjFirstCheck {
+            position: absolute;
+            left: 187px;
+            width: 50px;
+            text-align: center;
+        }
+
+        #descLayerObjSecondCheck {
+            position: absolute;
+            left: 137px;
+            width: 50px;
+            text-align: center;
+        }
+
+        #tempButtonObj {
+            position: absolute;
+            left: 0px;
+            width: 190px;
+            bottom: 0px;
+            height: 50px;
+        }
+
+        #descLayerObjNumText {
+            position: absolute;
+            left: 10px;
         }
     </style>
 
     <style>
         #chatBox {
             position: absolute;
+            background-color: #cccccc;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #chatBoxTextBox {
+            background-color: #cccccc;
+            visibility: hidden;
+            pointer-events: none;
         }
     </style>
     <div id="leftBar">
@@ -247,12 +282,6 @@
             width: 250px;
             height: 300px;
             pointer-events: none;
-        }
-
-        #rightPara {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
         }
     </style>
 

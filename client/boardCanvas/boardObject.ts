@@ -3,6 +3,7 @@ import type { Vec2 } from './coords.ts';
 import { BLACK, GOLD, GREY, GREY_LIGHT } from '../colours.ts';
 import { Shape } from '../objectEvents.ts';
 import type {
+    ObjectCreatePayload,
     PolyCreatePayload,
     RectCreatePayload,
     TokenCreatePayload,
@@ -23,12 +24,17 @@ export class BoardObjectBase {
     centerPoint: Vec2;
     selected: boolean;
     layerId: number;
+    currPathSpecs: Array<number>;
+    currPath: Path2D;
+    ctx?: CanvasRenderingContext2D;
+    shape: Shape;
 
     constructor(
         objectId: number,
         x: number,
         y: number,
         colour: ColInst | string,
+        kind: Shape,
     ) {
         this.objectId = objectId;
         this.zOrder = 0;
@@ -39,6 +45,38 @@ export class BoardObjectBase {
         this.selected = false;
         this.centerPoint = { x: 0, y: 0 };
         this.layerId = 0;
+        this.currPathSpecs = [0, 0, 0];
+        this.currPath = new Path2D();
+        this.ctx = undefined;
+        this.shape = kind;
+    }
+
+    draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+        if (
+            squareSize !== this.currPathSpecs[0] ||
+            offset.x !== this.currPathSpecs[1] ||
+            offset.y !== this.currPathSpecs[2]
+        ) {
+            this.buildPath(squareSize, offset);
+            this.ctx = ctx;
+        }
+        if (this.selected) {
+            ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = 4;
+            ctx.stroke(this.currPath);
+        }
+        if (this.shape === Shape.Line) {
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = this.colour.toString();
+            ctx.stroke(this.currPath);
+        } else {
+            ctx.fillStyle = this.colour.toString();
+            ctx.fill(this.currPath);
+        }
+    }
+
+    buildPath(squareSize: number, offset: Vec2) {
+        return;
     }
 
     // Moves the object a set amount
@@ -71,6 +109,19 @@ export class BoardObjectBase {
         return false;
     }
 
+    isPointInside(point: Vec2) {
+        if (
+            this.ctx?.isPointInPath(
+                this.currPath,
+                (point.x + 0.5) * this.currPathSpecs[0] + this.currPathSpecs[1],
+                (point.y + 0.5) * this.currPathSpecs[0] + this.currPathSpecs[2],
+            )
+        ) {
+            return true;
+        }
+        return false;
+    }
+
     // Function to set the center point of the object.
     setCenter() {
         this.centerPoint = { x: 0, y: 0 };
@@ -79,6 +130,14 @@ export class BoardObjectBase {
     setSelected(newSelection: boolean) {
         this.selected = newSelection;
     }
+
+    updateFromPayload(newSetting: ObjectCreatePayload) {
+        this.location.x = newSetting.x;
+        this.location.y = newSetting.y;
+        this.colour = newSetting.colour;
+        this.layerId = newSetting.layerId;
+        this.setCenter();
+    }
 }
 
 // Subclass for token objects.
@@ -86,9 +145,6 @@ export class Token extends BoardObjectBase {
     owner: string;
     diameter: number;
     name: string;
-    objType: Shape;
-    currPathSpecs: Array<number>;
-    currPath: Path2D;
     currOutPath: Path2D;
 
     constructor(
@@ -100,13 +156,10 @@ export class Token extends BoardObjectBase {
         name: string = '',
         owner: string = '',
     ) {
-        super(id, x, y, colour);
+        super(id, x, y, colour, Shape.Token);
         this.owner = owner;
         this.diameter = diam;
         this.name = name;
-        this.objType = Shape.Token;
-        this.currPathSpecs = [0, 0, 0];
-        this.currPath = new Path2D();
         this.currOutPath = new Path2D();
         this.setCenter();
     }
@@ -231,15 +284,14 @@ export class Token extends BoardObjectBase {
         this.diameter = newSetting.diameter;
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
+        this.setCenter();
     }
 }
 
-// Subclass for rectangle objects.
+// Subclass for both rectangle/circle objects.
 export class Box extends BoardObjectBase {
     size: Vec2;
-    objType: Shape.Rect | Shape.Ellipse;
-    currPathSpecs: Array<number>;
-    currPath: Path2D;
+    declare shape: Shape.Rect | Shape.Ellipse;
 
     constructor(
         id: number,
@@ -250,96 +302,53 @@ export class Box extends BoardObjectBase {
         colour: ColInst | string,
         kind: Shape.Rect | Shape.Ellipse,
     ) {
-        super(id, x, y, colour);
+        super(id, x, y, colour, kind);
         this.size = { x: xSize, y: ySize };
-        this.objType = kind;
-        this.currPathSpecs = [0, 0, 0];
-        this.currPath = new Path2D();
         this.setCenter();
+        this.shape = kind;
     }
 
-    draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        if (this.objType === Shape.Rect) {
-            this.drawRect(ctx, squareSize, offset);
-        } else {
-            this.drawEllipse(ctx, squareSize, offset);
-        }
+    buildPath(squareSize: number, offset: Vec2) {
+        this.shape === Shape.Rect
+            ? this.pathRect(squareSize, offset)
+            : this.pathEllipse(squareSize, offset);
     }
 
-    drawRect(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        if (this.selected) {
-            ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 4;
-            ctx.strokeRect(
-                this.location.x * squareSize + offset.x - 2,
-                this.location.y * squareSize + offset.y - 2,
-                this.size.x * squareSize + 4,
-                this.size.y * squareSize + 4,
-            );
-        }
-        ctx.fillStyle = this.colour.toString();
-        // This was updated to avoid anti-aliasing issues.
-        // I have no evidence but I do not think it fully worked.
-        ctx.fillRect(
+    pathRect(squareSize: number, offset: Vec2) {
+        this.currPath = new Path2D();
+        this.currPath.rect(
             Math.round(this.location.x * squareSize + offset.x),
             Math.round(this.location.y * squareSize + offset.y),
             Math.round(this.size.x * squareSize),
             Math.round(this.size.y * squareSize),
         );
+        this.currPathSpecs = [squareSize, offset.x, offset.y];
+        this.currPath.closePath();
     }
 
-    drawEllipse(
-        ctx: CanvasRenderingContext2D,
-        squareSize: number,
-        offset: Vec2,
-    ) {
-        if (
-            squareSize !== this.currPathSpecs[0] ||
-            offset.x !== this.currPathSpecs[1] ||
-            offset.y !== this.currPathSpecs[2]
-        ) {
-            const coords: Vec2 = {
-                x:
-                    this.location.x * squareSize +
-                    offset.x +
-                    (squareSize * this.size.x) / 2,
-                y:
-                    this.location.y * squareSize +
-                    offset.y +
-                    (squareSize * this.size.y) / 2,
-            };
-            this.currPath = new Path2D();
-            this.currPath.ellipse(
-                coords.x,
-                coords.y,
-                (this.size.x * squareSize) / 2,
-                (this.size.y * squareSize) / 2,
-                0,
-                0,
-                2 * Math.PI,
-            );
-            this.currPathSpecs = [squareSize, offset.x, offset.y];
-            this.currPath.closePath();
-        }
-        if (this.selected) {
-            ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 4;
-            ctx.stroke(this.currPath);
-        }
-        ctx.fillStyle = this.colour.toString();
-        ctx.fill(this.currPath);
-    }
-
-    isPointInside(point: Vec2) {
-        if (
-            point.x + 0.5 >= this.location.x &&
-            point.y + 0.5 >= this.location.y &&
-            point.x + 0.5 <= this.location.x + this.size.x &&
-            point.y + 0.5 <= this.location.y + this.size.y
-        ) {
-            return true;
-        }
-        return false;
+    pathEllipse(squareSize: number, offset: Vec2) {
+        const coords: Vec2 = {
+            x:
+                this.location.x * squareSize +
+                offset.x +
+                (squareSize * this.size.x) / 2,
+            y:
+                this.location.y * squareSize +
+                offset.y +
+                (squareSize * this.size.y) / 2,
+        };
+        this.currPath = new Path2D();
+        this.currPath.ellipse(
+            coords.x,
+            coords.y,
+            (this.size.x * squareSize) / 2,
+            (this.size.y * squareSize) / 2,
+            0,
+            0,
+            2 * Math.PI,
+        );
+        this.currPathSpecs = [squareSize, offset.x, offset.y];
+        this.currPath.closePath();
     }
 
     setCenter() {
@@ -351,7 +360,7 @@ export class Box extends BoardObjectBase {
 
     payloadFromObject(): RectCreatePayload {
         return {
-            kind: this.objType,
+            kind: this.shape,
             x: this.location.x,
             y: this.location.y,
             width: this.size.x,
@@ -361,25 +370,12 @@ export class Box extends BoardObjectBase {
             objectId: this.objectId,
         };
     }
-
-    updateFromPayload(newSetting: RectCreatePayload) {
-        this.location.x = newSetting.x;
-        this.location.y = newSetting.y;
-        this.size.x = newSetting.width;
-        this.size.y = newSetting.height;
-        this.colour = newSetting.colour;
-        this.layerId = newSetting.layerId;
-    }
 }
 
-// Subclass for polyline objects.
-// Also works for lines, if the setting is enabled.
+// Subclass for polyline/line objects.
 export class Polyline extends BoardObjectBase {
     points: Vec2[];
-    objType: Shape.Polyline | Shape.Line;
-    currPath: Path2D;
-    currPathSpecs: Array<number>;
-    ctx?: CanvasRenderingContext2D;
+    declare shape: Shape.Polyline | Shape.Line;
 
     constructor(
         id: number,
@@ -387,72 +383,28 @@ export class Polyline extends BoardObjectBase {
         y: number,
         structure: Vec2[],
         colour: ColInst | string,
-        shape: Shape.Polyline | Shape.Line,
+        kind: Shape.Polyline | Shape.Line,
     ) {
-        if (shape !== Shape.Polyline && shape !== Shape.Line) {
-            throw new TypeError(
-                'Attempted construction of Polyline object with non-line shape.',
-            );
-        }
-        super(id, x, y, colour);
+        super(id, x, y, colour, kind);
         this.points = structure;
-        this.objType = shape;
-        this.currPath = new Path2D();
-        this.currPathSpecs = [0, 0, 0];
-        this.ctx = undefined;
+        this.shape = kind;
         this.setCenter();
     }
 
-    draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        if (
-            squareSize !== this.currPathSpecs[0] ||
-            offset.x !== this.currPathSpecs[1] ||
-            offset.y !== this.currPathSpecs[2]
-        ) {
-            this.currPath = new Path2D();
-            this.currPath.moveTo(
-                Math.round(this.location.x * squareSize + offset.x),
-                Math.round(this.location.y * squareSize + offset.y),
+    buildPath(squareSize: number, offset: Vec2) {
+        this.currPath = new Path2D();
+        this.currPath.moveTo(
+            Math.round(this.location.x * squareSize + offset.x),
+            Math.round(this.location.y * squareSize + offset.y),
+        );
+        for (const pt of this.points) {
+            this.currPath.lineTo(
+                Math.round((this.location.x + pt.x) * squareSize + offset.x),
+                Math.round((this.location.y + pt.y) * squareSize + offset.y),
             );
-            for (const pt of this.points) {
-                this.currPath.lineTo(
-                    Math.round(
-                        (this.location.x + pt.x) * squareSize + offset.x,
-                    ),
-                    Math.round(
-                        (this.location.y + pt.y) * squareSize + offset.y,
-                    ),
-                );
-            }
-            this.currPathSpecs = [squareSize, offset.x, offset.y];
-            this.currPath.closePath();
         }
-        if (this.selected) {
-            ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 4;
-            ctx.stroke(this.currPath);
-        }
-        if (this.objType === Shape.Polyline) {
-            ctx.fillStyle = this.colour.toString();
-            ctx.fill(this.currPath);
-        } else {
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = this.colour.toString();
-            ctx.stroke(this.currPath);
-        }
-    }
-
-    isPointInside(point: Vec2) {
-        if (
-            this.ctx?.isPointInPath(
-                this.currPath,
-                (point.x + 0.5) * this.currPathSpecs[0] + this.currPathSpecs[1],
-                (point.y + 0.5) * this.currPathSpecs[0] + this.currPathSpecs[2],
-            )
-        ) {
-            return true;
-        }
-        return false;
+        this.currPathSpecs = [squareSize, offset.x, offset.y];
+        this.currPath.closePath();
     }
 
     setCenter() {
@@ -478,7 +430,7 @@ export class Polyline extends BoardObjectBase {
 
     payloadFromObject(): PolyCreatePayload {
         return {
-            kind: this.objType,
+            kind: this.shape,
             x: this.location.x,
             y: this.location.y,
             points: this.points,
@@ -486,13 +438,5 @@ export class Polyline extends BoardObjectBase {
             layerId: this.layerId,
             objectId: this.objectId,
         };
-    }
-
-    updateFromPayload(newSetting: PolyCreatePayload) {
-        this.location.x = newSetting.x;
-        this.location.y = newSetting.y;
-        this.points = newSetting.points;
-        this.colour = newSetting.colour;
-        this.layerId = newSetting.layerId;
     }
 }

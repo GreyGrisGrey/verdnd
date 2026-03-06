@@ -184,7 +184,7 @@ export class Board {
         }
     }
 
-    // Adds an object to a specified layer.
+    // Adds an object to a specified layer. Updates object if it already exists.
     addObject(layerId: number, newObject: ObjectCreatePayload) {
         const layer = this.layerMap.get(layerId);
         const currObj = this.objectMap.get(newObject.objectId!);
@@ -309,14 +309,5 @@ export class Board {
         }
         ctx.clearRect(0, 0, can.width, can.height);
         this.draw();
-    }
-
-    // Changes the zOrder of a layer, then sorts the layers.
-    changeLayerZ(layerId: number, newVal: number): void {
-        const layer = this.layerMap.get(layerId);
-        if (layer) {
-            layer.zOrder = newVal;
-        }
-        this.sortLayers();
     }
 }

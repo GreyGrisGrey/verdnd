@@ -122,8 +122,6 @@ export class tempStore {
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
-                targetObj.x += event.x;
-                targetObj.y += event.y;
                 this.socket.send(
                     JSON.stringify({
                         entity: 'OBJECT',
@@ -143,7 +141,6 @@ export class tempStore {
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
-                targetObj.colour = event.colour;
                 this.socket.send(
                     JSON.stringify({
                         entity: 'OBJECT',

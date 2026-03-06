@@ -30,13 +30,13 @@ export class BoardTokenMode {
         this.currHover = undefined;
         this.newTokenCheck = false;
         this.addEventListeners();
+        sizeInput.value = '1';
+        nameInput.value = 'Gremlin';
     }
 
     // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        sizeInput.value = '1';
-        nameInput.value = 'Gremlin';
         sizeInput.style.visibility = this.active ? 'visible' : 'hidden';
         nameInput.style.visibility = this.active ? 'visible' : 'hidden';
         sizeLabel.style.visibility = this.active ? 'visible' : 'hidden';

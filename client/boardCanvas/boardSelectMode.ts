@@ -78,7 +78,7 @@ export class BoardSelectMode {
                 this.selectClick = false;
                 if (
                     this.selectedObjects.length === 1 &&
-                    this.selectedObjects[0].objType === Shape.Token
+                    this.selectedObjects[0].shape === Shape.Token
                 ) {
                     this.exitOnNextStep = true;
                 }
@@ -107,15 +107,15 @@ export class BoardSelectMode {
             true,
         );
         const moveList = [];
-        for (const i of this.selectedObjects) {
+        for (const obj of this.selectedObjects) {
             moveList.push({
                 entity: Entity.Object,
                 action: Action.Move,
-                objectId: i.objectId,
+                objectId: obj.objectId,
                 x: point.x,
                 y: point.y,
             });
-            i.move(point.x, point.y);
+            obj.move(point.x, point.y);
         }
         this.board.serveInter.moveObjects(moveList as any);
         this.thirdOffset.x = 0;
