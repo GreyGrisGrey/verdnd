@@ -1,4 +1,4 @@
-import { Circle, Line, Polyline, Rect } from './boardObject.ts';
+import { Circle, Polyline, Rect } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
@@ -9,7 +9,6 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Class handling canvas' draw mode.
-// I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardDrawMode {
     board: Board;
     active: boolean;
@@ -232,9 +231,12 @@ export class BoardDrawMode {
                 objectId: -1,
             };
             this.completeObjCheck = true;
-        } else if (this.shape === Shape.Poly && this.params.length > 2) {
+        } else if (
+            (this.shape === Shape.Poly || this.shape === Shape.Line) &&
+            this.params.length > 2
+        ) {
             tempObj = {
-                kind: Shape.Poly,
+                kind: this.shape,
                 x: this.params[0].x,
                 y: this.params[0].y,
                 points: this.params.slice(1),
@@ -242,18 +244,6 @@ export class BoardDrawMode {
                 layerId: this.board.activeLayer,
                 objectId: -1,
             };
-            this.completeObjCheck = true;
-        } else if (this.shape === Shape.Line && this.params.length > 2) {
-            tempObj = {
-                kind: Shape.Line,
-                x: this.params[0].x,
-                y: this.params[0].y,
-                points: this.params.slice(1),
-                colour: colourSquare.style.background,
-                layerId: this.board.activeLayer,
-                objectId: -1,
-            };
-
             this.completeObjCheck = true;
         } else {
             return;
@@ -291,21 +281,17 @@ export class BoardDrawMode {
                     this.tempObject.diameter,
                     this.tempObject.colour,
                 );
-            } else if (this.tempObject.kind === Shape.Poly) {
+            } else if (
+                this.tempObject.kind === Shape.Poly ||
+                this.tempObject.kind === Shape.Line
+            ) {
                 return new Polyline(
                     -1,
                     this.tempObject.x,
                     this.tempObject.y,
                     this.tempObject.points,
                     this.tempObject.colour,
-                );
-            } else if (this.tempObject.kind === Shape.Line) {
-                return new Line(
-                    -1,
-                    this.tempObject.x,
-                    this.tempObject.y,
-                    this.tempObject.points,
-                    this.tempObject.colour,
+                    this.tempObject.kind,
                 );
             }
             return this.tempObject;
@@ -383,7 +369,10 @@ export class BoardDrawMode {
                 );
                 return newObj;
             }
-        } else if (this.params.length >= 2 && this.shape === Shape.Poly) {
+        } else if (
+            this.params.length >= 2 &&
+            (this.shape === Shape.Poly || this.shape === Shape.Line)
+        ) {
             const newParams = this.params.slice(1);
             const newObj = new Polyline(
                 -1,
@@ -391,16 +380,7 @@ export class BoardDrawMode {
                 this.params[0].y,
                 newParams,
                 colourSquare.style.background,
-            );
-            return newObj;
-        } else if (this.params.length >= 2 && this.shape === Shape.Line) {
-            const newParams = this.params.slice(1);
-            const newObj = new Line(
-                -1,
-                this.params[0].x,
-                this.params[0].y,
-                newParams,
-                colourSquare.style.background,
+                this.shape,
             );
             return newObj;
         }

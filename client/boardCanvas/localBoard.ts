@@ -1,6 +1,6 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Circle, Line, Polyline, Rect, Token } from './boardObject.ts';
+import { Circle, Polyline, Rect, Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
@@ -15,22 +15,28 @@ const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 function payloadToBoardObject(p: CreateObjectPayload): BoardObject {
     switch (p.kind) {
         case Shape.Circle:
-            return new Circle(p.objectId!, p.x, p.y, p.diameter, p.colour);
+            return new Circle(p.objectId, p.x, p.y, p.diameter, p.colour);
         case Shape.Rect:
-            return new Rect(p.objectId!, p.x, p.y, p.width, p.height, p.colour);
+            return new Rect(p.objectId, p.x, p.y, p.width, p.height, p.colour);
         case Shape.Token:
             return new Token(
-                p.objectId!,
+                p.objectId,
                 p.x,
                 p.y,
                 p.diameter,
                 p.colour,
                 p.name ?? '',
             );
-        case Shape.Poly:
-            return new Polyline(p.objectId!, p.x, p.y, p.points, p.colour);
         case Shape.Line:
-            return new Line(p.objectId!, p.x, p.y, p.points, p.colour);
+        case Shape.Poly:
+            return new Polyline(
+                p.objectId,
+                p.x,
+                p.y,
+                p.points,
+                p.colour,
+                p.kind,
+            );
         default: {
             throw new Error('Unknown shape');
         }

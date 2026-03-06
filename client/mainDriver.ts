@@ -54,7 +54,7 @@ async function mainLoop() {
     updateActiveLayer();
     runBoardStep();
     counter++;
-    if (counter === 2) {
+    if (counter === 5) {
         loadWall.style.visibility = 'hidden';
     }
     requestAnimationFrame(mainLoop);

@@ -57,17 +57,7 @@ export interface TokenCreatePayload {
 }
 
 export interface PolyCreatePayload {
-    kind: Shape.Poly;
-    x: number;
-    y: number;
-    points: Vec2[];
-    colour: ColInst | string;
-    layerId: number;
-    objectId: number;
-}
-
-export interface LineCreatePayload {
-    kind: Shape.Line;
+    kind: Shape.Poly | Shape.Line;
     x: number;
     y: number;
     points: Vec2[];
@@ -78,7 +68,6 @@ export interface LineCreatePayload {
 
 export type CreateObjectPayload =
     | CircleCreatePayload
-    | LineCreatePayload
     | PolyCreatePayload
     | RectCreatePayload
     | TokenCreatePayload;

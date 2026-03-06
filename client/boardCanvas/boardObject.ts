@@ -4,13 +4,12 @@ import { BLACK, GOLD, GREY, GREY_LIGHT } from '../colours.ts';
 import { Shape } from '../objectEvents.ts';
 import type {
     CircleCreatePayload,
-    LineCreatePayload,
     PolyCreatePayload,
     RectCreatePayload,
     TokenCreatePayload,
 } from '../objectEvents.ts';
 
-export type BoardObject = Circle | Line | Polyline | Rect | Token;
+export type BoardObject = Circle | Polyline | Rect | Token;
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
@@ -411,7 +410,7 @@ export class Circle extends BoardObjectBase {
 // Subclass for polyline objects.
 export class Polyline extends BoardObjectBase {
     points: Vec2[];
-    objType: Shape;
+    objType: Shape.Poly | Shape.Line;
     currPath: Path2D;
     currPathSpecs: Array<number>;
     ctx?: CanvasRenderingContext2D;
@@ -422,10 +421,16 @@ export class Polyline extends BoardObjectBase {
         y: number,
         structure: Vec2[],
         colour: ColInst | string,
+        shape: Shape.Poly | Shape.Line,
     ) {
+        if (shape !== Shape.Poly && shape !== Shape.Line) {
+            throw new TypeError(
+                'Attempted construction of Polyline object with non-line shape.',
+            );
+        }
         super(id, x, y, colour);
         this.points = structure;
-        this.objType = Shape.Poly;
+        this.objType = shape;
         this.currPath = new Path2D();
         this.currPathSpecs = [0, 0, 0];
         this.ctx = undefined;
@@ -457,9 +462,14 @@ export class Polyline extends BoardObjectBase {
             ctx.lineWidth = 4;
             ctx.stroke(this.currPath);
         }
-        ctx.fillStyle = this.colour.toString();
-        ctx.fill(this.currPath);
-        this.ctx = ctx;
+        if (this.objType === Shape.Poly) {
+            ctx.fillStyle = this.colour.toString();
+            ctx.fill(this.currPath);
+        } else {
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = this.colour.toString();
+            ctx.stroke(this.currPath);
+        }
     }
 
     isPointInside(point: Vec2) {
@@ -498,7 +508,7 @@ export class Polyline extends BoardObjectBase {
 
     payloadFromObject(): PolyCreatePayload {
         return {
-            kind: Shape.Poly,
+            kind: this.objType,
             x: this.location.x,
             y: this.location.y,
             points: this.points,
@@ -509,83 +519,6 @@ export class Polyline extends BoardObjectBase {
     }
 
     updateFromPayload(newSetting: PolyCreatePayload) {
-        this.location.x = newSetting.x;
-        this.location.y = newSetting.y;
-        this.points = newSetting.points;
-        this.colour = newSetting.colour;
-        this.layerId = newSetting.layerId;
-    }
-}
-
-// Subclass for handling line objects.
-export class Line extends BoardObjectBase {
-    points: Vec2[];
-    objType: Shape;
-
-    constructor(
-        id: number,
-        x: number,
-        y: number,
-        structure: Vec2[],
-        colour: ColInst | string,
-    ) {
-        super(id, x, y, colour);
-        this.points = structure;
-        this.objType = Shape.Line;
-        this.setCenter();
-    }
-
-    draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        ctx.beginPath();
-        ctx.moveTo(
-            this.location.x * squareSize + offset.x,
-            this.location.y * squareSize + offset.y,
-        );
-        for (const pt of this.points) {
-            ctx.lineTo(
-                (this.location.x + pt.x) * squareSize + offset.x,
-                (this.location.y + pt.y) * squareSize + offset.y,
-            );
-        }
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = this.colour.toString();
-        ctx.stroke();
-    }
-
-    setCenter() {
-        const topLeft: Vec2 = { x: 0, y: 0 };
-        const bottomRight: Vec2 = { x: 0, y: 0 };
-        for (const pt of this.points) {
-            if (pt.x < topLeft.x) {
-                topLeft.x = pt.x;
-            } else if (pt.x > bottomRight.x) {
-                bottomRight.x = pt.x;
-            }
-            if (pt.y < topLeft.y) {
-                topLeft.y = pt.y;
-            } else if (pt.y > bottomRight.y) {
-                bottomRight.y = pt.y;
-            }
-        }
-        this.centerPoint = {
-            x: (bottomRight.x + topLeft.x) / 2 + this.location.x,
-            y: (bottomRight.y + topLeft.y) / 2 + this.location.y,
-        };
-    }
-
-    payloadFromObject(): LineCreatePayload {
-        return {
-            kind: Shape.Line,
-            x: this.location.x,
-            y: this.location.y,
-            points: this.points,
-            colour: this.colour,
-            layerId: this.layerId,
-            objectId: this.objectId,
-        };
-    }
-
-    updateFromPayload(newSetting: LineCreatePayload) {
         this.location.x = newSetting.x;
         this.location.y = newSetting.y;
         this.points = newSetting.points;

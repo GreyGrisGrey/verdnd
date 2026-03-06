@@ -12,7 +12,6 @@ const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Class handling canvas' token mode.
-// Currently WIP.
 export class BoardTokenMode {
     board: Board;
     active: boolean;

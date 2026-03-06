@@ -4,7 +4,6 @@ import { getRequiredElement } from '../dom.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 
 // Class handling canvas' view mode.
-// I do not like this, but it was the cleanest way I could think to do the job.
 export class BoardViewMode {
     board: Board;
     active: boolean;
