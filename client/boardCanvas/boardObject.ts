@@ -26,12 +26,7 @@ export class BoardObjectBase {
     selected: boolean;
     layerId: number;
 
-    constructor(
-        objId: number,
-        x: number,
-        y: number,
-        colour: ColInst | string,
-    ) {
+    constructor(objId: number, x: number, y: number, colour: ColInst | string) {
         this.objectId = objId;
         this.zOrder = 0;
         this.location = { x, y };

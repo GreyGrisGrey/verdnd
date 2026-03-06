@@ -4,17 +4,10 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "lib": [
-            "ES2024",
-            "ES6",
-            "DOM",
-            "DOM.Iterable"
-        ],
-        "target": "ES2024",
+        "lib": ["ES2024", "ES6", "DOM", "DOM.Iterable"],
+        "target": "ES2024"
     },
-    "include": [
-        "out.ts"
-    ],
+    "include": ["out.ts"],
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
 }

@@ -32,7 +32,7 @@ export interface RectCreatePayload {
     height: number;
     colour: ColInst | string;
     layerId: number;
-    objectId?: number;
+    objectId: number;
 }
 
 export interface CircleCreatePayload {
@@ -42,7 +42,7 @@ export interface CircleCreatePayload {
     diameter: number;
     colour: ColInst | string;
     layerId: number;
-    objectId?: number;
+    objectId: number;
 }
 
 export interface TokenCreatePayload {
@@ -53,7 +53,7 @@ export interface TokenCreatePayload {
     colour: ColInst | string;
     name: string;
     layerId: number;
-    objectId?: number;
+    objectId: number;
 }
 
 export interface PolyCreatePayload {
@@ -63,7 +63,7 @@ export interface PolyCreatePayload {
     points: Vec2[];
     colour: ColInst | string;
     layerId: number;
-    objectId?: number;
+    objectId: number;
 }
 
 export interface LineCreatePayload {
@@ -73,7 +73,7 @@ export interface LineCreatePayload {
     points: Vec2[];
     colour: ColInst | string;
     layerId: number;
-    objectId?: number;
+    objectId: number;
 }
 
 export type CreateObjectPayload =

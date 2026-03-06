@@ -115,7 +115,7 @@ export class BoardSelectMode {
             });
             i.move(point.x, point.y);
         }
-        this.board.serveInter.moveObjects((moveList as any));
+        this.board.serveInter.moveObjects(moveList as any);
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;
     }
@@ -133,7 +133,7 @@ export class BoardSelectMode {
                 });
                 obj.setColour(this.currColour);
             }
-            this.board.serveInter.recolourObjects((recolourList as any));
+            this.board.serveInter.recolourObjects(recolourList as any);
         }
     }
 

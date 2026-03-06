@@ -5,7 +5,6 @@ import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
-const tokenModeButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
 const sizeInput = getRequiredElement('tokenSize', HTMLInputElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const sizeLabel = getRequiredElement('tokenSizeLabel', HTMLLabelElement);
@@ -36,20 +35,12 @@ export class BoardTokenMode {
 
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        tokenModeButton.disabled = setOn;
-        if (setOn) {
-            sizeInput.value = '1';
-            nameInput.value = 'Gremlin';
-            sizeInput.style.visibility = 'visible';
-            nameInput.style.visibility = 'visible';
-            sizeLabel.style.visibility = 'visible';
-            nameLabel.style.visibility = 'visible';
-        } else {
-            sizeInput.style.visibility = 'hidden';
-            nameInput.style.visibility = 'hidden';
-            sizeLabel.style.visibility = 'hidden';
-            nameLabel.style.visibility = 'hidden';
-        }
+        sizeInput.value = '1';
+        nameInput.value = 'Gremlin';
+        sizeInput.style.visibility = this.active ? 'visible' : 'hidden';
+        nameInput.style.visibility = this.active ? 'visible' : 'hidden';
+        sizeLabel.style.visibility = this.active ? 'visible' : 'hidden';
+        nameLabel.style.visibility = this.active ? 'visible' : 'hidden';
     }
 
     addEventListeners() {
@@ -176,6 +167,7 @@ export class BoardTokenMode {
                     colour: colourSquare.style.background,
                     name: nameInput.value,
                     layerId: this.board.activeLayer,
+                    objectId: -1,
                 },
             });
         }
@@ -198,6 +190,9 @@ export class BoardTokenMode {
                     false,
                 ),
             ]);
+            if (this.currHover) {
+                this.newTokenCheck = false;
+            }
         }
     }
 
@@ -239,11 +234,5 @@ export class BoardTokenMode {
             );
         }
         return undefined;
-    }
-
-    getNewObject() {
-        this.getNewHover();
-        this.newTokenCheck = false;
-        return this.createToken();
     }
 }

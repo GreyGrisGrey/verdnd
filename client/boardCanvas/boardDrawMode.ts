@@ -6,7 +6,6 @@ import { getRequiredElement } from '../dom.ts';
 import type { CreateObjectPayload } from '../objectEvents.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
-const drawModeButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Class handling canvas' draw mode.
@@ -39,7 +38,6 @@ export class BoardDrawMode {
     // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        drawModeButton.disabled = setOn;
         this.params = [];
         this.selectMode = false;
         this.selectState = 0;
@@ -214,6 +212,7 @@ export class BoardDrawMode {
                 height: sizes[1],
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
+                objectId: -1,
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Circle && this.params.length === 2) {
@@ -230,6 +229,7 @@ export class BoardDrawMode {
                 diameter: radius,
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
+                objectId: -1,
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Poly && this.params.length > 2) {
@@ -240,6 +240,7 @@ export class BoardDrawMode {
                 points: this.params.slice(1),
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
+                objectId: -1,
             };
             this.completeObjCheck = true;
         } else if (this.shape === Shape.Line && this.params.length > 2) {
@@ -250,6 +251,7 @@ export class BoardDrawMode {
                 points: this.params.slice(1),
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
+                objectId: -1,
             };
 
             this.completeObjCheck = true;

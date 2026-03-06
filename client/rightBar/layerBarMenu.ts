@@ -1,6 +1,6 @@
 import { GREY, RED } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from "../serveInter.ts"
+import { tempStore } from '../serveInter.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 
 export interface LayerState {
@@ -47,13 +47,7 @@ export class LayerMenu {
     }
 
     setMainElements() {
-        this.layerObj.style.background = GREY.toString();
-        this.layerObj.style.visibility = 'hidden';
-        this.layerObj.style.fontSize = '14px';
-
-        this.descObj.style.border = 'solid black';
         this.descObj.style.height = `${this.boxHeight}px`;
-        this.descObj.style.width = '250px';
 
         const numText = document.createElement('p');
         numText.innerText = 'Layer #';

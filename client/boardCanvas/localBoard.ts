@@ -1,16 +1,13 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Circle,
-    Line,
-    Polyline,
-    Rect,Token } from './boardObject.ts';
+import { Circle, Line, Polyline, Rect, Token } from './boardObject.ts';
 import type { BoardBounds, Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
 import type { LayerState } from '../rightBar/layerBarMenu.ts';
-import { tempStore } from "../serveInter.ts";
+import { tempStore } from '../serveInter.ts';
 import { CreateObjectPayload } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
@@ -218,12 +215,12 @@ export class Board {
     // Adds an object to a specified layer.
     addObject(layerId: number, newObject: CreateObjectPayload) {
         const layer = this.layerMap.get(layerId);
-        const currObj = this.objectMap.get(newObject.objectId!)
+        const currObj = this.objectMap.get(newObject.objectId!);
         if (!layer) {
-            return
+            return;
         } else if (currObj) {
-            currObj.updateFromPayload((newObject as any))
-            return
+            currObj.updateFromPayload(newObject as any);
+            return;
         }
         const addObj = payloadToBoardObject(newObject);
         this.objectMap.set(addObj.objectId, addObj);

@@ -1,35 +1,34 @@
-
 export class ColInst {
-    blue: number
-    green: number
-    red: number
-    alpha: number
-    
+    blue: number;
+    green: number;
+    red: number;
+    alpha: number;
+
     constructor(newR: number, newG: number, newB: number, newA: number) {
         this.red = newR;
         this.green = newG;
         this.blue = newB;
         this.alpha = newA;
     }
-    
+
     setR(newR: number) {
-        this.red = newR
+        this.red = newR;
     }
-    
+
     setG(newG: number) {
-        this.green = newG
+        this.green = newG;
     }
-    
+
     setB(newB: number) {
-        this.blue = newB
+        this.blue = newB;
     }
-    
+
     setA(newA: number) {
-        this.alpha = newA
+        this.alpha = newA;
     }
-    
+
     toString(): string {
-        return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha})`
+        return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha / 100})`;
     }
 }
 

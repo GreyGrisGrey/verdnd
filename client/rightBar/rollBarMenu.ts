@@ -1,6 +1,6 @@
 import { GREY } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from "../serveInter.ts"
+import { tempStore } from '../serveInter.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const rollBox = getRequiredElement('rollContainer', HTMLElement);
@@ -240,9 +240,9 @@ export class RollMenu {
     }
 
     updateChats(data: Map<number, number>) {
-        console.log(data)
+        console.log(data);
         for (const [key, val] of data) {
-            const targetNum = data.size - (key + 1)
+            const targetNum = data.size - (key + 1);
             if (targetNum < 50 && targetNum >= 0) {
                 this.updateChat(val, targetNum);
             }

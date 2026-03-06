@@ -11,7 +11,7 @@ def splitFile(filePath):
             importStep = True
         else:
             currLine = newText[currIndex].split(" ")
-            if currLine[0] == "const":
+            if currLine[0] == "const" or currLine[0] == "export":
                 importStep = True
             else:
                 currIndex += 1
@@ -24,7 +24,7 @@ def splitFile(filePath):
                 constStep = True
             else:
                 res[0].append(newText[currIndex])
-            currIndex += 1
+                currIndex += 1
     while currIndex < len(newText):
         currLine = newText[currIndex].split(" ")
         if len(currLine) > 1 and currLine[0] == "export":

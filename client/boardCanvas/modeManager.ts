@@ -24,6 +24,8 @@ export enum GetObjectReason {
     Create = 'CREATE',
 }
 
+type BoardMode = BoardViewMode | BoardTokenMode | BoardDrawMode;
+
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off.
 export class ModeManager {
@@ -33,8 +35,10 @@ export class ModeManager {
     tokenMan: BoardTokenMode;
     drawMan: BoardDrawMode;
     selectMan: BoardSelectMode;
+    modes: Record<Mode, BoardMode>;
     selectClick: boolean;
-    selectInstruct: HTMLElement
+    selectInstruct: HTMLElement;
+    buttons: Record<Mode, HTMLButtonElement>;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -43,44 +47,36 @@ export class ModeManager {
         this.tokenMan = new BoardTokenMode(parentBoard);
         this.drawMan = new BoardDrawMode(parentBoard);
         this.selectMan = new BoardSelectMode(parentBoard);
-        this.selectInstruct = document.getElementById('selectInstruct')!
+        this.modes = {
+            TOKEN: this.tokenMan,
+            DRAW: this.drawMan,
+            VIEW: this.viewMan,
+        };
+        this.buttons = {
+            TOKEN: tokenButton,
+            DRAW: drawButton,
+            VIEW: viewButton,
+        };
+        this.selectInstruct = document.getElementById('selectInstruct')!;
         this.selectClick = false;
+
         this.addEventListeners();
-        this.modifyText(this.viewMan);
-        this.viewMan.flipListeners(true);
-        this.selectInstruct.style.visibility = 'hidden';
+        this.modes[this.currMode].flipListeners(true);
+        modeParagraph.innerText = this.modes[this.currMode].getText();
     }
 
     // Adds event listeners for all modes, as well as some of its own.
     addEventListeners() {
         viewButton.addEventListener('click', () => {
-            this.currMode = Mode.View;
-            this.viewMan.flipListeners(true);
-            this.tokenMan.flipListeners(false);
-            this.drawMan.flipListeners(false);
-            this.selectMan.flipListeners(false);
-            this.modifyText(this.viewMan);
-            this.selectInstruct.style.visibility = 'hidden';
+            this.modeSwitch(Mode.View);
         });
 
         tokenButton.addEventListener('click', () => {
-            this.currMode = Mode.Token;
-            this.viewMan.flipListeners(false);
-            this.tokenMan.flipListeners(true);
-            this.drawMan.flipListeners(false);
-            this.selectMan.flipListeners(false);
-            this.modifyText(this.tokenMan);
-            this.selectInstruct.style.visibility = 'visible';
+            this.modeSwitch(Mode.Token);
         });
 
         drawButton.addEventListener('click', () => {
-            this.currMode = Mode.Draw;
-            this.viewMan.flipListeners(false);
-            this.tokenMan.flipListeners(false);
-            this.drawMan.flipListeners(true);
-            this.selectMan.flipListeners(false);
-            this.modifyText(this.drawMan);
-            this.selectInstruct.style.visibility = 'visible';
+            this.modeSwitch(Mode.Draw);
         });
 
         can.addEventListener('mousemove', (event) => {
@@ -105,15 +101,15 @@ export class ModeManager {
         );
     }
 
-    // Switches the information bar's text to match the current mode.
-    modifyText(
-        selectMode:
-            | BoardSelectMode
-            | BoardViewMode
-            | BoardTokenMode
-            | BoardDrawMode,
-    ) {
-        modeParagraph.innerText = selectMode.getText();
+    modeSwitch(newMode: Mode) {
+        this.modes[this.currMode].flipListeners(false);
+        this.buttons[this.currMode].disabled = false;
+        this.currMode = newMode;
+        this.modes[this.currMode].flipListeners(true);
+        this.buttons[this.currMode].disabled = true;
+        modeParagraph.innerText = this.modes[this.currMode].getText();
+        this.selectInstruct.style.visibility =
+            newMode === Mode.View ? 'hidden' : 'visible';
     }
 
     // Checks if the user has selected an area of the canvas.
