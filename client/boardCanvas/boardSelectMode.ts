@@ -28,6 +28,7 @@ export class BoardSelectMode {
         this.addEventListeners();
     }
 
+    // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         for (const obj of this.selectedObjects) {
             obj.setSelected(false);
@@ -40,6 +41,7 @@ export class BoardSelectMode {
         this.thirdOffset = { x: 0, y: 0 };
     }
 
+    // Adds all relevant event listeners.
     addEventListeners() {
         can.addEventListener('mousemove', (event) => {
             if (this.active && this.selectClick) {
@@ -65,7 +67,6 @@ export class BoardSelectMode {
                         candidate.isPointInside(point)
                     ) {
                         this.selectClick = true;
-                        break;
                     }
                 }
             }
@@ -98,6 +99,7 @@ export class BoardSelectMode {
         });
     }
 
+    // Moves each selected object individually.
     moveObjects() {
         const point = this.board.determineTile(
             this.board.originCoords.x + this.thirdOffset.x,
@@ -120,6 +122,7 @@ export class BoardSelectMode {
         this.thirdOffset.y = 0;
     }
 
+    // Recolours each selected object individually.
     recolour() {
         if (this.currColour !== colourSquare.style.background) {
             this.currColour = colourSquare.style.background;
@@ -137,10 +140,12 @@ export class BoardSelectMode {
         }
     }
 
+    // Does not return text for the information bar, as none exists.
     getText() {
         return 'nah';
     }
 
+    // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;
         for (const obj of this.selectedObjects) {

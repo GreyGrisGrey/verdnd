@@ -20,6 +20,7 @@ export enum RightBarTab {
     Character = 'CHARACTER',
 }
 
+// Class managing the right bar and its constituent menues.
 export class RightBarManager {
     layerMan: LayerMenu;
     tokenMan: TokenMenu;
@@ -38,39 +39,36 @@ export class RightBarManager {
         rightBar.style.width = '250px';
         this.addEventListeners();
         this.layerMan.toggleActive(true);
-        this.setText();
     }
 
+    // Adds relevant event listeners to each tab object.
     addEventListeners() {
         layerTab.addEventListener('click', () => {
             this.layerMan.toggleActive(true);
             this.rollMan.toggleActive(false);
             this.currActive = RightBarTab.Layer;
-            this.setText();
         });
 
         tokenTab.addEventListener('click', () => {
             this.layerMan.toggleActive(false);
             this.rollMan.toggleActive(false);
             this.currActive = RightBarTab.Token;
-            this.setText();
         });
 
         rollTab.addEventListener('click', () => {
             this.layerMan.toggleActive(false);
             this.rollMan.toggleActive(true);
             this.currActive = RightBarTab.Roll;
-            this.setText();
         });
 
         characterTab.addEventListener('click', () => {
             this.layerMan.toggleActive(false);
             this.rollMan.toggleActive(false);
             this.currActive = RightBarTab.Character;
-            this.setText();
         });
     }
 
+    // A single step updating the state of the currently active menu.
     step() {
         rightBar.style.height = `${window.innerHeight - 20}px`;
         if (this.currActive === RightBarTab.Layer) {
@@ -78,19 +76,5 @@ export class RightBarManager {
         } else if (this.currActive === RightBarTab.Roll) {
             this.rollMan.step();
         }
-    }
-
-    setText() {
-        if (this.currActive === RightBarTab.Layer) {
-            rightPara.innerText = '';
-        } else if (this.currActive === RightBarTab.Roll) {
-            rightPara.innerText = '';
-        } else {
-            rightPara.innerText = 'WIP';
-        }
-    }
-
-    addLayer(newLayer: LayerState) {
-        this.layerMan.addNewLayer(newLayer);
     }
 }

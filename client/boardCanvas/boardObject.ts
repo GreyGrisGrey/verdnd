@@ -119,14 +119,16 @@ export class Token extends BoardObjectBase {
             offset.y !== this.currPathSpecs[2]
         ) {
             const coords: Vec2 = {
-                x:
+                x: Math.round(
                     this.location.x * squareSize +
-                    offset.x +
-                    (squareSize * this.diameter) / 2,
-                y:
+                        offset.x +
+                        (squareSize * this.diameter) / 2,
+                ),
+                y: Math.round(
                     this.location.y * squareSize +
-                    offset.y +
-                    (squareSize * this.diameter) / 2,
+                        offset.y +
+                        (squareSize * this.diameter) / 2,
+                ),
             };
 
             this.currOutPath = new Path2D();
@@ -162,6 +164,7 @@ export class Token extends BoardObjectBase {
         ctx.fill(this.currPath);
     }
 
+    // Draws the token's overhead label.
     drawLabel(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         ctx.font = '20px serif';
         ctx.fillStyle = GREY_LIGHT.toString();
@@ -208,6 +211,7 @@ export class Token extends BoardObjectBase {
         };
     }
 
+    // Constructs a token creation payload from the pre-existing token.
     payloadFromObject(): TokenCreatePayload {
         return {
             kind: Shape.Token,
@@ -221,6 +225,7 @@ export class Token extends BoardObjectBase {
         };
     }
 
+    // Updates the token based on a provided payload.
     updateFromPayload(newSetting: TokenCreatePayload) {
         this.location.x = newSetting.x;
         this.location.y = newSetting.y;
@@ -261,11 +266,13 @@ export class Rect extends BoardObjectBase {
             );
         }
         ctx.fillStyle = this.colour.toString();
+        // This was updated to avoid anti-aliasing issues.
+        // I have no evidence but I do not think it fully worked.
         ctx.fillRect(
-            this.location.x * squareSize + offset.x,
-            this.location.y * squareSize + offset.y,
-            this.size.x * squareSize,
-            this.size.y * squareSize,
+            Math.round(this.location.x * squareSize + offset.x),
+            Math.round(this.location.y * squareSize + offset.y),
+            Math.round(this.size.x * squareSize),
+            Math.round(this.size.y * squareSize),
         );
     }
 
@@ -413,6 +420,7 @@ export class Circle extends BoardObjectBase {
 }
 
 // Subclass for polyline objects.
+// Also works for lines, if the setting is enabled.
 export class Polyline extends BoardObjectBase {
     points: Vec2[];
     objType: Shape.Polyline | Shape.Line;
@@ -450,13 +458,17 @@ export class Polyline extends BoardObjectBase {
         ) {
             this.currPath = new Path2D();
             this.currPath.moveTo(
-                this.location.x * squareSize + offset.x,
-                this.location.y * squareSize + offset.y,
+                Math.round(this.location.x * squareSize + offset.x),
+                Math.round(this.location.y * squareSize + offset.y),
             );
             for (const pt of this.points) {
                 this.currPath.lineTo(
-                    (this.location.x + pt.x) * squareSize + offset.x,
-                    (this.location.y + pt.y) * squareSize + offset.y,
+                    Math.round(
+                        (this.location.x + pt.x) * squareSize + offset.x,
+                    ),
+                    Math.round(
+                        (this.location.y + pt.y) * squareSize + offset.y,
+                    ),
                 );
             }
             this.currPathSpecs = [squareSize, offset.x, offset.y];

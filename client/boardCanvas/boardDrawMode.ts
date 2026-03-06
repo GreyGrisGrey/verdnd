@@ -390,6 +390,8 @@ export class BoardDrawMode {
         return undefined;
     }
 
+    // Removes the created object from the draw mode manager.
+    // Has functioning that makes said object "stick" for a moment to reduce flickering.
     clearObject() {
         if (!this.stickTemp) {
             this.tempObject = null;

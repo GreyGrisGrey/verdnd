@@ -1,3 +1,5 @@
+// Class representing an instance of a colour.
+// Just has basic setters for RGBA, and a toString method.
 export class ColInst {
     blue: number;
     green: number;

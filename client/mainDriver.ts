@@ -9,21 +9,25 @@ const rightMan = new RightBarManager(serveInter);
 const leftMan = new LeftBarManager();
 
 serveInter.setBoard(board);
-async function runBoardStep() {
-    board.step();
+// The order of events up there is unfortunately quite important.
+// Try not to poke it too much.
+
+// Updates the board based on the server interface.
+function syncServer() {
+    updateLayers();
+    updateObjects();
 }
 
-async function syncServer() {
+function updateObjects() {
     const data = serveInter.getObjects();
     if (data) {
         for (const [key, val] of data) {
             board.addObject(val.layerId, val);
         }
     }
-    updateLayers();
 }
 
-async function updateLayers() {
+function updateLayers() {
     const data = serveInter.getLayers();
     if (data) {
         rightMan.layerMan.handleNewLayers(data);
@@ -53,7 +57,7 @@ async function mainLoop() {
         counter = 1;
     }
     updateActiveLayer();
-    runBoardStep();
+    board.step();
     counter++;
     if (counter === 5) {
         loadWall.style.visibility = 'hidden';

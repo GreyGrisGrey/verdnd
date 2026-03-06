@@ -21,6 +21,7 @@ export class BoardLayer {
         this.playerVisible = newPlayer;
     }
 
+    // Updates the visibility values of the layer.
     updateVis(newGM: boolean, newPlayer: boolean) {
         this.GMVisible = newPlayer;
         this.playerVisible = newGM;

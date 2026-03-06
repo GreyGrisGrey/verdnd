@@ -160,29 +160,25 @@ export class Board {
         }
     }
 
+    // Returns the layer corresponding to a layerId.
     getLayer(layerId: number) {
         return this.layerMap.get(layerId);
     }
 
+    // Returns the object corresponding to an objectId.
     getObjectById(objectId: number) {
-        for (const [key, val] of this.layerMap) {
-            const obj = val.heldMap.get(objectId);
-            if (obj) {
-                return obj;
-            }
-        }
-        return null;
+        return this.objectMap.get(objectId);
     }
 
     // Removes a new board layer, then sorts the layers.
     // Returns false if the provided layer is not found.
-    removeLayer(removeID: number) {
-        const layer = this.layerMap.get(removeID);
+    removeLayer(removeId: number) {
+        const layer = this.layerMap.get(removeId);
         if (!layer) {
             return false;
         }
         const removeIndex = this.boardLayers.indexOf(layer);
-        if (!this.layerMap.delete(removeID)) {
+        if (!this.layerMap.delete(removeId)) {
             return false;
         }
         this.boardLayers.splice(removeIndex, 1);
@@ -227,8 +223,8 @@ export class Board {
     }
 
     // Changes the offset of specified layer.
-    moveLayer(moveID: number, moveX: number, moveY: number) {
-        const layer = this.layerMap.get(moveID);
+    moveLayer(moveId: number, moveX: number, moveY: number) {
+        const layer = this.layerMap.get(moveId);
         if (layer) {
             layer.shiftLayer({ x: moveX, y: moveY });
         }
@@ -246,15 +242,17 @@ export class Board {
         return [];
     }
 
+    // Selects a single token.
     selectToken(fixedPoint: Vec2[]) {
         const layer = this.layerMap.get(this.activeLayer);
+        let newSelected = undefined;
         if (layer) {
             const selected = layer.selectObjects(fixedPoint, Shape.Token)[0];
             if (selected instanceof Token) {
-                return selected;
+                newSelected = selected;
             }
         }
-        return undefined;
+        return newSelected;
     }
 
     // Draws points at the vertices of the tiles for.
@@ -334,6 +332,7 @@ export class Board {
         this.draw();
     }
 
+    // Changes the zOrder of a layer, then sorts the layers.
     changeLayerZ(layerId: number, newVal: number): void {
         const layer = this.layerMap.get(layerId);
         if (layer) {

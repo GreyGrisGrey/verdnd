@@ -32,6 +32,7 @@ export class BoardTokenMode {
         this.addEventListeners();
     }
 
+    // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
         sizeInput.value = '1';
@@ -42,6 +43,7 @@ export class BoardTokenMode {
         nameLabel.style.visibility = this.active ? 'visible' : 'hidden';
     }
 
+    // Adds all relevant event listeners.
     addEventListeners() {
         can.addEventListener('mousemove', () => {
             if (this.active) {
@@ -148,6 +150,7 @@ export class BoardTokenMode {
         return 'Left Click : Create Token\nLeft Click on Token : Select Token\nShift + Left Click : Select Tokens';
     }
 
+    // Creates a token, sends it directly to the server interface.
     createToken() {
         if (nameInput.value && sizeInput.value) {
             const coords = this.board.determineTile(
@@ -172,6 +175,7 @@ export class BoardTokenMode {
         }
     }
 
+    // If a token is being hovered over, draws the label for it.
     tryDrawLabel(
         ctx: CanvasRenderingContext2D,
         squareSize: number,
@@ -180,6 +184,7 @@ export class BoardTokenMode {
         this.currHover?.drawLabel(ctx, squareSize, offset);
     }
 
+    // Gets the token the mouse is currently hovering over, should such a token exist.
     getNewHover() {
         if (this.newTokenCheck) {
             this.currHover = this.board.selectToken([
@@ -195,7 +200,8 @@ export class BoardTokenMode {
         }
     }
 
-    getTempObject() {
+    // Constructs a rectangle showing the area to be selected.
+    getSelectBox() {
         if (this.params.length > 0) {
             const res = this.board.determineTile(
                 this.board.mouseCoords.x,

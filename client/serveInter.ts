@@ -8,10 +8,11 @@ import type {
 import type { DicePayload } from './rightBar/rollBarMenu.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 
+// Main interface with the server.
+// Will it stick around in the long run? I do not know.
 export class tempStore {
     storedObjects: Map<number, ObjectCreatePayload>;
     storedLayers: Map<number, LayerState>;
-    recentCreation: any[];
     currIndex: number;
     prevMapping: Map<number, number>;
     socket: WebSocket;
@@ -20,7 +21,6 @@ export class tempStore {
     constructor() {
         this.storedObjects = new Map();
         this.storedLayers = new Map();
-        this.recentCreation = [];
         this.currIndex = 0;
         this.prevMapping = new Map();
         this.socket = new WebSocket('ws://47.55.46.138:4322/');
@@ -68,6 +68,7 @@ export class tempStore {
         return this.prevMapping;
     }
 
+    // Sends a packet telling the backend to create an object with those parameters.
     async createObject(newObj: ObjectCreateEvent) {
         newObj.object.objectId = -1;
         this.socket.send(JSON.stringify(newObj));
@@ -78,10 +79,7 @@ export class tempStore {
         return this.storedObjects;
     }
 
-    getNewObjects() {
-        return this.recentCreation;
-    }
-
+    // Tells the backend to create a layer.
     async createLayer() {
         this.socket.send(
             JSON.stringify({
@@ -102,6 +100,8 @@ export class tempStore {
         return this.storedLayers;
     }
 
+    // Tells the backend to destroy a bunch of objects.
+    // Does not, in fact, destroy the object locally. TODO - make it do that.
     async destroyObjects(targetIds: number[]) {
         for (const id of targetIds) {
             if (this.storedObjects.has(id)) {
@@ -116,17 +116,8 @@ export class tempStore {
         }
     }
 
-    deleteRecentId(targetId: number) {
-        for (let i = 0; i < 3; i++) {
-            if (
-                this.recentCreation.length > i &&
-                this.recentCreation[i].objectId === targetId
-            ) {
-                this.recentCreation.splice(i, 1);
-            }
-        }
-    }
-
+    // Receives a list of objects to move, checks each object's existence, if it exists moves it and tells the backend to move it too.
+    // Questionable that it sends a packet for each object.
     async moveObjects(events: ObjectMoveEvent[]) {
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
@@ -146,11 +137,12 @@ export class tempStore {
         }
     }
 
+    // Receives a list of objects to recolour, checks each object's existence, if it exists recolours it and tells the backend to recolour it too.
+    // Questionable that it sends a packet for each object.
     async recolourObjects(events: ObjectRecolourEvent[]) {
         for (const event of events) {
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
-                console.log(event.objectId);
                 targetObj.colour = event.colour;
                 this.socket.send(
                     JSON.stringify({
@@ -164,6 +156,7 @@ export class tempStore {
         }
     }
 
+    // Updates a layer.
     async updateLayer(input: LayerState) {
         const targetObj = this.storedLayers.get(input.id);
         if (targetObj) {

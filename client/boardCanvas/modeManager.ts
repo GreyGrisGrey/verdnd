@@ -27,7 +27,7 @@ export enum GetObjectReason {
 type BoardMode = BoardViewMode | BoardTokenMode | BoardDrawMode;
 
 // Class handling the draw/token/view modes.
-// Also handles behaviour when a selection of board objects has been made. This may be split off.
+// Also handles behaviour when a selection of board objects has been made. This may be split off later.
 export class ModeManager {
     board: Board;
     currMode: Mode;
@@ -144,12 +144,13 @@ export class ModeManager {
             if (this.currMode === Mode.Draw) {
                 return this.drawMan.getTempObject();
             } else if (this.currMode === Mode.Token) {
-                return this.tokenMan.getTempObject();
+                return this.tokenMan.getSelectBox();
             }
         }
         return undefined;
     }
 
+    // Clears the temporarily held complete object in the draw manager.
     clearTemp() {
         if (this.currMode === Mode.Draw) {
             this.drawMan.clearObject();
@@ -166,6 +167,7 @@ export class ModeManager {
         this.exitSelected();
     }
 
+    // Enters the select mode, disabling the current mode but leaving it open to be reenabled.
     enterSelected() {
         let res: (BoardObject | undefined)[] = this.board.selectObjects();
         if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
@@ -198,6 +200,7 @@ export class ModeManager {
         }
     }
 
+    // Exits the select mode.
     exitSelected() {
         this.selectMan.flipListeners(false);
         if (this.currMode === Mode.Draw) {
@@ -207,6 +210,8 @@ export class ModeManager {
         }
     }
 
+    // Checks if the manager should swap into / out of select mode.
+    // Does the swap if it can.
     attemptSelectedSwap() {
         if (!this.selectMan.active && this.hasCompleteSelection()) {
             this.enterSelected();
@@ -215,6 +220,7 @@ export class ModeManager {
         }
     }
 
+    // Performs a single mode management step.
     step(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         this.attemptSelectedSwap();
         if (this.tokenMan.active) {

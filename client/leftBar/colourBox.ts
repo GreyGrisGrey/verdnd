@@ -18,6 +18,7 @@ const RGBTexts: Record<ColourComponent, HTMLInputElement> = {
     alpha: getRequiredElement('opacColText', HTMLInputElement),
 };
 
+// Class handling the colour selection box.
 export class ColourBox {
     savedColours: ColInst[];
     currColour: ColInst;
@@ -51,6 +52,8 @@ export class ColourBox {
         this.changeCurrColour();
     }
 
+    // Adds relevant event listeners.
+    // Mostly to do with registering changes to the currently selected colour.
     addEventListeners() {
         colourComponents.forEach((component) => {
             RGBSliders[component].addEventListener('input', () => {
@@ -105,9 +108,10 @@ export class ColourBox {
         });
     }
 
-    changeCurrColour(swap: boolean = false, swapID: number = -1) {
+    // Changes the currently selected colour for the main box.
+    changeCurrColour(swap: boolean = false, swapId: number = -1) {
         if (swap) {
-            this.currColour = this.savedColours[swapID];
+            this.currColour = this.savedColours[swapId];
         }
         this.mainBox.style.background = this.currColour.toString();
         colourComponents.forEach((component) => {
@@ -115,6 +119,7 @@ export class ColourBox {
         });
     }
 
+    // Matches the value displayed by a colour's corresponding slider input to its corresponding text input.
     matchInput(component: ColourComponent) {
         if (component === 'red') {
             RGBSliders[component].value = this.currColour.red.toString();
@@ -131,9 +136,10 @@ export class ColourBox {
         }
     }
 
-    changeSubColour(swapID: number = -1) {
-        this.savedColours[swapID] = this.currColour;
-        this.adjBoxes[swapID].style.background =
-            this.savedColours[swapID].toString();
+    // Changes the saved colour of the indicated adjoining colour box.
+    changeSubColour(swapId: number = -1) {
+        this.savedColours[swapId] = this.currColour;
+        this.adjBoxes[swapId].style.background =
+            this.savedColours[swapId].toString();
     }
 }

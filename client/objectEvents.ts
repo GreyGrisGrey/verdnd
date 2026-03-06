@@ -1,6 +1,8 @@
 import type { ColInst } from './colours.ts';
 import type { Vec2 } from './boardCanvas/coords.ts';
 
+// Just a bunch of enums and interfaces used by other files.
+
 export enum Shape {
     Rect = 'RECT',
     Circle = 'CIRCLE',

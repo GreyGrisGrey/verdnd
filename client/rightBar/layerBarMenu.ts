@@ -4,6 +4,8 @@ import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 
+// Class managing the right-bar's layer menu.
+// It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
 export class LayerMenu {
     active: boolean;
     button: HTMLElement;
@@ -33,12 +35,16 @@ export class LayerMenu {
         this.moveLayers();
     }
 
+    // Toggles whether this menu is active or not.
     toggleActive(newAct: boolean) {
         this.active = newAct;
         this.layerObj.style.visibility = this.active ? 'visible' : 'hidden';
         this.layerObj.style.pointerEvents = this.active ? 'auto' : 'none';
     }
 
+    // Modifies and styles the main elements of the page.
+    // Why is this here and not in a style element? I don't know.
+    // TODO - Fix that.
     setMainElements() {
         this.descObj.style.height = `${this.boxHeight}px`;
 
@@ -81,10 +87,12 @@ export class LayerMenu {
         });
     }
 
+    // Calls the server interface to create a new layer.
     createLayer() {
         this.serveInter.createLayer();
     }
 
+    // Updates the layer corresponding to a key value from a LayerState.
     updateLayer(key: number, val: LayerState) {
         const toUpdate = this.layerMap.get(key)!;
         toUpdate.gmVisible = val.gmVisible;
@@ -94,6 +102,7 @@ export class LayerMenu {
         (toUpdate.element!.children[2] as any).checked = val.gmVisible;
     }
 
+    // Handles a new batch of LayerStates from the server.
     handleNewLayers(newLayers: Map<number, LayerState>) {
         for (const [key, val] of newLayers) {
             if (!this.layerMap.has(key)) {
@@ -106,12 +115,7 @@ export class LayerMenu {
         this.resizeLayerBoxes();
     }
 
-    addNewLayer(layer: LayerState) {
-        this.constructLayer(layer);
-        this.moveLayers();
-        this.resizeLayerBoxes();
-    }
-
+    // Constructs a new layer, including relevant HTMLElements.
     constructLayer(buildData: LayerState) {
         const newBox = document.createElement('div');
         const newText = document.createElement('p');
@@ -191,12 +195,15 @@ export class LayerMenu {
         });
     }
 
+    // Changes the location of the HTMLElements of each layer.
+    // Something of a misnomer.
     moveLayers() {
         this.currElements.forEach((el, i) => {
             el.style.top = `${(this.boxHeight + 4) * (i + 1)}px`;
         });
     }
 
+    // Resizes the HTMLElements of each layer.
     resizeLayerBoxes() {
         const w = `${parseInt(this.layerObj.style.width, 10) - 4}px`;
         for (const el of this.currElements) {
@@ -205,6 +212,7 @@ export class LayerMenu {
         this.tempButtonObj.style.width = `${parseInt(this.layerObj.style.width, 10)}px`;
     }
 
+    // Unselects the currently selected layer.
     exitCurrSelect() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {
@@ -212,6 +220,7 @@ export class LayerMenu {
         }
     }
 
+    // Performs a single step updating the layer menu.
     step() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {

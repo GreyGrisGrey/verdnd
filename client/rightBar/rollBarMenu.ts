@@ -22,6 +22,8 @@ export interface DicePayload {
     result: number;
 }
 
+// Class manaing the roll menu on the right bar.
+// Also manages the roll menu on the left bar. Questionable.
 export class RollMenu {
     textBox: HTMLElement;
     active: boolean;
@@ -44,11 +46,15 @@ export class RollMenu {
         this.serveInter = server;
     }
 
+    // Updates the main elements of the menu. Also questionable, why is this not in a style element.
     setMainElements() {
         chatBox.append(this.textBox);
         chatBox.style.background = GREY.toString();
     }
 
+    // Constructs the HTML elements corresponding to each roll option.
+    // This looks dubious but it's not, because the structure of that will change substantially.
+    // More importantly I don't want to write all this out by hand.
     setRollElements() {
         let count = 0;
         for (const i of [3, 4, 6, 8, 10, 12, 20, 100, 101]) {
@@ -186,6 +192,8 @@ export class RollMenu {
         }
     }
 
+    // Toggles if the roll menu is active or not.
+    // Also toggles if the colour menu is active or not. Extremely dubious.
     toggleActive(newAct: boolean) {
         this.active = newAct;
         rollBox.style.visibility = this.active ? 'visible' : 'hidden';
@@ -199,6 +207,7 @@ export class RollMenu {
         }
     }
 
+    // Performs a single step updating the roll menu.
     async step() {
         const rH = rightBar.style.height;
         const rW = rightBar.style.width;
@@ -216,12 +225,14 @@ export class RollMenu {
         }
     }
 
+    // Constructs a bunch of chat boxes for the roll menu.
     async constructChats() {
         for (let i = 0; i < 50; i++) {
             this.constructChat(i);
         }
     }
 
+    // Constructs a single chat box for the roll menu.
     constructChat(currIndex: number) {
         const newBox = document.createElement('div');
         const newText = document.createElement('p');
@@ -239,6 +250,7 @@ export class RollMenu {
         this.currChats.push(newText);
     }
 
+    // Updates the text of the chat boxes.
     updateChats(data: Map<number, number>) {
         console.log(data);
         for (const [key, val] of data) {
@@ -249,11 +261,14 @@ export class RollMenu {
         }
     }
 
+    // Updates a chat box.
     updateChat(dataLine: number, currIndex: number) {
         this.currChats[currIndex].innerText = `Rolled ${dataLine}`;
         this.currChats[currIndex].style.visibility = 'visible';
     }
 
+    // Constructs a dice roll payload out of the current state of the left roll menu, plus some parameters from the button that called this.
+    // Very unclean. Will be fixed.
     constructPayload(
         diceSize: number,
         diceCount: number,

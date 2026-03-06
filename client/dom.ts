@@ -1,3 +1,4 @@
+// Gets an HTMLElement, throws an error if it's not there.
 export function getRequiredElement<T extends HTMLElement>(
     id: string,
     elementType: { new (): T },
