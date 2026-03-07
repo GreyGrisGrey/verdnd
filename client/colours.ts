@@ -34,6 +34,35 @@ export class ColInst {
     }
 }
 
+export function stringToColInst(newS: string) {
+    if (newS.charAt(0) === '#') {
+        return new ColInst(
+            parseInt(newS.slice(1, 3), 16),
+            parseInt(newS.slice(3, 5), 16),
+            parseInt(newS.slice(5, 7), 16),
+            100,
+        );
+    } else if (newS.slice(0, 4) === 'rgba') {
+        const splits = newS.slice(5).split(' ');
+        return new ColInst(
+            parseInt(splits[0].slice(0, splits[0].length)),
+            parseInt(splits[1].slice(0, splits[1].length)),
+            parseInt(splits[2].slice(0, splits[2].length)),
+            parseInt(splits[3].slice(0, splits[3].length)) * 100,
+        );
+    } else if (newS.slice(0, 3) === 'rgb') {
+        const splits = newS.slice(4).split(' ');
+        return new ColInst(
+            parseInt(splits[0].slice(0, splits[0].length)),
+            parseInt(splits[1].slice(0, splits[1].length)),
+            parseInt(splits[2].slice(0, splits[2].length)),
+            100,
+        );
+    }
+    console.log('Error, unrecognized colour string format');
+    return new ColInst(255, 0, 255, 100);
+}
+
 export const GREY = '#cccccc';
 export const GREY_LIGHT = '#eeeeee';
 export const RED = '#cc0000';

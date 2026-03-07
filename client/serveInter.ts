@@ -23,7 +23,8 @@ export class tempStore {
         this.storedLayers = new Map();
         this.currIndex = 0;
         this.prevMapping = new Map();
-        this.socket = new WebSocket('ws://47.55.46.138:4322/');
+        //this.socket = new WebSocket('ws://47.55.46.138:4322/');
+        this.socket = new WebSocket('ws://192.168.2.142:8765/');
         this.board = null;
 
         this.socket.addEventListener('message', (event) => {
@@ -46,7 +47,6 @@ export class tempStore {
                     );
                 }
             } else if (message.entity === 'ROLL') {
-                console.log(message);
                 this.prevMapping.set(message.index, message.result);
             }
         });
@@ -112,6 +112,10 @@ export class tempStore {
                         objectId: id,
                     }),
                 );
+                this.storedObjects.delete(id);
+                if (this.board) {
+                    this.board.removeObject(id);
+                }
             }
         }
     }

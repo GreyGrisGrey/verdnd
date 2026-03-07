@@ -63,12 +63,12 @@ export class BoardLayer {
     removeObject(removeId: number) {
         const toRemove = this.heldMap.get(removeId);
         if (!toRemove) {
-            alert('Error no object with such Id exists to remove');
+            console.log('Error no object with such Id exists to remove');
             return false;
         }
         const removeIndex = this.heldObjects.indexOf(toRemove);
         if (!this.heldMap.delete(removeId)) {
-            alert('Error no object with such Id exists to remove');
+            console.log('Error no object with such Id exists to remove');
             return false;
         }
         this.heldObjects.splice(removeIndex, 1);

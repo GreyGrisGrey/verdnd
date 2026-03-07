@@ -1,6 +1,10 @@
-import { ColInst } from '../colours.ts';
+import { ColInst, stringToColInst } from '../colours.ts';
+import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-const colorSquare = getRequiredElement('colourSquare', HTMLElement);
+import type { Vec2 } from '../boardCanvas/coords.ts';
+const colourSquare = getRequiredElement('colourSquare', HTMLElement);
+const colourPicker = getRequiredElement('colourPicker', HTMLElement);
+const can = getRequiredElement('board', HTMLCanvasElement);
 
 type ColourComponent = 'red' | 'green' | 'blue' | 'alpha';
 const colourComponents: ColourComponent[] = ['red', 'green', 'blue', 'alpha'];
@@ -27,8 +31,10 @@ export class ColourBox {
     adjBoxes: HTMLElement[];
     can: HTMLElement;
     shiftIsPressed: boolean;
+    pickColour: boolean;
+    board: Board;
 
-    constructor() {
+    constructor(newBoard: Board) {
         this.savedColours = [
             new ColInst(255, 0, 0, 100),
             new ColInst(0, 255, 0, 100),
@@ -39,10 +45,12 @@ export class ColourBox {
         ];
         this.currColour = new ColInst(120, 120, 120, 100);
         this.currRGBString = `rgba(${120}, ${120}, ${120}, ${1})`;
-        this.mainBox = colorSquare;
+        this.mainBox = colourSquare;
         this.adjBoxes = [];
-        this.can = colorSquare;
+        this.can = colourSquare;
         this.shiftIsPressed = false;
+        this.pickColour = false;
+        this.board = newBoard;
         for (const i of [0, 1, 2, 3, 4, 5]) {
             this.adjBoxes.push(getRequiredElement(`col${i + 1}`, HTMLElement));
             this.adjBoxes[i].style.left = `${i * 40 + 10}px`;
@@ -55,6 +63,32 @@ export class ColourBox {
     // Adds relevant event listeners.
     // Mostly to do with registering changes to the currently selected colour.
     addEventListeners() {
+        can.addEventListener('mousedown', (event) => {
+            if (this.pickColour) {
+                const coords = this.board.determineTile(
+                    event.clientX,
+                    event.clientY,
+                    false,
+                );
+                const resObj = this.board.selectObjects('any', [coords]);
+                if (resObj.length > 0) {
+                    if (typeof resObj[0].colour === typeof 'asd') {
+                        this.currColour = stringToColInst(
+                            resObj[0].colour as any,
+                        );
+                    } else {
+                        this.currColour = resObj[0].colour as any;
+                    }
+                    this.changeCurrColour();
+                }
+                this.pickColour = false;
+            }
+        });
+
+        colourPicker.addEventListener('click', () => {
+            this.pickColour = true;
+        });
+
         colourComponents.forEach((component) => {
             RGBSliders[component].addEventListener('input', () => {
                 const value = parseInt(RGBSliders[component].value, 10);

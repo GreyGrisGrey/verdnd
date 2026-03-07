@@ -211,14 +211,14 @@ export class Board {
         }
     }
 
-    // Checks if the mode manager is in a state to complete a selection, retrieves all objects in the selection if so.
-    selectObjects(targetType: string = 'any') {
+    // Retrieves objects corresponding to set of coordinates
+    selectObjects(
+        targetType: string = 'any',
+        coords: Vec2[] = this.modeMan.getSelectCoords(),
+    ) {
         const layer = this.layerMap.get(this.activeLayer);
         if (layer) {
-            return layer.selectObjects(
-                this.modeMan.getSelectCoords(),
-                targetType,
-            );
+            return layer.selectObjects(coords, targetType);
         }
         return [];
     }

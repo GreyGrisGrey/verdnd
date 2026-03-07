@@ -6,7 +6,7 @@ const serveInter = new tempStore();
 const loadWall = document.getElementById('loadBlock')!;
 const board = new Board(serveInter);
 const rightMan = new RightBarManager(serveInter);
-const leftMan = new LeftBarManager();
+const leftMan = new LeftBarManager(board);
 
 serveInter.setBoard(board);
 // The order of events up there is unfortunately quite important.

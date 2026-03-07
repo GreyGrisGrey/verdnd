@@ -11,6 +11,28 @@
 
 
     <title>Gameboard</title>
+    <div id="loadBlock">
+        <h1 id="loadText">Loading</h1>
+    </div>
+    <style>
+        #loadBlock {
+            background: #222222;
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            width: 2000px;
+            height: 2000px;
+            z-index: 99;
+        }
+
+        #loadText {
+            position: absolute;
+            color: #3333dd;
+            left: 500px;
+            top: 300px;
+            z-index: 99;
+        }
+    </style>
 
     <div id="modeMenuId">
         <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
@@ -203,12 +225,14 @@
             <input type="text" id="opacColText" />
             <canvas id="colourSquare"></canvas>
 
-            <button class="colorTab" id="col1"> </button>
-            <button class="colorTab" id="col2"> </button>
-            <button class="colorTab" id="col3"> </button>
-            <button class="colorTab" id="col4"> </button>
-            <button class="colorTab" id="col5"> </button>
-            <button class="colorTab" id="col6"> </button>
+            <button class="colourTab" id="colourPicker"> Pick </button>
+
+            <button class="colourTab" id="col1"> </button>
+            <button class="colourTab" id="col2"> </button>
+            <button class="colourTab" id="col3"> </button>
+            <button class="colourTab" id="col4"> </button>
+            <button class="colourTab" id="col5"> </button>
+            <button class="colourTab" id="col6"> </button>
         </div>
 
         <div id="rollContainer">
@@ -216,6 +240,13 @@
     </div>
 
     <style>
+        #colourPicker {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.25);
+            left: 260px;
+            width: 40px;
+        }
+
         .colLabel {
             position: absolute;
             left: 10px;
@@ -241,7 +272,7 @@
             pointer-events: auto;
         }
 
-        .colorTab {
+        .colourTab {
             background-color: rgba(200, 200, 200, 0.5);
             position: absolute;
             width: 30px;
@@ -405,9 +436,6 @@
     </div>
 
     <div class="canvasContainer">
-        <div id="loadBlock">
-            <h1 id="loadText">Loading</h1>
-        </div>
         <script>
             document.getElementById('loadText').style.left = window.innerWidth / 2 - 50 + "px";
             document.getElementById('loadText').style.top = window.innerHeight / 2 - 20 + "px";
@@ -422,16 +450,6 @@
     <style>
         #selectInstruct {
             visibility: hidden;
-        }
-
-        #loadBlock {
-            background: #222222;
-            position: absolute;
-            left: -5px;
-            top: -5px;
-            width: 2000px;
-            height: 2000px;
-            z-index: 9;
         }
 
         #loadText {
