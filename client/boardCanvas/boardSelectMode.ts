@@ -15,6 +15,7 @@ export class BoardSelectMode {
     selectClick: boolean;
     thirdOffset: Vec2;
     currColour: string;
+    boxItems: HTMLButtonElement[];
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -24,8 +25,49 @@ export class BoardSelectMode {
         this.selectClick = false;
         this.thirdOffset = { x: 0, y: 0 };
         this.currColour = 'none';
+        this.boxItems = [];
+        this.setUpBoxes();
 
         this.addEventListeners();
+    }
+
+    setUpBoxes() {
+        for (let i = 0; i < 10; i++) {
+            this.boxItems.push(
+                getRequiredElement(
+                    'bottomSelectBox' + i.toString(),
+                    HTMLButtonElement,
+                ),
+            );
+            if (i > 3 || i === 0) {
+                this.boxItems[i].disabled = true;
+            }
+            this.boxItems[i].addEventListener('click', () => {
+                this.handleSwitchEvent(i.toString());
+            });
+        }
+    }
+
+    toggleBoxes() {
+        for (const box of this.boxItems) {
+            box.style.visibility = this.active ? 'visible' : 'hidden';
+            box.style.pointerEvents = this.active ? 'auto' : 'none';
+        }
+    }
+
+    handleSwitchEvent(key: string) {
+        if (key === 'Escape' || key === '1') {
+            this.exitOnNextStep = true;
+        } else if (key === 'Backspace' || key === '2') {
+            const idList: number[] = [];
+            for (const obj of this.selectedObjects) {
+                idList.push(obj.objectId);
+            }
+            this.board.serveInter.destroyObjects(idList);
+            this.exitOnNextStep = true;
+        } else if (key === '3') {
+            this.recolour();
+        }
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -39,10 +81,17 @@ export class BoardSelectMode {
         this.currColour = colourSquare.style.background;
         this.selectClick = this.board.leftMouseDown;
         this.thirdOffset = { x: 0, y: 0 };
+        this.toggleBoxes();
     }
 
     // Adds all relevant event listeners.
     addEventListeners() {
+        document.addEventListener('keydown', (event) => {
+            if (this.active) {
+                this.handleSwitchEvent(event.key);
+            }
+        });
+
         can.addEventListener('mousemove', (event) => {
             if (this.active && this.selectClick) {
                 const change: Vec2 = {
@@ -84,19 +133,6 @@ export class BoardSelectMode {
                 ) {
                     this.exitOnNextStep = true;
                 }
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (this.active && event.key === 'Escape') {
-                this.exitOnNextStep = true;
-            } else if (this.active && event.key === 'Backspace') {
-                const idList: number[] = [];
-                for (const obj of this.selectedObjects) {
-                    idList.push(obj.objectId);
-                }
-                this.board.serveInter.destroyObjects(idList);
-                this.exitOnNextStep = true;
             }
         });
     }

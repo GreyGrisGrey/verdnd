@@ -21,43 +21,43 @@
     <div id="bottomBar">
         <div class="bottomBox" id="bottomBox1">
             <button class="bottomDrawBox" id="bottomDrawBox1">Rect [1]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox1"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox1">Exit [1] [Esc]</button>
         </div>
         <div class="bottomBox" id="bottomBox2">
             <button class="bottomDrawBox" id="bottomDrawBox2">Ellipse [2]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox2"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox2">Delete [2] [Back]</button>
         </div>
         <div class="bottomBox" id="bottomBox3">
             <button class="bottomDrawBox" id="bottomDrawBox3">Poly [3]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox3"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox3">Recolour [3]</button>
         </div>
         <div class="bottomBox" id="bottomBox4">
             <button class="bottomDrawBox" id="bottomDrawBox4">Wall [4]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox4"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox4">LUp WIP1 [4]</button>
         </div>
         <div class="bottomBox" id="bottomBox5">
             <button class="bottomDrawBox" id="bottomDrawBox5">Close [5]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox5"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox5">LDown WIP2 [5]</button>
         </div>
         <div class="bottomBox" id="bottomBox6">
             <button class="bottomDrawBox" id="bottomDrawBox6">Select [6]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox6"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox6">WIP3 [6]</button>
         </div>
         <div class="bottomBox" id="bottomBox7">
             <button class="bottomDrawBox" id="bottomDrawBox7">Cancel [7]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox7"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox7">WIP4 [7]</button>
         </div>
         <div class="bottomBox" id="bottomBox8">
             <button class="bottomDrawBox" id="bottomDrawBox8">WIP1 [8]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox8"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox8">WIP5 [8]</button>
         </div>
         <div class="bottomBox" id="bottomBox9">
             <button class="bottomDrawBox" id="bottomDrawBox9">WIP2 [9]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox9"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox9">WIP6 [9]</button>
         </div>
         <div class="bottomBox" id="bottomBox0">
             <button class="bottomDrawBox" id="bottomDrawBox0">WIP3 [0]</button>
-            <button class="bottomSelectBox" id="bottomSelectBox0"></button>
+            <button class="bottomSelectBox" id="bottomSelectBox0">WIP7 [0]</button>
         </div>
     </div>
 
@@ -71,6 +71,7 @@
             border: solid black;
             z-index: 9;
             left: 400px;
+            font-size: 8px;
         }
 
         .bottomBox {
@@ -79,7 +80,7 @@
             width: 56px;
             bottom: 0px;
             left: 0px;
-            background-color: rgba(200, 200, 200, 1);
+            background-color: #c8c8c8;
             border: solid black;
         }
 
@@ -89,6 +90,7 @@
             width: 56px;
             bottom: 0px;
             left: 0px;
+            font-size: 12px;
         }
 
         .bottomSelectBox {
@@ -98,6 +100,15 @@
             bottom: 0px;
             left: 0px;
             visibility: hidden;
+            font-size: 12px;
+        }
+
+        .bottomDrawBox:disabled {
+            background-color: #aaaaaa;
+        }
+
+        .bottomSelectBox:disabled {
+            background-color: #aaaaaa;
         }
     </style>
 
@@ -403,7 +414,7 @@
             document.getElementById('loadBlock').style.width = window.innerWidth + "px";
             document.getElementById('loadBlock').style.height = window.innerHeight + "px";
         </script>
-        <canvas id="board" oncontextmenu="return false;"></canvas>
+        <canvas id="board" oncontextmenu="return false;" tabindex='1'></canvas>
     </div>
 
     <script src="./out.js"></script>

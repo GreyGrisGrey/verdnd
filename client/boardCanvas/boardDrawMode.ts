@@ -55,7 +55,7 @@ export class BoardDrawMode {
                     HTMLButtonElement,
                 ),
             );
-            
+
             this.boxItems[i].addEventListener('click', () => {
                 this.handleSwitchEvent(i.toString());
                 this.flipBoxes();
@@ -68,6 +68,7 @@ export class BoardDrawMode {
             box.style.visibility = this.active ? 'visible' : 'hidden';
             box.style.pointerEvents = this.active ? 'auto' : 'none';
         }
+        this.flipBoxes();
     }
 
     flipBoxes() {
@@ -91,7 +92,6 @@ export class BoardDrawMode {
         if (setOn) {
             this.flipBoxes();
         }
-        this.toggleBoxes();
     }
 
     handleSwitchEvent(key: string) {

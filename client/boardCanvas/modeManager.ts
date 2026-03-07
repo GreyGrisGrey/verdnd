@@ -87,6 +87,7 @@ export class ModeManager {
             this.selectMan.active || this.currMode === Mode.Draw
                 ? 'auto'
                 : 'none';
+        this.drawMan.toggleBoxes();
     }
 
     // Adds event listeners for all modes, as well as some of its own.
@@ -108,7 +109,7 @@ export class ModeManager {
             this.board.mouseCoords.y = event.clientY;
         });
 
-        document.addEventListener('keydown', (event) => {
+        can.addEventListener('keydown', (event) => {
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
             } else if (event.key === 's') {
@@ -247,6 +248,7 @@ export class ModeManager {
         this.selectMan.flipListeners(false);
         if (this.currMode === Mode.Draw) {
             this.drawMan.active = true;
+            this.drawMan.selectMode = false;
         } else if (this.currMode === Mode.Token) {
             this.tokenMan.active = true;
         }
@@ -268,9 +270,6 @@ export class ModeManager {
         if (this.tokenMan.active) {
             this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
             this.tokenMan.getNewHover();
-        }
-        if (this.selectMan.active) {
-            this.selectMan.recolour();
         }
         this.toggleBoxesVis();
     }

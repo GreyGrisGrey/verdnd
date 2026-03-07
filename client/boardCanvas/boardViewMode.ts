@@ -22,6 +22,7 @@ export class BoardViewMode {
     // Adds relevant event listeners
     addEventListeners() {
         can.addEventListener('mousemove', (event) => {
+            can.focus();
             if (
                 (this.active && this.board.leftMouseDown) ||
                 this.board.rightMouseDown
@@ -36,7 +37,7 @@ export class BoardViewMode {
 
         // Changes the zoom level when scrolled
         can.addEventListener('wheel', (event) => {
-            if (this.active) {
+            if (true) {
                 const old = this.board.zoomVal;
                 if (
                     event.deltaY < 0 &&
