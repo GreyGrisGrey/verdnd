@@ -64,6 +64,18 @@ export class RightBarManager {
             this.rollMan.toggleActive(false);
             this.currActive = RightBarTab.Character;
         });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'p') {
+                this.layerMan.toggleActive(false);
+                this.rollMan.toggleActive(true);
+                this.currActive = RightBarTab.Roll;
+            } else if (event.key === 'l') {
+                this.layerMan.toggleActive(true);
+                this.rollMan.toggleActive(false);
+                this.currActive = RightBarTab.Layer;
+            }
+        });
     }
 
     // A single step updating the state of the currently active menu.

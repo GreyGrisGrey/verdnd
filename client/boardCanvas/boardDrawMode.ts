@@ -84,8 +84,8 @@ export class BoardDrawMode {
             }
         });
 
-        can.addEventListener('mousedown', () => {
-            if (this.active) {
+        can.addEventListener('mousedown', (event) => {
+            if (this.active && event.button === 0) {
                 if (
                     this.shape !== Shape.Polyline &&
                     this.shape !== Shape.Line
@@ -120,46 +120,48 @@ export class BoardDrawMode {
         });
 
         // Seriously suboptimal code for finishing construction of circles and rectangles.
-        can.addEventListener('mouseup', () => {
-            if (this.params.length === 0) {
-                return;
-            } else if (this.active && this.selectMode) {
-                const newPos = this.board.determineTile(
-                    this.board.mouseCoords.x + 1,
-                    this.board.mouseCoords.y + 1,
-                    false,
-                );
-                if (
-                    newPos.x === this.params[0].x &&
-                    newPos.y === this.params[0].y
+        can.addEventListener('mouseup', (event) => {
+            if (event.button === 0) {
+                if (this.params.length === 0) {
+                    return;
+                } else if (this.active && this.selectMode) {
+                    const newPos = this.board.determineTile(
+                        this.board.mouseCoords.x + 1,
+                        this.board.mouseCoords.y + 1,
+                        false,
+                    );
+                    if (
+                        newPos.x === this.params[0].x &&
+                        newPos.y === this.params[0].y
+                    ) {
+                        this.selectState = 1;
+                    } else {
+                        const topLeft: Vec2 = {
+                            x: Math.min(newPos.x, this.params[0].x),
+                            y: Math.min(newPos.y, this.params[0].y),
+                        };
+                        const bottomRight: Vec2 = {
+                            x: Math.max(newPos.x, this.params[0].x) + 1,
+                            y: Math.max(newPos.y, this.params[0].y) + 1,
+                        };
+                        this.selectState = 2;
+                        this.params = [];
+                        this.params.push(topLeft);
+                        this.params.push(bottomRight);
+                    }
+                } else if (
+                    this.active &&
+                    this.shape !== Shape.Polyline &&
+                    this.shape !== Shape.Line
                 ) {
-                    this.selectState = 1;
-                } else {
-                    const topLeft: Vec2 = {
-                        x: Math.min(newPos.x, this.params[0].x),
-                        y: Math.min(newPos.y, this.params[0].y),
-                    };
-                    const bottomRight: Vec2 = {
-                        x: Math.max(newPos.x, this.params[0].x) + 1,
-                        y: Math.max(newPos.y, this.params[0].y) + 1,
-                    };
-                    this.selectState = 2;
-                    this.params = [];
-                    this.params.push(topLeft);
-                    this.params.push(bottomRight);
+                    const res = this.board.determineTile(
+                        this.board.mouseCoords.x,
+                        this.board.mouseCoords.y,
+                        false,
+                    );
+                    this.params.push({ x: res.x, y: res.y });
+                    this.setNewObject();
                 }
-            } else if (
-                this.active &&
-                this.shape !== Shape.Polyline &&
-                this.shape !== Shape.Line
-            ) {
-                const res = this.board.determineTile(
-                    this.board.mouseCoords.x,
-                    this.board.mouseCoords.y,
-                    false,
-                );
-                this.params.push({ x: res.x, y: res.y });
-                this.setNewObject();
             }
         });
     }

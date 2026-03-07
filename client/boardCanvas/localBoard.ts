@@ -58,6 +58,7 @@ export class Board {
     originCoords: Vec2;
     mouseCoords: Vec2;
     leftMouseDown: boolean;
+    rightMouseDown: boolean;
     boardLayers: BoardLayer[];
     layerMap: Map<number, BoardLayer>;
     objectMap: Map<number, BoardObject>;
@@ -72,6 +73,7 @@ export class Board {
         this.originCoords = { x: 0, y: 0 };
         this.mouseCoords = { x: 0, y: 0 };
         this.leftMouseDown = false;
+        this.rightMouseDown = false;
         this.boardLayers = [];
         this.layerMap = new Map();
         this.objectMap = new Map();

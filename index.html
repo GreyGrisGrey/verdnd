@@ -13,16 +13,75 @@
     <title>Gameboard</title>
 
     <div id="modeMenuId">
-        <button class="modeButton" id="viewMenuButton" disabled>View</button>
-        <button class="modeButton" id="tokenMenuButton">Token</button>
-        <button class="modeButton" id="drawMenuButton">Draw</button>
+        <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
+        <button class="modeButton" id="tokenMenuButton">Token [S]</button>
+        <button class="modeButton" id="drawMenuButton">Draw [D]</button>
     </div>
+
+    <div id="bottomBar">
+        <div class="bottomBox" id="bottomBox1">
+            <button class="bottomDrawBox" id="bottomDrawBox1"></button>
+            <button class="bottomselectBox" id="bottomSelectBox1"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox2">
+            <button class="bottomDrawBox" id="bottomDrawBox2"></button>
+            <button class="bottomselectBox" id="bottomSelectBox2"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox3">
+            <button class="bottomDrawBox" id="bottomDrawBox3"></button>
+            <button class="bottomselectBox" id="bottomSelectBox3"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox4">
+            <button class="bottomDrawBox" id="bottomDrawBox4"></button>
+            <button class="bottomselectBox" id="bottomSelectBox4"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox5">
+            <button class="bottomDrawBox" id="bottomDrawBox5"></button>
+            <button class="bottomselectBox" id="bottomSelectBox5"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox6">
+            <button class="bottomDrawBox" id="bottomDrawBox6"></button>
+            <button class="bottomselectBox" id="bottomSelectBox6"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox7">
+            <button class="bottomDrawBox" id="bottomDrawBox7"></button>
+            <button class="bottomselectBox" id="bottomSelectBox7"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox8">
+            <button class="bottomDrawBox" id="bottomDrawBox8"></button>
+            <button class="bottomselectBox" id="bottomSelectBox8"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox9">
+            <button class="bottomDrawBox" id="bottomDrawBox9"></button>
+            <button class="bottomselectBox" id="bottomSelectBox9"></button>
+        </div>
+        <div class="bottomBox" id="bottomBox10">
+            <button class="bottomDrawBox" id="bottomDrawBox10"></button>
+            <button class="bottomselectBox" id="bottomSelectBox10"></button>
+        </div>
+    </div>
+
+    <style>
+        #bottomBar {
+            position: absolute;
+            visibility: hidden;
+            height: 80px;
+        }
+
+        #drawModeBar {
+            position: absolute;
+        }
+
+        #selectModeBar {
+            position: absolute;
+        }
+    </style>
 
     <div id="rightBar">
 
-        <button class="rightTab" id="rollTab">Roll</button>
+        <button class="rightTab" id="rollTab">Roll [P]</button>
         <button class="rightTab" id="tokenTab">T</button>
-        <button class="rightTab" id="layerTab">Layers</button>
+        <button class="rightTab" id="layerTab">Layers [L]</button>
         <button class="rightTab" id="characterTab">C</button>
 
         <div id="chatBox">
@@ -231,15 +290,11 @@
             height: 100px;
             background-color: rgba(200, 0, 0, 1);
         }
-    </style>
 
-    <style>
         #rollContainer {
             visibility: hidden;
         }
-    </style>
 
-    <style>
         .rightTab {
             background-color: rgba(200, 200, 200, 0.5);
             border: solid black;
@@ -248,22 +303,22 @@
             top: 10px;
             left: -50px;
             width: 50px;
-            height: 30px;
+            height: 50px;
             pointer-events: auto;
         }
 
         #tokenTab {
-            top: 50px;
+            top: 110px;
             visibility: hidden;
         }
 
         #layerTab {
-            top: 50px;
+            top: 70px;
             left: -50px;
         }
 
         #characterTab {
-            top: 130px;
+            top: 170px;
             visibility: hidden;
         }
 
@@ -323,7 +378,7 @@
             document.getElementById('loadBlock').style.width = window.innerWidth + "px";
             document.getElementById('loadBlock').style.height = window.innerHeight + "px";
         </script>
-        <canvas id="board"></canvas>
+        <canvas id="board" oncontextmenu="return false;"></canvas>
     </div>
 
     <script src="./out.js"></script>

@@ -49,13 +49,15 @@ export class BoardSelectMode {
                     x: Math.round(this.board.mouseCoords.x - event.clientX),
                     y: Math.round(this.board.mouseCoords.y - event.clientY),
                 };
-                this.thirdOffset.x -= change.x;
-                this.thirdOffset.y -= change.y;
+                if (!this.board.rightMouseDown) {
+                    this.thirdOffset.x -= change.x;
+                    this.thirdOffset.y -= change.y;
+                }
             }
         });
 
         can.addEventListener('mousedown', (event) => {
-            if (this.active) {
+            if (this.active && event.button === 0) {
                 const point = this.board.determineTile(
                     event.clientX,
                     event.clientY,
@@ -72,8 +74,8 @@ export class BoardSelectMode {
             }
         });
 
-        can.addEventListener('mouseup', () => {
-            if (this.active && this.selectClick) {
+        can.addEventListener('mouseup', (event) => {
+            if (this.active && this.selectClick && event.button === 0) {
                 this.moveObjects();
                 this.selectClick = false;
                 if (

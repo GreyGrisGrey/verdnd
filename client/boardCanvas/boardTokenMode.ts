@@ -57,8 +57,8 @@ export class BoardTokenMode {
             }
         });
 
-        can.addEventListener('mousedown', () => {
-            if (this.active) {
+        can.addEventListener('mousedown', (event) => {
+            if (this.active && event.button === 0) {
                 if (!this.shift) {
                     const res = this.board.selectToken([
                         this.board.determineTile(
@@ -86,8 +86,8 @@ export class BoardTokenMode {
             }
         });
 
-        can.addEventListener('mouseup', () => {
-            if (this.active) {
+        can.addEventListener('mouseup', (event) => {
+            if (this.active && event.button === 0) {
                 if (this.shift) {
                     this.params.push(
                         this.board.determineTile(

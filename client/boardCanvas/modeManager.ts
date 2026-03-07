@@ -84,18 +84,36 @@ export class ModeManager {
             this.board.mouseCoords.y = event.clientY;
         });
 
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'a') {
+                this.modeSwitch(Mode.View);
+            } else if (event.key === 's') {
+                this.modeSwitch(Mode.Token);
+            } else if (event.key === 'd') {
+                this.modeSwitch(Mode.Draw);
+            }
+        });
+
         can.addEventListener(
             'mousedown',
-            () => {
-                this.board.leftMouseDown = true;
+            (event) => {
+                if (event.button === 0) {
+                    this.board.leftMouseDown = true;
+                } else if (event.button === 2) {
+                    this.board.rightMouseDown = true;
+                }
             },
             { capture: true },
         );
 
         can.addEventListener(
             'mouseup',
-            () => {
-                this.board.leftMouseDown = false;
+            (event) => {
+                if (event.button === 0) {
+                    this.board.leftMouseDown = false;
+                } else if (event.button === 2) {
+                    this.board.rightMouseDown = false;
+                }
             },
             { capture: true },
         );

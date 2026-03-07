@@ -22,14 +22,15 @@ export class BoardViewMode {
     // Adds relevant event listeners
     addEventListeners() {
         can.addEventListener('mousemove', (event) => {
-            if (this.active) {
+            if (
+                (this.active && this.board.leftMouseDown) ||
+                this.board.rightMouseDown
+            ) {
                 const change: Vec2 = {
                     x: Math.round(this.board.mouseCoords.x - event.clientX),
                     y: Math.round(this.board.mouseCoords.y - event.clientY),
                 };
-                if (this.board.leftMouseDown) {
-                    this.board.moveCamera(change.x, change.y);
-                }
+                this.board.moveCamera(change.x, change.y);
             }
         });
 

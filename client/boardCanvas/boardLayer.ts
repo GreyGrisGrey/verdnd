@@ -121,7 +121,6 @@ export class BoardLayer {
                 (candidate.shape === matchType || matchType === 'any')
             ) {
                 acceptable.push(candidate);
-                break;
             } else if (
                 selectCoords.length === 2 &&
                 candidate.isCenterInsideRect(
@@ -132,6 +131,9 @@ export class BoardLayer {
             ) {
                 acceptable.push(candidate);
             }
+        }
+        if (selectCoords.length === 1 && acceptable.length > 0) {
+            return [acceptable[acceptable.length - 1]];
         }
         return acceptable;
     }
