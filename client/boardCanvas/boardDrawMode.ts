@@ -51,39 +51,51 @@ export class BoardDrawMode {
         this.completeObjCheck = false;
     }
 
+    handleSwitchEvent(key: string) {
+        if (key === '1') {
+            this.shape = Shape.Rect;
+            this.params = [];
+        } else if (key === '2') {
+            this.shape = Shape.Ellipse;
+            this.params = [];
+        } else if (key === '3') {
+            this.shape = Shape.Polyline;
+            this.params = [];
+        } else if (key === '4') {
+            this.shape = Shape.Line;
+            this.params = [];
+        } else if (key === '5') {
+            this.setNewObject();
+        } else if (key === '6') {
+            this.shape = Shape.Rect;
+            this.selectMode = true;
+            this.params = [];
+        } else if (key === '7') {
+            this.params = [];
+        }
+        this.params = [];
+    }
+
+    handleKeySwitchEvent(key: string) {
+        if (this.active) {
+            this.selectMode = false;
+        }
+        if (this.active && this.params.length === 0) {
+            this.handleSwitchEvent(key);
+        } else if (
+            this.active &&
+            key === '5' &&
+            this.params.length > 2 &&
+            (this.shape === Shape.Polyline || this.shape === Shape.Line)
+        ) {
+            this.handleSwitchEvent(key);
+        } else if (this.active && key === '7') {
+            this.handleSwitchEvent(key);
+        }
+    }
+
     // Adds all relevant event listeners.
     addEventListeners() {
-        // Handling for switching between drawn shape.
-        document.addEventListener('keydown', (event) => {
-            if (this.active) {
-                this.selectMode = false;
-            }
-            if (this.active && this.params.length === 0) {
-                if (event.key === '1') {
-                    this.shape = Shape.Rect;
-                } else if (event.key === '2') {
-                    this.shape = Shape.Ellipse;
-                } else if (event.key === '3') {
-                    this.shape = Shape.Polyline;
-                } else if (event.key === '4') {
-                    this.shape = Shape.Line;
-                } else if (event.key === '6') {
-                    this.shape = Shape.Rect;
-                    this.selectMode = true;
-                }
-                this.params = [];
-            } else if (
-                this.active &&
-                event.key === '5' &&
-                this.params.length > 2 &&
-                (this.shape === Shape.Polyline || this.shape === Shape.Line)
-            ) {
-                this.setNewObject();
-            } else if (this.active && event.key === '7') {
-                this.params = [];
-            }
-        });
-
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
                 if (
