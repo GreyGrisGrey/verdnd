@@ -1,14 +1,12 @@
 import { Board } from './boardCanvas/localBoard.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
-import { BottomBarManager } from './bottomBar/bottomBarMain.ts';
 import { tempStore } from './serveInter.ts';
 const serveInter = new tempStore();
 const loadWall = document.getElementById('loadBlock')!;
 const board = new Board(serveInter);
 const rightMan = new RightBarManager(serveInter);
 const leftMan = new LeftBarManager();
-const bottomMan = new BottomBarManager(serveInter, board.modeMan.drawMan);
 
 serveInter.setBoard(board);
 // The order of events up there is unfortunately quite important.

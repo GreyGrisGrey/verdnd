@@ -27,6 +27,7 @@ export class BoardDrawMode {
     selectState: number;
     tempObject: ObjectCreatePayload | null;
     stickTemp: boolean;
+    boxItems: HTMLButtonElement[];
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -38,8 +39,46 @@ export class BoardDrawMode {
         this.selectState = 0;
         this.tempObject = null;
         this.stickTemp = false;
+        this.boxItems = [];
 
         this.addEventListeners();
+        this.setUpBoxes();
+        this.flipBoxes();
+        this.toggleBoxes();
+    }
+
+    setUpBoxes() {
+        for (let i = 0; i < 10; i++) {
+            this.boxItems.push(
+                getRequiredElement(
+                    'bottomDrawBox' + i.toString(),
+                    HTMLButtonElement,
+                ),
+            );
+            
+            this.boxItems[i].addEventListener('click', () => {
+                this.handleSwitchEvent(i.toString());
+                this.flipBoxes();
+            });
+        }
+    }
+
+    toggleBoxes() {
+        for (const box of this.boxItems) {
+            box.style.visibility = this.active ? 'visible' : 'hidden';
+            box.style.pointerEvents = this.active ? 'auto' : 'none';
+        }
+    }
+
+    flipBoxes() {
+        this.boxItems[1].disabled = this.shape === Shape.Rect;
+        this.boxItems[2].disabled = this.shape === Shape.Ellipse;
+        this.boxItems[3].disabled = this.shape === Shape.Polyline;
+        this.boxItems[4].disabled = this.shape === Shape.Line;
+        this.boxItems[6].disabled = this.selectMode;
+        this.boxItems[8].disabled = true;
+        this.boxItems[9].disabled = true;
+        this.boxItems[0].disabled = true;
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -49,37 +88,33 @@ export class BoardDrawMode {
         this.selectMode = false;
         this.selectState = 0;
         this.completeObjCheck = false;
+        if (setOn) {
+            this.flipBoxes();
+        }
+        this.toggleBoxes();
     }
 
     handleSwitchEvent(key: string) {
         if (key === '1') {
             this.shape = Shape.Rect;
-            this.params = [];
         } else if (key === '2') {
             this.shape = Shape.Ellipse;
-            this.params = [];
         } else if (key === '3') {
             this.shape = Shape.Polyline;
-            this.params = [];
         } else if (key === '4') {
             this.shape = Shape.Line;
-            this.params = [];
         } else if (key === '5') {
             this.setNewObject();
-        } else if (key === '6') {
-            this.shape = Shape.Rect;
-            this.selectMode = true;
-            this.params = [];
-        } else if (key === '7') {
-            this.params = [];
+        }
+        if (key === '6') {
+            this.selectMode = !this.selectMode;
+        } else {
+            this.selectMode = false;
         }
         this.params = [];
     }
 
     handleKeySwitchEvent(key: string) {
-        if (this.active) {
-            this.selectMode = false;
-        }
         if (this.active && this.params.length === 0) {
             this.handleSwitchEvent(key);
         } else if (
@@ -96,11 +131,19 @@ export class BoardDrawMode {
 
     // Adds all relevant event listeners.
     addEventListeners() {
+        document.addEventListener('keydown', (event) => {
+            if (this.active) {
+                this.handleKeySwitchEvent(event.key);
+                this.flipBoxes();
+            }
+        });
+
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
                 if (
-                    this.shape !== Shape.Polyline &&
-                    this.shape !== Shape.Line
+                    (this.shape !== Shape.Polyline &&
+                        this.shape !== Shape.Line) ||
+                    this.selectMode
                 ) {
                     this.params.push(
                         this.board.determineTile(
@@ -194,12 +237,15 @@ export class BoardDrawMode {
     setNewObject() {
         let tempObj: ObjectCreatePayload;
         if (
-            (this.shape === Shape.Rect || this.shape === Shape.Ellipse) &&
+            (this.shape === Shape.Rect ||
+                this.shape === Shape.Ellipse ||
+                this.selectMode) &&
             this.params.length === 2
         ) {
             const res = rectangleFromPoints(this.params[0], this.params[1]);
+            const kind = this.selectMode ? Shape.Rect : this.shape;
             tempObj = {
-                kind: this.shape,
+                kind: kind as any,
                 x: res[0],
                 y: res[1],
                 width: res[2],
@@ -271,8 +317,8 @@ export class BoardDrawMode {
             return this.tempObject;
         }
         if (
-            this.shape !== Shape.Polyline &&
-            this.shape !== Shape.Line &&
+            ((this.shape !== Shape.Polyline && this.shape !== Shape.Line) ||
+                this.selectMode) &&
             this.params.length >= 1
         ) {
             const res = this.board.determineTile(
@@ -280,21 +326,20 @@ export class BoardDrawMode {
                 this.board.mouseCoords.y,
                 false,
             );
-            if (this.shape === Shape.Rect || this.shape === Shape.Ellipse) {
-                const res2 = rectangleFromPoints(this.params[0], res);
-                const col = this.selectMode
-                    ? WHITE_50
-                    : colourSquare.style.background;
-                return new Box(
-                    -1,
-                    res2[0],
-                    res2[1],
-                    res2[2],
-                    res2[3],
-                    col,
-                    this.shape,
-                );
-            }
+            const res2 = rectangleFromPoints(this.params[0], res);
+            const col = this.selectMode
+                ? WHITE_50
+                : colourSquare.style.background;
+            const shape = this.selectMode ? Shape.Rect : this.shape;
+            return new Box(
+                -1,
+                res2[0],
+                res2[1],
+                res2[2],
+                res2[3],
+                col,
+                shape as any,
+            );
         } else if (
             this.params.length >= 2 &&
             (this.shape === Shape.Polyline || this.shape === Shape.Line)

@@ -9,6 +9,7 @@ export enum Shape {
     Polyline = 'POLYLINE',
     Line = 'LINE',
     Token = 'TOKEN',
+    None = 'NONE',
 }
 
 export enum Entity {

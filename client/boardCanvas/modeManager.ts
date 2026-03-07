@@ -12,6 +12,7 @@ const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const tokenButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
+const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 
 export enum Mode {
     View = 'VIEW',
@@ -39,6 +40,7 @@ export class ModeManager {
     selectClick: boolean;
     selectInstruct: HTMLElement;
     buttons: Record<Mode, HTMLButtonElement>;
+    boxItems: HTMLElement[];
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -59,10 +61,32 @@ export class ModeManager {
         };
         this.selectInstruct = document.getElementById('selectInstruct')!;
         this.selectClick = false;
+        this.boxItems = [];
 
+        this.setUpBoxes();
         this.addEventListeners();
         this.modes[this.currMode].flipListeners(true);
         modeParagraph.innerText = this.modes[this.currMode].getText();
+    }
+
+    setUpBoxes() {
+        for (let i = 0; i < 10; i++) {
+            this.boxItems.push(
+                getRequiredElement('bottomBox' + i.toString(), HTMLElement),
+            );
+            this.boxItems[i].style.left = ((i + 9) % 10) * 60 + 'px';
+        }
+    }
+
+    toggleBoxesVis() {
+        bottomBar.style.visibility =
+            this.selectMan.active || this.currMode === Mode.Draw
+                ? 'visible'
+                : 'hidden';
+        bottomBar.style.pointerEvents =
+            this.selectMan.active || this.currMode === Mode.Draw
+                ? 'auto'
+                : 'none';
     }
 
     // Adds event listeners for all modes, as well as some of its own.
@@ -248,5 +272,6 @@ export class ModeManager {
         if (this.selectMan.active) {
             this.selectMan.recolour();
         }
+        this.toggleBoxesVis();
     }
 }
