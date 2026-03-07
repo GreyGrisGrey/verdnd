@@ -3,6 +3,8 @@ import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
+import type { ObjectRecolourEvent } from '../objectEvents.ts';
+import { stringToColInst } from '../colours.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -153,7 +155,6 @@ export class BoardSelectMode {
                 x: point.x,
                 y: point.y,
             });
-            obj.move(point.x, point.y);
         }
         this.board.serveInter.moveObjects(moveList as any);
         this.thirdOffset.x = 0;
@@ -163,18 +164,21 @@ export class BoardSelectMode {
     // Recolours each selected object individually.
     recolour() {
         if (this.currColour !== colourSquare.style.background) {
-            this.currColour = colourSquare.style.background;
-            const recolourList = [];
+            const recolourList: ObjectRecolourEvent[] = [];
             for (const obj of this.selectedObjects) {
                 recolourList.push({
                     entity: Entity.Object,
                     action: Action.Recolour,
                     objectId: obj.objectId,
-                    colour: this.currColour,
+                    colour: stringToColInst(colourSquare.style.background),
                 });
-                obj.setColour(this.currColour);
+                obj.setColour(colourSquare.style.background);
             }
-            this.board.serveInter.recolourObjects(recolourList as any);
+            this.board.serveInter.recolourObjects(
+                recolourList,
+                stringToColInst(this.currColour),
+            );
+            this.currColour = colourSquare.style.background;
         }
     }
 

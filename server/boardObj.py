@@ -1,7 +1,7 @@
 import json
 
 class boardObj:
-    def __init__(self, kind, x, y, col, layer, id, points = [], diameter = 0, width = 0, height = 0, name = ""):
+    def __init__(self, kind, x, y, col, layer, id, points = [], diameter = 0, width = 0, height = 0, name = "", client = 0):
         self.kind = kind
         self.x = x
         self.y = y
@@ -14,6 +14,7 @@ class boardObj:
         self.height = height
         self.name = name
         self.active = True
+        self.client = client
     
     def recolour(self, newCol):
         self.colour = newCol
@@ -29,7 +30,7 @@ class boardObj:
         if self.active == False:
             return json.dumps({"entity": "OBJECT", "action": "DESTROY", "objectId": self.objectId})
         if self.kind == "RECT" or self.kind == "ELLIPSE":
-            return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
+            return json.dumps({"entity": "OBJECT", "action": "CREATE", "clientId": self.client, "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
                                "width": self.width, 
@@ -38,7 +39,7 @@ class boardObj:
                                "layerId": self.layerId,
                                "objectId": self.objectId}})
         elif self.kind == "TOKEN":
-            return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
+            return json.dumps({"entity": "OBJECT", "action": "CREATE", "clientId": self.client, "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
                                "diameter": self.diameter,
@@ -47,7 +48,7 @@ class boardObj:
                                "layerId": self.layerId,
                                "objectId": self.objectId}})
         elif self.kind == "POLYLINE" or self.kind == "LINE":
-            return json.dumps({"entity": "OBJECT", "action": "CREATE", "object": {"kind": self.kind, 
+            return json.dumps({"entity": "OBJECT", "action": "CREATE", "clientId": self.client, "object": {"kind": self.kind, 
                                "x": self.x, 
                                "y": self.y, 
                                "points": self.points,

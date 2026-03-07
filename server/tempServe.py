@@ -29,6 +29,9 @@ async def handler(websocket):
         if (message != "PING"):
             res = json.loads(message)
             if "entity" in res:
+                if res["entity"] == "BADPACKAGE":
+                    res["data"]["client"] = res["client"]
+                    handleObj(res["data"])
                 if res["entity"] == "OBJECT":
                     handleObj(res)
                 if res["entity"] == "LAYER":
@@ -45,7 +48,7 @@ def handleObj(newJson):
         curr = 0
         while curr in heldObj and heldObj[curr].active:
             curr += 1
-        heldObj[curr] = constructObj(newJson["object"], curr)
+        heldObj[curr] = constructObj(newJson["object"], curr, newJson["client"])
     elif newJson["action"] == "DESTROY" and newJson["objectId"] in heldObj:
         heldObj[newJson["objectId"]].setInactive()
     elif newJson["action"] == "MOVE" and newJson["objectId"] in heldObj:
@@ -54,20 +57,20 @@ def handleObj(newJson):
         heldObj[newJson["objectId"]].recolour(newJson["colour"])
     return
 
-def constructObj(newJson, id):
+def constructObj(newJson, id, clientId):
     print(newJson)
     if newJson["kind"] == "RECT" or newJson["kind"] == "ELLIPSE":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
-                        width = newJson["width"], height = newJson["height"])
+                        width = newJson["width"], height = newJson["height"], client = clientId)
     if newJson["kind"] == "POLYLINE" or newJson["kind"] == "LINE":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
-                        points = newJson["points"])
+                        points = newJson["points"], client = clientId)
     if newJson["kind"] == "TOKEN":
         return boardObj.boardObj(newJson["kind"], newJson["x"], newJson["y"],
                         newJson["colour"], newJson["layerId"], id, 
-                        diameter = newJson["diameter"], name = newJson["name"])
+                        diameter = newJson["diameter"], name = newJson["name"], client = clientId)
     return None
 
 def handleLayer(newJson):

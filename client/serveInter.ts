@@ -4,24 +4,35 @@ import type {
     ObjectMoveEvent,
     ObjectRecolourEvent,
     LayerState,
+    ServerEvent,
 } from './objectEvents.ts';
 import type { DicePayload } from './rightBar/rollBarMenu.ts';
 import { Board } from './boardCanvas/localBoard.ts';
+import { ColInst } from './colours.ts';
+import { Action, Entity, Shape } from './objectEvents.ts';
 
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.
 export class tempStore {
+    localNum: number;
+    undoMap: Map<number, any>;
+    undoCreateTracker: Map<number, number>;
     storedObjects: Map<number, ObjectCreatePayload>;
     storedLayers: Map<number, LayerState>;
     currIndex: number;
+    secondIndex: number;
     prevMapping: Map<number, number>;
     socket: WebSocket;
     board: Board | null;
 
     constructor() {
+        this.localNum = Math.round(Math.random() * 1000000);
+        this.undoMap = new Map();
+        this.undoCreateTracker = new Map();
         this.storedObjects = new Map();
         this.storedLayers = new Map();
         this.currIndex = 0;
+        this.secondIndex = 0;
         this.prevMapping = new Map();
         //this.socket = new WebSocket('ws://47.55.46.138:4322/');
         this.socket = new WebSocket('ws://192.168.2.142:8765/');
@@ -41,6 +52,17 @@ export class tempStore {
                         this.board.removeObject(message.objectId);
                     }
                 } else {
+                    if (
+                        message.clientId === this.localNum &&
+                        !this.storedObjects.has(message.object.objectId)
+                    ) {
+                        this.secondIndex--;
+                        this.undoMap.set(
+                            this.undoCreateTracker.get(this.secondIndex)!,
+                            [message.object.objectId],
+                        );
+                        this.undoCreateTracker.delete(this.secondIndex);
+                    }
                     this.storedObjects.set(
                         message.object.objectId,
                         message.object,
@@ -50,6 +72,25 @@ export class tempStore {
                 this.prevMapping.set(message.index, message.result);
             }
         });
+    }
+
+    undoLast() {
+        if (this.currIndex === 0) {
+            return;
+        }
+        this.currIndex--;
+        const last = this.undoMap.get(this.currIndex)!;
+        if (!last[0].action) {
+            this.destroyObjects(last, true);
+        } else if (last[0].action === Action.Create) {
+            for (const obj of last) {
+                this.createObject(obj);
+            }
+        } else if (last[0].action === Action.Recolour) {
+            this.recolourObjects(last, new ColInst(0, 0, 0, 0), true);
+        } else if (last[0].action === Action.Move) {
+            this.moveObjects(last, true);
+        }
     }
 
     setBoard(newBoard: Board) {
@@ -69,9 +110,23 @@ export class tempStore {
     }
 
     // Sends a packet telling the backend to create an object with those parameters.
-    async createObject(newObj: ObjectCreateEvent) {
+    async createObject(newObj: ObjectCreateEvent, undo: boolean = false) {
         newObj.object.objectId = -1;
-        this.socket.send(JSON.stringify(newObj));
+        if (!undo) {
+            newObj.object.objectId = -1;
+            newObj.clientId = this.localNum;
+            this.undoMap.set(this.currIndex, [-1]);
+            this.undoCreateTracker.set(this.secondIndex, this.currIndex);
+            this.currIndex += 1;
+            this.secondIndex += 1;
+        }
+        this.socket.send(
+            JSON.stringify({
+                entity: 'BADPACKAGE',
+                client: this.localNum,
+                data: newObj,
+            }),
+        );
         return -1;
     }
 
@@ -101,10 +156,21 @@ export class tempStore {
     }
 
     // Tells the backend to destroy a bunch of objects.
-    // Does not, in fact, destroy the object locally. TODO - make it do that.
-    async destroyObjects(targetIds: number[]) {
+    async destroyObjects(targetIds: number[], undo: boolean = false) {
+        const undoPackets: ObjectCreateEvent[] = [];
+        if (!undo) {
+            this.undoMap.set(this.currIndex, undoPackets);
+            this.currIndex += 1;
+        }
         for (const id of targetIds) {
             if (this.storedObjects.has(id)) {
+                if (!undo) {
+                    undoPackets.push({
+                        entity: Entity.Object,
+                        action: Action.Create,
+                        object: this.storedObjects.get(id)!,
+                    });
+                }
                 this.socket.send(
                     JSON.stringify({
                         entity: 'OBJECT',
@@ -122,38 +188,68 @@ export class tempStore {
 
     // Receives a list of objects to move, checks each object's existence, if it exists moves it and tells the backend to move it too.
     // Questionable that it sends a packet for each object.
-    async moveObjects(events: ObjectMoveEvent[]) {
+    async moveObjects(events: ObjectMoveEvent[], undo: boolean = false) {
+        const undoPackets: ObjectMoveEvent[] = [];
         for (const event of events) {
+            if (!undo) {
+                undoPackets.push({
+                    entity: event.entity,
+                    action: event.action,
+                    objectId: event.objectId,
+                    x: -event.x,
+                    y: -event.y,
+                });
+            }
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
-                this.socket.send(
-                    JSON.stringify({
-                        entity: 'OBJECT',
-                        action: 'MOVE',
-                        objectId: event.objectId,
-                        x: event.x,
-                        y: event.y,
-                    }),
+                this.board!.objectMap.get(event.objectId)!.move(
+                    event.x,
+                    event.y,
                 );
+                this.socket.send(JSON.stringify(event));
             }
+        }
+        if (!undo) {
+            this.undoMap.set(this.currIndex, undoPackets);
+            this.currIndex += 1;
         }
     }
 
     // Receives a list of objects to recolour, checks each object's existence, if it exists recolours it and tells the backend to recolour it too.
     // Questionable that it sends a packet for each object.
-    async recolourObjects(events: ObjectRecolourEvent[]) {
+    recolourObjects(
+        events: ObjectRecolourEvent[],
+        oldCol: ColInst,
+        undo: boolean = false,
+    ) {
+        const undoPackets: ObjectRecolourEvent[] = [];
         for (const event of events) {
+            if (!undo) {
+                undoPackets.push({
+                    entity: event.entity,
+                    action: event.action,
+                    objectId: event.objectId,
+                    colour: oldCol.toString(),
+                });
+            }
             const targetObj = this.storedObjects.get(event.objectId);
             if (targetObj) {
+                this.board!.objectMap.get(event.objectId)!.setColour(
+                    event.colour.toString(),
+                );
                 this.socket.send(
                     JSON.stringify({
-                        entity: 'OBJECT',
-                        action: 'RECOLOUR',
+                        entity: event.entity,
+                        action: event.action,
                         objectId: event.objectId,
-                        colour: event.colour,
+                        colour: event.colour.toString(),
                     }),
                 );
             }
+        }
+        if (!undo) {
+            this.undoMap.set(this.currIndex, undoPackets);
+            this.currIndex += 1;
         }
     }
 

@@ -41,6 +41,7 @@ export class ModeManager {
     selectInstruct: HTMLElement;
     buttons: Record<Mode, HTMLButtonElement>;
     boxItems: HTMLElement[];
+    controlClick: boolean;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -62,6 +63,7 @@ export class ModeManager {
         this.selectInstruct = document.getElementById('selectInstruct')!;
         this.selectClick = false;
         this.boxItems = [];
+        this.controlClick = false;
 
         this.setUpBoxes();
         this.addEventListeners();
@@ -116,6 +118,16 @@ export class ModeManager {
                 this.modeSwitch(Mode.Token);
             } else if (event.key === 'd') {
                 this.modeSwitch(Mode.Draw);
+            } else if (event.key === 'Control') {
+                this.controlClick = true;
+            } else if (event.key === 'z' && this.controlClick) {
+                this.board.serveInter.undoLast();
+            }
+        });
+
+        can.addEventListener('keyup', (event) => {
+            if (event.key === 'Control') {
+                this.controlClick = false;
             }
         });
 

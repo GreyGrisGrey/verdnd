@@ -48,7 +48,7 @@ export function stringToColInst(newS: string) {
             parseInt(splits[0].slice(0, splits[0].length)),
             parseInt(splits[1].slice(0, splits[1].length)),
             parseInt(splits[2].slice(0, splits[2].length)),
-            parseInt(splits[3].slice(0, splits[3].length)) * 100,
+            Math.round(parseFloat(splits[3].slice(0, splits[3].length)) * 100),
         );
     } else if (newS.slice(0, 3) === 'rgb') {
         const splits = newS.slice(4).split(' ');

@@ -45,7 +45,7 @@ export class BoardObjectBase {
         this.selected = false;
         this.centerPoint = { x: 0, y: 0 };
         this.layerId = 0;
-        this.currPathSpecs = [0, 0, 0];
+        this.currPathSpecs = [0, 0, 0, 0, 0];
         this.currPath = new Path2D();
         this.ctx = undefined;
         this.shape = kind;
@@ -55,7 +55,9 @@ export class BoardObjectBase {
         if (
             squareSize !== this.currPathSpecs[0] ||
             offset.x !== this.currPathSpecs[1] ||
-            offset.y !== this.currPathSpecs[2]
+            offset.y !== this.currPathSpecs[2] ||
+            this.location.x !== this.currPathSpecs[3] ||
+            this.location.y !== this.currPathSpecs[4]
         ) {
             this.buildPath(squareSize, offset);
             this.ctx = ctx;
@@ -136,6 +138,7 @@ export class BoardObjectBase {
         this.location.y = newSetting.y;
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
+        console.log(newSetting);
         this.setCenter();
     }
 }
@@ -322,7 +325,13 @@ export class Box extends BoardObjectBase {
             Math.round(this.size.x * squareSize),
             Math.round(this.size.y * squareSize),
         );
-        this.currPathSpecs = [squareSize, offset.x, offset.y];
+        this.currPathSpecs = [
+            squareSize,
+            offset.x,
+            offset.y,
+            this.location.x,
+            this.location.y,
+        ];
         this.currPath.closePath();
     }
 
@@ -347,7 +356,13 @@ export class Box extends BoardObjectBase {
             0,
             2 * Math.PI,
         );
-        this.currPathSpecs = [squareSize, offset.x, offset.y];
+        this.currPathSpecs = [
+            squareSize,
+            offset.x,
+            offset.y,
+            this.location.x,
+            this.location.y,
+        ];
         this.currPath.closePath();
     }
 
@@ -403,7 +418,13 @@ export class Polyline extends BoardObjectBase {
                 Math.round((this.location.y + pt.y) * squareSize + offset.y),
             );
         }
-        this.currPathSpecs = [squareSize, offset.x, offset.y];
+        this.currPathSpecs = [
+            squareSize,
+            offset.x,
+            offset.y,
+            this.location.x,
+            this.location.y,
+        ];
         this.currPath.closePath();
     }
 

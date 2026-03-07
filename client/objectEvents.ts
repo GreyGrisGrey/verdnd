@@ -109,6 +109,7 @@ export interface LayerRemoveObjectEvent {
 export interface ObjectCreateEvent {
     entity: Entity.Object;
     action: Action.Create;
+    clientId?: number;
     object: ObjectCreatePayload;
 }
 
@@ -130,7 +131,7 @@ export interface ObjectRecolourEvent {
     entity: Entity.Object;
     action: Action.Recolour;
     objectId: number;
-    colour: ColInst;
+    colour: ColInst | string;
 }
 
 export interface LayerZOrderEvent {
