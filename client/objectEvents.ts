@@ -26,6 +26,7 @@ export enum Entity {
     Object = 'OBJECT',
     Roll = 'ROLL',
     Name = 'NAME',
+    Laser = 'LASER',
 }
 
 export enum Action {
@@ -137,9 +138,31 @@ export interface RollEvent {
     dice: DicePayload;
 }
 
+export interface singleRoll {
+    result: number;
+    size: number;
+    exclude: boolean;
+}
+
+export interface RollComplete {
+    entity: Entity.Roll;
+    action: Action.Update;
+    id: number;
+    result: number;
+    rolls: singleRoll[];
+}
+
 export interface ServerPacket {
     userId: number;
     event: ServerEvent;
+}
+
+export interface LaserEvent {
+    entity: Entity.Laser;
+    id: number;
+    colour: ColInst | string;
+    time: number;
+    coords: Vec2;
 }
 
 export type ServerEvent =
@@ -150,6 +173,7 @@ export type ServerEvent =
     | ObjectDestroyEvent
     | ObjectMoveEvent
     | ObjectRecolourEvent
-    | RollEvent;
+    | RollEvent
+    | LaserEvent;
 
 export type ObjectChangeEvent = ObjectCreateEvent | ObjectDestroyEvent;

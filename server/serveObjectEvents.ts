@@ -61,6 +61,7 @@ export enum Entity {
     Object = 'OBJECT',
     Roll = 'ROLL',
     Name = 'NAME',
+    Laser = 'LASER',
 }
 
 export enum Action {
@@ -177,6 +178,13 @@ export interface ServerPacket {
     event: ServerEvent;
 }
 
+export interface LaserEvent {
+    entity: Entity.Laser;
+    id: number;
+    colour: ColInst | string;
+    time: number;
+}
+
 export type ServerEvent =
     | LayerCreateEvent
     | LayerDestroyEvent
@@ -185,6 +193,7 @@ export type ServerEvent =
     | ObjectDestroyEvent
     | ObjectMoveEvent
     | ObjectRecolourEvent
-    | RollEvent;
+    | RollEvent
+    | LaserEvent;
 
 export type ObjectChangeEvent = ObjectCreateEvent | ObjectDestroyEvent;

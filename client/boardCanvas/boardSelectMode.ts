@@ -142,8 +142,8 @@ export class BoardSelectMode {
     // Moves each selected object individually.
     moveObjects() {
         const point = this.board.determineTile(
-            this.board.originCoords.x + this.thirdOffset.x,
-            this.board.originCoords.y + this.thirdOffset.y,
+            this.board.offset.x + this.thirdOffset.x,
+            this.board.offset.y + this.thirdOffset.y,
             true,
         );
         const moveList = [];

@@ -40,6 +40,14 @@ function updateLayers() {
 async function mainLoop() {
     if (board.layerMap.size === 0) {
         counter = 0;
+    } else if (board.modeMan.sendLaser) {
+        serveInter.sendLaser(
+            (board.mouseCoords.x - board.offset.x) / (5 * board.zoomVal),
+            (board.mouseCoords.y - board.offset.y) / (5 * board.zoomVal),
+            true,
+        );
+    } else {
+        serveInter.sendLaser(0, 0, false);
     }
     if (counter % 25 === 0) {
         syncServer();

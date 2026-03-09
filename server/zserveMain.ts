@@ -11,6 +11,7 @@ import type {
     ServerEvent,
     DicePayload,
     RollEvent,
+    LaserEvent,
 } from './serveObjectEvents.ts';
 import { Action, Entity, Shape } from './serveObjectEvents.ts';
 
@@ -22,6 +23,7 @@ const layerMap: Map<number, LayerUpdateEvent> = new Map();
 const diceMap: Map<number, RollEvent> = new Map();
 const rightToWrongUserMap: Map<number, number> = new Map();
 const wrongToRightUserMap: Map<number, number> = new Map();
+const laserMap: Map<number, LaserEvent> = new Map();
 
 let objectLock = false;
 let layerLock = false;
@@ -39,9 +41,7 @@ wss.on('connection', async function connection(ws) {
     ws.on('error', console.error);
 
     ws.on('message', async function message(data, ws) {
-        console.log('received: %s', data);
         const returnVal = await handleEvent(data);
-        console.log(returnVal);
         if (returnVal) {
             wss.clients.forEach(function each(client) {
                 if (client.readyState === WebSocket.OPEN) {
@@ -56,9 +56,7 @@ wss.on('connection', async function connection(ws) {
 });
 
 async function handleEvent(event: any) {
-    console.log(event);
     const message = JSON.parse(event);
-    console.log(message);
     if (rightToWrongUserMap.has(message.userId)) {
         const payload = message.event;
         if (payload.entity === Entity.Object) {
@@ -81,6 +79,8 @@ async function handleEvent(event: any) {
             }
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice);
+        } else if (payload.entity === Entity.Laser) {
+            return updateLaser(payload);
         }
     } else {
         return establishUser(message.userId);
@@ -88,6 +88,11 @@ async function handleEvent(event: any) {
 }
 
 createLayer();
+
+async function updateLaser(payload: LaserEvent) {
+    laserMap.set(payload.id, payload);
+    sendAllLasers();
+}
 
 async function createObj(newObject: ObjectCreateEvent) {
     await waitLock(objectLock);
@@ -246,13 +251,6 @@ async function establishUser(initialId: number) {
     userLock = true;
     wrongToRightUserMap.set(initialId, currUser);
     rightToWrongUserMap.set(currUser, initialId);
-    console.log(
-        JSON.stringify({
-            entity: Entity.Name,
-            oldId: initialId,
-            newId: currUser,
-        }),
-    );
     const sendObj = JSON.stringify({
         entity: Entity.Name,
         oldId: initialId,
@@ -272,12 +270,22 @@ async function waitLock(lock: boolean) {
 
 async function sendAll() {
     for (const [key, val] of layerMap) {
+        await new Promise((resolve) => setTimeout(resolve, 2));
         broadcast(JSON.stringify(val));
     }
     for (const [key, val] of objectMap) {
+        await new Promise((resolve) => setTimeout(resolve, 2));
         broadcast(JSON.stringify(val));
     }
     for (const [key, val] of diceMap) {
+        await new Promise((resolve) => setTimeout(resolve, 2));
+        broadcast(JSON.stringify(val));
+    }
+}
+
+async function sendAllLasers() {
+    const currTime = Date.now();
+    for (const [key, val] of laserMap) {
         broadcast(JSON.stringify(val));
     }
 }
@@ -285,7 +293,6 @@ async function sendAll() {
 async function broadcast(newMessage: string) {
     if (newMessage) {
         wss.clients.forEach(function each(client) {
-            console.log(client, newMessage);
             if (client.readyState === WebSocket.OPEN) {
                 client.send(newMessage!, { binary: false });
             }

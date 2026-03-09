@@ -6,6 +6,7 @@ import type {
     LayerState,
     ServerEvent,
     DicePayload,
+    LaserEvent,
 } from './objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from './colours.ts';
@@ -25,6 +26,8 @@ export class tempStore {
     prevMapping: Map<number, number>;
     socket: WebSocket;
     board: Board | null;
+    lasers: Map<number, LaserEvent>;
+    designal: boolean;
 
     constructor() {
         this.localNum = Math.round(Math.random() * 1000000) + 500;
@@ -36,8 +39,10 @@ export class tempStore {
         this.currIndex = 0;
         this.secondIndex = 0;
         this.prevMapping = new Map();
+        this.lasers = new Map();
         this.socket = new WebSocket('ws://47.55.46.138:4322/');
         this.board = null;
+        this.designal = false;
         this.ping();
 
         this.socket.addEventListener('message', (event) => {
@@ -82,8 +87,16 @@ export class tempStore {
                 }
             } else if (message.entity === Entity.Roll) {
                 this.prevMapping.set(message.id, message.dice.result);
+            } else if (message.entity === Entity.Laser) {
+                if (message.id !== this.localNum) {
+                    this.lasers.set(message.id, message);
+                }
             }
         });
+    }
+
+    getLasers() {
+        return this.lasers;
     }
 
     undoLast() {
@@ -282,5 +295,31 @@ export class tempStore {
 
     parcelServeEvent(payload: ServerEvent) {
         return JSON.stringify({ userId: this.localNum, event: payload });
+    }
+
+    sendLaser(x: number, y: number, send: boolean) {
+        if (send) {
+            this.socket.send(
+                this.parcelServeEvent({
+                    entity: Entity.Laser,
+                    id: this.localNum,
+                    colour: '#cc00cc',
+                    coords: { x: x, y: y },
+                    time: Date.now(),
+                }),
+            );
+            this.designal = false;
+        } else if (!this.designal) {
+            this.socket.send(
+                this.parcelServeEvent({
+                    entity: Entity.Laser,
+                    id: this.localNum,
+                    colour: '#cc00cc',
+                    coords: { x: 0, y: 0 },
+                    time: 0,
+                }),
+            );
+            this.designal = true;
+        }
     }
 }

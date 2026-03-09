@@ -55,7 +55,7 @@ export class Board {
     zoomGlobal: number;
     zoomLevels: number[];
     zoomVal: number;
-    originCoords: Vec2;
+    offset: Vec2;
     mouseCoords: Vec2;
     leftMouseDown: boolean;
     rightMouseDown: boolean;
@@ -70,7 +70,7 @@ export class Board {
         this.zoomGlobal = 3;
         this.zoomLevels = [4, 6, 8, 10, 13, 16, 20, 24, 28, 32];
         this.zoomVal = this.zoomLevels[this.zoomGlobal];
-        this.originCoords = { x: 0, y: 0 };
+        this.offset = { x: 0, y: 0 };
         this.mouseCoords = { x: 0, y: 0 };
         this.leftMouseDown = false;
         this.rightMouseDown = false;
@@ -94,18 +94,30 @@ export class Board {
             2 * Math.PI,
             false,
         );
-        ctx.fillStyle = BLUE.toString();
-        if (this.leftMouseDown) {
-            ctx.fillStyle = RED.toString();
-        }
+        ctx.fillStyle = this.leftMouseDown ? RED.toString() : BLUE.toString();
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    drawLaser(x: number, y: number, col: string) {
+        ctx.beginPath();
+        ctx.arc(
+            x * 5 * this.zoomVal + this.offset.x,
+            y * 5 * this.zoomVal + this.offset.y,
+            1 * this.zoomVal,
+            0,
+            2 * Math.PI,
+            false,
+        );
+        ctx.fillStyle = col;
         ctx.fill();
         ctx.closePath();
     }
 
     // Updates the center of the camera, subject to the boundaries of the board.
     moveCamera(xMod: number, yMod: number) {
-        this.originCoords.x -= xMod;
-        this.originCoords.y -= yMod;
+        this.offset.x -= xMod;
+        this.offset.y -= yMod;
     }
 
     // Sorts held board layers by zOrder.
@@ -238,19 +250,19 @@ export class Board {
 
     // Draws points at the vertices of the tiles for.
     drawPointGrid(squareSize: number) {
-        let currX = this.originCoords.x;
+        let currX = this.offset.x;
         while (currX + squareSize > 0) {
             currX -= squareSize;
         }
         while (currX < can.width + 100) {
-            let currY = this.originCoords.y;
+            let currY = this.offset.y;
             while (currY + squareSize > 0) {
                 currY -= squareSize;
             }
             while (currY < can.height + 100) {
                 if (
-                    currX <= this.originCoords.x &&
-                    currX + squareSize >= this.originCoords.x
+                    currX <= this.offset.x &&
+                    currX + squareSize >= this.offset.x
                 ) {
                     ctx.fillStyle = WHITE.toString();
                 } else {
@@ -268,13 +280,13 @@ export class Board {
         const squareSize = 5 * this.zoomVal;
         if (vertex) {
             return {
-                x: Math.round((x - this.originCoords.x) / squareSize),
-                y: Math.round((y - this.originCoords.y) / squareSize),
+                x: Math.round((x - this.offset.x) / squareSize),
+                y: Math.round((y - this.offset.y) / squareSize),
             };
         } else {
             return {
-                x: Math.floor((x - this.originCoords.x) / squareSize),
-                y: Math.floor((y - this.originCoords.y) / squareSize),
+                x: Math.floor((x - this.offset.x) / squareSize),
+                y: Math.floor((y - this.offset.y) / squareSize),
             };
         }
     }
@@ -286,7 +298,7 @@ export class Board {
             layer.drawLayer(
                 ctx,
                 squareSize,
-                this.originCoords,
+                this.offset,
                 this.modeMan.selectMan.thirdOffset,
             );
             if (i === this.activeLayer) {
@@ -294,13 +306,15 @@ export class Board {
                     | BoardObject
                     | undefined;
                 if (tempObj) {
-                    tempObj.draw(ctx, squareSize, this.originCoords);
+                    tempObj.draw(ctx, squareSize, this.offset);
                 }
             }
         }
         this.drawPointGrid(squareSize);
-        this.drawMousePointer();
-        this.modeMan.step(ctx, squareSize, this.originCoords);
+        if (this.modeMan.sendLaser) {
+            this.drawMousePointer();
+        }
+        this.modeMan.step(ctx, squareSize, this.offset);
     }
 
     // Performs a single drawing step.
@@ -311,5 +325,15 @@ export class Board {
         }
         ctx.clearRect(0, 0, can.width, can.height);
         this.draw();
+        const newLasers = this.serveInter.getLasers();
+        for (const [key, val] of newLasers) {
+            if (Date.now() - val.time < 1500) {
+                this.drawLaser(
+                    val.coords.x,
+                    val.coords.y,
+                    val.colour.toString(),
+                );
+            }
+        }
     }
 }

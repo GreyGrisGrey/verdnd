@@ -47,40 +47,40 @@ export class BoardViewMode {
                     this.board.zoomVal =
                         this.board.zoomLevels[this.board.zoomGlobal];
                     const originDist: Vec2 = {
-                        x: this.board.mouseCoords.x - this.board.originCoords.x,
-                        y: this.board.mouseCoords.y - this.board.originCoords.y,
+                        x: this.board.mouseCoords.x - this.board.offset.x,
+                        y: this.board.mouseCoords.y - this.board.offset.y,
                     };
                     const goals: Vec2 = {
                         x: (originDist.x * this.board.zoomVal) / old,
                         y: (originDist.y * this.board.zoomVal) / old,
                     };
-                    this.board.originCoords.x -= goals.x - originDist.x;
-                    this.board.originCoords.y -= goals.y - originDist.y;
+                    this.board.offset.x -= goals.x - originDist.x;
+                    this.board.offset.y -= goals.y - originDist.y;
                 } else if (event.deltaY > 0 && this.board.zoomGlobal > 0) {
                     this.board.zoomGlobal -= 1;
                     this.board.zoomVal =
                         this.board.zoomLevels[this.board.zoomGlobal];
                     const originDist: Vec2 = {
-                        x: this.board.mouseCoords.x - this.board.originCoords.x,
-                        y: this.board.mouseCoords.y - this.board.originCoords.y,
+                        x: this.board.mouseCoords.x - this.board.offset.x,
+                        y: this.board.mouseCoords.y - this.board.offset.y,
                     };
                     const goals: Vec2 = {
                         x: (originDist.x * this.board.zoomVal) / old,
                         y: (originDist.y * this.board.zoomVal) / old,
                     };
-                    this.board.originCoords.x -= goals.x - originDist.x;
-                    this.board.originCoords.y -= goals.y - originDist.y;
+                    this.board.offset.x -= goals.x - originDist.x;
+                    this.board.offset.y -= goals.y - originDist.y;
                 }
-                this.board.originCoords.x =
-                    Math.round(this.board.originCoords.x * 10000) / 10000;
-                this.board.originCoords.y =
-                    Math.round(this.board.originCoords.y * 10000) / 10000;
+                this.board.offset.x =
+                    Math.round(this.board.offset.x * 10000) / 10000;
+                this.board.offset.y =
+                    Math.round(this.board.offset.y * 10000) / 10000;
             }
         });
     }
 
     // Text for the information bar.
     getText() {
-        return 'Scroll : Zoom\nLeft Click + Drag : Pan';
+        return 'Scroll : Zoom\nLeft Click + Drag : Pan\nL : Toggle laser visibility';
     }
 }

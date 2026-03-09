@@ -30,6 +30,7 @@ type BoardMode = BoardViewMode | BoardTokenMode | BoardDrawMode;
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off later.
 export class ModeManager {
+    sendLaser: boolean;
     board: Board;
     currMode: Mode;
     viewMan: BoardViewMode;
@@ -44,6 +45,7 @@ export class ModeManager {
     controlClick: boolean;
 
     constructor(parentBoard: Board) {
+        this.sendLaser = true;
         this.board = parentBoard;
         this.currMode = Mode.View;
         this.viewMan = new BoardViewMode(parentBoard);
@@ -122,6 +124,8 @@ export class ModeManager {
                 this.controlClick = true;
             } else if (event.key === 'z' && this.controlClick) {
                 this.board.serveInter.undoLast();
+            } else if (event.key === 'l') {
+                this.sendLaser = !this.sendLaser;
             }
         });
 
