@@ -84,6 +84,7 @@ export class Board {
 
     // Test function for pointer drawing.
     // Will be removed when a proper laser tool is added.
+    // oh no its part of the proper laser tool's functionality it's stuck here forever
     drawMousePointer() {
         ctx.beginPath();
         ctx.arc(

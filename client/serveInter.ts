@@ -7,6 +7,7 @@ import type {
     ServerEvent,
     DicePayload,
     LaserEvent,
+    RollComplete,
 } from './objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from './colours.ts';
@@ -23,7 +24,7 @@ export class tempStore {
     storedLayers: Map<number, LayerState>;
     currIndex: number;
     secondIndex: number;
-    prevMapping: Map<number, number>;
+    rollMapping: Map<number, RollComplete>;
     socket: WebSocket;
     board: Board | null;
     lasers: Map<number, LaserEvent>;
@@ -38,7 +39,7 @@ export class tempStore {
         this.storedLayers = new Map();
         this.currIndex = 0;
         this.secondIndex = 0;
-        this.prevMapping = new Map();
+        this.rollMapping = new Map();
         this.lasers = new Map();
         this.socket = new WebSocket('ws://47.55.46.138:4322/');
         this.board = null;
@@ -86,7 +87,7 @@ export class tempStore {
                     );
                 }
             } else if (message.entity === Entity.Roll) {
-                this.prevMapping.set(message.id, message.dice.result);
+                this.rollMapping.set(message.id, message);
             } else if (message.entity === Entity.Laser) {
                 if (message.id !== this.localNum) {
                     this.lasers.set(message.id, message);
@@ -141,7 +142,7 @@ export class tempStore {
     }
 
     getDice() {
-        return this.prevMapping;
+        return this.rollMapping;
     }
 
     // Sends a packet telling the backend to create an object with those parameters.

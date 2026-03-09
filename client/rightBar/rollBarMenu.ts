@@ -1,6 +1,7 @@
 import { GREY } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
+import { RollComplete, RollResult } from '../objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const rollBox = getRequiredElement('rollContainer', HTMLElement);
@@ -13,6 +14,7 @@ export class RollMenu {
     active: boolean;
     modifier: number;
     currChats: HTMLElement[];
+    currBoxes: HTMLElement[];
     serveInter: tempStore;
 
     constructor(server: tempStore) {
@@ -20,6 +22,7 @@ export class RollMenu {
         this.active = false;
         this.modifier = 0;
         this.currChats = [];
+        this.currBoxes = [];
         this.setRollElements();
         this.constructChats();
         this.serveInter = server;
@@ -188,10 +191,6 @@ export class RollMenu {
         if (chatBox.style.height !== rH || chatBox.style.width !== rW) {
             chatBox.style.width = rW;
             chatBox.style.height = rH;
-            const w = parseInt(rW, 10);
-            if (!Number.isNaN(w)) {
-                this.textBox.style.width = `${w - 30}px`;
-            }
         }
         const data = this.serveInter.getDice();
         if (data) {
@@ -213,32 +212,46 @@ export class RollMenu {
         chatBox.append(newBox);
         newBox.append(newText);
         newBox.style.position = 'absolute';
-        newBox.style.bottom = currIndex * 30 + 10 + 'px';
-        newBox.style.left = '10px';
-        newBox.style.width = '100px';
-        newBox.style.height = '30px';
+        newBox.style.bottom = currIndex * 60 + 10 + 'px';
+        newBox.style.width = '246px';
+        newBox.style.height = '60px';
+        newBox.style.border = 'solid #000000';
+        newBox.style.overflow = 'hidden';
+        newBox.style.visibility = 'hidden';
 
         newText.style.position = 'absolute';
-        newText.style.width = '100px';
-        newText.style.height = '30px';
+        newText.style.width = '246px';
+        newText.style.left = '0px';
+        newText.style.height = '60px';
+        newText.style.overflow = 'hidden';
+        newText.style.visibility = 'hidden';
+        newText.style.whiteSpace = 'nowrap';
         this.currChats.push(newText);
+        this.currBoxes.push(newBox);
     }
 
     // Updates the text of the chat boxes.
-    updateChats(data: Map<number, number>) {
-        console.log(data);
+    updateChats(data: Map<number, RollComplete>) {
         for (const [key, val] of data) {
             const targetNum = data.size - (key + 1);
             if (targetNum < 50 && targetNum >= 0) {
-                this.updateChat(val, targetNum);
+                this.updateChat(val.result, targetNum, val.userId);
             }
         }
     }
 
     // Updates a chat box.
-    updateChat(dataLine: number, currIndex: number) {
-        this.currChats[currIndex].innerText = `Rolled ${dataLine}`;
+    updateChat(dataLine: RollResult, currIndex: number, userId: number) {
+        let newString = '';
+        for (const roll of dataLine.rolls) {
+            newString += `(D${roll.size}, ${roll.result}) `;
+        }
+        this.currChats[currIndex].innerText =
+            `User ${userId} Rolled` +
+            newString +
+            `\nResult = ${dataLine.result}`;
         this.currChats[currIndex].style.visibility = 'visible';
+        this.currBoxes[currIndex].style.visibility = 'visible';
     }
 
     // Constructs a new roll payload and sends it to the backend.

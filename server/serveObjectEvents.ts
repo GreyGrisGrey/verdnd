@@ -173,6 +173,25 @@ export interface RollEvent {
     dice: DicePayload;
 }
 
+export interface SingleRoll {
+    result: number;
+    size: number;
+    exclude: boolean;
+}
+
+export interface RollComplete {
+    entity: Entity.Roll;
+    action: Action.Update;
+    id: number;
+    result: RollResult;
+    userId: number;
+}
+
+export interface RollResult {
+    result: number;
+    rolls: SingleRoll[];
+}
+
 export interface ServerPacket {
     userId: number;
     event: ServerEvent;

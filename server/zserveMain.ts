@@ -12,7 +12,10 @@ import type {
     DicePayload,
     RollEvent,
     LaserEvent,
+    RollComplete,
+    RollResult,
 } from './serveObjectEvents.ts';
+import { SingleRoll } from './serveObjectEvents.ts';
 import { Action, Entity, Shape } from './serveObjectEvents.ts';
 
 // @ts-ignore
@@ -20,7 +23,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 
 const objectMap: Map<number, ObjectCreateEvent> = new Map();
 const layerMap: Map<number, LayerUpdateEvent> = new Map();
-const diceMap: Map<number, RollEvent> = new Map();
+const diceMap: Map<number, RollComplete> = new Map();
 const rightToWrongUserMap: Map<number, number> = new Map();
 const wrongToRightUserMap: Map<number, number> = new Map();
 const laserMap: Map<number, LaserEvent> = new Map();
@@ -78,7 +81,7 @@ async function handleEvent(event: any) {
                 return updateLayer(payload.layer.objectId, payload.layer);
             }
         } else if (payload.entity === Entity.Roll) {
-            return addDice(payload.dice);
+            return addDice(payload.dice, message.userId);
         } else if (payload.entity === Entity.Laser) {
             return updateLaser(payload);
         }
@@ -201,37 +204,67 @@ async function destroyLayer(layerId: number) {
     broadcast(sendObj);
 }
 
-async function addDice(newDice: DicePayload) {
-    newDice.result = newDice.modifier;
-    if (newDice.advantage) {
-        newDice.result += Math.max(
+async function addDice(newDice: DicePayload, userId: number) {
+    const rollList: SingleRoll[] = [];
+    const rollResult = { result: newDice.modifier, rolls: rollList };
+    if (newDice.advantage || newDice.disadvantage) {
+        const rolls = [
             Math.ceil(Math.random() * 20),
             Math.ceil(Math.random() * 20),
-        );
-    } else if (newDice.disadvantage) {
-        newDice.result += Math.min(
-            Math.ceil(Math.random() * 20),
-            Math.ceil(Math.random() * 20),
-        );
+        ];
+        rollResult.result += newDice.advantage
+            ? Math.max(rolls[0], rolls[1])
+            : Math.min(rolls[0], rolls[1]);
+        if (newDice.advantage) {
+            rollResult.rolls.push({
+                result: Math.max(rolls[0], rolls[1]),
+                size: 20,
+                exclude: false,
+            });
+            rollResult.rolls.push({
+                result: Math.min(rolls[0], rolls[1]),
+                size: 20,
+                exclude: true,
+            });
+        } else {
+            rollResult.rolls.push({
+                result: Math.min(rolls[0], rolls[1]),
+                size: 20,
+                exclude: false,
+            });
+            rollResult.rolls.push({
+                result: Math.max(rolls[0], rolls[1]),
+                size: 20,
+                exclude: true,
+            });
+        }
     } else {
         while (newDice.diceCount > 0) {
-            newDice.result += Math.ceil(Math.random() * newDice.diceSize);
+            const newResult = Math.ceil(Math.random() * newDice.diceSize);
+            rollResult.result += newResult;
+            rollList.push({
+                result: newResult,
+                size: newDice.diceSize,
+                exclude: false,
+            });
             newDice.diceCount -= 1;
         }
     }
     await waitLock(diceLock);
     diceLock = true;
     diceMap.set(currDice, {
-        dice: newDice,
         entity: Entity.Roll,
-        action: Action.Create,
+        action: Action.Update,
         id: currDice,
+        result: rollResult,
+        userId: userId,
     });
     const sendObj = JSON.stringify({
         entity: Entity.Roll,
-        action: Action.Create,
+        action: Action.Update,
         id: currDice,
-        dice: newDice,
+        result: rollResult,
+        userId: userId,
     });
     currDice++;
     diceLock = false;

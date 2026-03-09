@@ -148,6 +148,11 @@ export interface RollComplete {
     entity: Entity.Roll;
     action: Action.Update;
     id: number;
+    result: RollResult;
+    userId: number;
+}
+
+export interface RollResult {
     result: number;
     rolls: singleRoll[];
 }
