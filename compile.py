@@ -34,40 +34,73 @@ def splitFile(filePath):
         currIndex += 1
     return res
 
-items = listdir("C:/greybox/verdDnD/client/")
-files = []
-dirs = []
-currIndex = 0
-while (currIndex < len(items)):
-    nextItem = items[currIndex].split(".")
-    if (len(nextItem) == 1):
-        newItems = listdir("C:/greybox/verdDnD/client/" + items[currIndex])
-        for i in newItems:
-            items.append(items[currIndex] + "/" + i)
-        dirs.append("C:/greybox/verdDnD/client/" + items[currIndex])
-    elif (nextItem[1] == "ts"):
-        files.append("C:/greybox/verdDnD/client/" + items[currIndex])
-    currIndex += 1
+def clientCompile():
 
-constDict = {}
-codeBlock = ""
+    items = listdir("C:/greybox/verdDnD/client/")
+    files = []
+    dirs = []
+    currIndex = 0
+    while (currIndex < len(items)):
+        nextItem = items[currIndex].split(".")
+        if (len(nextItem) == 1):
+            newItems = listdir("C:/greybox/verdDnD/client/" + items[currIndex])
+            for i in newItems:
+                items.append(items[currIndex] + "/" + i)
+            dirs.append("C:/greybox/verdDnD/client/" + items[currIndex])
+        elif (nextItem[1] == "ts"):
+            files.append("C:/greybox/verdDnD/client/" + items[currIndex])
+        currIndex += 1
 
-for i in files:
-    if i != "C:/greybox/verdDnD/client/mainDriver.ts":
-        res = splitFile(i)
-        for j in res[0]:
-            constDict[j] = True
-        codeBlock += res[1]
+    constDict = {}
+    codeBlock = ""
 
-res = splitFile("C:/greybox/verdDnD/client/mainDriver.ts")
-for j in res[0]:
-    constDict[j] = True
+    for i in files:
+        if i != "C:/greybox/verdDnD/client/mainDriver.ts":
+            res = splitFile(i)
+            for j in res[0]:
+                constDict[j] = True
+            codeBlock += res[1]
 
-finalBlock = ""
-finalBlock += codeBlock
-for i in constDict:
-    finalBlock += i + "\n"
-finalBlock += res[1]
+    res = splitFile("C:/greybox/verdDnD/client/mainDriver.ts")
+    for j in res[0]:
+        constDict[j] = True
+
+    finalBlock = ""
+    finalBlock += codeBlock
+    for i in constDict:
+        finalBlock += i + "\n"
+    finalBlock += res[1]
 
 
-open("out.ts", "w").write(finalBlock)
+    open("clientOut.ts", "w").write(finalBlock)
+
+def serverCompile():
+    items = listdir("C:/greybox/verdDnD/server/")
+    files = []
+    dirs = []
+    currIndex = 0
+    while (currIndex < len(items)):
+        nextItem = items[currIndex].split(".")
+        if (len(nextItem) == 2 and nextItem[1] == "ts"):
+            files.append("C:/greybox/verdDnD/server/" + items[currIndex])
+        currIndex += 1
+
+    constDict = {}
+    codeBlock = ""
+
+    for i in files:
+        if i != "C:/greybox/verdDnD/server/mainDriver.ts":
+            res = splitFile(i)
+            for j in res[0]:
+                constDict[j] = True
+            codeBlock += res[1]
+
+    finalBlock = ""
+    finalBlock += codeBlock
+    for i in constDict:
+        finalBlock += i + "\n"
+
+    open("serveOut.ts", "w").write(finalBlock)
+
+clientCompile()
+serverCompile()

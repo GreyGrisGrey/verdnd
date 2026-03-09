@@ -5,8 +5,8 @@ import type {
     ObjectRecolourEvent,
     LayerState,
     ServerEvent,
+    DicePayload,
 } from './objectEvents.ts';
-import type { DicePayload } from './rightBar/rollBarMenu.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from './colours.ts';
 import { Action, Entity, Shape } from './objectEvents.ts';
@@ -15,6 +15,7 @@ import { Action, Entity, Shape } from './objectEvents.ts';
 // Will it stick around in the long run? I do not know.
 export class tempStore {
     localNum: number;
+    localFlag: boolean;
     undoMap: Map<number, any>;
     undoCreateTracker: Map<number, number>;
     storedObjects: Map<number, ObjectCreatePayload>;
@@ -26,7 +27,8 @@ export class tempStore {
     board: Board | null;
 
     constructor() {
-        this.localNum = Math.round(Math.random() * 1000000);
+        this.localNum = Math.round(Math.random() * 1000000) + 500;
+        this.localFlag = false;
         this.undoMap = new Map();
         this.undoCreateTracker = new Map();
         this.storedObjects = new Map();
@@ -34,17 +36,26 @@ export class tempStore {
         this.currIndex = 0;
         this.secondIndex = 0;
         this.prevMapping = new Map();
-        //this.socket = new WebSocket('ws://47.55.46.138:4322/');
-        this.socket = new WebSocket('ws://192.168.2.142:8765/');
+        this.socket = new WebSocket('ws://47.55.46.138:4322/');
         this.board = null;
+        this.ping();
 
         this.socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);
-            if (message.entity === 'LAYER') {
-                this.storedLayers.set(message.data.id, message.data);
-            } else if (message.entity === 'OBJECT') {
+            console.log(message);
+            if (
+                message.entity === Entity.Name &&
+                message.oldId === this.localNum &&
+                !this.localFlag
+            ) {
+                this.localFlag = true;
+                this.localNum = message.newId;
+            }
+            if (message.entity === Entity.Layer) {
+                this.storedLayers.set(message.layer.id, message.layer);
+            } else if (message.entity === Entity.Object) {
                 if (
-                    message.action === 'DESTROY' &&
+                    message.action === Action.Destroy &&
                     this.storedObjects.has(message.objectId)
                 ) {
                     this.storedObjects.delete(message.objectId);
@@ -53,9 +64,10 @@ export class tempStore {
                     }
                 } else {
                     if (
-                        message.clientId === this.localNum &&
+                        message.userId === this.localNum &&
                         !this.storedObjects.has(message.object.objectId)
                     ) {
+                        console.log('AAAAAAAAAAAa');
                         this.secondIndex--;
                         this.undoMap.set(
                             this.undoCreateTracker.get(this.secondIndex)!,
@@ -68,8 +80,8 @@ export class tempStore {
                         message.object,
                     );
                 }
-            } else if (message.entity === 'ROLL') {
-                this.prevMapping.set(message.index, message.result);
+            } else if (message.entity === Entity.Roll) {
+                this.prevMapping.set(message.id, message.dice.result);
             }
         });
     }
@@ -97,12 +109,22 @@ export class tempStore {
         this.board = newBoard;
     }
 
-    ping() {
-        this.socket.send('PING');
+    async ping() {
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+        this.socket.send(
+            JSON.stringify({ userId: this.localNum, event: 'PING' }),
+        );
     }
 
     rollDice(newDice: DicePayload) {
-        this.socket.send(JSON.stringify({ entity: 'ROLL', data: newDice }));
+        this.socket.send(
+            this.parcelServeEvent({
+                dice: newDice,
+                id: 0,
+                action: Action.Create,
+                entity: Entity.Roll,
+            }),
+        );
     }
 
     getDice() {
@@ -112,21 +134,15 @@ export class tempStore {
     // Sends a packet telling the backend to create an object with those parameters.
     async createObject(newObj: ObjectCreateEvent, undo: boolean = false) {
         newObj.object.objectId = -1;
+        newObj.userId = this.localNum;
         if (!undo) {
             newObj.object.objectId = -1;
-            newObj.clientId = this.localNum;
             this.undoMap.set(this.currIndex, [-1]);
             this.undoCreateTracker.set(this.secondIndex, this.currIndex);
             this.currIndex += 1;
             this.secondIndex += 1;
         }
-        this.socket.send(
-            JSON.stringify({
-                entity: 'BADPACKAGE',
-                client: this.localNum,
-                data: newObj,
-            }),
-        );
+        this.socket.send(this.parcelServeEvent(newObj));
         return -1;
     }
 
@@ -137,15 +153,10 @@ export class tempStore {
     // Tells the backend to create a layer.
     async createLayer() {
         this.socket.send(
-            JSON.stringify({
-                entity: 'LAYER',
-                action: 'Create',
-                data: {
-                    id: -1,
-                    gmVisible: true,
-                    playerVisible: true,
-                    zOrder: 0,
-                },
+            this.parcelServeEvent({
+                entity: Entity.Layer,
+                action: Action.Create,
+                layerId: -1,
             }),
         );
         return;
@@ -169,12 +180,13 @@ export class tempStore {
                         entity: Entity.Object,
                         action: Action.Create,
                         object: this.storedObjects.get(id)!,
+                        userId: this.localNum,
                     });
                 }
                 this.socket.send(
-                    JSON.stringify({
-                        entity: 'OBJECT',
-                        action: 'DESTROY',
+                    this.parcelServeEvent({
+                        entity: Entity.Object,
+                        action: Action.Destroy,
                         objectId: id,
                     }),
                 );
@@ -206,7 +218,7 @@ export class tempStore {
                     event.x,
                     event.y,
                 );
-                this.socket.send(JSON.stringify(event));
+                this.socket.send(this.parcelServeEvent(event));
             }
         }
         if (!undo) {
@@ -238,7 +250,7 @@ export class tempStore {
                     event.colour.toString(),
                 );
                 this.socket.send(
-                    JSON.stringify({
+                    this.parcelServeEvent({
                         entity: event.entity,
                         action: event.action,
                         objectId: event.objectId,
@@ -260,7 +272,15 @@ export class tempStore {
             this.storedLayers.set(input.id, input);
         }
         this.socket.send(
-            JSON.stringify({ entity: 'LAYER', action: 'Update', data: input }),
+            this.parcelServeEvent({
+                entity: Entity.Layer,
+                action: Action.Update,
+                layer: input,
+            }),
         );
+    }
+
+    parcelServeEvent(payload: ServerEvent) {
+        return JSON.stringify({ userId: this.localNum, event: payload });
     }
 }

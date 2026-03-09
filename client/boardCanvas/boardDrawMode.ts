@@ -276,6 +276,7 @@ export class BoardDrawMode {
             entity: Entity.Object,
             action: Action.Create,
             object: tempObj,
+            userId: -1,
         });
         this.params = [];
         this.tempObject = tempObj;

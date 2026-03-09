@@ -1,7 +1,42 @@
-import type { ColInst } from './colours.ts';
-import type { Vec2 } from './boardCanvas/coords.ts';
+export class ColInst {
+    blue: number;
+    green: number;
+    red: number;
+    alpha: number;
+
+    constructor(newR: number, newG: number, newB: number, newA: number) {
+        this.red = newR;
+        this.green = newG;
+        this.blue = newB;
+        this.alpha = newA;
+    }
+
+    setR(newR: number) {
+        this.red = newR;
+    }
+
+    setG(newG: number) {
+        this.green = newG;
+    }
+
+    setB(newB: number) {
+        this.blue = newB;
+    }
+
+    setA(newA: number) {
+        this.alpha = newA;
+    }
+
+    toString(): string {
+        return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha / 100})`;
+    }
+}
 
 // Just a bunch of enums and interfaces used by other files.
+export interface Vec2 {
+    x: number;
+    y: number;
+}
 
 export interface DicePayload {
     diceSize: number;

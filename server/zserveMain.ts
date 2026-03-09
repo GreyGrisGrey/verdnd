@@ -1,0 +1,294 @@
+import type {
+    ObjectCreateEvent,
+    ObjectCreatePayload,
+    LayerCreateEvent,
+    LayerDestroyEvent,
+    LayerUpdateEvent,
+    ObjectMoveEvent,
+    ObjectRecolourEvent,
+    ObjectDestroyEvent,
+    LayerState,
+    ServerEvent,
+    DicePayload,
+    RollEvent,
+} from './serveObjectEvents.ts';
+import { Action, Entity, Shape } from './serveObjectEvents.ts';
+
+// @ts-ignore
+import WebSocket, { WebSocketServer } from 'ws';
+
+const objectMap: Map<number, ObjectCreateEvent> = new Map();
+const layerMap: Map<number, LayerUpdateEvent> = new Map();
+const diceMap: Map<number, RollEvent> = new Map();
+const rightToWrongUserMap: Map<number, number> = new Map();
+const wrongToRightUserMap: Map<number, number> = new Map();
+
+let objectLock = false;
+let layerLock = false;
+let diceLock = false;
+let userLock = false;
+
+let currObj = 0;
+let currLayer = 0;
+let currDice = 0;
+let currUser = 0;
+
+const wss = new WebSocketServer({ port: 8765 });
+
+wss.on('connection', async function connection(ws) {
+    ws.on('error', console.error);
+
+    ws.on('message', async function message(data, ws) {
+        console.log('received: %s', data);
+        const returnVal = await handleEvent(data);
+        console.log(returnVal);
+        if (returnVal) {
+            wss.clients.forEach(function each(client) {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(returnVal!, { binary: ws });
+                }
+            });
+        }
+        wss.emit(returnVal!);
+    });
+
+    console.log('aaa');
+});
+
+async function handleEvent(event: any) {
+    console.log(event);
+    const message = JSON.parse(event);
+    console.log(message);
+    if (rightToWrongUserMap.has(message.userId)) {
+        const payload = message.event;
+        if (payload.entity === Entity.Object) {
+            if (payload.action === Action.Create) {
+                return createObj(payload);
+            } else if (payload.action === Action.Destroy) {
+                return destroyObj(payload.objectId);
+            } else if (payload.action === Action.Move) {
+                return moveObj(payload.objectId, payload.x, payload.y);
+            } else if (payload.action === Action.Recolour) {
+                return colourObj(payload.objectId, payload.colour);
+            }
+        } else if (payload.entity === Entity.Layer) {
+            if (payload.action === Action.Create) {
+                return createLayer();
+            } else if (payload.action === Action.Destroy) {
+                return destroyLayer(payload.layerId);
+            } else if (payload.action === Action.Update) {
+                return updateLayer(payload.layer.objectId, payload.layer);
+            }
+        } else if (payload.entity === Entity.Roll) {
+            return addDice(payload.dice);
+        }
+    } else {
+        return establishUser(message.userId);
+    }
+}
+
+createLayer();
+
+async function createObj(newObject: ObjectCreateEvent) {
+    await waitLock(objectLock);
+    objectLock = true;
+    objectMap.set(currObj, newObject);
+    newObject.object.objectId = currObj;
+    const sendObj = JSON.stringify(newObject);
+    currObj++;
+    objectLock = false;
+    broadcast(sendObj);
+}
+
+async function destroyObj(objId: number) {
+    await waitLock(objectLock);
+    objectLock = true;
+    objectMap.delete(objId);
+    const sendObj = JSON.stringify({
+        entity: Entity.Object,
+        action: Action.Destroy,
+        objectId: objId,
+    });
+    objectLock = false;
+    broadcast(sendObj);
+}
+
+async function moveObj(objId: number, xChange: number, yChange: number) {
+    await waitLock(objectLock);
+    objectLock = true;
+    const currObj = objectMap.get(objId);
+    if (currObj) {
+        currObj.object.x += xChange;
+        currObj.object.y += yChange;
+        const sendObj = JSON.stringify(currObj);
+        objectLock = false;
+        broadcast(sendObj);
+    } else {
+        objectLock = false;
+        return 'NONE';
+    }
+}
+
+async function colourObj(objId: number, colour: string) {
+    await waitLock(objectLock);
+    objectLock = true;
+    const currObj = objectMap.get(objId);
+    if (currObj) {
+        currObj.object.colour = colour;
+        const sendObj = JSON.stringify(currObj);
+        objectLock = false;
+        broadcast(sendObj);
+    } else {
+        objectLock = false;
+        return 'NONE';
+    }
+}
+
+async function createLayer() {
+    await waitLock(layerLock);
+    if (currLayer > 11) {
+        return 'NONE';
+    }
+    layerLock = true;
+    layerMap.set(currLayer, {
+        entity: Entity.Layer,
+        action: Action.Update,
+        layer: {
+            gmVisible: true,
+            playerVisible: true,
+            zOrder: currLayer,
+            id: currLayer,
+        },
+    });
+    const sendObj = JSON.stringify(layerMap.get(currLayer));
+    currLayer++;
+    layerLock = false;
+    broadcast(sendObj);
+}
+
+async function updateLayer(layerId: number, newLayer: LayerState) {
+    await waitLock(layerLock);
+    layerLock = true;
+    layerMap.set(layerId, {
+        entity: Entity.Layer,
+        action: Action.Update,
+        layer: newLayer,
+    });
+    const sendObj = JSON.stringify({
+        entity: Entity.Layer,
+        action: Action.Update,
+        layer: newLayer,
+    });
+    layerLock = false;
+    broadcast(sendObj);
+}
+
+async function destroyLayer(layerId: number) {
+    await waitLock(layerLock);
+    layerLock = true;
+    layerMap.delete(layerId);
+    layerLock = false;
+    const sendObj = JSON.stringify({
+        entity: Entity.Layer,
+        action: Action.Destroy,
+        layerId: layerId,
+    });
+    broadcast(sendObj);
+}
+
+async function addDice(newDice: DicePayload) {
+    newDice.result = newDice.modifier;
+    if (newDice.advantage) {
+        newDice.result += Math.max(
+            Math.ceil(Math.random() * 20),
+            Math.ceil(Math.random() * 20),
+        );
+    } else if (newDice.disadvantage) {
+        newDice.result += Math.min(
+            Math.ceil(Math.random() * 20),
+            Math.ceil(Math.random() * 20),
+        );
+    } else {
+        while (newDice.diceCount > 0) {
+            newDice.result += Math.ceil(Math.random() * newDice.diceSize);
+            newDice.diceCount -= 1;
+        }
+    }
+    await waitLock(diceLock);
+    diceLock = true;
+    diceMap.set(currDice, {
+        dice: newDice,
+        entity: Entity.Roll,
+        action: Action.Create,
+        id: currDice,
+    });
+    const sendObj = JSON.stringify({
+        entity: Entity.Roll,
+        action: Action.Create,
+        id: currDice,
+        dice: newDice,
+    });
+    currDice++;
+    diceLock = false;
+    return sendObj;
+}
+
+async function establishUser(initialId: number) {
+    if (wrongToRightUserMap.has(initialId)) {
+        const sendObj = JSON.stringify({
+            entity: Entity.Name,
+            oldId: initialId,
+            newId: wrongToRightUserMap.get(initialId),
+        });
+        sendAll();
+    }
+    await waitLock(userLock);
+    userLock = true;
+    wrongToRightUserMap.set(initialId, currUser);
+    rightToWrongUserMap.set(currUser, initialId);
+    console.log(
+        JSON.stringify({
+            entity: Entity.Name,
+            oldId: initialId,
+            newId: currUser,
+        }),
+    );
+    const sendObj = JSON.stringify({
+        entity: Entity.Name,
+        oldId: initialId,
+        newId: currUser,
+    });
+    broadcast(sendObj);
+    currUser++;
+    userLock = false;
+    sendAll();
+}
+
+async function waitLock(lock: boolean) {
+    while (lock) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+}
+
+async function sendAll() {
+    for (const [key, val] of layerMap) {
+        broadcast(JSON.stringify(val));
+    }
+    for (const [key, val] of objectMap) {
+        broadcast(JSON.stringify(val));
+    }
+    for (const [key, val] of diceMap) {
+        broadcast(JSON.stringify(val));
+    }
+}
+
+async function broadcast(newMessage: string) {
+    if (newMessage) {
+        wss.clients.forEach(function each(client) {
+            console.log(client, newMessage);
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(newMessage!, { binary: false });
+            }
+        });
+    }
+}

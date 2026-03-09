@@ -47,10 +47,6 @@ async function mainLoop() {
     }
     if (counter % 25 === 0) {
         rightMan.step();
-        if (board.layerMap.size !== 0) {
-            serveInter.ping();
-        }
-        counter = 1;
     }
     board.activeLayer = rightMan.layerMan.currSelect;
     board.step();

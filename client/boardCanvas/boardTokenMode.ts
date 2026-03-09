@@ -171,6 +171,7 @@ export class BoardTokenMode {
                     layerId: this.board.activeLayer,
                     objectId: -1,
                 },
+                userId: -1,
             });
         }
     }

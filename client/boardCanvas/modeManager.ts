@@ -157,14 +157,16 @@ export class ModeManager {
     }
 
     modeSwitch(newMode: Mode) {
-        this.modes[this.currMode].flipListeners(false);
-        this.buttons[this.currMode].disabled = false;
-        this.currMode = newMode;
-        this.modes[this.currMode].flipListeners(true);
-        this.buttons[this.currMode].disabled = true;
-        modeParagraph.innerText = this.modes[this.currMode].getText();
-        this.selectInstruct.style.visibility =
-            newMode === Mode.View ? 'hidden' : 'visible';
+        if (!this.selectMan.active) {
+            this.modes[this.currMode].flipListeners(false);
+            this.buttons[this.currMode].disabled = false;
+            this.currMode = newMode;
+            this.modes[this.currMode].flipListeners(true);
+            this.buttons[this.currMode].disabled = true;
+            modeParagraph.innerText = this.modes[this.currMode].getText();
+            this.selectInstruct.style.visibility =
+                newMode === Mode.View ? 'hidden' : 'visible';
+        }
     }
 
     // Checks if the user has selected an area of the canvas.

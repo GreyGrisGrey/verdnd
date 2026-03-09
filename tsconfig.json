@@ -7,7 +7,7 @@
         "lib": ["ES2024", "ES6", "DOM", "DOM.Iterable"],
         "target": "ES2024"
     },
-    "include": ["out.ts"],
-    "moduleResolution": "bundler",
+    "include": ["clientOut.ts"],
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true
 }

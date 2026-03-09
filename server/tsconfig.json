@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "lib": ["ES2024", "ES6", "DOM", "DOM.Iterable"],
+        "target": "ES2024",
+        "types": ["node"],
+        "moduleResolution": "NodeNext",
+        "paths": {
+            "local/*": ["./node_modules/*"]
+        },
+        "allowJs": true
+    },
+    "include": ["../serveOut.ts"],
+    "exclude": ["./newServe/node_modules"],
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true
+}

@@ -1,0 +1,17 @@
+{
+    "name": "newserve",
+    "version": "1.0.0",
+    "description": "verdDnd server",
+    "main": "index.js",
+    "scripts": {
+        "test": "ver test"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "ws": "^8.19.0"
+    },
+    "devDependencies": {
+        "@types/ws": "^8.18.1"
+    }
+}

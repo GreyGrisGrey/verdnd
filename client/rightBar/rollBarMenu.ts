@@ -6,15 +6,6 @@ const chatBox = getRequiredElement('chatBox', HTMLElement);
 const rollBox = getRequiredElement('rollContainer', HTMLElement);
 const colBox = getRequiredElement('colContainer', HTMLElement);
 
-export interface DicePayload {
-    diceSize: number;
-    diceCount: number;
-    advantage: boolean;
-    disadvantage: boolean;
-    modifier: number;
-    result: number;
-}
-
 // Class manaing the roll menu on the right bar.
 // Also manages the roll menu on the left bar. Questionable.
 export class RollMenu {
