@@ -11,7 +11,7 @@ import type {
 } from './objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from './colours.ts';
-import { Action, Entity, Shape } from './objectEvents.ts';
+import { Action, Entity } from './objectEvents.ts';
 
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.

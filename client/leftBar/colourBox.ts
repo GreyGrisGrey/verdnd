@@ -1,7 +1,6 @@
 import { ColInst, stringToColInst } from '../colours.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-import type { Vec2 } from '../boardCanvas/coords.ts';
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);

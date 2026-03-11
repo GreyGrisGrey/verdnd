@@ -1,22 +1,13 @@
 import type {
     ObjectCreateEvent,
-    ObjectCreatePayload,
-    LayerCreateEvent,
-    LayerDestroyEvent,
     LayerUpdateEvent,
-    ObjectMoveEvent,
-    ObjectRecolourEvent,
-    ObjectDestroyEvent,
     LayerState,
-    ServerEvent,
     DicePayload,
-    RollEvent,
     LaserEvent,
     RollComplete,
-    RollResult,
 } from './serveObjectEvents.ts';
 import { SingleRoll } from './serveObjectEvents.ts';
-import { Action, Entity, Shape } from './serveObjectEvents.ts';
+import { Action, Entity } from './serveObjectEvents.ts';
 
 import WebSocket, { WebSocketServer } from 'ws';
 
@@ -54,7 +45,7 @@ wss.on('connection', async function connection(ws) {
         wss.emit(returnVal!);
     });
 
-    console.log('aaa');
+    console.log('connection established');
 });
 
 async function handleEvent(event: any) {
@@ -272,11 +263,6 @@ async function addDice(newDice: DicePayload, userId: number) {
 
 async function establishUser(initialId: number) {
     if (wrongToRightUserMap.has(initialId)) {
-        const sendObj = JSON.stringify({
-            entity: Entity.Name,
-            oldId: initialId,
-            newId: wrongToRightUserMap.get(initialId),
-        });
         sendAll();
     }
     await waitLock(userLock);
@@ -316,7 +302,6 @@ async function sendAll() {
 }
 
 async function sendAllLasers() {
-    const currTime = Date.now();
     for (const [key, val] of laserMap) {
         broadcast(JSON.stringify(val));
     }
