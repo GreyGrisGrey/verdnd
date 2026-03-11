@@ -304,7 +304,7 @@ export class tempStore {
                 this.parcelServeEvent({
                     entity: Entity.Laser,
                     id: this.localNum,
-                    colour: '#cc00cc',
+                    colour: this.board!.laserCol,
                     coords: { x: x, y: y },
                     time: Date.now(),
                 }),

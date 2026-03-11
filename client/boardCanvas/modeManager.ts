@@ -124,8 +124,6 @@ export class ModeManager {
                 this.controlClick = true;
             } else if (event.key === 'z' && this.controlClick) {
                 this.board.serveInter.undoLast();
-            } else if (event.key === 'l') {
-                this.sendLaser = !this.sendLaser;
             }
         });
 

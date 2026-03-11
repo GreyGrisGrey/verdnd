@@ -12,7 +12,8 @@ const colBox = getRequiredElement('colContainer', HTMLElement);
 export class RollMenu {
     textBox: HTMLElement;
     active: boolean;
-    modifier: number;
+    modifier: string;
+    modBox: HTMLElement;
     currChats: HTMLElement[];
     currBoxes: HTMLElement[];
     serveInter: tempStore;
@@ -20,7 +21,8 @@ export class RollMenu {
     constructor(server: tempStore) {
         this.textBox = getRequiredElement('chatBoxTextBox', HTMLElement);
         this.active = false;
-        this.modifier = 0;
+        this.modifier = '0';
+        this.modBox = this.textBox;
         this.currChats = [];
         this.currBoxes = [];
         this.setRollElements();
@@ -73,22 +75,14 @@ export class RollMenu {
                 roll.style.top = '3px';
                 roll.value = `D${i}`;
 
-                setCount.addEventListener('input', () => {
-                    if (
-                        Number(setCount.value) &&
-                        Math.abs(Number(setCount.value)) < 9999
-                    ) {
-                        this.modifier = Number(setCount.value);
-                    } else if (Number(setCount.value) > 0) {
-                        setCount.value = '9999';
-                    } else if (Number(setCount.value)) {
-                        setCount.value = '-9999';
-                    } else {
-                        setCount.value = '0';
-                    }
-                });
-
                 roll.addEventListener('click', () => {
+                    if (
+                        Number.isNaN(Number(setCount.value)) ||
+                        Math.abs(Number(setCount.value)) > 101
+                    ) {
+                        setCount.value = '0';
+                        return;
+                    }
                     this.constructPayload(
                         i,
                         Number(setCount.value),
@@ -147,22 +141,10 @@ export class RollMenu {
                 setCount.value = '0';
 
                 setCount.addEventListener('input', () => {
-                    if (
-                        Number(setCount.value) &&
-                        Math.abs(Number(setCount.value)) < 9999
-                    ) {
-                        this.modifier = Number(setCount.value);
-                    } else if (Number(setCount.value) > 0) {
-                        setCount.value = '9999';
-                        this.modifier = 9999;
-                    } else if (Number(setCount.value)) {
-                        setCount.value = '-9999';
-                        this.modifier = -9999;
-                    } else {
-                        setCount.value = '1';
-                        this.modifier = 1;
-                    }
+                    this.modifier = setCount.value;
                 });
+
+                this.modBox = setCount;
             }
             count++;
         }
@@ -181,6 +163,9 @@ export class RollMenu {
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
         for (const text of this.currChats) {
             text.style.visibility = this.active ? 'visible' : 'hidden';
+        }
+        for (const box of this.currBoxes) {
+            box.style.visibility = this.active ? 'visible' : 'hidden';
         }
     }
 
@@ -261,12 +246,20 @@ export class RollMenu {
         advantage: boolean,
         disadvantage: boolean,
     ) {
+        if (
+            Number.isNaN(Number(this.modifier)) ||
+            Math.abs(Number(this.modifier)) > 101
+        ) {
+            this.modifier = '0';
+            (this.modBox as any).value = '0';
+            return;
+        }
         let currLoad = {
             diceSize: diceSize,
             diceCount: diceCount,
             advantage: advantage,
             disadvantage: disadvantage,
-            modifier: this.modifier,
+            modifier: Number(this.modifier),
             result: 0,
         };
         this.serveInter.rollDice(currLoad);

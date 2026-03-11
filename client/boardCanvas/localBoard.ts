@@ -65,10 +65,13 @@ export class Board {
     modeMan: ModeManager;
     activeLayer: number;
     serveInter: tempStore;
+    laserCol: string;
 
     constructor(server: tempStore) {
-        this.zoomGlobal = 3;
-        this.zoomLevels = [4, 6, 8, 10, 13, 16, 20, 24, 28, 32];
+        this.zoomGlobal = 5;
+        this.zoomLevels = [
+            2, 3, 4, 6, 8, 10, 13, 16, 20, 24, 28, 32, 38, 44, 50,
+        ];
         this.zoomVal = this.zoomLevels[this.zoomGlobal];
         this.offset = { x: 0, y: 0 };
         this.mouseCoords = { x: 0, y: 0 };
@@ -80,6 +83,11 @@ export class Board {
         this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
         this.serveInter = server;
+        this.laserCol = BLUE;
+    }
+
+    recolourLaser(newCol: string) {
+        this.laserCol = newCol;
     }
 
     // Test function for pointer drawing.
@@ -95,7 +103,7 @@ export class Board {
             2 * Math.PI,
             false,
         );
-        ctx.fillStyle = this.leftMouseDown ? RED.toString() : BLUE.toString();
+        ctx.fillStyle = this.leftMouseDown ? RED.toString() : this.laserCol;
         ctx.fill();
         ctx.closePath();
     }

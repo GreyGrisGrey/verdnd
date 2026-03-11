@@ -18,7 +18,6 @@ import type {
 import { SingleRoll } from './serveObjectEvents.ts';
 import { Action, Entity, Shape } from './serveObjectEvents.ts';
 
-// @ts-ignore
 import WebSocket, { WebSocketServer } from 'ws';
 
 const objectMap: Map<number, ObjectCreateEvent> = new Map();
