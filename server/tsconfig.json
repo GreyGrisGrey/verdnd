@@ -5,7 +5,7 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "lib": ["ES2024", "ES6", "DOM", "DOM.Iterable"],
-        "target": "ES2024",
+        "target": "ESNext",
         "types": ["node"],
         "moduleResolution": "NodeNext",
         "paths": {

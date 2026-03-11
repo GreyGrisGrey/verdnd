@@ -2,7 +2,7 @@
     "name": "newserve",
     "version": "1.0.0",
     "description": "verdDnd server",
-    "main": "index.js",
+    "main": "serveOut.js",
     "scripts": {
         "test": "ver test"
     },

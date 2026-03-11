@@ -17,7 +17,6 @@ import { Action, Entity } from './objectEvents.ts';
 // Will it stick around in the long run? I do not know.
 export class tempStore {
     localNum: number;
-    localFlag: boolean;
     undoMap: Map<number, any>;
     undoCreateTracker: Map<number, number>;
     storedObjects: Map<number, ObjectCreatePayload>;
@@ -32,7 +31,6 @@ export class tempStore {
 
     constructor() {
         this.localNum = Math.round(Math.random() * 1000000) + 500;
-        this.localFlag = false;
         this.undoMap = new Map();
         this.undoCreateTracker = new Map();
         this.storedObjects = new Map();
@@ -51,11 +49,9 @@ export class tempStore {
             console.log(message);
             if (
                 message.entity === Entity.Name &&
-                message.oldId === this.localNum &&
-                !this.localFlag
+                message.id === this.localNum.toString()
             ) {
-                this.localFlag = true;
-                this.localNum = message.newId;
+                console.log('yay');
             }
             if (message.entity === Entity.Layer) {
                 this.storedLayers.set(message.layer.id, message.layer);
@@ -126,7 +122,15 @@ export class tempStore {
     async ping() {
         await new Promise((resolve) => setTimeout(resolve, 4000));
         this.socket.send(
-            JSON.stringify({ userId: this.localNum, event: 'PING' }),
+            JSON.stringify({
+                userId: this.localNum,
+                event: {
+                    entity: Entity.Name,
+                    pass: '1',
+                    name: 'wuog',
+                    id: this.localNum.toString(),
+                },
+            }),
         );
     }
 
@@ -295,7 +299,10 @@ export class tempStore {
     }
 
     parcelServeEvent(payload: ServerEvent) {
-        return JSON.stringify({ userId: this.localNum, event: payload });
+        return JSON.stringify({
+            userId: this.localNum.toString(),
+            event: payload,
+        });
     }
 
     sendLaser(x: number, y: number, send: boolean) {

@@ -158,7 +158,7 @@ export interface RollResult {
 }
 
 export interface ServerPacket {
-    userId: number;
+    userId: string;
     event: ServerEvent;
 }
 
@@ -170,6 +170,19 @@ export interface LaserEvent {
     coords: Vec2;
 }
 
+export interface NameEvent {
+    entity: Entity.Name;
+    pass: string;
+    name: string;
+    id: string;
+}
+
+export interface NameCheckedEvent {
+    entity: Entity.Name;
+    id: string;
+    accepted: boolean;
+}
+
 export type ServerEvent =
     | LayerCreateEvent
     | LayerDestroyEvent
@@ -179,6 +192,7 @@ export type ServerEvent =
     | ObjectMoveEvent
     | ObjectRecolourEvent
     | RollEvent
-    | LaserEvent;
+    | LaserEvent
+    | NameEvent;
 
 export type ObjectChangeEvent = ObjectCreateEvent | ObjectDestroyEvent;

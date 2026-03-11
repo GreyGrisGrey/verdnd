@@ -5,17 +5,22 @@ import type {
     DicePayload,
     LaserEvent,
     RollComplete,
+    NameEvent,
+    NameCheckedEvent,
 } from './serveObjectEvents.ts';
 import { SingleRoll } from './serveObjectEvents.ts';
 import { Action, Entity } from './serveObjectEvents.ts';
 
 import WebSocket, { WebSocketServer } from 'ws';
+import { Client } from 'pg';
+import { PostGresData } from './dataMain.ts';
+const cli = new PostGresData();
 
+// SELECT datname FROM pg_catalog.pg_database
 const objectMap: Map<number, ObjectCreateEvent> = new Map();
 const layerMap: Map<number, LayerUpdateEvent> = new Map();
 const diceMap: Map<number, RollComplete> = new Map();
-const rightToWrongUserMap: Map<number, number> = new Map();
-const wrongToRightUserMap: Map<number, number> = new Map();
+const userMap: Map<string, boolean> = new Map();
 const laserMap: Map<number, LaserEvent> = new Map();
 
 let objectLock = false;
@@ -26,7 +31,7 @@ let userLock = false;
 let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
-let currUser = 0;
+const currGame = 0;
 
 const wss = new WebSocketServer({ port: 8765 });
 
@@ -50,7 +55,7 @@ wss.on('connection', async function connection(ws) {
 
 async function handleEvent(event: any) {
     const message = JSON.parse(event);
-    if (rightToWrongUserMap.has(message.userId)) {
+    if (userMap.has(message.userId)) {
         const payload = message.event;
         if (payload.entity === Entity.Object) {
             if (payload.action === Action.Create) {
@@ -75,12 +80,17 @@ async function handleEvent(event: any) {
         } else if (payload.entity === Entity.Laser) {
             return updateLaser(payload);
         }
-    } else {
-        return establishUser(message.userId);
+    } else if (message.event) {
+        const payload = message.event;
+        if (payload.pass && payload.name && payload.id) {
+            return establishUser(payload);
+        }
     }
 }
 
 createLayer();
+
+cli.constructGame(123);
 
 async function updateLaser(payload: LaserEvent) {
     laserMap.set(payload.id, payload);
@@ -261,21 +271,35 @@ async function addDice(newDice: DicePayload, userId: number) {
     return sendObj;
 }
 
-async function establishUser(initialId: number) {
-    if (wrongToRightUserMap.has(initialId)) {
+async function establishUser(payload: NameEvent) {
+    if (userMap.has(payload.id)) {
         sendAll();
     }
     await waitLock(userLock);
     userLock = true;
-    wrongToRightUserMap.set(initialId, currUser);
-    rightToWrongUserMap.set(currUser, initialId);
-    const sendObj = JSON.stringify({
-        entity: Entity.Name,
-        oldId: initialId,
-        newId: currUser,
-    });
-    broadcast(sendObj);
-    currUser++;
+    // THIS CURRENTLY USES THE WRONG ID FOR DEV PURPOSES
+    // FIX THIS AT SOME POINT
+    if (await cli.addUser(payload.name, payload.pass, payload.id)) {
+        userMap.set(payload.id, true);
+        broadcast(
+            JSON.stringify({
+                entity: Entity.Name,
+                accepted: true,
+                id: payload.id,
+            }),
+        );
+        console.log('succeed');
+    } else {
+        broadcast(
+            JSON.stringify({
+                entity: Entity.Name,
+                accepted: false,
+                id: payload.id,
+            }),
+        );
+        console.log('failed');
+    }
+    console.log('donethat');
     userLock = false;
     sendAll();
 }
