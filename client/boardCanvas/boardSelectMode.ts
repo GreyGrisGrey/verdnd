@@ -1,10 +1,10 @@
 import type { BoardObject } from './boardObject.ts';
-import type { Vec2 } from './coords.ts';
+import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Action, Entity, Shape } from '../objectEvents.ts';
-import type { ObjectRecolourEvent } from '../objectEvents.ts';
-import { stringToColInst } from '../colours.ts';
+import { Action, Entity, Shape } from '../../shared/objectEvents.ts';
+import type { ObjectRecolourEvent } from '../../shared/objectEvents.ts';
+import { stringToColInst } from '../../shared/colours.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);

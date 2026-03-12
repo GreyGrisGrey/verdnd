@@ -7,9 +7,9 @@ import type {
     RollComplete,
     NameEvent,
     Token,
-} from './serveObjectEvents.ts';
-import { SingleRoll } from './serveObjectEvents.ts';
-import { Action, Entity } from './serveObjectEvents.ts';
+} from '../shared/objectEvents.ts';
+import { SingleRoll } from '../shared/objectEvents.ts';
+import { Action, Entity } from '../shared/objectEvents.ts';
 import {
     objectPayloadToRow,
     updateObjectToRow,

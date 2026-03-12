@@ -1,13 +1,13 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
 import { Box, Polyline } from './boardObject.ts';
-import type { Vec2 } from './coords.ts';
+import type { Vec2 } from '../../shared/coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
-import { BLUE, RED, WHITE } from '../colours.ts';
+import { BLUE, RED, WHITE } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Shape } from '../objectEvents.ts';
+import { Shape } from '../../shared/objectEvents.ts';
 import { tempStore } from '../serveInter.ts';
-import { ObjectCreatePayload, LayerState } from '../objectEvents.ts';
+import { ObjectCreatePayload, LayerState } from '../../shared/objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 

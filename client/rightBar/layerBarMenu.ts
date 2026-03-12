@@ -1,7 +1,7 @@
-import { GREY, RED } from '../colours.ts';
+import { GREY, RED } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
-import { LayerState } from '../objectEvents.ts';
+import { LayerState } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 
 // Class managing the right-bar's layer menu.

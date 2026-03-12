@@ -9,10 +9,10 @@ import type {
     LaserEvent,
     RollComplete,
     Token,
-} from './objectEvents.ts';
+} from '../shared/objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
-import { ColInst } from './colours.ts';
-import { Action, Entity } from './objectEvents.ts';
+import { ColInst } from '../shared/colours.ts';
+import { Action, Entity } from '../shared/objectEvents.ts';
 
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.

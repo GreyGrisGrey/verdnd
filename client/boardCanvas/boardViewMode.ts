@@ -1,4 +1,4 @@
-import type { Vec2 } from './coords.ts';
+import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);

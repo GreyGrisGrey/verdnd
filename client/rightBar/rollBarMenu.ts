@@ -1,6 +1,6 @@
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
-import { RollComplete, RollResult } from '../objectEvents.ts';
+import { RollComplete, RollResult } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const rollBox = getRequiredElement('rollContainer', HTMLElement);

@@ -8,9 +8,10 @@ import {
     NameEvent,
     NameCheckedEvent,
     Token,
-} from './serveObjectEvents.ts';
-import { SingleRoll, Vec2 } from './serveObjectEvents.ts';
-import { Action, Entity, Shape } from './serveObjectEvents.ts';
+    SingleRoll,
+} from '../shared/objectEvents.ts';
+import { Vec2 } from '../shared/coords.ts';
+import { Action, Entity, Shape } from '../shared/objectEvents.ts';
 
 export function objectTableToPayloads(rows: any[]) {
     const mapping: Map<number, ObjectCreateEvent> = new Map();

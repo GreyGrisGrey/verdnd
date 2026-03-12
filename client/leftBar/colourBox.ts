@@ -1,4 +1,4 @@
-import { ColInst, stringToColInst } from '../colours.ts';
+import { ColInst, stringToColInst } from '../../shared/colours.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);

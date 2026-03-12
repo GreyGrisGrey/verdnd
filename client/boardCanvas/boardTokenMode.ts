@@ -1,9 +1,9 @@
 import { Box, type BoardObject } from './boardObject.ts';
-import type { Vec2 } from './coords.ts';
+import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
-import { WHITE_50 } from '../colours.ts';
+import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Action, Entity, Shape } from '../objectEvents.ts';
+import { Action, Entity, Shape } from '../../shared/objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);

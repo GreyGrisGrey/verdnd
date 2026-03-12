@@ -1,13 +1,13 @@
-import type { ColInst } from '../colours.ts';
-import type { Vec2 } from './coords.ts';
-import { BLACK, GOLD, GREY, GREY_LIGHT } from '../colours.ts';
-import { Shape } from '../objectEvents.ts';
+import type { ColInst } from '../../shared/colours.ts';
+import type { Vec2 } from '../../shared/coords.ts';
+import { BLACK, GOLD, GREY, GREY_LIGHT } from '../../shared/colours.ts';
+import { Shape } from '../../shared/objectEvents.ts';
 import type {
     ObjectCreatePayload,
     PolyCreatePayload,
     RectCreatePayload,
-} from '../objectEvents.ts';
-import { Token } from '../objectEvents.ts';
+} from '../../shared/objectEvents.ts';
+import { Token } from '../../shared/objectEvents.ts';
 
 export type BoardObject = Polyline | Box;
 
