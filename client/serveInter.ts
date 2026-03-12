@@ -285,6 +285,7 @@ export class tempStore {
 
     // Updates a layer.
     async updateLayer(input: LayerState) {
+        console.log(input);
         const targetObj = this.storedLayers.get(input.id);
         if (targetObj) {
             this.storedLayers.set(input.id, input);

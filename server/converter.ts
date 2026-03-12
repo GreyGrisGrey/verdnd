@@ -12,7 +12,6 @@ import { SingleRoll, Vec2 } from './serveObjectEvents.ts';
 import { Action, Entity, Shape } from './serveObjectEvents.ts';
 
 export function objectTableToPayloads(rows: any[]) {
-    console.log(rows);
     const mapping: Map<number, ObjectCreateEvent> = new Map();
     for (const row of rows) {
         const structData: Vec2[] = row[4].split(':').map((item: string) => {

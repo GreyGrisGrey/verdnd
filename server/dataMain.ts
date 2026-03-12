@@ -158,7 +158,6 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
     }
 
     async addObject(gameId: number, object: string) {
-        console.log(gameId, object);
         await this.client.query({
             text: `INSERT INTO mainschema.objects${gameId} VALUES ${object}`,
         });
@@ -170,6 +169,12 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
         });
     }
 
+    async destroyObject(gameId: number, objectId: number) {
+        await this.client.query({
+            text: `DELETE FROM mainschema.objects${gameId} WHERE ObjectId = ${objectId}`,
+        });
+    }
+
     async addLayer(gameId: number, layer: string) {
         await this.client.query({
             text: `INSERT INTO mainschema.layers${gameId} VALUES ${layer}`,
@@ -177,8 +182,10 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
     }
 
     async updateLayer(gameId: number, layerId: number, layer: any[]) {
+        console.log(layer);
+        console.log(layerId);
         await this.client.query({
-            text: `UPDATE mainschema.objects${gameId} SET GmVisible = '${layer[0]}', PlayerVisible = '${layer[1]}', zOrder = ${layer[2]} WHERE LayerId = ${layerId}`,
+            text: `UPDATE mainschema.layers${gameId} SET GmVisible = '${layer[0]}', PlayerVisible = '${layer[1]}', zOrder = ${layer[2]} WHERE Id = ${layerId}`,
         });
     }
 

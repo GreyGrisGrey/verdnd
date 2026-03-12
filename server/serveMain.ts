@@ -108,7 +108,7 @@ async function handleEvent(event: any) {
             } else if (payload.action === Action.Destroy) {
                 return destroyLayer(payload.layerId);
             } else if (payload.action === Action.Update) {
-                return updateLayer(payload.layer.objectId, payload.layer);
+                return updateLayer(payload.layer.id, payload.layer);
             }
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice, message.userId);
@@ -152,6 +152,7 @@ async function destroyObj(objId: number) {
         action: Action.Destroy,
         objectId: objId,
     });
+    cli.destroyObject(currGame, objId);
     objectLock = false;
     broadcast(sendObj);
 }
