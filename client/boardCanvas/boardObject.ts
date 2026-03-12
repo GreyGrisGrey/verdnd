@@ -82,9 +82,12 @@ export class BoardObjectBase {
             this.buildPath(squareSize, offset);
             this.ctx = ctx;
         }
+        if (this.token.active) {
+            this.drawToken(this.ctx as any, squareSize, offset);
+        }
         if (this.selected) {
             ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }
         if (this.shape === Shape.Line) {
@@ -106,8 +109,11 @@ export class BoardObjectBase {
     }
 
     drawOutline(ctx: CanvasRenderingContext2D) {
-        ctx.strokeStyle = this.token.colour;
-        ctx.stroke(this.currPath);
+        if (!this.selected) {
+            ctx.strokeStyle = this.token.colour;
+            ctx.lineWidth = 3;
+            ctx.stroke(this.currPath);
+        }
     }
 
     drawLabel(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {

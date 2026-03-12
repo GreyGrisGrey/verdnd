@@ -1,10 +1,8 @@
 import { BoardDrawMode } from './boardDrawMode.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Shape } from '../objectEvents.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardTokenMode } from './boardTokenMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
-import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const modeParagraph = getRequiredElement('modeParagraph', HTMLElement);
@@ -69,7 +67,7 @@ export class ModeManager {
 
         this.setUpBoxes();
         this.addEventListeners();
-        this.modes[this.currMode].flipListeners(true);
+        this.modeSwitch(Mode.View);
         modeParagraph.innerText = this.modes[this.currMode].getText();
     }
 
@@ -233,7 +231,7 @@ export class ModeManager {
             res = [this.tokenMan.currHover];
             this.tokenMan.currHover = undefined;
         } else if (this.currMode === Mode.Token) {
-            res = this.board.selectObjects(Shape.Token);
+            res = this.board.selectObjects();
         }
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {

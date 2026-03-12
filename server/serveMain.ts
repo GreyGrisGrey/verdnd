@@ -71,7 +71,6 @@ async function setUp() {
     await new Promise((resolve) => setTimeout(resolve, 500));
     const res = await cli.getGame(currGame);
     if (res) {
-        console.log(res);
         objectMap = res[0] as any;
         layerMap = res[1] as any;
         diceMap = res[2] as any;
@@ -372,7 +371,7 @@ async function establishUser(payload: NameEvent) {
                 id: payload.id,
             }),
         );
-        console.log('succeed');
+        console.log('user add success');
     } else {
         broadcast(
             JSON.stringify({
@@ -381,9 +380,8 @@ async function establishUser(payload: NameEvent) {
                 id: payload.id,
             }),
         );
-        console.log('failed');
+        console.log('user add fail');
     }
-    console.log('donethat');
     userLock = false;
     sendAll();
 }
@@ -395,7 +393,6 @@ async function waitLock(lock: boolean) {
 }
 
 async function sendAll() {
-    console.log(objectMap);
     for (const [key, val] of layerMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
         broadcast(JSON.stringify(val));

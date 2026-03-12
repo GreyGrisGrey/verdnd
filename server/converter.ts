@@ -126,7 +126,6 @@ export function tokenTableToPayloads(
 ) {
     for (const row of rows) {
         const currObj = objMapping.get(row[0]);
-        console.log(row);
         if (currObj) {
             currObj.token = {
                 name: row[1],

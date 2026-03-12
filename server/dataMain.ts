@@ -104,7 +104,6 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
     }
 
     async constructGameTables(newId: number) {
-        console.log(newId);
         await this.client.query({
             text: `CREATE TABLE mainschema.objects${newId} (Shape text NOT NULL, Colour text, LayerId int, ObjectId int PRIMARY KEY, StructureData text NOT NULL, Owner text)`,
             rowMode: 'array',
@@ -144,7 +143,6 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
             text: `SELECT gameId FROM mainschema.games WHERE gameId = ${gameId}`,
             rowMode: 'array',
         });
-        console.log(res);
         if (res.rows.length > 0) {
             return true;
         }
@@ -153,7 +151,6 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
 
     async getGame(gameId: number) {
         if (await this.checkGame(gameId)) {
-            console.log('bwa');
             const first = await this.client.query({
                 text: `SELECT * FROM mainschema.objects${gameId}`,
                 rowMode: 'array',

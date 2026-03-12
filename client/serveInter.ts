@@ -8,7 +8,6 @@ import type {
     DicePayload,
     LaserEvent,
     RollComplete,
-    UpdateTokenEvent,
     Token,
 } from './objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
@@ -269,7 +268,6 @@ export class tempStore {
         oldCol: ColInst,
         undo: boolean = false,
     ) {
-        console.log(events);
         const undoPackets: ObjectRecolourEvent[] = [];
         for (const event of events) {
             if (!undo) {

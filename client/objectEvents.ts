@@ -24,7 +24,6 @@ export enum Shape {
     Ellipse = 'ELLIPSE',
     Polyline = 'POLYLINE',
     Line = 'LINE',
-    Token = 'TOKEN',
     None = 'NONE',
 }
 

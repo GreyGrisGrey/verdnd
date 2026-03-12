@@ -5,7 +5,6 @@ import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
-const sizeInput = getRequiredElement('tokenSize', HTMLInputElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
@@ -29,7 +28,6 @@ export class BoardTokenMode {
         this.currHover = undefined;
         this.newTokenCheck = false;
         this.addEventListeners();
-        sizeInput.value = '1';
         nameInput.value = 'Gremlin';
     }
 
@@ -115,27 +113,6 @@ export class BoardTokenMode {
         document.addEventListener('keyup', (event) => {
             if (event.key === 'Shift') {
                 this.shift = false;
-            }
-        });
-
-        sizeInput.addEventListener('input', () => {
-            if (sizeInput.value.length > 3) {
-                sizeInput.value = '1';
-            } else {
-                for (const char of sizeInput.value) {
-                    if (char.charCodeAt(0) < 48 || char.charCodeAt(0) > 57) {
-                        sizeInput.value = '1';
-                        break;
-                    }
-                }
-                if (parseInt(sizeInput.value, 10) < 1) {
-                    sizeInput.value = '1';
-                } else if (parseInt(sizeInput.value, 10) > 300) {
-                    alert(
-                        'u have no legitimate need to make a token this big\npls be serious',
-                    );
-                    sizeInput.value = '1';
-                }
             }
         });
     }
