@@ -6,9 +6,8 @@ import type {
     ObjectCreatePayload,
     PolyCreatePayload,
     RectCreatePayload,
-    TokenCreatePayload,
 } from '../objectEvents.ts';
-import { BoardToken } from './boardToken.ts';
+import { Token } from '../objectEvents.ts';
 
 export type BoardObject = Polyline | Box;
 
@@ -29,8 +28,8 @@ export class BoardObjectBase {
     currPath: Path2D;
     ctx?: CanvasRenderingContext2D;
     shape: Shape;
-    tokenId: number;
-    token: BoardToken | null;
+    token: Token;
+    owner: string;
 
     constructor(
         objectId: number,
@@ -52,17 +51,24 @@ export class BoardObjectBase {
         this.currPath = new Path2D();
         this.ctx = undefined;
         this.shape = kind;
-        this.tokenId = -1;
-        this.token = null;
+        this.token = {
+            name: 'na',
+            movable: true,
+            active: false,
+            colour: '#cccccc',
+        };
+        this.owner = 'None';
     }
 
     hasToken() {
-        return this.tokenId > -1;
+        return this.token.active;
     }
 
-    setToken(newToken: BoardToken, tokId: number) {
-        this.tokenId = tokId;
-        this.token = newToken;
+    updateToken(newToken: Token) {
+        this.token.name = newToken.name;
+        this.token.movable = newToken.movable;
+        this.token.active = newToken.active;
+        this.token.colour = newToken.colour;
     }
 
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
@@ -89,18 +95,37 @@ export class BoardObjectBase {
             ctx.fillStyle = this.colour.toString();
             ctx.fill(this.currPath);
         }
-        if (this.token) {
+        if (this.token.active) {
             this.drawToken(this.ctx as any, squareSize, offset);
         }
     }
 
     drawToken(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        (this.token as any).drawOutline(ctx, this.currPath);
-        (this.token as any).drawLabel(
-            ctx,
-            squareSize,
-            offset,
-            this.centerPoint,
+        this.drawOutline(ctx);
+        this.drawLabel(ctx, squareSize, offset);
+    }
+
+    drawOutline(ctx: CanvasRenderingContext2D) {
+        ctx.strokeStyle = this.token.colour;
+        ctx.stroke(this.currPath);
+    }
+
+    drawLabel(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+        ctx.font = '20px serif';
+        ctx.fillStyle = '#eeeeee';
+        ctx.textAlign = 'center';
+        const textSize = ctx.measureText(this.token.name).width;
+        ctx.fillRect(
+            this.centerPoint.x * squareSize + offset.x - textSize / 2 - 5,
+            this.centerPoint.y * squareSize + offset.y - 15,
+            textSize + 10,
+            25,
+        );
+        ctx.fillStyle = '#222222';
+        ctx.fillText(
+            this.token.name,
+            this.centerPoint.x * squareSize + offset.x,
+            this.centerPoint.y * squareSize + offset.y,
         );
     }
 
@@ -166,6 +191,7 @@ export class BoardObjectBase {
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
         this.setCenter();
+        this.updateToken(newSetting.token);
     }
 }
 
@@ -261,6 +287,7 @@ export class Box extends BoardObjectBase {
             colour: this.colour,
             layerId: this.layerId,
             objectId: this.objectId,
+            token: this.token,
         };
     }
 }
@@ -336,6 +363,7 @@ export class Polyline extends BoardObjectBase {
             colour: this.colour,
             layerId: this.layerId,
             objectId: this.objectId,
+            token: this.token,
         };
     }
 }

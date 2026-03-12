@@ -6,7 +6,7 @@ import type {
     LaserEvent,
     RollComplete,
     NameEvent,
-    NameCheckedEvent,
+    Token,
 } from './serveObjectEvents.ts';
 import { SingleRoll } from './serveObjectEvents.ts';
 import { Action, Entity } from './serveObjectEvents.ts';
@@ -16,6 +16,8 @@ import {
     layerPayloadToRow,
     rollPayloadToRow,
     updateLayerToRow,
+    updateTokenToRow,
+    tokenPayloadToRow,
 } from './converter.ts';
 
 import WebSocket, { WebSocketServer } from 'ws';
@@ -121,6 +123,8 @@ async function handleEvent(event: any) {
         } else if (payload.entity === Entity.Laser) {
             return 'nah';
             return updateLaser(payload);
+        } else if (payload.entity === Entity.Token) {
+            return updateToken(payload.token, payload.id);
         }
     } else if (message.event) {
         const payload = message.event;
@@ -139,11 +143,15 @@ async function updateLaser(payload: LaserEvent) {
 
 async function createObj(newObject: ObjectCreateEvent) {
     await waitLock(objectLock);
+    if (!newObject.token) {
+        return;
+    }
     objectLock = true;
     objectMap.set(currObj, newObject);
     newObject.object.objectId = currObj;
     const sendObj = JSON.stringify(newObject);
     cli.addObject(currGame, objectPayloadToRow(newObject));
+    cli.addToken(currGame, tokenPayloadToRow(newObject.token, currObj));
     currObj++;
     objectLock = false;
     broadcast(sendObj);
@@ -335,6 +343,18 @@ async function addDice(newDice: DicePayload, userId: number) {
     return sendObj;
 }
 
+async function updateToken(newToken: Token, id: number) {
+    cli.updateToken(currGame, id, updateTokenToRow(newToken));
+    await waitLock(objectLock);
+    objectLock = true;
+    objectMap.get(id)!.token = newToken;
+    objectMap.get(id)!.object.token = newToken;
+    broadcast(
+        JSON.stringify({ entity: Entity.Token, id: id, token: newToken }),
+    );
+    objectLock = false;
+}
+
 async function establishUser(payload: NameEvent) {
     if (userMap.has(payload.id)) {
         sendAll();
@@ -375,6 +395,7 @@ async function waitLock(lock: boolean) {
 }
 
 async function sendAll() {
+    console.log(objectMap);
     for (const [key, val] of layerMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
         broadcast(JSON.stringify(val));

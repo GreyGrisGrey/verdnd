@@ -7,7 +7,6 @@ import { Action, Entity, Shape } from '../objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const sizeInput = getRequiredElement('tokenSize', HTMLInputElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
-const sizeLabel = getRequiredElement('tokenSizeLabel', HTMLLabelElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 

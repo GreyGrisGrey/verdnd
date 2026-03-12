@@ -3,9 +3,8 @@ import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import type { ObjectCreatePayload } from '../objectEvents.ts';
+import type { ObjectCreatePayload, Token } from '../objectEvents.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
-import { BoardToken } from './boardToken.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -29,7 +28,6 @@ export class BoardDrawMode {
     tempObject: ObjectCreatePayload | null;
     stickTemp: boolean;
     boxItems: HTMLButtonElement[];
-    defaultToken: BoardToken;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -42,12 +40,6 @@ export class BoardDrawMode {
         this.tempObject = null;
         this.stickTemp = false;
         this.boxItems = [];
-        this.defaultToken = new BoardToken(
-            'squonk',
-            'skibidi',
-            '#cccccc',
-            true,
-        );
 
         this.addEventListeners();
         this.setUpBoxes();
@@ -261,6 +253,12 @@ export class BoardDrawMode {
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
+                token: {
+                    name: 'none',
+                    colour: '#cccccc',
+                    active: false,
+                    movable: false,
+                },
             };
             this.completeObjCheck = true;
         } else if (
@@ -275,6 +273,12 @@ export class BoardDrawMode {
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
+                token: {
+                    name: 'none',
+                    colour: '#cccccc',
+                    active: false,
+                    movable: false,
+                },
             };
             this.completeObjCheck = true;
         } else {
@@ -285,6 +289,12 @@ export class BoardDrawMode {
             action: Action.Create,
             object: tempObj,
             userId: -1,
+            token: {
+                name: 'na',
+                colour: '#cccccc',
+                active: false,
+                movable: false,
+            },
         });
         this.params = [];
         this.tempObject = tempObj;

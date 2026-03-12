@@ -7,6 +7,7 @@ import {
     RollComplete,
     NameEvent,
     NameCheckedEvent,
+    Token,
 } from './serveObjectEvents.ts';
 import { SingleRoll, Vec2 } from './serveObjectEvents.ts';
 import { Action, Entity, Shape } from './serveObjectEvents.ts';
@@ -31,6 +32,18 @@ export function objectTableToPayloads(rows: any[]) {
                     layerId: row[2],
                     objectId: row[3],
                     kind: row[0],
+                    token: {
+                        name: 'na',
+                        colour: '#cccccc',
+                        active: false,
+                        movable: false,
+                    },
+                },
+                token: {
+                    name: 'na',
+                    colour: '#cccccc',
+                    active: false,
+                    movable: false,
                 },
             });
         } else {
@@ -38,6 +51,12 @@ export function objectTableToPayloads(rows: any[]) {
                 entity: Entity.Object,
                 action: Action.Create,
                 userId: 0,
+                token: {
+                    name: 'na',
+                    colour: '#cccccc',
+                    active: false,
+                    movable: false,
+                },
                 object: {
                     x: structData[0].x,
                     y: structData[0].y,
@@ -47,6 +66,12 @@ export function objectTableToPayloads(rows: any[]) {
                     layerId: row[2],
                     objectId: row[3],
                     kind: row[0],
+                    token: {
+                        name: 'na',
+                        colour: '#cccccc',
+                        active: false,
+                        movable: false,
+                    },
                 },
             });
         }
@@ -95,6 +120,30 @@ export function rollTableToPayloads(rows: any[]) {
     return mapping;
 }
 
+export function tokenTableToPayloads(
+    rows: any[],
+    objMapping: Map<number, ObjectCreateEvent>,
+) {
+    for (const row of rows) {
+        const currObj = objMapping.get(row[0]);
+        console.log(row);
+        if (currObj) {
+            currObj.token = {
+                name: row[1],
+                colour: row[2],
+                movable: row[3],
+                active: row[4],
+            };
+            currObj.object.token = {
+                name: row[1],
+                colour: row[2],
+                movable: row[3],
+                active: row[4],
+            };
+        }
+    }
+}
+
 export function objectPayloadToRow(payload: ObjectCreateEvent) {
     let returnString = `('${payload.object.kind}', '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
     if (
@@ -134,6 +183,14 @@ export function layerPayloadToRow(payload: LayerUpdateEvent) {
     return `(${payload.layer.gmVisible}, ${payload.layer.playerVisible}, ${payload.layer.zOrder}, ${payload.layer.id})`;
 }
 
+export function updateLayerToRow(payload: LayerUpdateEvent) {
+    return [
+        payload.layer.gmVisible,
+        payload.layer.playerVisible,
+        payload.layer.zOrder,
+    ];
+}
+
 export function rollPayloadToRow(payload: RollComplete) {
     let convertString = '';
     for (const roll of payload.result.rolls) {
@@ -142,10 +199,15 @@ export function rollPayloadToRow(payload: RollComplete) {
     return `(${payload.id}, ${payload.result.result}, '${payload.userId}', '${convertString}')`;
 }
 
-export function updateLayerToRow(payload: LayerUpdateEvent) {
+export function tokenPayloadToRow(payload: Token, id: number) {
+    return `(${id}, '${payload.name}', '${payload.colour}', '${payload.movable}', '${payload.active}')`;
+}
+
+export function updateTokenToRow(payload: Token) {
     return [
-        payload.layer.gmVisible,
-        payload.layer.playerVisible,
-        payload.layer.zOrder,
+        payload.name,
+        payload.colour,
+        payload.movable.toString(),
+        payload.active.toString(),
     ];
 }

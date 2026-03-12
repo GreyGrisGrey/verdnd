@@ -8,6 +8,8 @@ import type {
     DicePayload,
     LaserEvent,
     RollComplete,
+    UpdateTokenEvent,
+    Token,
 } from './objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from './colours.ts';
@@ -87,6 +89,11 @@ export class tempStore {
                 if (message.id !== this.localNum) {
                     this.lasers.set(message.id, message);
                 }
+            } else if (message.entity === Entity.Token) {
+                const currObj = this.storedObjects.get(message.id);
+                if (currObj) {
+                    currObj.token = message.token;
+                }
             }
         });
     }
@@ -163,6 +170,16 @@ export class tempStore {
         return -1;
     }
 
+    updateToken(newToken: Token, newId: number) {
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Token,
+                token: newToken,
+                id: newId,
+            }),
+        );
+    }
+
     getObjects(): Map<number, ObjectCreatePayload> {
         return this.storedObjects;
     }
@@ -198,6 +215,7 @@ export class tempStore {
                         action: Action.Create,
                         object: this.storedObjects.get(id)!,
                         userId: this.localNum,
+                        token: this.storedObjects.get(id)!.token,
                     });
                 }
                 this.socket.send(

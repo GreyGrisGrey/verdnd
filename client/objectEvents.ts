@@ -12,6 +12,13 @@ export interface DicePayload {
     result: number;
 }
 
+export interface Token {
+    name: string;
+    colour: string;
+    movable: boolean;
+    active: boolean;
+}
+
 export enum Shape {
     Rect = 'RECT',
     Ellipse = 'ELLIPSE',
@@ -27,6 +34,7 @@ export enum Entity {
     Roll = 'ROLL',
     Name = 'NAME',
     Laser = 'LASER',
+    Token = 'TOKEN',
 }
 
 export enum Action {
@@ -57,17 +65,7 @@ export interface RectCreatePayload {
     colour: ColInst | string;
     layerId: number;
     objectId: number;
-}
-
-export interface TokenCreatePayload {
-    kind: Shape.Token;
-    x: number;
-    y: number;
-    diameter: number;
-    colour: ColInst | string;
-    name: string;
-    layerId: number;
-    objectId: number;
+    token: Token;
 }
 
 export interface PolyCreatePayload {
@@ -78,12 +76,10 @@ export interface PolyCreatePayload {
     colour: ColInst | string;
     layerId: number;
     objectId: number;
+    token: Token;
 }
 
-export type ObjectCreatePayload =
-    | PolyCreatePayload
-    | RectCreatePayload
-    | TokenCreatePayload;
+export type ObjectCreatePayload = PolyCreatePayload | RectCreatePayload;
 
 export interface LayerCreateEvent {
     entity: Entity.Layer;
@@ -107,6 +103,7 @@ export interface ObjectCreateEvent {
     entity: Entity.Object;
     action: Action.Create;
     object: ObjectCreatePayload;
+    token: Token;
     userId: number;
 }
 
@@ -183,6 +180,12 @@ export interface NameCheckedEvent {
     accepted: boolean;
 }
 
+export interface UpdateTokenEvent {
+    entity: Entity.Token;
+    id: number;
+    token: Token;
+}
+
 export type ServerEvent =
     | LayerCreateEvent
     | LayerDestroyEvent
@@ -193,6 +196,7 @@ export type ServerEvent =
     | ObjectRecolourEvent
     | RollEvent
     | LaserEvent
-    | NameEvent;
+    | NameEvent
+    | UpdateTokenEvent;
 
 export type ObjectChangeEvent = ObjectCreateEvent | ObjectDestroyEvent;

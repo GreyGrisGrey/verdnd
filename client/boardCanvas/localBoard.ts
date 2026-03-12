@@ -8,7 +8,6 @@ import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
 import { tempStore } from '../serveInter.ts';
 import { ObjectCreatePayload, LayerState } from '../objectEvents.ts';
-import { BoardToken } from './boardToken.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
@@ -58,7 +57,6 @@ export class Board {
     activeLayer: number;
     serveInter: tempStore;
     laserCol: string;
-    defaultToken: BoardToken;
 
     constructor(server: tempStore) {
         this.zoomGlobal = 5;
@@ -77,12 +75,6 @@ export class Board {
         this.activeLayer = 0;
         this.serveInter = server;
         this.laserCol = BLUE;
-        this.defaultToken = new BoardToken(
-            'squonk',
-            'skibidi',
-            '#cc0000',
-            true,
-        );
     }
 
     recolourLaser(newCol: string) {
@@ -217,7 +209,7 @@ export class Board {
             return;
         }
         const addObj = payloadToBoardObject(newObject);
-        addObj.setToken(this.defaultToken, 1);
+        addObj.updateToken(newObject.token);
         this.objectMap.set(addObj.objectId, addObj);
         if (layer) {
             layer.addObject(addObj, addObj.objectId);

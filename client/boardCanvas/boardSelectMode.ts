@@ -7,6 +7,7 @@ import type { ObjectRecolourEvent } from '../objectEvents.ts';
 import { stringToColInst } from '../colours.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
+const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {
@@ -41,12 +42,57 @@ export class BoardSelectMode {
                     HTMLButtonElement,
                 ),
             );
-            if (i > 3 || i === 0) {
+            if (i === 0 || (i > 3 && i < 6) || i > 8) {
                 this.boxItems[i].disabled = true;
             }
             this.boxItems[i].addEventListener('click', () => {
                 this.handleSwitchEvent(i.toString());
             });
+        }
+    }
+
+    attemptRename() {
+        for (const obj of this.selectedObjects) {
+            if (obj.token.active) {
+                const newToken = {
+                    name: nameInput.value,
+                    colour: obj.token.colour,
+                    active: true,
+                    movable: obj.token.movable,
+                };
+                obj.updateToken(newToken);
+                this.board.serveInter.updateToken(newToken, obj.objectId);
+            }
+        }
+    }
+
+    attemptTokenRecolour() {
+        for (const obj of this.selectedObjects) {
+            if (obj.token.active) {
+                const newToken = {
+                    name: obj.token.name,
+                    colour: colourSquare.style.background,
+                    active: true,
+                    movable: obj.token.movable,
+                };
+                obj.updateToken(newToken);
+                this.board.serveInter.updateToken(newToken, obj.objectId);
+            }
+        }
+    }
+
+    tokenize() {
+        for (const obj of this.selectedObjects) {
+            if (!obj.token.active) {
+                const newToken = {
+                    name: nameInput.value,
+                    colour: colourSquare.style.background,
+                    active: true,
+                    movable: true,
+                };
+                obj.updateToken(newToken);
+                this.board.serveInter.updateToken(newToken, obj.objectId);
+            }
         }
     }
 
@@ -69,6 +115,12 @@ export class BoardSelectMode {
             this.exitOnNextStep = true;
         } else if (key === '3') {
             this.recolour();
+        } else if (key === '6') {
+            this.tokenize();
+        } else if (key === '7') {
+            this.attemptRename();
+        } else if (key === '8') {
+            this.attemptTokenRecolour();
         }
     }
 
@@ -182,7 +234,7 @@ export class BoardSelectMode {
 
     // Does not return text for the information bar, as none exists.
     getText() {
-        return 'nah';
+        return 'sooon';
     }
 
     // Sets the list of currently selected objects.
