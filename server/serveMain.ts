@@ -78,13 +78,13 @@ async function setUp() {
             }
         }
         for (const [key, val] of diceMap) {
-            if (val.id >= currObj) {
+            if (val.id >= currDice) {
                 currDice = val.id + 1;
             }
         }
-        console.log(currObj, currLayer, currDice);
     } else {
         cli.constructGame('0');
+        createLayer();
     }
 }
 
@@ -314,6 +314,16 @@ async function addDice(newDice: DicePayload, userId: number) {
         result: rollResult,
         userId: userId,
     });
+    cli.addRoll(
+        currGame,
+        rollPayloadToRow({
+            entity: Entity.Roll,
+            action: Action.Update,
+            id: currDice,
+            result: rollResult,
+            userId: userId,
+        }),
+    );
     currDice++;
     diceLock = false;
     return sendObj;

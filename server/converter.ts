@@ -139,7 +139,7 @@ export function rollPayloadToRow(payload: RollComplete) {
     for (const roll of payload.result.rolls) {
         convertString += `${roll.result},${roll.size},${roll.exclude}`;
     }
-    return `(${payload.id}, ${payload.result}, ${payload.userId}, ${convertString})`;
+    return `(${payload.id}, ${payload.result.result}, '${payload.userId}', '${convertString}')`;
 }
 
 export function updateLayerToRow(payload: LayerUpdateEvent) {

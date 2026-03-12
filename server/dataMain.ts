@@ -190,6 +190,7 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
     }
 
     async addRoll(gameId: number, roll: string) {
+        console.log(roll);
         await this.client.query({
             text: `INSERT INTO mainschema.rolls${gameId} VALUES ${roll}`,
         });
