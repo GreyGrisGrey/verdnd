@@ -163,23 +163,21 @@ export class BoardSelectMode {
 
     // Recolours each selected object individually.
     recolour() {
-        if (this.currColour !== colourSquare.style.background) {
-            const recolourList: ObjectRecolourEvent[] = [];
-            for (const obj of this.selectedObjects) {
-                recolourList.push({
-                    entity: Entity.Object,
-                    action: Action.Recolour,
-                    objectId: obj.objectId,
-                    colour: stringToColInst(colourSquare.style.background),
-                });
-                obj.setColour(colourSquare.style.background);
-            }
-            this.board.serveInter.recolourObjects(
-                recolourList,
-                stringToColInst(this.currColour),
-            );
-            this.currColour = colourSquare.style.background;
+        const recolourList: ObjectRecolourEvent[] = [];
+        for (const obj of this.selectedObjects) {
+            recolourList.push({
+                entity: Entity.Object,
+                action: Action.Recolour,
+                objectId: obj.objectId,
+                colour: stringToColInst(colourSquare.style.background),
+            });
+            obj.setColour(colourSquare.style.background);
         }
+        this.board.serveInter.recolourObjects(
+            recolourList,
+            stringToColInst(this.currColour),
+        );
+        this.currColour = colourSquare.style.background;
     }
 
     // Does not return text for the information bar, as none exists.

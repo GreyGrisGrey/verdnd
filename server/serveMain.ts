@@ -10,6 +10,13 @@ import type {
 } from './serveObjectEvents.ts';
 import { SingleRoll } from './serveObjectEvents.ts';
 import { Action, Entity } from './serveObjectEvents.ts';
+import {
+    objectPayloadToRow,
+    updateObjectToRow,
+    layerPayloadToRow,
+    rollPayloadToRow,
+    updateLayerToRow,
+} from './converter.ts';
 
 import WebSocket, { WebSocketServer } from 'ws';
 import { Client } from 'pg';
@@ -17,10 +24,10 @@ import { PostGresData } from './dataMain.ts';
 const cli = new PostGresData();
 
 // SELECT datname FROM pg_catalog.pg_database
-const objectMap: Map<number, ObjectCreateEvent> = new Map();
-const layerMap: Map<number, LayerUpdateEvent> = new Map();
-const diceMap: Map<number, RollComplete> = new Map();
-const userMap: Map<string, boolean> = new Map();
+let objectMap: Map<number, ObjectCreateEvent> = new Map();
+let layerMap: Map<number, LayerUpdateEvent> = new Map();
+let diceMap: Map<number, RollComplete> = new Map();
+let userMap: Map<string, boolean> = new Map();
 const laserMap: Map<number, LaserEvent> = new Map();
 
 let objectLock = false;
@@ -53,6 +60,34 @@ wss.on('connection', async function connection(ws) {
     console.log('connection established');
 });
 
+async function setUp() {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const res = await cli.getGame(currGame);
+    if (res) {
+        objectMap = res[0] as any;
+        layerMap = res[1] as any;
+        diceMap = res[2] as any;
+        for (const [key, val] of objectMap) {
+            if (val.object.objectId >= currObj) {
+                currObj = val.object.objectId + 1;
+            }
+        }
+        for (const [key, val] of layerMap) {
+            if (val.layer.id >= currLayer) {
+                currLayer = val.layer.id + 1;
+            }
+        }
+        for (const [key, val] of diceMap) {
+            if (val.id >= currObj) {
+                currDice = val.id + 1;
+            }
+        }
+        console.log(currObj, currLayer, currDice);
+    } else {
+        cli.constructGame('0');
+    }
+}
+
 async function handleEvent(event: any) {
     const message = JSON.parse(event);
     if (userMap.has(message.userId)) {
@@ -78,6 +113,7 @@ async function handleEvent(event: any) {
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice, message.userId);
         } else if (payload.entity === Entity.Laser) {
+            return 'nah';
             return updateLaser(payload);
         }
     } else if (message.event) {
@@ -88,9 +124,7 @@ async function handleEvent(event: any) {
     }
 }
 
-createLayer();
-
-cli.constructGame(123);
+setUp();
 
 async function updateLaser(payload: LaserEvent) {
     laserMap.set(payload.id, payload);
@@ -103,6 +137,7 @@ async function createObj(newObject: ObjectCreateEvent) {
     objectMap.set(currObj, newObject);
     newObject.object.objectId = currObj;
     const sendObj = JSON.stringify(newObject);
+    cli.addObject(currGame, objectPayloadToRow(newObject));
     currObj++;
     objectLock = false;
     broadcast(sendObj);
@@ -129,6 +164,7 @@ async function moveObj(objId: number, xChange: number, yChange: number) {
         currObj.object.x += xChange;
         currObj.object.y += yChange;
         const sendObj = JSON.stringify(currObj);
+        cli.updateObject(currGame, objId, updateObjectToRow(currObj));
         objectLock = false;
         broadcast(sendObj);
     } else {
@@ -144,6 +180,7 @@ async function colourObj(objId: number, colour: string) {
     if (currObj) {
         currObj.object.colour = colour;
         const sendObj = JSON.stringify(currObj);
+        cli.updateObject(currGame, objId, updateObjectToRow(currObj));
         objectLock = false;
         broadcast(sendObj);
     } else {
@@ -169,6 +206,7 @@ async function createLayer() {
         },
     });
     const sendObj = JSON.stringify(layerMap.get(currLayer));
+    cli.addLayer(currGame, layerPayloadToRow(layerMap.get(currLayer)!));
     currLayer++;
     layerLock = false;
     broadcast(sendObj);
@@ -187,6 +225,15 @@ async function updateLayer(layerId: number, newLayer: LayerState) {
         action: Action.Update,
         layer: newLayer,
     });
+    cli.updateLayer(
+        currGame,
+        layerId,
+        updateLayerToRow({
+            entity: Entity.Layer,
+            action: Action.Update,
+            layer: newLayer,
+        }),
+    );
     layerLock = false;
     broadcast(sendObj);
 }

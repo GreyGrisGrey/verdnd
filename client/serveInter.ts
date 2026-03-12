@@ -69,7 +69,6 @@ export class tempStore {
                         message.userId === this.localNum &&
                         !this.storedObjects.has(message.object.objectId)
                     ) {
-                        console.log('AAAAAAAAAAAa');
                         this.secondIndex--;
                         this.undoMap.set(
                             this.undoCreateTracker.get(this.secondIndex)!,
@@ -252,6 +251,7 @@ export class tempStore {
         oldCol: ColInst,
         undo: boolean = false,
     ) {
+        console.log(events);
         const undoPackets: ObjectRecolourEvent[] = [];
         for (const event of events) {
             if (!undo) {

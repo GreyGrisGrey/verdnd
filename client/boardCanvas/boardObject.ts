@@ -138,7 +138,6 @@ export class BoardObjectBase {
         this.location.y = newSetting.y;
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
-        console.log(newSetting);
         this.setCenter();
     }
 }

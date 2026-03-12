@@ -1,4 +1,8 @@
-import {objectTableToPayloads, layerTableToPayloads, rollTableToPayloads} from './converter.ts'
+import {
+    objectTableToPayloads,
+    layerTableToPayloads,
+    rollTableToPayloads,
+} from './converter.ts';
 
 import { Client } from 'pg';
 
@@ -25,12 +29,11 @@ export class PostGresData {
             console.error('something bad has happened!', err.stack);
         });
         this.client.connect();
-        this.resetData()
     }
-    
+
     async resetData() {
-        await this.blowUpEverything()
-        await this.constructTables()
+        await this.blowUpEverything();
+        await this.constructTables();
     }
 
     async constructTables() {
@@ -59,7 +62,7 @@ export class PostGresData {
     // who needs a database anyway
     async blowUpEverything() {
         await this.client.query({
-            text: `DROP SCHEMA mainschema CASCADE`
+            text: `DROP SCHEMA mainschema CASCADE`,
         });
     }
 
@@ -78,7 +81,7 @@ export class PostGresData {
         });
         console.log(res.rows);
     }
-    
+
     async printAll() {
         const res = await this.client.query({
             text: `SELECT table_schema, table_name
@@ -86,21 +89,21 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
             rowMode: 'array',
         });
         for (const val of res.rows) {
-            console.log(val)
+            console.log(val);
         }
     }
-    
+
     async constructGameTables(newId: number) {
         await this.client.query({
             text: `CREATE TABLE mainschema.objects${newId} (Shape text NOT NULL, Colour text, LayerId int, ObjectId int PRIMARY KEY, StructureData text NOT NULL)`,
             rowMode: 'array',
         });
         await this.client.query({
-            text: `CREATE TABLE mainschema.layer${newId} (GmVisible boolean, PlayerVisible boolean, zOrder int, Id int PRIMARY KEY)`,
+            text: `CREATE TABLE mainschema.layers${newId} (GmVisible boolean, PlayerVisible boolean, zOrder int, Id int PRIMARY KEY)`,
             rowMode: 'array',
         });
         await this.client.query({
-            text: `CREATE TABLE mainschema.roll${newId} (Id int PRIMARY KEY, Result int NOT NULL, UserId int, ResultData text)`,
+            text: `CREATE TABLE mainschema.rolls${newId} (Id int PRIMARY KEY, Result int NOT NULL, UserId int, ResultData text)`,
             rowMode: 'array',
         });
     }
@@ -118,17 +121,12 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
             text: `INSERT INTO mainschema.users VALUES ('${newId}', '${newName}', '${newPass}')`,
             rowMode: 'array',
         });
-        const testRes = await this.client.query({
-            text: `SELECT userId FROM mainschema.users`,
-            rowMode: 'array',
-        });
-        console.log(testRes);
         return true;
     }
 
     async checkGame(gameId: number) {
         const res = await this.client.query({
-            text: `SELECT game FROM mainschema.games WHERE gameId = ${gameId}'`,
+            text: `SELECT gameId FROM mainschema.games WHERE gameId = ${gameId}`,
             rowMode: 'array',
         });
         if (res.rows.length > 0) {
@@ -148,44 +146,49 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
                 rowMode: 'array',
             });
             const third = await this.client.query({
-                text: `SELECT * FROM mainschema.${gameId}rolls${gameId}`,
+                text: `SELECT * FROM mainschema.rolls${gameId}`,
                 rowMode: 'array',
             });
-            return [objectTableToPayloads(first.rows), layerTableToPayloads(second.rows), rollTableToPayloads(third.rows)];
+            return [
+                objectTableToPayloads(first.rows),
+                layerTableToPayloads(second.rows),
+                rollTableToPayloads(third.rows),
+            ];
         }
     }
-    
-    async addObject(gameId: number, object: string){
+
+    async addObject(gameId: number, object: string) {
+        console.log(gameId, object);
         await this.client.query({
             text: `INSERT INTO mainschema.objects${gameId} VALUES ${object}`,
         });
     }
-    
+
     async updateObject(gameId: number, objectId: number, object: string[]) {
         await this.client.query({
             text: `UPDATE mainschema.objects${gameId} SET Colour = '${object[0]}', StructureData = '${object[1]}' WHERE ObjectId = ${objectId}`,
         });
     }
-    
-    async addLayer(gameId: number, layer: string){
+
+    async addLayer(gameId: number, layer: string) {
         await this.client.query({
             text: `INSERT INTO mainschema.layers${gameId} VALUES ${layer}`,
         });
     }
-    
+
     async updateLayer(gameId: number, layerId: number, layer: any[]) {
         await this.client.query({
             text: `UPDATE mainschema.objects${gameId} SET GmVisible = '${layer[0]}', PlayerVisible = '${layer[1]}', zOrder = ${layer[2]} WHERE LayerId = ${layerId}`,
         });
     }
-    
-    async addRoll(gameId: number, roll: string){
+
+    async addRoll(gameId: number, roll: string) {
         await this.client.query({
             text: `INSERT INTO mainschema.rolls${gameId} VALUES ${roll}`,
         });
     }
 
-    async constructGame(gmId: number) {
+    async constructGame(gmId: string) {
         await this.delayGameLock();
         this.gameLock = true;
         const query = {
