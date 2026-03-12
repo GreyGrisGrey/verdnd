@@ -1,6 +1,6 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Box, Polyline, Token } from './boardObject.ts';
+import { Box, Polyline } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../colours.ts';
@@ -8,6 +8,7 @@ import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../objectEvents.ts';
 import { tempStore } from '../serveInter.ts';
 import { ObjectCreatePayload, LayerState } from '../objectEvents.ts';
+import { BoardToken } from './boardToken.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
@@ -23,15 +24,6 @@ function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
                 p.height,
                 p.colour,
                 p.kind,
-            );
-        case Shape.Token:
-            return new Token(
-                p.objectId,
-                p.x,
-                p.y,
-                p.diameter,
-                p.colour,
-                p.name ?? '',
             );
         case Shape.Line:
         case Shape.Polyline:
@@ -66,6 +58,7 @@ export class Board {
     activeLayer: number;
     serveInter: tempStore;
     laserCol: string;
+    defaultToken: BoardToken;
 
     constructor(server: tempStore) {
         this.zoomGlobal = 5;
@@ -84,6 +77,12 @@ export class Board {
         this.activeLayer = 0;
         this.serveInter = server;
         this.laserCol = BLUE;
+        this.defaultToken = new BoardToken(
+            'squonk',
+            'skibidi',
+            '#cc0000',
+            true,
+        );
     }
 
     recolourLaser(newCol: string) {
@@ -218,6 +217,7 @@ export class Board {
             return;
         }
         const addObj = payloadToBoardObject(newObject);
+        addObj.setToken(this.defaultToken, 1);
         this.objectMap.set(addObj.objectId, addObj);
         if (layer) {
             layer.addObject(addObj, addObj.objectId);
@@ -250,9 +250,7 @@ export class Board {
         let newSelected = undefined;
         if (layer) {
             const selected = layer.selectObjects(fixedPoint, Shape.Token)[0];
-            if (selected instanceof Token) {
-                newSelected = selected;
-            }
+            return selected;
         }
         return newSelected;
     }
@@ -323,7 +321,7 @@ export class Board {
         if (this.modeMan.sendLaser) {
             this.drawMousePointer();
         }
-        this.modeMan.step(ctx, squareSize, this.offset);
+        this.modeMan.step();
     }
 
     // Performs a single drawing step.

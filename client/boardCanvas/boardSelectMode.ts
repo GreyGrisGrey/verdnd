@@ -131,7 +131,7 @@ export class BoardSelectMode {
                 this.selectClick = false;
                 if (
                     this.selectedObjects.length === 1 &&
-                    this.selectedObjects[0].shape === Shape.Token
+                    this.selectedObjects[0].hasToken()
                 ) {
                     this.exitOnNextStep = true;
                 }

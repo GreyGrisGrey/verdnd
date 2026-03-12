@@ -5,6 +5,7 @@ import { WHITE_50 } from '../colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type { ObjectCreatePayload } from '../objectEvents.ts';
 import { Action, Entity, Shape } from '../objectEvents.ts';
+import { BoardToken } from './boardToken.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -28,6 +29,7 @@ export class BoardDrawMode {
     tempObject: ObjectCreatePayload | null;
     stickTemp: boolean;
     boxItems: HTMLButtonElement[];
+    defaultToken: BoardToken;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -40,6 +42,12 @@ export class BoardDrawMode {
         this.tempObject = null;
         this.stickTemp = false;
         this.boxItems = [];
+        this.defaultToken = new BoardToken(
+            'squonk',
+            'skibidi',
+            '#cccccc',
+            true,
+        );
 
         this.addEventListeners();
         this.setUpBoxes();

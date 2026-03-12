@@ -38,7 +38,9 @@ let userLock = false;
 let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
+
 const currGame = 0;
+const play = true;
 
 const wss = new WebSocketServer({ port: 8765 });
 
@@ -61,9 +63,13 @@ wss.on('connection', async function connection(ws) {
 });
 
 async function setUp() {
+    if (!play) {
+        return;
+    }
     await new Promise((resolve) => setTimeout(resolve, 500));
     const res = await cli.getGame(currGame);
     if (res) {
+        console.log(res);
         objectMap = res[0] as any;
         layerMap = res[1] as any;
         diceMap = res[2] as any;
@@ -83,7 +89,7 @@ async function setUp() {
             }
         }
     } else {
-        cli.constructGame('0');
+        await cli.constructGame('0');
         createLayer();
     }
 }

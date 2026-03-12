@@ -281,10 +281,9 @@ export class ModeManager {
     }
 
     // Performs a single mode management step.
-    step(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+    step() {
         this.attemptSelectedSwap();
         if (this.tokenMan.active) {
-            this.tokenMan.tryDrawLabel(ctx, squareSize, offset);
             this.tokenMan.getNewHover();
         }
         this.toggleBoxesVis();

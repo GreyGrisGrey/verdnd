@@ -8,8 +8,9 @@ import type {
     RectCreatePayload,
     TokenCreatePayload,
 } from '../objectEvents.ts';
+import { BoardToken } from './boardToken.ts';
 
-export type BoardObject = Polyline | Box | Token;
+export type BoardObject = Polyline | Box;
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
@@ -28,6 +29,8 @@ export class BoardObjectBase {
     currPath: Path2D;
     ctx?: CanvasRenderingContext2D;
     shape: Shape;
+    tokenId: number;
+    token: BoardToken | null;
 
     constructor(
         objectId: number,
@@ -49,6 +52,17 @@ export class BoardObjectBase {
         this.currPath = new Path2D();
         this.ctx = undefined;
         this.shape = kind;
+        this.tokenId = -1;
+        this.token = null;
+    }
+
+    hasToken() {
+        return this.tokenId > -1;
+    }
+
+    setToken(newToken: BoardToken, tokId: number) {
+        this.tokenId = tokId;
+        this.token = newToken;
     }
 
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
@@ -75,6 +89,19 @@ export class BoardObjectBase {
             ctx.fillStyle = this.colour.toString();
             ctx.fill(this.currPath);
         }
+        if (this.token) {
+            this.drawToken(this.ctx as any, squareSize, offset);
+        }
+    }
+
+    drawToken(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
+        (this.token as any).drawOutline(ctx, this.currPath);
+        (this.token as any).drawLabel(
+            ctx,
+            squareSize,
+            offset,
+            this.centerPoint,
+        );
     }
 
     buildPath(squareSize: number, offset: Vec2) {
@@ -136,154 +163,6 @@ export class BoardObjectBase {
     updateFromPayload(newSetting: ObjectCreatePayload) {
         this.location.x = newSetting.x;
         this.location.y = newSetting.y;
-        this.colour = newSetting.colour;
-        this.layerId = newSetting.layerId;
-        this.setCenter();
-    }
-}
-
-// Subclass for token objects.
-export class Token extends BoardObjectBase {
-    owner: string;
-    diameter: number;
-    name: string;
-    currOutPath: Path2D;
-
-    constructor(
-        id: number,
-        x: number,
-        y: number,
-        diam: number,
-        colour: ColInst | string,
-        name: string = '',
-        owner: string = '',
-    ) {
-        super(id, x, y, colour, Shape.Token);
-        this.owner = owner;
-        this.diameter = diam;
-        this.name = name;
-        this.currOutPath = new Path2D();
-        this.setCenter();
-    }
-
-    draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        if (
-            squareSize !== this.currPathSpecs[0] ||
-            offset.x !== this.currPathSpecs[1] ||
-            offset.y !== this.currPathSpecs[2]
-        ) {
-            const coords: Vec2 = {
-                x: Math.round(
-                    this.location.x * squareSize +
-                        offset.x +
-                        (squareSize * this.diameter) / 2,
-                ),
-                y: Math.round(
-                    this.location.y * squareSize +
-                        offset.y +
-                        (squareSize * this.diameter) / 2,
-                ),
-            };
-
-            this.currOutPath = new Path2D();
-            this.currOutPath.arc(
-                coords.x,
-                coords.y,
-                (this.diameter * squareSize) / 2,
-                0,
-                2 * Math.PI,
-                false,
-            );
-            this.currOutPath.closePath();
-
-            this.currPath = new Path2D();
-            this.currPath.arc(
-                coords.x,
-                coords.y,
-                (this.diameter * squareSize) / 2 - 2,
-                0,
-                2 * Math.PI,
-                false,
-            );
-            this.currPath.closePath();
-
-            this.currPathSpecs = [squareSize, offset.x, offset.y];
-        }
-
-        ctx.strokeStyle = this.selected ? GOLD.toString() : GREY.toString();
-        ctx.lineWidth = 4;
-        ctx.stroke(this.currOutPath);
-
-        ctx.fillStyle = this.colour.toString();
-        ctx.fill(this.currPath);
-    }
-
-    // Draws the token's overhead label.
-    drawLabel(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
-        ctx.font = '20px serif';
-        ctx.fillStyle = GREY_LIGHT.toString();
-        ctx.textAlign = 'center';
-        const textSize = ctx.measureText(this.name).width;
-        ctx.fillRect(
-            this.location.x * squareSize +
-                offset.x +
-                (squareSize * this.diameter) / 2 -
-                textSize / 2 -
-                5,
-            this.location.y * squareSize + offset.y - 35,
-            textSize + 10,
-            25,
-        );
-        ctx.fillStyle = BLACK.toString();
-        ctx.fillText(
-            this.name,
-            this.location.x * squareSize +
-                offset.x +
-                (squareSize * this.diameter) / 2,
-            this.location.y * squareSize + offset.y - 20,
-        );
-    }
-
-    isPointInside(point: Vec2) {
-        const adj = Math.abs(
-            this.location.x + this.diameter / 2 - point.x - 0.5,
-        );
-        const opp = Math.abs(
-            this.location.y + this.diameter / 2 - point.y - 0.5,
-        );
-        const distance = Math.sqrt(adj * adj + opp * opp);
-        if (distance <= this.diameter / 2) {
-            return true;
-        }
-        return false;
-    }
-
-    setCenter() {
-        this.centerPoint = {
-            x: this.location.x + this.diameter / 2,
-            y: this.location.y + this.diameter / 2,
-        };
-    }
-
-    // Constructs a token creation payload from the pre-existing token.
-    payloadFromObject(): TokenCreatePayload {
-        return {
-            kind: Shape.Token,
-            x: this.location.x,
-            y: this.location.y,
-            diameter: this.diameter,
-            colour: this.colour,
-            name: this.name,
-            layerId: this.layerId,
-            objectId: this.objectId,
-        };
-    }
-
-    // Updates the token based on a provided payload.
-    updateFromPayload(newSetting: TokenCreatePayload) {
-        this.location.x = newSetting.x;
-        this.location.y = newSetting.y;
-        this.diameter = newSetting.diameter;
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
         this.setCenter();

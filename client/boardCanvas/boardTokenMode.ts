@@ -1,4 +1,4 @@
-import { Box, type Token } from './boardObject.ts';
+import { Box, type BoardObject } from './boardObject.ts';
 import type { Vec2 } from './coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../colours.ts';
@@ -18,7 +18,7 @@ export class BoardTokenMode {
     params: Vec2[];
     shift: boolean;
     completeSelectCheck: boolean;
-    currHover?: Token;
+    currHover?: BoardObject;
     newTokenCheck: boolean;
 
     constructor(parentBoard: Board) {
@@ -37,9 +37,7 @@ export class BoardTokenMode {
     // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        sizeInput.style.visibility = this.active ? 'visible' : 'hidden';
         nameInput.style.visibility = this.active ? 'visible' : 'hidden';
-        sizeLabel.style.visibility = this.active ? 'visible' : 'hidden';
         nameLabel.style.visibility = this.active ? 'visible' : 'hidden';
     }
 
@@ -68,10 +66,7 @@ export class BoardTokenMode {
                         ),
                     ]);
                     this.currHover = res;
-                    if (!this.currHover) {
-                        this.createToken();
-                        this.newTokenCheck = true;
-                    } else {
+                    if (this.currHover) {
                         this.completeSelectCheck = true;
                     }
                 } else {
@@ -147,42 +142,7 @@ export class BoardTokenMode {
     }
 
     getText() {
-        return 'Left Click : Create Token\nLeft Click on Token : Select Token\nShift + Left Click : Select Tokens';
-    }
-
-    // Creates a token, sends it directly to the server interface.
-    createToken() {
-        if (nameInput.value && sizeInput.value) {
-            const coords = this.board.determineTile(
-                this.board.mouseCoords.x,
-                this.board.mouseCoords.y,
-                false,
-            );
-            this.board.serveInter.createObject({
-                entity: Entity.Object,
-                action: Action.Create,
-                object: {
-                    kind: Shape.Token,
-                    x: coords.x,
-                    y: coords.y,
-                    diameter: parseInt(sizeInput.value, 10),
-                    colour: colourSquare.style.background,
-                    name: nameInput.value,
-                    layerId: this.board.activeLayer,
-                    objectId: -1,
-                },
-                userId: -1,
-            });
-        }
-    }
-
-    // If a token is being hovered over, draws the label for it.
-    tryDrawLabel(
-        ctx: CanvasRenderingContext2D,
-        squareSize: number,
-        offset: Vec2,
-    ) {
-        this.currHover?.drawLabel(ctx, squareSize, offset);
+        return 'Token creation now handled by selecting objects in draw mode\nLeft Click on Token : Select Token\nShift + Left Click : Select Tokens';
     }
 
     // Gets the token the mouse is currently hovering over, should such a token exist.
