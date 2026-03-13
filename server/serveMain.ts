@@ -19,10 +19,9 @@ import {
     updateTokenToRow,
     tokenPayloadToRow,
 } from './converter.ts';
+import { PostGresData } from './dataMain.ts';
 
 import WebSocket, { WebSocketServer } from 'ws';
-import { Client } from 'pg';
-import { PostGresData } from './dataMain.ts';
 const cli = new PostGresData();
 
 // SELECT datname FROM pg_catalog.pg_database
@@ -58,7 +57,6 @@ wss.on('connection', async function connection(ws) {
                 }
             });
         }
-        wss.emit(returnVal!);
     });
 
     console.log('connection established');
