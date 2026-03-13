@@ -282,14 +282,6 @@ export class tempStore {
         }
     }
 
-    updateTokenLocal(newToken: Token, newId: number) {
-        this.storedObjects.get(newId)!.updateToken(newToken);
-    }
-
-    getObjects(): Map<number, ObjectCreatePayload> {
-        return this.storedObjectPayloads;
-    }
-
     // Tells the backend to create a layer.
     async createLayer() {
         if (this.online) {
@@ -310,10 +302,6 @@ export class tempStore {
         this.layMenu!.constructLayer(layerPacket);
         this.board!.boardLayers.push(newLayer);
         this.board!.boardLayers.sort();
-    }
-
-    getLayers() {
-        return this.storedLayerStates;
     }
 
     // Tells the backend to destroy a bunch of objects.
@@ -347,20 +335,6 @@ export class tempStore {
                 if (this.board) {
                     this.board.removeObject(id);
                 }
-            }
-        }
-    }
-
-    destroyObjectsLocal(targetIds: number[]) {
-        for (const val of targetIds) {
-            const curr = this.storedObjects.get(val);
-            if (curr) {
-                if (this.storedLayers.has(curr.layerId)) {
-                    this.storedLayers
-                        .get(curr.layerId)!
-                        .removeObject(curr.objectId);
-                }
-                this.storedObjects.delete(val);
             }
         }
     }
@@ -447,11 +421,6 @@ export class tempStore {
                 }),
             );
         }
-    }
-
-    updateLayerLocal(input: LayerState) {
-        this.storedLayers.get(input.id)!.updateFromLayerState(input);
-        this.layMenu!.updateLayer(input.id, input);
     }
 
     parcelServeEvent(payload: ServerEvent) {

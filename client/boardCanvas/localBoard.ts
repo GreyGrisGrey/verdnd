@@ -105,52 +105,6 @@ export class Board {
         });
     }
 
-    // Adds a new board layer, then sorts the layers.
-    addLayer(newLayer: LayerState) {
-        if (newLayer.id === undefined) {
-            return;
-        }
-        const currLayer = this.layerMap.get(newLayer.id!);
-        if (currLayer) {
-            currLayer.updateVis(newLayer.playerVisible, newLayer.gmVisible);
-        } else {
-            const toAdd = new BoardLayer(
-                newLayer.zOrder,
-                newLayer.gmVisible,
-                newLayer.playerVisible,
-            );
-            this.layerMap.set(newLayer.id!, toAdd);
-            this.boardLayers.push(toAdd);
-            this.boardLayers.sort();
-        }
-    }
-
-    // Returns the layer corresponding to a layerId.
-    getLayer(layerId: number) {
-        return this.layerMap.get(layerId);
-    }
-
-    // Returns the object corresponding to an objectId.
-    getObjectById(objectId: number) {
-        return this.objectMap.get(objectId);
-    }
-
-    // Removes a new board layer, then sorts the layers.
-    // Returns false if the provided layer is not found.
-    removeLayer(removeId: number) {
-        const layer = this.layerMap.get(removeId);
-        if (!layer) {
-            return false;
-        }
-        const removeIndex = this.boardLayers.indexOf(layer);
-        if (!this.layerMap.delete(removeId)) {
-            return false;
-        }
-        this.boardLayers.splice(removeIndex, 1);
-        this.sortLayers();
-        return true;
-    }
-
     // Deletes an object based on the Id of the object and the layer it belongs on.
     removeObject(objectId: number, layerId: number = -1) {
         this.objectMap.delete(objectId);
