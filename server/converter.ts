@@ -1,12 +1,7 @@
 import {
     ObjectCreateEvent,
     LayerUpdateEvent,
-    LayerState,
-    DicePayload,
-    LaserEvent,
     RollComplete,
-    NameEvent,
-    NameCheckedEvent,
     Token,
     SingleRoll,
 } from '../shared/objectEvents.ts';

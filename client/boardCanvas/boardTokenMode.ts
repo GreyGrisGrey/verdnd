@@ -3,11 +3,10 @@ import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Action, Entity, Shape } from '../../shared/objectEvents.ts';
+import { Shape } from '../../shared/objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
-const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
 // Class handling canvas' token mode.
 export class BoardTokenMode {

@@ -1,5 +1,4 @@
 import type { BoardObject } from './boardObject.ts';
-import { Shape } from '../../shared/objectEvents.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 
 // Manages a single layer of the board.

@@ -1,6 +1,6 @@
 import type { ColInst } from '../../shared/colours.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import { BLACK, GOLD, GREY, GREY_LIGHT } from '../../shared/colours.ts';
+import { GOLD } from '../../shared/colours.ts';
 import { Shape } from '../../shared/objectEvents.ts';
 import type {
     ObjectCreatePayload,

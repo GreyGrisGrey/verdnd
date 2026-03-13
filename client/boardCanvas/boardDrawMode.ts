@@ -3,7 +3,7 @@ import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import type { ObjectCreatePayload, Token } from '../../shared/objectEvents.ts';
+import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
 import { Action, Entity, Shape } from '../../shared/objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);

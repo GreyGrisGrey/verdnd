@@ -30,7 +30,6 @@ export class PostGresData {
             console.error('something bad has happened!', err.stack);
         });
         this.client.connect();
-        this.printTokens();
     }
 
     async resetData() {
