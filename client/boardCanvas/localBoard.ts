@@ -1,44 +1,13 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
-import { Box, Polyline } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { Shape } from '../../shared/objectEvents.ts';
 import { tempStore } from '../serveInter.ts';
-import { ObjectCreatePayload, LayerState } from '../../shared/objectEvents.ts';
+import { LayerState } from '../../shared/objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
-
-function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
-    switch (p.kind) {
-        case Shape.Ellipse:
-        case Shape.Rect:
-            return new Box(
-                p.objectId,
-                p.x,
-                p.y,
-                p.width,
-                p.height,
-                p.colour,
-                p.kind,
-            );
-        case Shape.Line:
-        case Shape.Polyline:
-            return new Polyline(
-                p.objectId,
-                p.x,
-                p.y,
-                p.points,
-                p.colour,
-                p.kind,
-            );
-        default: {
-            throw new Error('Unknown shape');
-        }
-    }
-}
 
 // Main class controlling the state of the canvas.
 export class Board {
@@ -198,24 +167,6 @@ export class Board {
                 layer.removeObject(objectId);
             }
             return true;
-        }
-    }
-
-    // Adds an object to a specified layer. Updates object if it already exists.
-    addObject(layerId: number, newObject: ObjectCreatePayload) {
-        const layer = this.layerMap.get(layerId);
-        const currObj = this.objectMap.get(newObject.objectId!);
-        if (!layer) {
-            return;
-        } else if (currObj) {
-            currObj.updateFromPayload(newObject as any);
-            return;
-        }
-        const addObj = payloadToBoardObject(newObject);
-        addObj.updateToken(newObject.token);
-        this.objectMap.set(addObj.objectId, addObj);
-        if (layer) {
-            layer.addObject(addObj, addObj.objectId);
         }
     }
 

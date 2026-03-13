@@ -30,6 +30,7 @@ export class PostGresData {
             console.error('something bad has happened!', err.stack);
         });
         this.client.connect();
+        this.resetData();
     }
 
     async resetData() {
@@ -180,6 +181,12 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
     async addToken(gameId: number, token: string) {
         await this.client.query({
             text: `INSERT INTO mainschema.tokens${gameId} VALUES ${token}`,
+        });
+    }
+
+    async destroyToken(gameId: number, objectId: number) {
+        await this.client.query({
+            text: `DELETE FROM mainschema.tokens${gameId} WHERE Id = ${objectId}`,
         });
     }
 

@@ -4,6 +4,7 @@ import { RollMenu } from './rollBarMenu.ts';
 import { TokenMenu } from './tokenBarMenu.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
+import { LayerState } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const layerTab = getRequiredElement('layerTab', HTMLElement);
 const tokenTab = getRequiredElement('tokenTab', HTMLElement);
@@ -27,9 +28,9 @@ export class RightBarManager {
     currActive: RightBarTab;
     serveInter: tempStore;
 
-    constructor(server: tempStore) {
+    constructor(server: tempStore, layMap: Map<number, LayerState>) {
         this.serveInter = server;
-        this.layerMan = new LayerMenu(this.serveInter);
+        this.layerMan = new LayerMenu(this.serveInter, layMap);
         this.tokenMan = new TokenMenu();
         this.characterMan = new CharacterMenu();
         this.rollMan = new RollMenu(this.serveInter);

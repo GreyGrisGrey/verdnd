@@ -1,5 +1,6 @@
 import type { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
+import { LayerState } from '../../shared/objectEvents.ts';
 
 // Manages a single layer of the board.
 // Currently has little functionality.
@@ -18,6 +19,12 @@ export class BoardLayer {
         this.zOrder = newOrder;
         this.GMVisible = newGM;
         this.playerVisible = newPlayer;
+    }
+
+    updateFromLayerState(newLayer: LayerState) {
+        this.zOrder = newLayer.zOrder;
+        this.GMVisible = newLayer.gmVisible;
+        this.playerVisible = newLayer.playerVisible;
     }
 
     // Updates the visibility values of the layer.
@@ -47,9 +54,11 @@ export class BoardLayer {
 
     // Adds a new board object, then sorts the board objects.
     addObject(newObj: BoardObject, newId: number) {
-        this.heldObjects.push(newObj);
-        this.heldMap.set(newId, newObj);
-        this.sortObjects();
+        if (!this.heldMap.has(newId)) {
+            this.heldObjects.push(newObj);
+            this.heldMap.set(newId, newObj);
+            this.sortObjects();
+        }
     }
 
     // Removes a board object.

@@ -19,14 +19,14 @@ export class LayerMenu {
     tempButtonObj: HTMLElement;
     serveInter: tempStore;
 
-    constructor(server: tempStore) {
+    constructor(server: tempStore, layerMap: Map<number, LayerState>) {
         this.active = false;
         this.serveInter = server;
         this.button = getRequiredElement('layerTab', HTMLElement);
         this.layers = [];
         this.descObj = getRequiredElement('descLayerObj', HTMLElement);
         this.currElements = [];
-        this.layerMap = new Map();
+        this.layerMap = layerMap;
         this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);
         this.boxHeight = 50;
         this.currSelect = 0;
@@ -61,17 +61,12 @@ export class LayerMenu {
         (toUpdate.element!.children[2] as any).checked = val.gmVisible;
     }
 
-    // Handles a new batch of LayerStates from the server.
-    handleNewLayers(newLayers: Map<number, LayerState>) {
-        for (const [key, val] of newLayers) {
-            if (!this.layerMap.has(key)) {
-                this.constructLayer(val);
-            } else {
-                this.updateLayer(key, val);
-            }
+    // Updates all the layers.
+    // I don't know why we need to do this every step, but we do.
+    updateLayers() {
+        for (const [key, val] of this.layerMap) {
+            this.updateLayer(key, val);
         }
-        this.moveLayers();
-        this.resizeLayerBoxes();
     }
 
     // Constructs a new layer, including relevant HTMLElements.
@@ -87,7 +82,6 @@ export class LayerMenu {
             zOrder: buildData.zOrder,
             element: newBox,
         });
-
         newBox.style.position = 'absolute';
         newBox.style.border = 'solid black';
         newBox.style.height = `${this.boxHeight}px`;
@@ -113,7 +107,6 @@ export class LayerMenu {
         checkVisibleGM.style.top = '15px';
         checkVisibleGM.style.left = '200px';
         checkVisibleGM.checked = buildData.gmVisible;
-
         this.layerObj.append(newBox);
         newBox.append(newText);
         newBox.append(checkVisibleAll);
@@ -191,5 +184,8 @@ export class LayerMenu {
             this.descObj.style.width = `${parseInt(this.layerObj.style.width.slice(0, this.layerObj.style.width.length - 2), 10) - 4}px`;
             this.resizeLayerBoxes();
         }
+        this.moveLayers();
+        this.resizeLayerBoxes();
+        this.updateLayers();
     }
 }
