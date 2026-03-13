@@ -13,6 +13,8 @@ import type {
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from '../shared/colours.ts';
 import { Action, Entity } from '../shared/objectEvents.ts';
+import { BoardObject } from './boardCanvas/boardObject.ts';
+import { BoardLayer } from './boardCanvas/boardLayer.ts';
 
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.
@@ -20,8 +22,10 @@ export class tempStore {
     localNum: number;
     undoMap: Map<number, any>;
     undoCreateTracker: Map<number, number>;
-    storedObjects: Map<number, ObjectCreatePayload>;
-    storedLayers: Map<number, LayerState>;
+    storedObjects: Map<number, BoardObject>;
+    storedObjectPayloads: Map<number, ObjectCreatePayload>;
+    storedLayerStates: Map<number, LayerState>;
+    storedLayers: Map<number, BoardLayer>;
     currIndex: number;
     secondIndex: number;
     rollMapping: Map<number, RollComplete>;
@@ -30,12 +34,17 @@ export class tempStore {
     lasers: Map<number, LaserEvent>;
     designal: boolean;
 
-    constructor() {
+    constructor(
+        newObjects: Map<number, BoardObject>,
+        newLayers: Map<number, BoardLayer>,
+    ) {
         this.localNum = Math.round(Math.random() * 1000000) + 500;
         this.undoMap = new Map();
         this.undoCreateTracker = new Map();
-        this.storedObjects = new Map();
-        this.storedLayers = new Map();
+        this.storedObjects = newObjects;
+        this.storedObjectPayloads = new Map();
+        this.storedLayerStates = new Map();
+        this.storedLayers = newLayers;
         this.currIndex = 0;
         this.secondIndex = 0;
         this.rollMapping = new Map();
@@ -55,20 +64,20 @@ export class tempStore {
                 console.log('yay');
             }
             if (message.entity === Entity.Layer) {
-                this.storedLayers.set(message.layer.id, message.layer);
+                this.storedLayerStates.set(message.layer.id, message.layer);
             } else if (message.entity === Entity.Object) {
                 if (
                     message.action === Action.Destroy &&
-                    this.storedObjects.has(message.objectId)
+                    this.storedObjectPayloads.has(message.objectId)
                 ) {
-                    this.storedObjects.delete(message.objectId);
+                    this.storedObjectPayloads.delete(message.objectId);
                     if (this.board) {
                         this.board.removeObject(message.objectId);
                     }
                 } else {
                     if (
                         message.userId === this.localNum &&
-                        !this.storedObjects.has(message.object.objectId)
+                        !this.storedObjectPayloads.has(message.object.objectId)
                     ) {
                         this.secondIndex--;
                         this.undoMap.set(
@@ -77,7 +86,7 @@ export class tempStore {
                         );
                         this.undoCreateTracker.delete(this.secondIndex);
                     }
-                    this.storedObjects.set(
+                    this.storedObjectPayloads.set(
                         message.object.objectId,
                         message.object,
                     );
@@ -89,7 +98,7 @@ export class tempStore {
                     this.lasers.set(message.id, message);
                 }
             } else if (message.entity === Entity.Token) {
-                const currObj = this.storedObjects.get(message.id);
+                const currObj = this.storedObjectPayloads.get(message.id);
                 if (currObj) {
                     currObj.token = message.token;
                 }
@@ -180,7 +189,7 @@ export class tempStore {
     }
 
     getObjects(): Map<number, ObjectCreatePayload> {
-        return this.storedObjects;
+        return this.storedObjectPayloads;
     }
 
     // Tells the backend to create a layer.
@@ -196,7 +205,7 @@ export class tempStore {
     }
 
     getLayers() {
-        return this.storedLayers;
+        return this.storedLayerStates;
     }
 
     // Tells the backend to destroy a bunch of objects.
@@ -207,14 +216,14 @@ export class tempStore {
             this.currIndex += 1;
         }
         for (const id of targetIds) {
-            if (this.storedObjects.has(id)) {
+            if (this.storedObjectPayloads.has(id)) {
                 if (!undo) {
                     undoPackets.push({
                         entity: Entity.Object,
                         action: Action.Create,
-                        object: this.storedObjects.get(id)!,
+                        object: this.storedObjectPayloads.get(id)!,
                         userId: this.localNum,
-                        token: this.storedObjects.get(id)!.token,
+                        token: this.storedObjectPayloads.get(id)!.token,
                     });
                 }
                 this.socket.send(
@@ -224,7 +233,7 @@ export class tempStore {
                         objectId: id,
                     }),
                 );
-                this.storedObjects.delete(id);
+                this.storedObjectPayloads.delete(id);
                 if (this.board) {
                     this.board.removeObject(id);
                 }
@@ -246,7 +255,7 @@ export class tempStore {
                     y: -event.y,
                 });
             }
-            const targetObj = this.storedObjects.get(event.objectId);
+            const targetObj = this.storedObjectPayloads.get(event.objectId);
             if (targetObj) {
                 this.board!.objectMap.get(event.objectId)!.move(
                     event.x,
@@ -278,7 +287,7 @@ export class tempStore {
                     colour: oldCol.toString(),
                 });
             }
-            const targetObj = this.storedObjects.get(event.objectId);
+            const targetObj = this.storedObjectPayloads.get(event.objectId);
             if (targetObj) {
                 this.board!.objectMap.get(event.objectId)!.setColour(
                     event.colour.toString(),
@@ -300,9 +309,9 @@ export class tempStore {
     }
 
     async updateLayer(input: LayerState) {
-        const targetObj = this.storedLayers.get(input.id);
+        const targetObj = this.storedLayerStates.get(input.id);
         if (targetObj) {
-            this.storedLayers.set(input.id, input);
+            this.storedLayerStates.set(input.id, input);
         }
         this.socket.send(
             this.parcelServeEvent({

@@ -41,7 +41,6 @@ function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
 }
 
 // Main class controlling the state of the canvas.
-// Somewhat oversized, may be split up eventually.
 export class Board {
     zoomGlobal: number;
     zoomLevels: number[];
@@ -58,7 +57,11 @@ export class Board {
     serveInter: tempStore;
     laserCol: string;
 
-    constructor(server: tempStore) {
+    constructor(
+        server: tempStore,
+        newMap: Map<number, BoardObject>,
+        newLay: Map<number, BoardLayer>,
+    ) {
         this.zoomGlobal = 5;
         this.zoomLevels = [
             2, 3, 4, 6, 8, 10, 13, 16, 20, 24, 28, 32, 38, 44, 50,
@@ -69,8 +72,8 @@ export class Board {
         this.leftMouseDown = false;
         this.rightMouseDown = false;
         this.boardLayers = [];
-        this.layerMap = new Map();
-        this.objectMap = new Map();
+        this.layerMap = newLay;
+        this.objectMap = newMap;
         this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
         this.serveInter = server;

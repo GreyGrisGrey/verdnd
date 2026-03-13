@@ -2,9 +2,13 @@ import { Board } from './boardCanvas/localBoard.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { tempStore } from './serveInter.ts';
-const serveInter = new tempStore();
+import { BoardObject } from './boardCanvas/boardObject.ts';
+import { BoardLayer } from './boardCanvas/boardLayer.ts';
+const storedObjects: Map<number, BoardObject> = new Map();
+const storedLayers: Map<number, BoardLayer> = new Map();
+const serveInter = new tempStore(storedObjects, storedLayers);
 const loadWall = document.getElementById('loadBlock')!;
-const board = new Board(serveInter);
+const board = new Board(serveInter, storedObjects, storedLayers);
 const rightMan = new RightBarManager(serveInter);
 const leftMan = new LeftBarManager(board);
 

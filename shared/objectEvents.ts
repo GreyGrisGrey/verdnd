@@ -197,5 +197,3 @@ export type ServerEvent =
     | LaserEvent
     | NameEvent
     | UpdateTokenEvent;
-
-export type ObjectChangeEvent = ObjectCreateEvent | ObjectDestroyEvent;
