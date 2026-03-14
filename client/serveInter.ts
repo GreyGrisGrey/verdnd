@@ -101,7 +101,6 @@ export class tempStore {
             this.socket = new WebSocket('ws://47.55.46.138:4322/');
             this.socket.addEventListener('message', (event) => {
                 const message = JSON.parse(event.data);
-                console.log(message);
                 if (message.entity === Entity.Name && message.accepted) {
                     this.id = message.id;
                     this.isGm = message.gm;

@@ -123,7 +123,6 @@ async function handleEvent(event: any, ws: WebSocket) {
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice, message.userId);
         } else if (payload.entity === Entity.Laser) {
-            return 'nah';
             return updateLaser(payload);
         } else if (payload.entity === Entity.Token) {
             return updateToken(payload.token, payload.id);
@@ -398,7 +397,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
                 JSON.stringify({
                     entity: Entity.Name,
                     accepted: true,
-                    gm: false,
+                    gm: allGm,
                     id: payload.id,
                 }),
             );
@@ -410,7 +409,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
             JSON.stringify({
                 entity: Entity.Name,
                 accepted: true,
-                gm: false,
+                gm: allGm,
                 id: payload.id,
             }),
         );
