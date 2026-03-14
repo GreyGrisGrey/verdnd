@@ -430,6 +430,7 @@ export class tempStore {
 
     async destroyLayer(input: LayerState) {
         if (this.online) {
+            this.board!.clearLayer(input.id);
             this.socket!.send(
                 this.parcelServeEvent({
                     entity: Entity.Layer,

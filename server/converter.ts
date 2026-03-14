@@ -189,6 +189,9 @@ export function updateLayerToRow(payload: LayerUpdateEvent) {
         payload.layer.gmVisible,
         payload.layer.playerVisible,
         payload.layer.zOrder,
+        payload.layer.name,
+        payload.layer.x,
+        payload.layer.y,
     ];
 }
 

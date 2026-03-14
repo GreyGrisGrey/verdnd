@@ -294,6 +294,7 @@ export class LayerMenu {
             layer.element!.style.background = RED.toString();
             layerXInput.value = layer.x.toString();
             layerYInput.value = layer.y.toString();
+            layerRenameInput.value = layer.name;
             currLayerText.innerText =
                 layer.name === 'none' ? `Layer ${this.currSelect}` : layer.name;
         }

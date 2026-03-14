@@ -30,7 +30,6 @@ export class PostGresData {
             console.error('something bad has happened!', err.stack);
         });
         this.client.connect();
-        this.resetData();
     }
 
     async resetData() {
@@ -222,7 +221,7 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
 
     async updateLayer(gameId: number, layerId: number, layer: any[]) {
         await this.client.query({
-            text: `UPDATE mainschema.layers${gameId} SET GmVisible = '${layer[0]}', PlayerVisible = '${layer[1]}', zOrder = ${layer[2]} WHERE Id = ${layerId}`,
+            text: `UPDATE mainschema.layers${gameId} SET GmVisible = '${layer[0]}', PlayerVisible = '${layer[1]}', zOrder = ${layer[2]}, Name = '${layer[3]}', X = ${layer[4]}, Y = ${layer[5]} WHERE Id = ${layerId}`,
         });
     }
 

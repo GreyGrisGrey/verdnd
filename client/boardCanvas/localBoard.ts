@@ -58,6 +58,17 @@ export class Board {
         this.laserCol = newCol;
     }
 
+    clearLayer(layerId: number) {
+        const layer = this.layerMap.get(layerId);
+        if (layer) {
+            const destroyItems = [];
+            for (const [key, val] of layer.heldMap) {
+                destroyItems.push(key);
+            }
+            this.serveInter.destroyObjects(destroyItems, true);
+        }
+    }
+
     // Test function for pointer drawing.
     // Will be removed when a proper laser tool is added.
     // oh no its part of the proper laser tool's functionality it's stuck here forever
