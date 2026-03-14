@@ -225,7 +225,7 @@ export class RollMenu {
     }
 
     // Updates a chat box.
-    updateChat(dataLine: RollResult, currIndex: number, userId: number) {
+    updateChat(dataLine: RollResult, currIndex: number, userId: string) {
         let newString = '';
         for (const roll of dataLine.rolls) {
             newString += `(D${roll.size}, ${roll.result}) `;

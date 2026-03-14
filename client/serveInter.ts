@@ -66,6 +66,10 @@ export class tempStore {
     designal: boolean;
     online: boolean;
     layMenu: LayerMenu | null;
+    isGm: boolean;
+    id: string;
+    pass: string;
+    name: string;
 
     constructor(
         newObjects: Map<number, BoardObject>,
@@ -87,16 +91,24 @@ export class tempStore {
         this.designal = false;
         this.online = true;
         this.layMenu = null;
+        this.isGm = false;
+
+        this.id = '';
+        this.pass = '';
+        this.name = '';
+
         if (this.online) {
             this.socket = new WebSocket('ws://47.55.46.138:4322/');
             this.socket.addEventListener('message', (event) => {
                 const message = JSON.parse(event.data);
                 console.log(message);
-                if (
-                    message.entity === Entity.Name &&
-                    message.id === this.localNum.toString()
-                ) {
+                if (message.entity === Entity.Name && message.accepted) {
+                    this.id = message.id;
+                    this.isGm = message.gm;
                     console.log('yay');
+                } else if (message.entity === Entity.Name) {
+                    console.log('boo');
+                    alert('failed to log in');
                 }
                 if (message.entity === Entity.Layer) {
                     if (message.action === Action.Destroy) {
@@ -220,6 +232,20 @@ export class tempStore {
         );
     }
 
+    async signIn(name: string, pass: string, id: string) {
+        this.socket!.send(
+            JSON.stringify({
+                userId: this.localNum,
+                event: {
+                    entity: Entity.Name,
+                    pass: pass,
+                    name: name,
+                    id: id,
+                },
+            }),
+        );
+    }
+
     rollDice(newDice: DicePayload) {
         if (this.online) {
             this.socket!.send(
@@ -228,6 +254,7 @@ export class tempStore {
                     id: 0,
                     action: Action.Create,
                     entity: Entity.Roll,
+                    userId: this.id,
                 }),
             );
         }
@@ -239,8 +266,11 @@ export class tempStore {
 
     // Sends a packet telling the backend to create an object with those parameters.
     async createObject(newObj: ObjectCreateEvent, undo: boolean = false) {
+        if (!this.isGm) {
+            return;
+        }
         newObj.object.objectId = -1;
-        newObj.userId = this.localNum;
+        newObj.userId = this.id;
         if (!undo) {
             newObj.object.objectId = -1;
             this.undoMap.set(this.currIndex, [-1]);
@@ -276,6 +306,9 @@ export class tempStore {
     }
 
     updateToken(newToken: Token, newId: number) {
+        if (!this.isGm) {
+            return;
+        }
         if (this.online) {
             this.socket!.send(
                 this.parcelServeEvent({
@@ -289,6 +322,9 @@ export class tempStore {
 
     // Tells the backend to create a layer.
     async createLayer() {
+        if (!this.isGm) {
+            return;
+        }
         if (this.online) {
             this.socket!.send(
                 this.parcelServeEvent({
@@ -311,6 +347,9 @@ export class tempStore {
 
     // Tells the backend to destroy a bunch of objects.
     async destroyObjects(targetIds: number[], undo: boolean = false) {
+        if (!this.isGm) {
+            return;
+        }
         const undoPackets: ObjectCreateEvent[] = [];
         if (!undo) {
             this.undoMap.set(this.currIndex, undoPackets);
@@ -323,7 +362,7 @@ export class tempStore {
                         entity: Entity.Object,
                         action: Action.Create,
                         object: this.storedObjectPayloads.get(id)!,
-                        userId: this.localNum,
+                        userId: this.id,
                         token: this.storedObjectPayloads.get(id)!.token,
                     });
                 }
@@ -379,6 +418,9 @@ export class tempStore {
         oldCol: ColInst,
         undo: boolean = false,
     ) {
+        if (!this.isGm) {
+            return;
+        }
         const undoPackets: ObjectRecolourEvent[] = [];
         for (const event of events) {
             if (!undo) {
@@ -413,6 +455,9 @@ export class tempStore {
     }
 
     async updateLayer(input: LayerState) {
+        if (!this.isGm) {
+            return;
+        }
         const targetObj = this.storedLayerStates.get(input.id);
         if (targetObj) {
             this.storedLayers.get(input.id)!.updateFromLayerState(input);
@@ -429,6 +474,9 @@ export class tempStore {
     }
 
     async destroyLayer(input: LayerState) {
+        if (!this.isGm) {
+            return;
+        }
         if (this.online) {
             this.board!.clearLayer(input.id);
             this.socket!.send(
@@ -443,7 +491,7 @@ export class tempStore {
 
     parcelServeEvent(payload: ServerEvent) {
         return JSON.stringify({
-            userId: this.localNum.toString(),
+            userId: this.id,
             event: payload,
         });
     }

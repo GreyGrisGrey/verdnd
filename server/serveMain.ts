@@ -30,6 +30,7 @@ let layerMap: Map<number, LayerUpdateEvent> = new Map();
 let diceMap: Map<number, RollComplete> = new Map();
 let userMap: Map<string, boolean> = new Map();
 const laserMap: Map<number, LaserEvent> = new Map();
+const gmMap: Map<WebSocket, boolean> = new Map();
 
 let objectLock = false;
 let layerLock = false;
@@ -42,14 +43,16 @@ let currDice = 0;
 
 const currGame = 0;
 const play = true;
+const allGm = false;
 
 const wss = new WebSocketServer({ port: 8765 });
 
 wss.on('connection', async function connection(ws) {
+    const newConnect = ws;
     ws.on('error', console.error);
 
     ws.on('message', async function message(data, ws) {
-        const returnVal = await handleEvent(data);
+        const returnVal = await handleEvent(data, newConnect);
         if (returnVal) {
             wss.clients.forEach(function each(client) {
                 if (client.readyState === WebSocket.OPEN) {
@@ -58,6 +61,8 @@ wss.on('connection', async function connection(ws) {
             });
         }
     });
+    gmMap.set(newConnect, allGm);
+    console.log(gmMap);
 
     console.log('connection established');
 });
@@ -93,7 +98,7 @@ async function setUp() {
     }
 }
 
-async function handleEvent(event: any) {
+async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
     if (userMap.has(message.userId)) {
         const payload = message.event;
@@ -126,7 +131,7 @@ async function handleEvent(event: any) {
     } else if (message.event) {
         const payload = message.event;
         if (payload.pass && payload.name && payload.id) {
-            return establishUser(payload);
+            return establishUser(payload, ws);
         }
     }
 }
@@ -230,6 +235,7 @@ async function createLayer() {
 async function updateLayer(layerId: number, newLayer: LayerState) {
     await waitLock(layerLock);
     layerLock = true;
+    const oldVis = layerMap.get(layerId)!.layer.playerVisible;
     layerMap.set(layerId, {
         entity: Entity.Layer,
         action: Action.Update,
@@ -249,6 +255,9 @@ async function updateLayer(layerId: number, newLayer: LayerState) {
             layer: newLayer,
         }),
     );
+    if (oldVis !== newLayer.playerVisible) {
+        sendMasses(newLayer.id);
+    }
     layerLock = false;
     broadcast(sendObj);
 }
@@ -270,7 +279,7 @@ async function destroyLayer(layerId: number) {
     layerLock = false;
 }
 
-async function addDice(newDice: DicePayload, userId: number) {
+async function addDice(newDice: DicePayload, userId: string) {
     const rollList: SingleRoll[] = [];
     const rollResult = { result: newDice.modifier, rolls: rollList };
     if (newDice.advantage || newDice.disadvantage) {
@@ -359,20 +368,49 @@ async function updateToken(newToken: Token, id: number) {
     objectLock = false;
 }
 
-async function establishUser(payload: NameEvent) {
+async function establishUser(payload: NameEvent, ws: WebSocket) {
     if (userMap.has(payload.id)) {
         sendAll();
     }
     await waitLock(userLock);
     userLock = true;
-    // THIS CURRENTLY USES THE WRONG ID FOR DEV PURPOSES
-    // FIX THIS AT SOME POINT
-    if (await cli.addUser(payload.name, payload.pass, payload.id)) {
+    if (await cli.verifyUser(payload.id, payload.pass)) {
+        if (
+            payload.id === 'Verdi' ||
+            payload.id === 'Grey' ||
+            payload.id === 'Verd' ||
+            payload.id === 'Verdigris'
+        ) {
+            gmMap.set(ws, true);
+            userMap.set(payload.id, true);
+            broadcast(
+                JSON.stringify({
+                    entity: Entity.Name,
+                    accepted: true,
+                    gm: true,
+                    id: payload.id,
+                }),
+            );
+            console.log('user add success');
+        } else {
+            userMap.set(payload.id, true);
+            broadcast(
+                JSON.stringify({
+                    entity: Entity.Name,
+                    accepted: true,
+                    gm: false,
+                    id: payload.id,
+                }),
+            );
+            console.log('user add success');
+        }
+    } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
         userMap.set(payload.id, true);
         broadcast(
             JSON.stringify({
                 entity: Entity.Name,
                 accepted: true,
+                gm: false,
                 id: payload.id,
             }),
         );
@@ -382,6 +420,7 @@ async function establishUser(payload: NameEvent) {
             JSON.stringify({
                 entity: Entity.Name,
                 accepted: false,
+                gm: false,
                 id: payload.id,
             }),
         );
@@ -397,6 +436,15 @@ async function waitLock(lock: boolean) {
     }
 }
 
+async function sendMasses(targetLayer: number) {
+    for (const [key, val] of objectMap) {
+        if (val.object.layerId === targetLayer) {
+            await new Promise((resolve) => setTimeout(resolve, 2));
+            broadcast(JSON.stringify(val), val.object.layerId);
+        }
+    }
+}
+
 async function sendAll() {
     for (const [key, val] of layerMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
@@ -404,7 +452,7 @@ async function sendAll() {
     }
     for (const [key, val] of objectMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
-        broadcast(JSON.stringify(val));
+        broadcast(JSON.stringify(val), val.object.layerId);
     }
     for (const [key, val] of diceMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
@@ -418,11 +466,17 @@ async function sendAllLasers() {
     }
 }
 
-async function broadcast(newMessage: string) {
+async function broadcast(newMessage: string, layerId: number = -1) {
     if (newMessage) {
         wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(newMessage!, { binary: false });
+                if (
+                    layerId === -1 ||
+                    layerMap.get(layerId)!.layer.playerVisible ||
+                    gmMap.get(client)
+                ) {
+                    client.send(newMessage!, { binary: false });
+                }
             }
         });
     }

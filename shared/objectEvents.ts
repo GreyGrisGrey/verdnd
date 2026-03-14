@@ -106,7 +106,7 @@ export interface ObjectCreateEvent {
     action: Action.Create;
     object: ObjectCreatePayload;
     token: Token;
-    userId: number;
+    userId: string;
 }
 
 export interface ObjectMoveEvent {
@@ -135,6 +135,7 @@ export interface RollEvent {
     action: Action.Create;
     id: number;
     dice: DicePayload;
+    userId: string;
 }
 
 export interface SingleRoll {
@@ -148,7 +149,7 @@ export interface RollComplete {
     action: Action.Update;
     id: number;
     result: RollResult;
-    userId: number;
+    userId: string;
 }
 
 export interface RollResult {
@@ -180,6 +181,7 @@ export interface NameCheckedEvent {
     entity: Entity.Name;
     id: string;
     accepted: boolean;
+    gm: boolean;
 }
 
 export interface UpdateTokenEvent {

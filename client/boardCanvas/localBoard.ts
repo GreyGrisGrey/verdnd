@@ -229,6 +229,7 @@ export class Board {
                 squareSize,
                 this.offset,
                 this.modeMan.selectMan.thirdOffset,
+                this.serveInter.isGm,
             );
             if (i === this.activeLayer) {
                 const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as

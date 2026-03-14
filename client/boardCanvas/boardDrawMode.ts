@@ -289,7 +289,7 @@ export class BoardDrawMode {
             entity: Entity.Object,
             action: Action.Create,
             object: tempObj,
-            userId: -1,
+            userId: '-1',
             token: {
                 name: 'na',
                 colour: '#cccccc',

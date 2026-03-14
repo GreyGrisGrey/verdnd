@@ -19,7 +19,7 @@ export function objectTableToPayloads(rows: any[]) {
             mapping.set(row[3], {
                 entity: Entity.Object,
                 action: Action.Create,
-                userId: 0,
+                userId: '0',
                 object: {
                     x: structData[0].x,
                     y: structData[0].y,
@@ -46,7 +46,7 @@ export function objectTableToPayloads(rows: any[]) {
             mapping.set(row[3], {
                 entity: Entity.Object,
                 action: Action.Create,
-                userId: 0,
+                userId: '0',
                 token: {
                     name: 'na',
                     colour: '#cccccc',

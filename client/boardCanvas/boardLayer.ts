@@ -90,8 +90,9 @@ export class BoardLayer {
         squareSize: number,
         offset: Vec2,
         thirdOffset: Vec2 = { x: 0, y: 0 },
+        isGm: boolean,
     ) {
-        if (this.GMVisible) {
+        if ((this.GMVisible && isGm) || (this.playerVisible && !isGm)) {
             const localOffset: Vec2 = {
                 x: offset.x + this.layerOffset.x * squareSize,
                 y: offset.y + this.layerOffset.y * squareSize,

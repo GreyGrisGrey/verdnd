@@ -137,6 +137,18 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
         return true;
     }
 
+    async verifyUser(id: string, suppliedPass: string) {
+        const query = {
+            text: `SELECT Password FROM mainschema.users WHERE UserId = '${id}'`,
+            rowMode: 'array',
+        };
+        const result = await this.client.query(query);
+        if (result.rows.length == 1 && this.testEncrypt(suppliedPass, 'a')) {
+            return true;
+        }
+        return false;
+    }
+
     async checkGame(gameId: number) {
         const res = await this.client.query({
             text: `SELECT gameId FROM mainschema.games WHERE gameId = ${gameId}`,
@@ -257,18 +269,6 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
         this.gameLock = false;
         await this.constructGameTables(result.rows[0]);
         return result.rows[0];
-    }
-
-    async verifyUser(id: string, suppliedPass: string) {
-        const query = {
-            text: `SELECT Password FROM mainschema.users WHERE Id = '${id}'`,
-            rowMode: 'array',
-        };
-        const result = await this.client.query(query);
-        if (result.rows.length == 1 && this.testEncrypt(suppliedPass, 'a')) {
-            return true;
-        }
-        return false;
     }
 
     // currently does nothing, will continue to do nothing until encryption is set up.

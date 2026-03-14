@@ -5,6 +5,7 @@ import { tempStore } from './serveInter.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { LayerState } from '../shared/objectEvents.ts';
+import { getRequiredElement } from './dom.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -17,6 +18,16 @@ const loadWall = document.getElementById('loadBlock')!;
 const board = new Board(serveInter, storedObjects, storedLayers);
 const rightMan = new RightBarManager(serveInter, storedLayerStates);
 const leftMan = new LeftBarManager(board);
+const tempBox = getRequiredElement('signinTemporary', HTMLElement);
+
+tempBox.addEventListener('click', () => {
+    const id = prompt('Id', serveInter.localNum.toString());
+    const pass = prompt('Password', '1');
+    const name = prompt('Name', 'squiggle');
+    if (name && pass && id) {
+        serveInter.signIn(name, pass, id);
+    }
+});
 
 serveInter.setBoard(board);
 serveInter.setMan(rightMan.layerMan);
