@@ -3,6 +3,13 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
+const layerTop = getRequiredElement('layerTop', HTMLElement);
+const layerMid = getRequiredElement('layerMid', HTMLElement);
+const currLayerText = getRequiredElement('currLayerText', HTMLElement);
+const layerBottom = getRequiredElement('layerBottom', HTMLElement);
+const layerRenameInput = getRequiredElement('rename', HTMLInputElement);
+const layerXInput = getRequiredElement('xChange', HTMLInputElement);
+const layerYInput = getRequiredElement('yChange', HTMLInputElement);
 
 // Class managing the right-bar's layer menu.
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
@@ -37,6 +44,42 @@ export class LayerMenu {
             }
         });
         this.moveLayers();
+
+        layerRenameInput.addEventListener('change', () => {
+            const layer = this.layerMap.get(this.currSelect)!;
+            (layer.element!.children[0] as any).innerText =
+                layerRenameInput.value === 'none'
+                    ? `Layer ${this.currSelect}`
+                    : layerRenameInput.value;
+            layer.name = layerRenameInput.value;
+            this.serveInter.updateLayer(layer);
+        });
+
+        layerXInput.addEventListener('change', () => {
+            const newX = layerXInput.value;
+            if (Number.isNaN(Number(newX))) {
+                layerXInput.value = '0';
+            } else {
+                const layer = this.layerMap.get(this.currSelect);
+                if (layer) {
+                    layer.x = Number(newX);
+                    this.serveInter.updateLayer(layer);
+                }
+            }
+        });
+
+        layerYInput.addEventListener('change', () => {
+            const newY = layerYInput.value;
+            if (Number.isNaN(Number(newY))) {
+                layerYInput.value = '0';
+            } else {
+                const layer = this.layerMap.get(this.currSelect);
+                if (layer) {
+                    layer.y = Number(newY);
+                    this.serveInter.updateLayer(layer);
+                }
+            }
+        });
     }
 
     // Toggles whether this menu is active or not.
@@ -44,11 +87,23 @@ export class LayerMenu {
         this.active = newAct;
         this.layerObj.style.visibility = this.active ? 'visible' : 'hidden';
         this.layerObj.style.pointerEvents = this.active ? 'auto' : 'none';
+        this.enterCurrSelect();
     }
 
     // Calls the server interface to create a new layer.
     createLayer() {
         this.serveInter.createLayer();
+    }
+
+    updateInputs(val: LayerState) {
+        console.log('a');
+        console.log(val);
+        layerXInput.value = val.x.toString();
+        layerYInput.value = val.y.toString();
+        layerRenameInput.value = val.name.toString();
+        console.log('done');
+        currLayerText.innerText =
+            val.name === 'none' ? `Layer ${this.currSelect}` : val.name;
     }
 
     // Updates the layer corresponding to a key value from a LayerState.
@@ -59,14 +114,15 @@ export class LayerMenu {
         toUpdate.zOrder = val.zOrder;
         (toUpdate.element!.children[1] as any).checked = val.playerVisible;
         (toUpdate.element!.children[2] as any).checked = val.gmVisible;
-    }
-
-    // Updates all the layers.
-    // I don't know why we need to do this every step, but we do.
-    updateLayers() {
-        for (const [key, val] of this.layerMap) {
-            this.updateLayer(key, val);
+        toUpdate.x = val.x;
+        toUpdate.y = val.y;
+        toUpdate.name = val.name;
+        (toUpdate.element!.children[0] as any).innerText =
+            val.name === 'none' ? `Layer ${key}` : val.name;
+        if (key === this.currSelect) {
+            this.updateInputs(val);
         }
+        console.log(this.layerMap);
     }
 
     // Constructs a new layer, including relevant HTMLElements.
@@ -81,7 +137,11 @@ export class LayerMenu {
             playerVisible: buildData.playerVisible,
             zOrder: buildData.zOrder,
             element: newBox,
+            name: buildData.name,
+            x: buildData.x,
+            y: buildData.y,
         });
+        const num = buildData.id;
         newBox.style.position = 'absolute';
         newBox.style.border = 'solid black';
         newBox.style.height = `${this.boxHeight}px`;
@@ -93,7 +153,10 @@ export class LayerMenu {
         newText.style.width = '100px';
         newText.style.left = '10px';
         newText.style.top = '5px';
-        newText.innerText = `Layer ${buildData.id}`;
+        newText.innerText =
+            buildData.name === 'none'
+                ? `Layer ${buildData.id}`
+                : buildData.name;
 
         checkVisibleAll.type = 'checkbox';
         checkVisibleAll.style.position = 'absolute';
@@ -107,7 +170,7 @@ export class LayerMenu {
         checkVisibleGM.style.top = '15px';
         checkVisibleGM.style.left = '200px';
         checkVisibleGM.checked = buildData.gmVisible;
-        this.layerObj.append(newBox);
+        layerBottom.append(newBox);
         newBox.append(newText);
         newBox.append(checkVisibleAll);
         newBox.append(checkVisibleGM);
@@ -115,43 +178,44 @@ export class LayerMenu {
 
         newBox.addEventListener('mousedown', () => {
             if (this.active) {
-                if (
-                    this.currSelect !== parseInt(newText.innerText.slice(6), 10)
-                ) {
+                if (this.currSelect !== num) {
                     this.exitCurrSelect();
-                    this.currSelect = parseInt(newText.innerText.slice(6), 10);
+                    this.currSelect = num;
+                    this.enterCurrSelect();
                 }
             }
         });
 
-        checkVisibleGM.addEventListener('mousedown', () => {
+        checkVisibleGM.addEventListener('change', () => {
             if (this.active) {
-                this.serveInter.updateLayer({
-                    id: buildData.id,
-                    gmVisible: !checkVisibleGM.checked,
-                    playerVisible: checkVisibleAll.checked,
-                    zOrder: buildData.zOrder,
-                });
+                const layer = this.layerMap.get(num);
+                if (layer) {
+                    layer.gmVisible = checkVisibleGM.checked;
+                    this.serveInter.updateLayer(layer);
+                }
             }
         });
 
-        checkVisibleAll.addEventListener('mousedown', () => {
+        checkVisibleAll.addEventListener('change', () => {
             if (this.active) {
-                this.serveInter.updateLayer({
-                    id: buildData.id,
-                    gmVisible: checkVisibleGM.checked,
-                    playerVisible: !checkVisibleAll.checked,
-                    zOrder: buildData.zOrder,
-                });
+                const layer = this.layerMap.get(num);
+                if (layer) {
+                    layer.playerVisible = checkVisibleAll.checked;
+                    this.serveInter.updateLayer(layer);
+                }
             }
         });
+
+        if (num === 0) {
+            this.updateInputs(buildData);
+        }
     }
 
     // Changes the location of the HTMLElements of each layer.
     // Something of a misnomer.
     moveLayers() {
         this.currElements.forEach((el, i) => {
-            el.style.top = `${(this.boxHeight + 4) * (i + 1)}px`;
+            el.style.top = `${(this.boxHeight + 4) * i}px`;
         });
     }
 
@@ -172,8 +236,20 @@ export class LayerMenu {
         }
     }
 
+    enterCurrSelect() {
+        const layer = this.layerMap.get(this.currSelect);
+        if (layer) {
+            layer.element!.style.background = RED.toString();
+            layerXInput.value = layer.x.toString();
+            layerYInput.value = layer.y.toString();
+            currLayerText.innerText =
+                layer.name === 'none' ? `Layer ${this.currSelect}` : layer.name;
+        }
+    }
+
     // Performs a single step updating the layer menu.
     step() {
+        layerBottom.style.height = `${window.innerHeight - 370}px`;
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = RED.toString();
@@ -186,6 +262,5 @@ export class LayerMenu {
         }
         this.moveLayers();
         this.resizeLayerBoxes();
-        this.updateLayers();
     }
 }

@@ -109,7 +109,7 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
             rowMode: 'array',
         });
         await this.client.query({
-            text: `CREATE TABLE mainschema.layers${newId} (GmVisible boolean, PlayerVisible boolean, zOrder int, Id int PRIMARY KEY)`,
+            text: `CREATE TABLE mainschema.layers${newId} (GmVisible boolean, PlayerVisible boolean, zOrder int, Id int PRIMARY KEY, X real, Y real, Name text)`,
             rowMode: 'array',
         });
         await this.client.query({

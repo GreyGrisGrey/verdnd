@@ -106,7 +106,10 @@ export class BoardViewMode {
                     this.start.x = res.x;
                     this.start.y = res.y;
                     this.measuring = true;
-                } else if (event.key === 'Backspace') {
+                } else if (
+                    event.key === 'Backspace' ||
+                    event.key === 'Escape'
+                ) {
                     this.start.x = 0;
                     this.start.y = 0;
                     this.measuring = false;

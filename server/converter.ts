@@ -86,6 +86,9 @@ export function layerTableToPayloads(rows: any[]) {
                 playerVisible: row[1],
                 zOrder: row[2],
                 id: row[3],
+                name: row[6],
+                x: row[4],
+                y: row[5],
             },
         });
     }
@@ -175,7 +178,10 @@ export function updateObjectToRow(payload: ObjectCreateEvent) {
 }
 
 export function layerPayloadToRow(payload: LayerUpdateEvent) {
-    return `(${payload.layer.gmVisible}, ${payload.layer.playerVisible}, ${payload.layer.zOrder}, ${payload.layer.id})`;
+    let returnVal = `(${payload.layer.gmVisible}, ${payload.layer.playerVisible}, ${payload.layer.zOrder}, `;
+    returnVal += `${payload.layer.id}, ${payload.layer.x}, `;
+    returnVal += `${payload.layer.y}, '${payload.layer.name}')`;
+    return returnVal;
 }
 
 export function updateLayerToRow(payload: LayerUpdateEvent) {

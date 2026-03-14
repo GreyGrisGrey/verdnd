@@ -5,6 +5,7 @@ import { LayerState } from '../../shared/objectEvents.ts';
 // Manages a single layer of the board.
 // Currently has little functionality.
 export class BoardLayer {
+    name: string;
     layerOffset: Vec2;
     heldObjects: BoardObject[];
     heldMap: Map<number, BoardObject>;
@@ -13,6 +14,7 @@ export class BoardLayer {
     playerVisible: boolean;
 
     constructor(newOrder: number, newGM: boolean, newPlayer: boolean) {
+        this.name = '';
         this.layerOffset = { x: 0, y: 0 };
         this.heldObjects = [];
         this.heldMap = new Map();
@@ -25,6 +27,9 @@ export class BoardLayer {
         this.zOrder = newLayer.zOrder;
         this.GMVisible = newLayer.gmVisible;
         this.playerVisible = newLayer.playerVisible;
+        this.name = newLayer.name;
+        this.layerOffset.x = newLayer.x;
+        this.layerOffset.y = newLayer.y;
     }
 
     // Updates the visibility values of the layer.
@@ -88,8 +93,8 @@ export class BoardLayer {
     ) {
         if (this.GMVisible) {
             const localOffset: Vec2 = {
-                x: offset.x + this.layerOffset.x,
-                y: offset.y + this.layerOffset.y,
+                x: offset.x + this.layerOffset.x * squareSize,
+                y: offset.y + this.layerOffset.y * squareSize,
             };
             for (const obj of this.heldObjects) {
                 if (obj.selected) {

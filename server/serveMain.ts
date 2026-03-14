@@ -215,6 +215,9 @@ async function createLayer() {
             playerVisible: true,
             zOrder: currLayer,
             id: currLayer,
+            name: 'none',
+            x: 0,
+            y: 0,
         },
     });
     const sendObj = JSON.stringify(layerMap.get(currLayer));

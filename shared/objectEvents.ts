@@ -52,6 +52,9 @@ export interface LayerState {
     playerVisible: boolean;
     zOrder: number;
     id: number;
+    name: string;
+    x: number;
+    y: number;
     element?: HTMLElement;
 }
 
