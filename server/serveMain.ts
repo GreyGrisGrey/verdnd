@@ -213,7 +213,7 @@ async function createLayer() {
         layer: {
             gmVisible: true,
             playerVisible: true,
-            zOrder: currLayer,
+            zOrder: layerMap.size,
             id: currLayer,
             name: 'none',
             x: 0,
@@ -256,14 +256,18 @@ async function updateLayer(layerId: number, newLayer: LayerState) {
 async function destroyLayer(layerId: number) {
     await waitLock(layerLock);
     layerLock = true;
-    layerMap.delete(layerId);
+    if (layerMap.size > 1) {
+        layerMap.delete(layerId);
+        cli.destroyLayer(currGame, layerId);
+        layerLock = false;
+        const sendObj = JSON.stringify({
+            entity: Entity.Layer,
+            action: Action.Destroy,
+            layerId: layerId,
+        });
+        broadcast(sendObj);
+    }
     layerLock = false;
-    const sendObj = JSON.stringify({
-        entity: Entity.Layer,
-        action: Action.Destroy,
-        layerId: layerId,
-    });
-    broadcast(sendObj);
 }
 
 async function addDice(newDice: DicePayload, userId: number) {

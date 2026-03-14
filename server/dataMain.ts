@@ -226,6 +226,12 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
         });
     }
 
+    async destroyLayer(gameId: number, layerId: number) {
+        await this.client.query({
+            text: `DELETE FROM mainschema.layers${gameId} WHERE Id = ${layerId}`,
+        });
+    }
+
     async addRoll(gameId: number, roll: string) {
         await this.client.query({
             text: `INSERT INTO mainschema.rolls${gameId} VALUES ${roll}`,

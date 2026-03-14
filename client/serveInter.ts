@@ -99,7 +99,12 @@ export class tempStore {
                     console.log('yay');
                 }
                 if (message.entity === Entity.Layer) {
-                    if (this.storedLayerStates.has(message.layer.id)) {
+                    if (message.action === Action.Destroy) {
+                        if (this.storedLayers.has(message.layerId)) {
+                            this.layMenu!.destroyLayerElement(message.layerId);
+                            this.storedLayers.delete(message.layerId);
+                        }
+                    } else if (this.storedLayerStates.has(message.layer.id)) {
                         this.layMenu!.updateLayer(
                             message.layer.id,
                             message.layer,
@@ -418,6 +423,18 @@ export class tempStore {
                     entity: Entity.Layer,
                     action: Action.Update,
                     layer: input,
+                }),
+            );
+        }
+    }
+
+    async destroyLayer(input: LayerState) {
+        if (this.online) {
+            this.socket!.send(
+                this.parcelServeEvent({
+                    entity: Entity.Layer,
+                    action: Action.Destroy,
+                    layerId: input.id,
                 }),
             );
         }
