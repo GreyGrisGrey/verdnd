@@ -5,6 +5,7 @@ import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
 import { Action, Entity, Shape } from '../../shared/objectEvents.ts';
+import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 
@@ -149,14 +150,14 @@ export class BoardDrawMode {
                         this.board.determineTile(
                             this.board.mouseCoords.x,
                             this.board.mouseCoords.y,
-                            false,
+                            CoordModes.Center,
                         ),
                     );
                 } else if (this.params.length > 0) {
                     const res = this.board.determineTile(
                         this.board.mouseCoords.x,
                         this.board.mouseCoords.y,
-                        true,
+                        CoordModes.Vertex,
                     );
                     this.params.push({
                         x: res.x - this.params[0].x,
@@ -167,7 +168,7 @@ export class BoardDrawMode {
                         this.board.determineTile(
                             this.board.mouseCoords.x,
                             this.board.mouseCoords.y,
-                            true,
+                            CoordModes.Vertex,
                         ),
                     );
                 }
@@ -183,7 +184,7 @@ export class BoardDrawMode {
                     const newPos = this.board.determineTile(
                         this.board.mouseCoords.x + 1,
                         this.board.mouseCoords.y + 1,
-                        false,
+                        CoordModes.Center,
                     );
                     if (
                         newPos.x === this.params[0].x &&
@@ -212,7 +213,7 @@ export class BoardDrawMode {
                     const res = this.board.determineTile(
                         this.board.mouseCoords.x,
                         this.board.mouseCoords.y,
-                        false,
+                        CoordModes.Center,
                     );
                     this.params.push({ x: res.x, y: res.y });
                     this.setNewObject();
@@ -343,7 +344,7 @@ export class BoardDrawMode {
             const res = this.board.determineTile(
                 this.board.mouseCoords.x,
                 this.board.mouseCoords.y,
-                false,
+                CoordModes.Center,
             );
             const res2 = rectangleFromPoints(this.params[0], res);
             const col = this.selectMode

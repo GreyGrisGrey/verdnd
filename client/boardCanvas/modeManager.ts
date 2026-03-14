@@ -284,6 +284,9 @@ export class ModeManager {
         if (this.tokenMan.active) {
             this.tokenMan.getNewHover();
         }
+        if (this.viewMan.measuring) {
+            this.viewMan.drawMeasure();
+        }
         this.toggleBoxesVis();
     }
 }

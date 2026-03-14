@@ -5,9 +5,14 @@ import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
-import { LayerState } from '../../shared/objectEvents.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
+
+export enum CoordModes {
+    Vertex = 0,
+    Center = 1,
+    None = 2,
+}
 
 // Main class controlling the state of the canvas.
 export class Board {
@@ -183,17 +188,22 @@ export class Board {
     }
 
     // Determines which tile/vertex a coordinate pair is located on.
-    determineTile(x: number, y: number, vertex: boolean) {
+    determineTile(x: number, y: number, type: CoordModes) {
         const squareSize = 5 * this.zoomVal;
-        if (vertex) {
+        if (type === CoordModes.Vertex) {
             return {
                 x: Math.round((x - this.offset.x) / squareSize),
                 y: Math.round((y - this.offset.y) / squareSize),
             };
-        } else {
+        } else if (type === CoordModes.Center) {
             return {
                 x: Math.floor((x - this.offset.x) / squareSize),
                 y: Math.floor((y - this.offset.y) / squareSize),
+            };
+        } else {
+            return {
+                x: (x - this.offset.x) / squareSize,
+                y: (y - this.offset.y) / squareSize,
             };
         }
     }

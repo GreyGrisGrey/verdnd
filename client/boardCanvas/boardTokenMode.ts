@@ -4,6 +4,7 @@ import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../../shared/objectEvents.ts';
+import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
@@ -45,7 +46,7 @@ export class BoardTokenMode {
                     this.board.determineTile(
                         this.board.mouseCoords.x,
                         this.board.mouseCoords.y,
-                        false,
+                        CoordModes.Center,
                     ),
                 ]);
             }
@@ -58,7 +59,7 @@ export class BoardTokenMode {
                         this.board.determineTile(
                             this.board.mouseCoords.x,
                             this.board.mouseCoords.y,
-                            false,
+                            CoordModes.Center,
                         ),
                     ]);
                     this.currHover = res;
@@ -70,7 +71,7 @@ export class BoardTokenMode {
                         this.board.determineTile(
                             this.board.mouseCoords.x,
                             this.board.mouseCoords.y,
-                            false,
+                            CoordModes.Center,
                         ),
                     );
                 }
@@ -84,7 +85,7 @@ export class BoardTokenMode {
                         this.board.determineTile(
                             this.board.mouseCoords.x,
                             this.board.mouseCoords.y,
-                            false,
+                            CoordModes.Center,
                         ),
                     );
                     const newCoords: Vec2[] = [];
@@ -127,7 +128,7 @@ export class BoardTokenMode {
                 this.board.determineTile(
                     this.board.mouseCoords.x,
                     this.board.mouseCoords.y,
-                    false,
+                    CoordModes.Center,
                 ),
             ]);
             if (this.currHover) {
@@ -142,7 +143,7 @@ export class BoardTokenMode {
             const res = this.board.determineTile(
                 this.board.mouseCoords.x,
                 this.board.mouseCoords.y,
-                false,
+                CoordModes.Center,
             );
             let coords: Vec2 = { x: 0, y: 0 };
             if (res.x >= this.params[0].x) {

@@ -1,23 +1,74 @@
 import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
+import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
+const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
     board: Board;
     active: boolean;
+    start: Vec2;
+    measuring: boolean;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
         this.active = true;
         this.addEventListeners();
+        this.start = { x: 0, y: 0 };
+        this.measuring = false;
     }
 
     // Flips the active state of the mode.
     flipListeners(setOn: boolean) {
         this.active = setOn;
+        this.start.x = 0;
+        this.start.y = 0;
+        this.measuring = false;
+    }
+
+    drawMeasure() {
+        const squareSize = 5 * this.board.zoomVal;
+        const res = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            CoordModes.None,
+        );
+        const res2 = {
+            x: (this.start.x + 0.5) * squareSize + this.board.offset.x,
+            y: (this.start.y + 0.5) * squareSize + this.board.offset.y,
+        };
+        const res3 = {
+            x: res.x * squareSize + this.board.offset.x,
+            y: res.y * squareSize + this.board.offset.y,
+        };
+        const rad = Math.sqrt(
+            Math.pow(Math.abs(res2.x - res3.x), 2) +
+                Math.pow(Math.abs(res2.y - res3.y), 2),
+        );
+        const rad2 = Math.sqrt(
+            Math.pow(Math.abs(res.x - this.start.x - 0.5), 2) +
+                Math.pow(Math.abs(res.y - this.start.y - 0.5), 2),
+        );
+        ctx.beginPath();
+        ctx.arc(res2.x, res2.y, rad, 0, 2 * Math.PI);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#cccccc';
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(res2.x, res2.y);
+        ctx.lineTo(res3.x, res3.y);
+        ctx.stroke();
+        ctx.font = '20px serif';
+        ctx.fillStyle = '#eeeeee';
+        ctx.textAlign = 'center';
+        const newText = `${Math.round(rad2 * 500) / 100} feet`;
+        const textSize = ctx.measureText(newText).width;
+        ctx.fillRect(res3.x - textSize / 2 - 5, res3.y - 15, textSize + 10, 25);
+        ctx.fillStyle = '#222222';
+        ctx.fillText(newText, res3.x, res3.y);
     }
 
     // Adds relevant event listeners
@@ -46,6 +97,19 @@ export class BoardViewMode {
                     this.board.offset.y = 0;
                 } else if (event.key === 'o') {
                     this.board.laserCol = colourSquare.style.background;
+                } else if (event.key === 'j') {
+                    const res = this.board.determineTile(
+                        this.board.mouseCoords.x,
+                        this.board.mouseCoords.y,
+                        CoordModes.Center,
+                    );
+                    this.start.x = res.x;
+                    this.start.y = res.y;
+                    this.measuring = true;
+                } else if (event.key === 'Backspace') {
+                    this.start.x = 0;
+                    this.start.y = 0;
+                    this.measuring = false;
                 }
             }
         });
@@ -96,6 +160,6 @@ export class BoardViewMode {
 
     // Text for the information bar.
     getText() {
-        return 'Scroll : Zoom\nLeft Click + Drag : Pan\nM : Toggle laser visibility\nK : Recenter camera to origin\nO : Recolour laser pointer';
+        return 'Scroll : Zoom\nLeft Click + Drag : Pan\nJ : Measure\nM : Toggle laser visibility\nK : Recenter camera to origin\nO : Recolour laser pointer';
     }
 }

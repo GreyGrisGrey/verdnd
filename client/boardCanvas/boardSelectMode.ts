@@ -5,6 +5,7 @@ import { getRequiredElement } from '../dom.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { ObjectRecolourEvent } from '../../shared/objectEvents.ts';
 import { stringToColInst } from '../../shared/colours.ts';
+import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
@@ -164,7 +165,7 @@ export class BoardSelectMode {
                 const point = this.board.determineTile(
                     event.clientX,
                     event.clientY,
-                    false,
+                    CoordModes.Center,
                 );
                 for (const candidate of this.selectedObjects) {
                     if (
@@ -196,7 +197,7 @@ export class BoardSelectMode {
         const point = this.board.determineTile(
             this.board.offset.x + this.thirdOffset.x,
             this.board.offset.y + this.thirdOffset.y,
-            true,
+            CoordModes.Vertex,
         );
         const moveList = [];
         for (const obj of this.selectedObjects) {

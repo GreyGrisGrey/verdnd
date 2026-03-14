@@ -1,6 +1,7 @@
 import { ColInst, stringToColInst } from '../../shared/colours.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
+import { CoordModes } from '../boardCanvas/localBoard.ts';
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -67,7 +68,7 @@ export class ColourBox {
                 const coords = this.board.determineTile(
                     event.clientX,
                     event.clientY,
-                    false,
+                    CoordModes.Center,
                 );
                 const resObj = this.board.selectObjects('any', [coords]);
                 if (resObj.length > 0) {
