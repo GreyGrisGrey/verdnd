@@ -25,7 +25,6 @@ export class RollMenu {
         this.currChats = [];
         this.currBoxes = [];
         this.setRollElements();
-        this.constructChats();
         this.serveInter = server;
     }
 
@@ -196,11 +195,10 @@ export class RollMenu {
         chatBox.append(newBox);
         newBox.append(newText);
         newBox.style.position = 'absolute';
-        newBox.style.bottom = currIndex * 60 + 10 + 'px';
+        newBox.style.top = currIndex * 60 + 'px';
         newBox.style.width = '246px';
         newBox.style.height = '60px';
         newBox.style.border = 'solid #000000';
-        newBox.style.overflow = 'hidden';
         newBox.style.visibility = 'hidden';
 
         newText.style.position = 'absolute';
@@ -217,7 +215,7 @@ export class RollMenu {
     // Updates the text of the chat boxes.
     updateChats(data: Map<number, RollComplete>) {
         for (const [key, val] of data) {
-            const targetNum = data.size - (key + 1);
+            const targetNum = key;
             if (targetNum < 50 && targetNum >= 0) {
                 this.updateChat(val.result, targetNum, val.userId);
             }
@@ -226,6 +224,9 @@ export class RollMenu {
 
     // Updates a chat box.
     updateChat(dataLine: RollResult, currIndex: number, userId: string) {
+        while (this.currChats.length <= currIndex) {
+            this.constructChat(this.currChats.length);
+        }
         let newString = '';
         for (const roll of dataLine.rolls) {
             newString += `(D${roll.size}, ${roll.result}) `;

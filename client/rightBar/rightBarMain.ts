@@ -6,6 +6,8 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
+const rollBox = getRequiredElement('rollContainer', HTMLElement);
+const layerBox = getRequiredElement('layerLayerObj', HTMLElement);
 const layerTab = getRequiredElement('layerTab', HTMLElement);
 const tokenTab = getRequiredElement('tokenTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
@@ -82,6 +84,8 @@ export class RightBarManager {
     // A single step updating the state of the currently active menu.
     step() {
         rightBar.style.height = `${window.innerHeight - 20}px`;
+        layerBox.style.height = `${window.innerHeight - 20}px`;
+        rollBox.style.height = `${window.innerHeight - 20}px`;
         if (this.currActive === RightBarTab.Layer) {
             this.layerMan.step();
         } else if (this.currActive === RightBarTab.Roll) {
