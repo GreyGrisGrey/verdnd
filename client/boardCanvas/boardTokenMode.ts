@@ -6,8 +6,6 @@ import { getRequiredElement } from '../dom.ts';
 import { Shape } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
-const nameInput = getRequiredElement('tokenName', HTMLInputElement);
-const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 
 // Class handling canvas' token mode.
 export class BoardTokenMode {
@@ -28,14 +26,11 @@ export class BoardTokenMode {
         this.currHover = undefined;
         this.newTokenCheck = false;
         this.addEventListeners();
-        nameInput.value = 'Gremlin';
     }
 
     // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
-        nameInput.style.visibility = this.active ? 'visible' : 'hidden';
-        nameLabel.style.visibility = this.active ? 'visible' : 'hidden';
     }
 
     // Adds all relevant event listeners.

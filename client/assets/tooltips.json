@@ -1,0 +1,44 @@
+{
+    "bottomContent": [
+        {
+            "draw": "Incomplete",
+            "select": "Incomplete"
+        },
+        {
+            "draw": "Left click and drag : Draw rectangle",
+            "select": "Exits current selection."
+        },
+        {
+            "draw": "Left click and drag : Draw ellipse",
+            "select": "Deletes currently selected objects."
+        },
+        {
+            "draw": "Left click : Begin drawing polyline\nLeft Click again : Add vertext to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
+            "select": "Recolour currently selected objects.\nColours based on currently selected colour in colour picker."
+        },
+        {
+            "draw": "Left click : Begin drawing wall\nLeft Click again : Add vertext to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
+            "select": "Incomplete"
+        },
+        {
+            "draw": "Complete in progress polyline or wall object.",
+            "select": "Incomplete"
+        },
+        {
+            "draw": "Left click on object : Select topmost object on currently active layer\nLeft Click and drag : Select all objects within an area on the currently active layer.",
+            "select": "Turn currently selected object into a token allowing players to move it\nColours based on currently selected colour in colour picker."
+        },
+        {
+            "draw": "Cancel creation of in progress object.",
+            "select": "Rename currently selected token"
+        },
+        {
+            "draw": "Incomplete",
+            "select": "Recolour currently selected token outline.\nColours based on currently selected colour in colour picker."
+        },
+        {
+            "draw": "Incomplete",
+            "select": "Incomplete"
+        }
+    ]
+}

@@ -35,18 +35,9 @@ def splitFile(filePath):
     return res
 
 def clientCompile():
-    items = listdir("C:/greybox/verdDnD/shared/")
+    items = listdir("C:/greybox/verdDnD/client/")
     files = []
     dirs = []
-    currIndex = 0
-    while (currIndex < len(items)):
-        nextItem = items[currIndex].split(".")
-        if (len(nextItem) == 2 and nextItem[1] == "ts"):
-            files.append("C:/greybox/verdDnD/shared/" + items[currIndex])
-        currIndex += 1
-        
-        
-    items = listdir("C:/greybox/verdDnD/client/")
     currIndex = 0
     while (currIndex < len(items)):
         nextItem = items[currIndex].split(".")
@@ -57,6 +48,14 @@ def clientCompile():
             dirs.append("C:/greybox/verdDnD/client/" + items[currIndex])
         elif (nextItem[1] == "ts"):
             files.append("C:/greybox/verdDnD/client/" + items[currIndex])
+        currIndex += 1
+        
+    items = listdir("C:/greybox/verdDnD/shared/")
+    currIndex = 0
+    while (currIndex < len(items)):
+        nextItem = items[currIndex].split(".")
+        if (len(nextItem) == 2 and nextItem[1] == "ts"):
+            files.append("C:/greybox/verdDnD/shared/" + items[currIndex])
         currIndex += 1
 
     constDict = {}

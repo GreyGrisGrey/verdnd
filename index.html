@@ -18,10 +18,10 @@
         #loadBlock {
             background: #222222;
             position: absolute;
-            left: -5px;
-            top: -5px;
-            width: 2000px;
-            height: 2000px;
+            left: -10px;
+            top: -10px;
+            width: 3000px;
+            height: 3000px;
             z-index: 99;
         }
 
@@ -41,6 +41,11 @@
     </div>
 
     <div id="bottomBar">
+        <div id="bottomTooltip">
+            <p id="bottomTooltipText"></p>
+            <input type="text" id="tokenName" />
+            <label id="tokenNameLabel">Insert token name:</label>
+        </div>
         <div class="bottomBox" id="bottomBox1">
             <button class="bottomDrawBox" id="bottomDrawBox1">Rect [1]</button>
             <button class="bottomSelectBox" id="bottomSelectBox1">Exit [1] [Esc]</button>
@@ -84,6 +89,18 @@
     </div>
 
     <style>
+        #bottomTooltip {
+            position: absolute;
+            height: 60px;
+            width: 400px;
+            bottom: 60px;
+            left: 100px;
+            visibility: hidden;
+            background-color: #eeeeee;
+            border: solid black;
+            font-size: 12px;
+        }
+
         #bottomBar {
             position: absolute;
             height: 60px;
@@ -179,7 +196,6 @@
             top: 10px;
             left: 600px;
             z-index: 3;
-
         }
 
         #layerUpButton {
@@ -568,11 +584,6 @@
             cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
             non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         </p>
-
-        <div id="tokenMenuItems">
-            <input type="text" id="tokenName" />
-            <label id="tokenNameLabel">Name</label>
-        </div>
     </div>
 
     <div class="canvasContainer">
@@ -623,17 +634,20 @@
 
         #tokenNameLabel {
             position: absolute;
-            left: 10px;
+            left: 100px;
             width: 100px;
-            top: 27px;
+            bottom: 2px;
+            z-index: 3;
         }
 
         #tokenName {
             position: absolute;
-            left: 60px;
+            left: 200px;
             width: 100px;
-            top: 25px;
+            bottom: 0px;
             pointer-events: auto;
+            background: rgba(200, 200, 200, 1);
+            z-index: 11;
         }
 
         .modeButton {

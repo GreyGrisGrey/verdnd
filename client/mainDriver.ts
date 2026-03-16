@@ -6,6 +6,7 @@ import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { LayerState } from '../shared/objectEvents.ts';
 import { getRequiredElement } from './dom.ts';
+import { TooltipManager } from './tooltips.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -19,6 +20,7 @@ const board = new Board(serveInter, storedObjects, storedLayers);
 const rightMan = new RightBarManager(serveInter, storedLayerStates);
 const leftMan = new LeftBarManager(board);
 const tempBox = getRequiredElement('signinTemporary', HTMLElement);
+const tooltips = new TooltipManager();
 
 tempBox.addEventListener('click', () => {
     const id = prompt('Id', serveInter.localNum.toString());
