@@ -18,8 +18,8 @@
         #loadBlock {
             background: #222222;
             position: absolute;
-            left: -10px;
-            top: -10px;
+            left: 0px;
+            top: 0px;
             width: 3000px;
             height: 3000px;
             z-index: 99;
@@ -36,7 +36,6 @@
 
     <div id="modeMenuId">
         <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
-        <button class="modeButton" id="tokenMenuButton">Token [S]</button>
         <button class="modeButton" id="drawMenuButton">Draw [D]</button>
     </div>
 
@@ -621,16 +620,6 @@
 
 
     <style>
-        #tokenMenuItems {
-            background: rgba(200, 200, 200, 1);
-            width: 250px;
-            height: 50px;
-            position: absolute;
-            top: 150px;
-            left: 0px;
-            visibility: hidden;
-        }
-
         #tokenNameLabel {
             position: absolute;
             left: 100px;
@@ -652,7 +641,7 @@
         .modeButton {
             background: rgba(200, 200, 200, 1);
             z-index: 3;
-            width: 250px;
+            width: 100px;
             height: 50px;
             pointer-events: auto;
         }
@@ -668,8 +657,8 @@
             z-index: 2;
             bottom: 10px;
             left: 10px;
-            width: 250px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
             pointer-events: none;
         }
     </style>

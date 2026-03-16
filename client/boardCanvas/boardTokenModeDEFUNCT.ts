@@ -7,7 +7,8 @@ import { Shape } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 
-// Class handling canvas' token mode.
+// Class formerly handling tokens
+// Currently just here so some of its code can be repurposed later.
 export class BoardTokenMode {
     board: Board;
     active: boolean;

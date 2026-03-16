@@ -1,12 +1,10 @@
 import { BoardDrawMode } from './boardDrawMode.ts';
 import type { BoardObject } from './boardObject.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
-import { BoardTokenMode } from './boardTokenMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
-const tokenButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
@@ -14,7 +12,6 @@ const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 export enum Mode {
     View = 'VIEW',
     Draw = 'DRAW',
-    Token = 'TOKEN',
 }
 
 export enum GetObjectReason {
@@ -22,7 +19,7 @@ export enum GetObjectReason {
     Create = 'CREATE',
 }
 
-type BoardMode = BoardViewMode | BoardTokenMode | BoardDrawMode;
+type BoardMode = BoardViewMode | BoardDrawMode;
 
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off later.
@@ -31,7 +28,6 @@ export class ModeManager {
     board: Board;
     currMode: Mode;
     viewMan: BoardViewMode;
-    tokenMan: BoardTokenMode;
     drawMan: BoardDrawMode;
     selectMan: BoardSelectMode;
     modes: Record<Mode, BoardMode>;
@@ -45,16 +41,13 @@ export class ModeManager {
         this.board = parentBoard;
         this.currMode = Mode.View;
         this.viewMan = new BoardViewMode(parentBoard);
-        this.tokenMan = new BoardTokenMode(parentBoard);
         this.drawMan = new BoardDrawMode(parentBoard);
         this.selectMan = new BoardSelectMode(parentBoard);
         this.modes = {
-            TOKEN: this.tokenMan,
             DRAW: this.drawMan,
             VIEW: this.viewMan,
         };
         this.buttons = {
-            TOKEN: tokenButton,
             DRAW: drawButton,
             VIEW: viewButton,
         };
@@ -99,10 +92,6 @@ export class ModeManager {
             this.modeSwitch(Mode.View);
         });
 
-        tokenButton.addEventListener('click', () => {
-            this.modeSwitch(Mode.Token);
-        });
-
         drawButton.addEventListener('click', () => {
             this.modeSwitch(Mode.Draw);
         });
@@ -115,8 +104,6 @@ export class ModeManager {
         can.addEventListener('keydown', (event) => {
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
-            } else if (event.key === 's') {
-                this.modeSwitch(Mode.Token);
             } else if (event.key === 'd') {
                 this.modeSwitch(Mode.Draw);
             } else if (event.key === 'Control') {
@@ -171,11 +158,6 @@ export class ModeManager {
     hasCompleteSelection() {
         if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
             return true;
-        } else if (
-            this.currMode === Mode.Token &&
-            this.tokenMan.completeSelectCheck
-        ) {
-            return true;
         }
         return false;
     }
@@ -184,11 +166,6 @@ export class ModeManager {
     getSelectCoords() {
         if (this.currMode === Mode.Draw && this.drawMan.selectState !== 0) {
             return this.drawMan.params;
-        } else if (
-            this.currMode === Mode.Token &&
-            this.tokenMan.completeSelectCheck
-        ) {
-            return this.tokenMan.params;
         }
         return [{ x: 0, y: 0 }];
     }
@@ -198,8 +175,6 @@ export class ModeManager {
         if (reason === GetObjectReason.Draw) {
             if (this.currMode === Mode.Draw) {
                 return this.drawMan.getTempObject();
-            } else if (this.currMode === Mode.Token) {
-                return this.tokenMan.getSelectBox();
             }
         }
         return undefined;
@@ -225,12 +200,6 @@ export class ModeManager {
     // Enters the select mode, disabling the current mode but leaving it open to be reenabled.
     enterSelected() {
         let res: (BoardObject | undefined)[] = this.board.selectObjects();
-        if (this.currMode === Mode.Token && this.tokenMan.params.length === 0) {
-            res = [this.tokenMan.currHover];
-            this.tokenMan.currHover = undefined;
-        } else if (this.currMode === Mode.Token) {
-            res = this.board.selectObjects();
-        }
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {
             this.selectMan.flipListeners(true);
@@ -239,18 +208,11 @@ export class ModeManager {
                 this.drawMan.active = false;
                 this.drawMan.selectState = 0;
                 this.drawMan.params = [];
-            } else if (this.currMode === Mode.Token) {
-                this.tokenMan.active = false;
-                this.tokenMan.completeSelectCheck = false;
-                this.tokenMan.params = [];
             }
         } else {
             if (this.currMode === Mode.Draw) {
                 this.drawMan.selectState = 0;
                 this.drawMan.params = [];
-            } else if (this.currMode === Mode.Token) {
-                this.tokenMan.completeSelectCheck = false;
-                this.tokenMan.params = [];
             }
         }
     }
@@ -261,8 +223,6 @@ export class ModeManager {
         if (this.currMode === Mode.Draw) {
             this.drawMan.active = true;
             this.drawMan.selectMode = false;
-        } else if (this.currMode === Mode.Token) {
-            this.tokenMan.active = true;
         }
     }
 
@@ -279,9 +239,6 @@ export class ModeManager {
     // Performs a single mode management step.
     step() {
         this.attemptSelectedSwap();
-        if (this.tokenMan.active) {
-            this.tokenMan.getNewHover();
-        }
         if (this.viewMan.measuring) {
             this.viewMan.drawMeasure();
         }
