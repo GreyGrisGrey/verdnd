@@ -52,14 +52,7 @@ wss.on('connection', async function connection(ws) {
     ws.on('error', console.error);
 
     ws.on('message', async function message(data, ws) {
-        const returnVal = await handleEvent(data, newConnect);
-        if (returnVal) {
-            wss.clients.forEach(function each(client) {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(returnVal!, { binary: ws });
-                }
-            });
-        }
+        handleEvent(data, newConnect);
     });
     gmMap.set(newConnect, allGm);
     console.log(gmMap);

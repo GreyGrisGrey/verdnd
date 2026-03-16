@@ -34,6 +34,7 @@ export enum Entity {
     Name = 'NAME',
     Laser = 'LASER',
     Token = 'TOKEN',
+    Meta = 'META',
 }
 
 export enum Action {
@@ -45,6 +46,7 @@ export enum Action {
     Recolour = 'RECOLOUR',
     ZOrder = 'ZORDER',
     Update = 'UPDATE',
+    Rename = 'RENAME',
 }
 
 export interface LayerState {
@@ -188,6 +190,12 @@ export interface UpdateTokenEvent {
     entity: Entity.Token;
     id: number;
     token: Token;
+}
+
+export interface GameNameEvent {
+    entity: Entity.Meta;
+    action: Action.Rename;
+    newName: string;
 }
 
 export type ServerEvent =

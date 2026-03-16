@@ -95,7 +95,7 @@ export class BoardDrawMode {
         this.completeObjCheck = false;
         this.toggleBoxes();
     }
-    
+
     // Handles key press events when draw mode is active.
     handleSwitchEvent(key: string) {
         if (key === '1') {
@@ -116,7 +116,7 @@ export class BoardDrawMode {
         }
         this.params = [];
     }
-    
+
     // Handles key press events when draw mode is active.
     handleKeySwitchEvent(key: string) {
         if (this.active && this.params.length === 0) {

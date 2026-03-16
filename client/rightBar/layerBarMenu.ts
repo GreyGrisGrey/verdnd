@@ -275,7 +275,7 @@ export class LayerMenu {
             layer.element!.style.background = GREY.toString();
         }
     }
-    
+
     destroyLayerElement(id: number) {
         const currLayer = this.layerMap.get(id);
         if (currLayer) {
