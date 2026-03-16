@@ -105,7 +105,15 @@ export class ColourBox {
             });
 
             RGBTexts[component].addEventListener('input', () => {
-                const value = parseInt(RGBTexts[component].value, 10);
+                let value = Number(RGBTexts[component].value);
+                if (
+                    Number.isNaN(Number(RGBTexts[component].value)) ||
+                    Number(RGBTexts[component].value) > 255 ||
+                    Number(RGBTexts[component].value) < 0
+                ) {
+                    RGBTexts[component].value = '120';
+                    value = 120;
+                }
                 if (component === 'red') {
                     this.currColour.setR(value);
                 } else if (component === 'green') {

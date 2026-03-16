@@ -178,7 +178,7 @@ export class BoardDrawMode {
             }
         });
 
-        // Seriously suboptimal code for finishing construction of circles and rectangles.
+        // Seriously suboptimal code for finishing construction of ellipses and rectangles.
         can.addEventListener('mouseup', (event) => {
             if (event.button === 0) {
                 if (this.params.length === 0) {

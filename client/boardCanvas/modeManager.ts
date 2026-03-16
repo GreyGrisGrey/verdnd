@@ -208,6 +208,7 @@ export class ModeManager {
         if (this.currMode === Mode.Draw) {
             this.drawMan.active = true;
             this.drawMan.selectMode = false;
+            this.drawMan.flipBoxes();
         }
     }
 
