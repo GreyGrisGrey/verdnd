@@ -129,7 +129,7 @@ export class LayerMenu {
     // Toggles whether this menu is active or not.
     toggleActive(newAct: boolean) {
         this.active = newAct;
-        this.layerObj.style.visibility = this.active ? 'visible' : 'hidden';
+        this.layerObj.style.visibility = this.active ? 'inherit' : 'hidden';
         this.layerObj.style.pointerEvents = this.active ? 'auto' : 'none';
         this.enterCurrSelect();
     }

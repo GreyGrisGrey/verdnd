@@ -12,6 +12,7 @@ const layerTab = getRequiredElement('layerTab', HTMLElement);
 const tokenTab = getRequiredElement('tokenTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
+const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
 
 export enum RightBarTab {
     None = 'NONE',
@@ -29,6 +30,7 @@ export class RightBarManager {
     rollMan: RollMenu;
     currActive: RightBarTab;
     serveInter: tempStore;
+    visible: boolean;
 
     constructor(server: tempStore, layMap: Map<number, LayerState>) {
         this.serveInter = server;
@@ -37,9 +39,17 @@ export class RightBarManager {
         this.characterMan = new CharacterMenu();
         this.rollMan = new RollMenu(this.serveInter);
         this.currActive = RightBarTab.Layer;
+        this.visible = true;
         rightBar.style.width = '250px';
         this.addEventListeners();
         this.layerMan.toggleActive(true);
+    }
+
+    toggleVisible() {
+        rightBar.style.visibility = this.visible ? 'visible' : 'hidden';
+        hideRight.style.left = this.visible ? '-50px' : '210px';
+        hideRight.style.visibility = 'visible';
+        hideRight.innerText = this.visible ? 'Hide' : 'Show';
     }
 
     // Adds relevant event listeners to each tab object.
@@ -66,6 +76,11 @@ export class RightBarManager {
             this.layerMan.toggleActive(false);
             this.rollMan.toggleActive(false);
             this.currActive = RightBarTab.Character;
+        });
+
+        hideRight.addEventListener('click', () => {
+            this.visible = !this.visible;
+            this.toggleVisible();
         });
 
         document.addEventListener('keydown', (event) => {

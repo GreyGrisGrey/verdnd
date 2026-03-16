@@ -153,17 +153,17 @@ export class RollMenu {
     toggleActive(newAct: boolean) {
         this.active = newAct;
         this.step();
-        rollBox.style.visibility = this.active ? 'visible' : 'hidden';
+        rollBox.style.visibility = this.active ? 'inherit' : 'hidden';
         rollBox.style.pointerEvents = this.active ? 'auto' : 'none';
-        colBox.style.visibility = this.active ? 'hidden' : 'visible';
+        colBox.style.visibility = this.active ? 'hidden' : 'inherit';
         colBox.style.pointerEvents = this.active ? 'none' : 'auto';
-        chatBox.style.visibility = this.active ? 'visible' : 'hidden';
+        chatBox.style.visibility = this.active ? 'inherit' : 'hidden';
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
         for (const text of this.currChats) {
-            text.style.visibility = this.active ? 'visible' : 'hidden';
+            text.style.visibility = this.active ? 'inherit' : 'hidden';
         }
         for (const box of this.currBoxes) {
-            box.style.visibility = this.active ? 'visible' : 'hidden';
+            box.style.visibility = this.active ? 'inherit' : 'hidden';
         }
     }
 
@@ -235,8 +235,8 @@ export class RollMenu {
             `User ${userId} Rolled` +
             newString +
             `\nResult = ${dataLine.result}`;
-        this.currChats[currIndex].style.visibility = 'visible';
-        this.currBoxes[currIndex].style.visibility = 'visible';
+        this.currChats[currIndex].style.visibility = 'inherit';
+        this.currBoxes[currIndex].style.visibility = 'inherit';
     }
 
     // Constructs a new roll payload and sends it to the backend.
