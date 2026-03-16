@@ -58,6 +58,8 @@ export class ModeManager {
         this.setUpBoxes();
         this.addEventListeners();
         this.modeSwitch(Mode.View);
+        bottomBar.style.visibility = 'visible';
+        bottomBar.style.pointerEvents = 'auto';
     }
 
     setUpBoxes() {
@@ -67,23 +69,6 @@ export class ModeManager {
             );
             this.boxItems[i].style.left = ((i + 9) % 10) * 60 + 'px';
         }
-    }
-
-    toggleBoxesVis() {
-        bottomBar.style.visibility =
-            this.selectMan.active ||
-            this.currMode === Mode.Draw ||
-            this.currMode === Mode.View
-                ? 'visible'
-                : 'hidden';
-        bottomBar.style.pointerEvents =
-            this.selectMan.active ||
-            this.currMode === Mode.Draw ||
-            this.currMode === Mode.View
-                ? 'auto'
-                : 'none';
-        this.drawMan.toggleBoxes();
-        this.viewMan.toggleBoxes();
     }
 
     // Adds event listeners for all modes, as well as some of its own.
@@ -242,6 +227,5 @@ export class ModeManager {
         if (this.viewMan.measuring) {
             this.viewMan.drawMeasure();
         }
-        this.toggleBoxesVis();
     }
 }

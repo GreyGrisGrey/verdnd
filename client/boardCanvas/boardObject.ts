@@ -60,10 +60,12 @@ export class BoardObjectBase {
         this.owner = 'None';
     }
 
+    // Checks if the object's token is active.
     hasToken() {
         return this.token.active;
     }
 
+    // Updates the object's token to match the provided.
     updateToken(newToken: Token) {
         this.token.name = newToken.name;
         this.token.movable = newToken.movable;
@@ -71,6 +73,7 @@ export class BoardObjectBase {
         this.token.colour = newToken.colour;
     }
 
+    // Draws the object.
     draw(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         if (
             squareSize !== this.currPathSpecs[0] ||
@@ -103,11 +106,13 @@ export class BoardObjectBase {
         }
     }
 
+    // Draws the object's token, if the token is active.
     drawToken(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         this.drawOutline(ctx);
         this.drawLabel(ctx, squareSize, offset);
     }
 
+    // Draws the outline of the object's token.
     drawOutline(ctx: CanvasRenderingContext2D) {
         if (!this.selected) {
             ctx.strokeStyle = this.token.colour;
@@ -116,6 +121,7 @@ export class BoardObjectBase {
         }
     }
 
+    // Draws the token's label.
     drawLabel(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         ctx.font = '20px serif';
         ctx.fillStyle = '#eeeeee';
@@ -135,11 +141,12 @@ export class BoardObjectBase {
         );
     }
 
+    // Blank function for building the path of the object.
     buildPath(squareSize: number, offset: Vec2) {
         return;
     }
 
-    // Moves the object a set amount
+    // Moves the object a set amount.
     move(xChange: number, yChange: number) {
         this.location.x += xChange;
         this.location.y += yChange;
@@ -169,6 +176,7 @@ export class BoardObjectBase {
         return false;
     }
 
+    // Checks if a point is contained within the path of the object.
     isPointInside(point: Vec2) {
         if (
             this.ctx?.isPointInPath(
@@ -191,6 +199,7 @@ export class BoardObjectBase {
         this.selected = newSelection;
     }
 
+    // Updates the object to match that of a provided payload.
     updateFromPayload(newSetting: ObjectCreatePayload) {
         this.location.x = newSetting.x;
         this.location.y = newSetting.y;

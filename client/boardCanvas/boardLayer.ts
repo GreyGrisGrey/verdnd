@@ -23,6 +23,8 @@ export class BoardLayer {
         this.playerVisible = newPlayer;
     }
 
+    // Updates status of layer from layer state object.
+    // It should probably just store a layer state object but it doesn't.
     updateFromLayerState(newLayer: LayerState) {
         this.zOrder = newLayer.zOrder;
         this.GMVisible = newLayer.gmVisible;

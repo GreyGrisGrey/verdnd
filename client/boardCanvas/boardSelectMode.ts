@@ -233,11 +233,6 @@ export class BoardSelectMode {
         this.currColour = colourSquare.style.background;
     }
 
-    // Does not return text for the information bar, as none exists.
-    getText() {
-        return 'sooon';
-    }
-
     // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;

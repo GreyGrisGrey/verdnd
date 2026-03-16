@@ -28,27 +28,27 @@
         {
             "draw": "Complete in progress polyline or wall object.",
             "select": "Incomplete",
-            "view": "K or 5 : Recenter camera."
+            "view": "5 : Recenter camera."
         },
         {
             "draw": "Left click on object : Select topmost object on currently active layer\nLeft Click and drag : Select all objects within an area on the currently active layer.",
             "select": "Turn currently selected object into a token allowing players to move it\nColours based on currently selected colour in colour picker.",
-            "view": "M or 6 : Toggle laser visibility."
+            "view": "6 : Toggle laser visibility."
         },
         {
             "draw": "Cancel creation of in progress object.",
             "select": "Rename currently selected token",
-            "view": "O or 7 : Recolour laser.\nColours based on currently selected colour in colour picker."
+            "view": "7 : Recolour laser.\nColours based on currently selected colour in colour picker."
         },
         {
             "draw": "Incomplete",
             "select": "Recolour currently selected token outline.\nColours based on currently selected colour in colour picker.",
-            "view": "J or 8 : Measure distance from cursor location."
+            "view": "8 : Measure distance from cursor location."
         },
         {
             "draw": "Incomplete",
             "select": "Incomplete",
-            "view": "Backspace/Escape/9 : Stop measuring."
+            "view": "Backspace/Escape/9 : Stop measuring distance."
         }
     ]
 }

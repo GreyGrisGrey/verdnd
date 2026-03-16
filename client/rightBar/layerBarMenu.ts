@@ -268,14 +268,14 @@ export class LayerMenu {
         this.tempButtonObj.style.width = `${parseInt(this.layerObj.style.width, 10)}px`;
     }
 
-    // Unselects the currently selected layer.
+    // Unselects the currently selected layer, in preparation for it not being the currently selected layer.
     exitCurrSelect() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = GREY.toString();
         }
     }
-
+    
     destroyLayerElement(id: number) {
         const currLayer = this.layerMap.get(id);
         if (currLayer) {
@@ -288,6 +288,7 @@ export class LayerMenu {
         this.moveLayers();
     }
 
+    // Selects the currently selected layer.
     enterCurrSelect() {
         const layer = this.layerMap.get(this.currSelect);
         if (layer) {

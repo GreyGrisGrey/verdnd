@@ -48,6 +48,7 @@ export class BoardDrawMode {
         this.toggleBoxes();
     }
 
+    // Sets up control buttons.
     setUpBoxes() {
         for (let i = 0; i < 10; i++) {
             this.boxItems.push(
@@ -64,6 +65,7 @@ export class BoardDrawMode {
         }
     }
 
+    // Toggles functionality of control buttons.
     toggleBoxes() {
         for (const box of this.boxItems) {
             box.style.visibility = this.active ? 'visible' : 'hidden';
@@ -72,6 +74,7 @@ export class BoardDrawMode {
         this.flipBoxes();
     }
 
+    // Flips which control buttons are disabled.
     flipBoxes() {
         this.boxItems[1].disabled = this.shape === Shape.Rect;
         this.boxItems[2].disabled = this.shape === Shape.Ellipse;
@@ -90,11 +93,10 @@ export class BoardDrawMode {
         this.selectMode = false;
         this.selectState = 0;
         this.completeObjCheck = false;
-        if (setOn) {
-            this.flipBoxes();
-        }
+        this.toggleBoxes();
     }
-
+    
+    // Handles key press events when draw mode is active.
     handleSwitchEvent(key: string) {
         if (key === '1') {
             this.shape = Shape.Rect;
@@ -114,7 +116,8 @@ export class BoardDrawMode {
         }
         this.params = [];
     }
-
+    
+    // Handles key press events when draw mode is active.
     handleKeySwitchEvent(key: string) {
         if (this.active && this.params.length === 0) {
             this.handleSwitchEvent(key);
@@ -220,18 +223,6 @@ export class BoardDrawMode {
                 }
             }
         });
-    }
-
-    // Text for the information bar.
-    getText() {
-        return `\
-        1 : Create Rectangle
-        2 : Create Ellipse
-        3 : Create Polyline
-        4 : Create Wall
-        5 : Complete Wall/Polyline
-        6 : Select
-        7 : Cancel Draw`;
     }
 
     // Finalizes the current object and sends it to the server.

@@ -58,6 +58,7 @@ export class Board {
         this.laserCol = newCol;
     }
 
+    // Clears a layer of all of its objects, and tells the server to do the same.
     clearLayer(layerId: number) {
         const layer = this.layerMap.get(layerId);
         if (layer) {
@@ -87,6 +88,7 @@ export class Board {
         ctx.closePath();
     }
 
+    // Draws a laser from the details of a laser event.
     drawLaser(x: number, y: number, col: string) {
         ctx.beginPath();
         ctx.arc(

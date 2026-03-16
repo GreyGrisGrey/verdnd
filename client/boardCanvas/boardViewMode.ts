@@ -33,6 +33,7 @@ export class BoardViewMode {
         this.toggleBoxes();
     }
 
+    // Sets up control buttons for viewing/clicking.
     setUpBoxes() {
         for (let i = 0; i < 10; i++) {
             this.boxItems.push(
@@ -50,6 +51,7 @@ export class BoardViewMode {
         }
     }
 
+    // Toggles functionality of buttons.
     toggleBoxes() {
         for (const box of this.boxItems) {
             box.style.visibility = this.active ? 'visible' : 'hidden';
@@ -57,15 +59,16 @@ export class BoardViewMode {
         }
     }
 
+    // Handles key press events when view mode is active.
     handleSwitchEvent(key: string) {
-        if (key === 'm' || key === '6') {
+        if (key === '6') {
             this.board.modeMan.sendLaser = !this.board.modeMan.sendLaser;
-        } else if (key === 'k' || key === '5') {
+        } else if (key === '5') {
             this.board.offset.x = 0;
             this.board.offset.y = 0;
-        } else if (key === 'o' || key === '7') {
+        } else if (key === '7') {
             this.board.laserCol = colourSquare.style.background;
-        } else if (key === 'j' || key === '8') {
+        } else if (key === '8') {
             const res = this.board.determineTile(
                 this.board.mouseCoords.x,
                 this.board.mouseCoords.y,
@@ -81,6 +84,9 @@ export class BoardViewMode {
         }
     }
 
+    // Draws the current circle created by the measuring tool.
+    // Kind of looks not great, something should be done about this.
+    // TODO : Do that.
     drawMeasure() {
         const squareSize = 5 * this.board.zoomVal;
         const res = this.board.determineTile(
@@ -189,8 +195,4 @@ export class BoardViewMode {
         });
     }
 
-    // Text for the information bar.
-    getText() {
-        return 'Scroll : Zoom\nLeft Click + Drag : Pan\nJ : Measure\nM : Toggle laser visibility\nK : Recenter camera to origin\nO : Recolour laser pointer';
-    }
 }
