@@ -10,6 +10,7 @@ const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 export class TooltipManager {
     boxDrawItems: HTMLButtonElement[];
     boxSelectItems: HTMLButtonElement[];
+    boxViewItems: HTMLButtonElement[];
     bottomTooltip: HTMLElement;
     bottomTooltipText: HTMLElement;
     bottomContent: any[];
@@ -18,6 +19,7 @@ export class TooltipManager {
     constructor() {
         this.boxDrawItems = [];
         this.boxSelectItems = [];
+        this.boxViewItems = [];
         this.bottomTooltip = getRequiredElement('bottomTooltip', HTMLElement);
         this.bottomTooltipText = getRequiredElement(
             'bottomTooltipText',
@@ -59,6 +61,12 @@ export class TooltipManager {
                     HTMLButtonElement,
                 ),
             );
+            this.boxViewItems.push(
+                getRequiredElement(
+                    'bottomViewBox' + i.toString(),
+                    HTMLButtonElement,
+                ),
+            );
         }
     }
 
@@ -73,6 +81,19 @@ export class TooltipManager {
             });
 
             this.boxDrawItems[i].addEventListener('mouseout', () => {
+                this.bottomActive = false;
+                this.awaitDisable();
+            });
+
+            this.boxViewItems[i].addEventListener('mouseover', () => {
+                this.bottomActive = true;
+                this.bottomTooltipText.innerText = this.bottomContent[i].view;
+                nameInput.style.visibility = 'hidden';
+                nameLabel.style.visibility = 'hidden';
+                this.bottomTooltip.style.visibility = 'visible';
+            });
+
+            this.boxViewItems[i].addEventListener('mouseout', () => {
                 this.bottomActive = false;
                 this.awaitDisable();
             });

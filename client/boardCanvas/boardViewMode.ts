@@ -12,6 +12,7 @@ export class BoardViewMode {
     active: boolean;
     start: Vec2;
     measuring: boolean;
+    boxItems: HTMLButtonElement[];
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -19,6 +20,8 @@ export class BoardViewMode {
         this.addEventListeners();
         this.start = { x: 0, y: 0 };
         this.measuring = false;
+        this.boxItems = [];
+        this.setUpBoxes();
     }
 
     // Flips the active state of the mode.
@@ -27,6 +30,55 @@ export class BoardViewMode {
         this.start.x = 0;
         this.start.y = 0;
         this.measuring = false;
+        this.toggleBoxes();
+    }
+
+    setUpBoxes() {
+        for (let i = 0; i < 10; i++) {
+            this.boxItems.push(
+                getRequiredElement(
+                    'bottomViewBox' + i.toString(),
+                    HTMLButtonElement,
+                ),
+            );
+            if (i === 0 || i === 1 || i === 4) {
+                this.boxItems[i].disabled = true;
+            }
+            this.boxItems[i].addEventListener('click', () => {
+                this.handleSwitchEvent(i.toString());
+            });
+        }
+    }
+
+    toggleBoxes() {
+        for (const box of this.boxItems) {
+            box.style.visibility = this.active ? 'visible' : 'hidden';
+            box.style.pointerEvents = this.active ? 'auto' : 'none';
+        }
+    }
+
+    handleSwitchEvent(key: string) {
+        if (key === 'm' || key === '6') {
+            this.board.modeMan.sendLaser = !this.board.modeMan.sendLaser;
+        } else if (key === 'k' || key === '5') {
+            this.board.offset.x = 0;
+            this.board.offset.y = 0;
+        } else if (key === 'o' || key === '7') {
+            this.board.laserCol = colourSquare.style.background;
+        } else if (key === 'j' || key === '8') {
+            const res = this.board.determineTile(
+                this.board.mouseCoords.x,
+                this.board.mouseCoords.y,
+                CoordModes.Center,
+            );
+            this.start.x = res.x;
+            this.start.y = res.y;
+            this.measuring = true;
+        } else if (key === 'Backspace' || key === 'Escape' || key === '9') {
+            this.start.x = 0;
+            this.start.y = 0;
+            this.measuring = false;
+        }
     }
 
     drawMeasure() {
@@ -89,31 +141,7 @@ export class BoardViewMode {
 
         can.addEventListener('keydown', (event) => {
             if (this.active) {
-                if (event.key === 'm') {
-                    this.board.modeMan.sendLaser =
-                        !this.board.modeMan.sendLaser;
-                } else if (event.key === 'k') {
-                    this.board.offset.x = 0;
-                    this.board.offset.y = 0;
-                } else if (event.key === 'o') {
-                    this.board.laserCol = colourSquare.style.background;
-                } else if (event.key === 'j') {
-                    const res = this.board.determineTile(
-                        this.board.mouseCoords.x,
-                        this.board.mouseCoords.y,
-                        CoordModes.Center,
-                    );
-                    this.start.x = res.x;
-                    this.start.y = res.y;
-                    this.measuring = true;
-                } else if (
-                    event.key === 'Backspace' ||
-                    event.key === 'Escape'
-                ) {
-                    this.start.x = 0;
-                    this.start.y = 0;
-                    this.measuring = false;
-                }
+                this.handleSwitchEvent(event.key);
             }
         });
 

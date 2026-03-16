@@ -5,7 +5,6 @@ import { BoardTokenMode } from './boardTokenMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-const modeParagraph = getRequiredElement('modeParagraph', HTMLElement);
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const tokenButton = getRequiredElement('tokenMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
@@ -37,7 +36,6 @@ export class ModeManager {
     selectMan: BoardSelectMode;
     modes: Record<Mode, BoardMode>;
     selectClick: boolean;
-    selectInstruct: HTMLElement;
     buttons: Record<Mode, HTMLButtonElement>;
     boxItems: HTMLElement[];
     controlClick: boolean;
@@ -60,7 +58,6 @@ export class ModeManager {
             DRAW: drawButton,
             VIEW: viewButton,
         };
-        this.selectInstruct = document.getElementById('selectInstruct')!;
         this.selectClick = false;
         this.boxItems = [];
         this.controlClick = false;
@@ -68,7 +65,6 @@ export class ModeManager {
         this.setUpBoxes();
         this.addEventListeners();
         this.modeSwitch(Mode.View);
-        modeParagraph.innerText = this.modes[this.currMode].getText();
     }
 
     setUpBoxes() {
@@ -82,14 +78,19 @@ export class ModeManager {
 
     toggleBoxesVis() {
         bottomBar.style.visibility =
-            this.selectMan.active || this.currMode === Mode.Draw
+            this.selectMan.active ||
+            this.currMode === Mode.Draw ||
+            this.currMode === Mode.View
                 ? 'visible'
                 : 'hidden';
         bottomBar.style.pointerEvents =
-            this.selectMan.active || this.currMode === Mode.Draw
+            this.selectMan.active ||
+            this.currMode === Mode.Draw ||
+            this.currMode === Mode.View
                 ? 'auto'
                 : 'none';
         this.drawMan.toggleBoxes();
+        this.viewMan.toggleBoxes();
     }
 
     // Adds event listeners for all modes, as well as some of its own.
@@ -163,9 +164,6 @@ export class ModeManager {
             this.currMode = newMode;
             this.modes[this.currMode].flipListeners(true);
             this.buttons[this.currMode].disabled = true;
-            modeParagraph.innerText = this.modes[this.currMode].getText();
-            this.selectInstruct.style.visibility =
-                newMode === Mode.View ? 'hidden' : 'visible';
         }
     }
 
