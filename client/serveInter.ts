@@ -17,6 +17,7 @@ import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { Box, Polyline } from './boardCanvas/boardObject.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
+import { RollMenu } from './rightBar/rollBarMenu.ts';
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
@@ -66,6 +67,7 @@ export class tempStore {
     designal: boolean;
     online: boolean;
     layMenu: LayerMenu | null;
+    rollMenu: RollMenu | null;
     isGm: boolean;
     id: string;
     pass: string;
@@ -91,6 +93,7 @@ export class tempStore {
         this.designal = false;
         this.online = true;
         this.layMenu = null;
+        this.rollMenu = null;
         this.isGm = false;
 
         this.id = '';
@@ -156,6 +159,7 @@ export class tempStore {
                         this.createObjectLocal(message);
                     }
                 } else if (message.entity === Entity.Roll) {
+                    console.log('arrival');
                     this.rollMapping.set(message.id, message);
                 } else if (message.entity === Entity.Laser) {
                     if (message.id !== this.localNum) {

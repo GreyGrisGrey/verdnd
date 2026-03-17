@@ -177,6 +177,7 @@ export class RollMenu {
         }
         const data = this.serveInter.getDice();
         if (data) {
+            console.log('bwa');
             this.updateChats(data);
         }
     }
@@ -199,14 +200,14 @@ export class RollMenu {
         newBox.style.width = '246px';
         newBox.style.height = '60px';
         newBox.style.border = 'solid #000000';
-        newBox.style.visibility = 'hidden';
+        newBox.style.visibility = 'inherit';
 
         newText.style.position = 'absolute';
         newText.style.width = '246px';
         newText.style.left = '0px';
         newText.style.height = '60px';
         newText.style.overflow = 'hidden';
-        newText.style.visibility = 'hidden';
+        newText.style.visibility = 'inherit';
         newText.style.whiteSpace = 'nowrap';
         this.currChats.push(newText);
         this.currBoxes.push(newBox);
@@ -216,15 +217,14 @@ export class RollMenu {
     updateChats(data: Map<number, RollComplete>) {
         for (const [key, val] of data) {
             const targetNum = key;
-            if (targetNum < 50 && targetNum >= 0) {
-                this.updateChat(val.result, targetNum, val.userId);
-            }
+            this.updateChat(val.result, targetNum, val.userId);
         }
     }
 
     // Updates a chat box.
     updateChat(dataLine: RollResult, currIndex: number, userId: string) {
         while (this.currChats.length <= currIndex) {
+            console.log(this.currChats.length);
             this.constructChat(this.currChats.length);
         }
         let newString = '';

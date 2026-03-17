@@ -112,7 +112,7 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
             rowMode: 'array',
         });
         await this.client.query({
-            text: `CREATE TABLE mainschema.rolls${newId} (Id int PRIMARY KEY, Result int NOT NULL, UserId int, ResultData text)`,
+            text: `CREATE TABLE mainschema.rolls${newId} (Id int PRIMARY KEY, Result int NOT NULL, UserId text, ResultData text)`,
             rowMode: 'array',
         });
         await this.client.query({

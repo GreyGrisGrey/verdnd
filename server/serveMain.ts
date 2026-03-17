@@ -41,7 +41,7 @@ let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
 
-const currGame = 2;
+const currGame = 1;
 const play = true;
 const allGm = false;
 
@@ -344,6 +344,7 @@ async function addDice(newDice: DicePayload, userId: string) {
         }),
     );
     currDice++;
+    broadcast(sendObj);
     diceLock = false;
     return sendObj;
 }
