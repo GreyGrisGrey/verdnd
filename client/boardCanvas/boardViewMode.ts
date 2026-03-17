@@ -1,5 +1,6 @@
 import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
+import type { BoardObject } from './boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -13,6 +14,8 @@ export class BoardViewMode {
     start: Vec2;
     measuring: boolean;
     boxItems: HTMLButtonElement[];
+    completeSelectCheck: boolean;
+    selectedToken: BoardObject | null;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -22,6 +25,8 @@ export class BoardViewMode {
         this.measuring = false;
         this.boxItems = [];
         this.setUpBoxes();
+        this.completeSelectCheck = false;
+        this.selectedToken = null;
     }
 
     // Flips the active state of the mode.
@@ -30,6 +35,7 @@ export class BoardViewMode {
         this.start.x = 0;
         this.start.y = 0;
         this.measuring = false;
+        this.completeSelectCheck = false;
         this.toggleBoxes();
     }
 
@@ -133,15 +139,28 @@ export class BoardViewMode {
     addEventListeners() {
         can.addEventListener('mousemove', (event) => {
             can.focus();
-            if (
-                (this.active && this.board.leftMouseDown) ||
-                this.board.rightMouseDown
-            ) {
+            if (this.board.rightMouseDown) {
                 const change: Vec2 = {
                     x: Math.round(this.board.mouseCoords.x - event.clientX),
                     y: Math.round(this.board.mouseCoords.y - event.clientY),
                 };
                 this.board.moveCamera(change.x, change.y);
+            }
+        });
+
+        can.addEventListener('mousedown', (event) => {
+            if (this.active && event.button === 0) {
+                const res = this.board.selectToken([
+                    this.board.determineTile(
+                        this.board.mouseCoords.x,
+                        this.board.mouseCoords.y,
+                        CoordModes.Center,
+                    ),
+                ]);
+                if (res) {
+                    this.completeSelectCheck = true;
+                    this.selectedToken = res;
+                }
             }
         });
 

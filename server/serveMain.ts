@@ -41,7 +41,7 @@ let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
 
-const currGame = 0;
+const currGame = 2;
 const play = true;
 const allGm = false;
 

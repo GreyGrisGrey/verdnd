@@ -143,6 +143,11 @@ export class ModeManager {
     hasCompleteSelection() {
         if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
             return true;
+        } else if (
+            this.currMode === Mode.View &&
+            this.viewMan.completeSelectCheck
+        ) {
+            return true;
         }
         return false;
     }
@@ -184,6 +189,15 @@ export class ModeManager {
 
     // Enters the select mode, disabling the current mode but leaving it open to be reenabled.
     enterSelected() {
+        if (this.currMode === Mode.View) {
+            let res = this.viewMan.selectedToken;
+            if (res) {
+                this.selectMan.flipListeners(true);
+                this.selectMan.setSelected([res]);
+            }
+            this.viewMan.flipListeners(false);
+            return;
+        }
         let res: (BoardObject | undefined)[] = this.board.selectObjects();
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {
@@ -209,6 +223,8 @@ export class ModeManager {
             this.drawMan.active = true;
             this.drawMan.selectMode = false;
             this.drawMan.flipBoxes();
+        } else if (this.currMode === Mode.View) {
+            this.viewMan.flipListeners(true);
         }
     }
 
