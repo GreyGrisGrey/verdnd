@@ -23,7 +23,7 @@
         {
             "draw": "Left click : Begin drawing wall\nLeft Click again : Add vertext to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
             "select": "Incomplete",
-            "view": "Incomplete"
+            "view": "Left click and drag : Move token."
         },
         {
             "draw": "Complete in progress polyline or wall object.",

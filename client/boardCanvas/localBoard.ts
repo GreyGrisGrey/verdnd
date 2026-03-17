@@ -224,7 +224,6 @@ export class Board {
     // Draws the board.
     draw() {
         const squareSize = 5 * this.zoomVal;
-        this.drawPointGrid(squareSize);
         for (const [i, layer] of this.boardLayers.entries()) {
             layer.drawLayer(
                 ctx,
@@ -242,6 +241,7 @@ export class Board {
                 }
             }
         }
+        this.drawPointGrid(squareSize);
         if (this.modeMan.sendLaser) {
             this.drawMousePointer();
         }

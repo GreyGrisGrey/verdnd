@@ -48,7 +48,7 @@ export class BoardViewMode {
                     HTMLButtonElement,
                 ),
             );
-            if (i === 0 || i === 1 || i === 4) {
+            if (i === 0 || i === 1) {
                 this.boxItems[i].disabled = true;
             }
             this.boxItems[i].addEventListener('click', () => {

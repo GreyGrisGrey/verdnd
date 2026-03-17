@@ -24,7 +24,7 @@ const RGBTexts: Record<ColourComponent, HTMLInputElement> = {
 
 // Class handling the colour selection box.
 export class ColourBox {
-    savedColours: ColInst[];
+    savedColours: (string | ColInst)[];
     currColour: ColInst;
     currRGBString: string;
     mainBox: HTMLElement;
@@ -36,12 +36,12 @@ export class ColourBox {
 
     constructor(newBoard: Board) {
         this.savedColours = [
-            new ColInst(255, 0, 0, 100),
-            new ColInst(0, 255, 0, 100),
-            new ColInst(0, 0, 255, 100),
-            new ColInst(50, 50, 50, 100),
-            new ColInst(150, 150, 150, 100),
-            new ColInst(255, 255, 255, 100),
+            '#ff0000',
+            '#00ff00',
+            '#0000ff',
+            '#323232',
+            '#969696',
+            '#ffffff',
         ];
         this.currColour = new ColInst(120, 120, 120, 100);
         this.currRGBString = `rgba(${120}, ${120}, ${120}, ${1})`;
@@ -153,7 +153,11 @@ export class ColourBox {
     // Changes the currently selected colour for the main box.
     changeCurrColour(swap: boolean = false, swapId: number = -1) {
         if (swap) {
-            this.currColour = this.savedColours[swapId];
+            if (this.savedColours[swapId] instanceof ColInst) {
+                this.currColour = this.savedColours[swapId];
+            } else {
+                this.currColour = stringToColInst(this.savedColours[swapId]);
+            }
         }
         this.mainBox.style.background = this.currColour.toString();
         colourComponents.forEach((component) => {
@@ -180,7 +184,7 @@ export class ColourBox {
 
     // Changes the saved colour of the indicated adjoining colour box.
     changeSubColour(swapId: number = -1) {
-        this.savedColours[swapId] = this.currColour;
+        this.savedColours[swapId] = this.currColour.toString();
         this.adjBoxes[swapId].style.background =
             this.savedColours[swapId].toString();
     }

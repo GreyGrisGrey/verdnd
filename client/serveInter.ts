@@ -137,7 +137,7 @@ export class tempStore {
                         }
                     } else if (message.action !== Action.Destroy) {
                         if (
-                            message.userId === this.localNum &&
+                            message.userId === this.id &&
                             !this.storedObjectPayloads.has(
                                 message.object.objectId,
                             )
