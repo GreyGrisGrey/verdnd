@@ -150,13 +150,16 @@ export class BoardViewMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                const res = this.board.selectToken([
-                    this.board.determineTile(
-                        this.board.mouseCoords.x,
-                        this.board.mouseCoords.y,
-                        CoordModes.Center,
-                    ),
-                ]);
+                const res = this.board.selectToken(
+                    [
+                        this.board.determineTile(
+                            this.board.mouseCoords.x,
+                            this.board.mouseCoords.y,
+                            CoordModes.Center,
+                        ),
+                    ],
+                    'token',
+                );
                 if (res) {
                     this.completeSelectCheck = true;
                     this.selectedToken = res;

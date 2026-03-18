@@ -221,7 +221,8 @@ export class tempStore {
     }
 
     async ping() {
-        await new Promise((resolve) => setTimeout(resolve, 7500));
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        console.log(this.socket);
         this.socket!.send(
             JSON.stringify({
                 userId: this.localNum,
@@ -401,7 +402,7 @@ export class tempStore {
                 });
             }
             const targetObj = this.storedObjectPayloads.get(event.objectId);
-            if (targetObj) {
+            if (targetObj && (this.isGm || targetObj.token.active)) {
                 this.storedObjects.get(event.objectId)!.move(event.x, event.y);
                 if (this.online) {
                     this.socket!.send(this.parcelServeEvent(event));

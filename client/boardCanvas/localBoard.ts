@@ -163,11 +163,11 @@ export class Board {
     }
 
     // Selects a single token.
-    selectToken(fixedPoint: Vec2[]) {
+    selectToken(fixedPoint: Vec2[], matchType: string = 'any') {
         const layer = this.layerMap.get(this.activeLayer);
         let newSelected = undefined;
         if (layer) {
-            const selected = layer.selectObjects(fixedPoint)[0];
+            const selected = layer.selectObjects(fixedPoint, matchType)[0];
             return selected;
         }
         return newSelected;

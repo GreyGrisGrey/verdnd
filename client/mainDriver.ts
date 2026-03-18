@@ -21,6 +21,7 @@ const rightMan = new RightBarManager(serveInter, storedLayerStates);
 const leftMan = new LeftBarManager(board);
 const tempBox = getRequiredElement('signinTemporary', HTMLElement);
 const tooltips = new TooltipManager();
+let prevLaser = Date.now();
 
 tempBox.addEventListener('click', () => {
     const id = prompt('Id', serveInter.localNum.toString());
@@ -44,13 +45,18 @@ function setup() {
 async function mainLoop() {
     if (board.layerMap.size === 0) {
         counter = 0;
-    } else if (board.modeMan.sendLaser && serveInter.online && false) {
+    } else if (
+        board.modeMan.sendLaser &&
+        serveInter.online &&
+        Date.now() - prevLaser > 30
+    ) {
         serveInter.sendLaser(
             (board.mouseCoords.x - board.offset.x) / (5 * board.zoomVal),
             (board.mouseCoords.y - board.offset.y) / (5 * board.zoomVal),
             true,
         );
-    } else if (serveInter.online && false) {
+        prevLaser = Date.now();
+    } else if (serveInter.online && Date.now() - prevLaser > 40) {
         serveInter.sendLaser(0, 0, false);
     }
     if (counter % 25 === 0) {

@@ -115,7 +115,6 @@ async function handleEvent(event: any, ws: WebSocket) {
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice, message.userId);
         } else if (payload.entity === Entity.Laser) {
-            console.log(Date.now());
             return updateLaser(payload);
         } else if (payload.entity === Entity.Token) {
             return updateToken(payload.token, payload.id);
@@ -376,7 +375,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         ) {
             gmMap.set(ws, true);
             userMap.set(payload.id, true);
-            broadcast(
+            ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
                     accepted: true,
@@ -387,7 +386,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
             console.log('user add success');
         } else {
             userMap.set(payload.id, true);
-            broadcast(
+            ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
                     accepted: true,
@@ -399,7 +398,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
         userMap.set(payload.id, true);
-        broadcast(
+        ws.send(
             JSON.stringify({
                 entity: Entity.Name,
                 accepted: true,
@@ -409,10 +408,10 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         );
         console.log('user add success');
     } else {
-        broadcast(
+        ws.send(
             JSON.stringify({
                 entity: Entity.Name,
-                accepted: false,
+                accepted: true,
                 gm: false,
                 id: payload.id,
             }),
