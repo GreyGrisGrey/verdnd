@@ -262,6 +262,7 @@ export class tempStore {
                 action: Action.Create,
                 entity: Entity.Roll,
                 userId: this.id,
+                userName: this.name,
             }),
         );
     }

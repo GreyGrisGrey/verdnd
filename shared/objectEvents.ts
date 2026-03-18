@@ -139,6 +139,7 @@ export interface RollEvent {
     id: number;
     dice: DicePayload;
     userId: string;
+    userName: string;
 }
 
 export interface SingleRoll {
@@ -153,6 +154,7 @@ export interface RollComplete {
     id: number;
     result: RollResult;
     userId: string;
+    userName: string;
 }
 
 export interface RollResult {

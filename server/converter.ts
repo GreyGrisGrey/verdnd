@@ -114,6 +114,7 @@ export function rollTableToPayloads(rows: any[]) {
             id: row[0],
             userId: row[2],
             result: { result: row[1], rolls: structData },
+            userName: row[2],
         });
     }
     return mapping;

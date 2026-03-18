@@ -177,7 +177,6 @@ export class RollMenu {
         }
         const data = this.serveInter.getDice();
         if (data) {
-            console.log('bwa');
             this.updateChats(data);
         }
     }
@@ -217,12 +216,12 @@ export class RollMenu {
     updateChats(data: Map<number, RollComplete>) {
         for (const [key, val] of data) {
             const targetNum = key;
-            this.updateChat(val.result, targetNum, val.userId);
+            this.updateChat(val.result, targetNum, val.userName);
         }
     }
 
     // Updates a chat box.
-    updateChat(dataLine: RollResult, currIndex: number, userId: string) {
+    updateChat(dataLine: RollResult, currIndex: number, userName: string) {
         while (this.currChats.length <= currIndex) {
             console.log(this.currChats.length);
             this.constructChat(this.currChats.length);
@@ -232,7 +231,7 @@ export class RollMenu {
             newString += `(D${roll.size}, ${roll.result}) `;
         }
         this.currChats[currIndex].innerText =
-            `User ${userId} Rolled` +
+            `User ${userName} Rolled` +
             newString +
             `\nResult = ${dataLine.result}`;
         this.currChats[currIndex].style.visibility = 'inherit';

@@ -41,6 +41,7 @@ let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
 let laserTimer = 0;
+let finishedSetup = false;
 
 const currGame = 2;
 const play = true;
@@ -59,6 +60,8 @@ wss.on('connection', async function connection(ws) {
 
     console.log('connection established');
 });
+
+setUp();
 
 async function setUp() {
     if (!play) {
@@ -85,9 +88,11 @@ async function setUp() {
                 currDice = val.id + 1;
             }
         }
+        finishedSetup = true;
     } else {
         await cli.constructGame('0');
-        createLayer();
+        await createLayer();
+        finishedSetup = true;
     }
 }
 
@@ -114,7 +119,7 @@ async function handleEvent(event: any, ws: WebSocket) {
                 return updateLayer(payload.layer.id, payload.layer);
             }
         } else if (payload.entity === Entity.Roll) {
-            return addDice(payload.dice, message.userId);
+            return addDice(payload.dice, message.userId, payload.userName);
         } else if (payload.entity === Entity.Laser) {
             return updateLaser(payload);
         } else if (payload.entity === Entity.Token && gmMap.get(ws)) {
@@ -126,8 +131,6 @@ async function handleEvent(event: any, ws: WebSocket) {
         }
     }
 }
-
-setUp();
 
 async function updateLaser(payload: LaserEvent) {
     laserMap.set(payload.id, payload);
@@ -272,7 +275,7 @@ async function destroyLayer(layerId: number) {
     layerLock = false;
 }
 
-async function addDice(newDice: DicePayload, userId: string) {
+async function addDice(newDice: DicePayload, userId: string, userName: string) {
     const rollList: SingleRoll[] = [];
     const rollResult = { result: newDice.modifier, rolls: rollList };
     if (newDice.advantage || newDice.disadvantage) {
@@ -320,12 +323,14 @@ async function addDice(newDice: DicePayload, userId: string) {
     }
     await waitLock(diceLock);
     diceLock = true;
+    console.log(userName);
     diceMap.set(currDice, {
         entity: Entity.Roll,
         action: Action.Update,
         id: currDice,
         result: rollResult,
         userId: userId,
+        userName: userName,
     });
     const sendObj = JSON.stringify({
         entity: Entity.Roll,
@@ -333,6 +338,7 @@ async function addDice(newDice: DicePayload, userId: string) {
         id: currDice,
         result: rollResult,
         userId: userId,
+        userName: userName,
     });
     cli.addRoll(
         currGame,
@@ -342,6 +348,7 @@ async function addDice(newDice: DicePayload, userId: string) {
             id: currDice,
             result: rollResult,
             userId: userId,
+            userName: userName,
         }),
     );
     currDice++;
@@ -439,6 +446,9 @@ async function sendMasses(targetLayer: number) {
 }
 
 async function sendAll(ws: WebSocket) {
+    while (!finishedSetup) {
+        await new Promise((resolve) => setTimeout(resolve, 2));
+    }
     for (const [key, val] of layerMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
         ws.send(JSON.stringify(val));
