@@ -62,11 +62,10 @@ export class tempStore {
     currIndex: number;
     secondIndex: number;
     rollMapping: Map<number, RollComplete>;
-    socket: WebSocket | null;
+    socket: WebSocket;
     board: Board | null;
     lasers: Map<number, LaserEvent>;
     designal: boolean;
-    online: boolean;
     layMenu: LayerMenu | null;
     rollMenu: RollMenu | null;
     isGm: boolean;
@@ -92,7 +91,6 @@ export class tempStore {
         this.lasers = new Map();
         this.board = null;
         this.designal = false;
-        this.online = true;
         this.layMenu = null;
         this.rollMenu = null;
         this.isGm = false;
@@ -100,89 +98,87 @@ export class tempStore {
         this.id = '';
         this.pass = '';
         this.name = '';
+        // Switch to say if we're using local network or not
+        // No doubt a better way of doing this exists, but also it's so minor I don't care.
+        const online = true;
 
-        if (this.online) {
+        if (online) {
             this.socket = new WebSocket('ws://47.55.46.138:4322/');
-            this.socket.addEventListener('message', (event) => {
-                const message = JSON.parse(event.data);
-                if (message.entity === Entity.Name && message.accepted) {
-                    this.id = message.id;
-                    this.isGm = message.gm;
-                    console.log('yay');
-                } else if (message.entity === Entity.Name) {
-                    console.log('boo');
-                    alert('failed to log in');
-                }
-                if (message.entity === Entity.Layer) {
-                    if (message.action === Action.Destroy) {
-                        if (this.storedLayers.has(message.layerId)) {
-                            this.layMenu!.destroyLayerElement(message.layerId);
-                            this.storedLayers.delete(message.layerId);
-                        }
-                    } else if (this.storedLayerStates.has(message.layer.id)) {
-                        this.layMenu!.updateLayer(
-                            message.layer.id,
-                            message.layer,
-                        );
-                        this.storedLayers
-                            .get(message.layer.id)!
-                            .updateFromLayerState(message.layer);
-                    } else {
-                        this.createLayerLocal(message.layer);
-                    }
-                } else if (message.entity === Entity.Object) {
-                    if (
-                        message.action === Action.Destroy &&
-                        this.storedObjectPayloads.has(message.objectId)
-                    ) {
-                        this.storedObjectPayloads.delete(message.objectId);
-                        if (this.board) {
-                            this.board.removeObject(message.objectId);
-                        }
-                    } else if (message.action !== Action.Destroy) {
-                        if (
-                            message.userId === this.id &&
-                            !this.storedObjectPayloads.has(
-                                message.object.objectId,
-                            )
-                        ) {
-                            this.secondIndex--;
-                            this.undoMap.set(
-                                this.undoCreateTracker.get(this.secondIndex)!,
-                                [message.object.objectId],
-                            );
-                            this.undoCreateTracker.delete(this.secondIndex);
-                        }
-                        this.storedObjectPayloads.set(
-                            message.object.objectId,
-                            message.object,
-                        );
-                        this.createObjectLocal(message);
-                    }
-                } else if (message.entity === Entity.Roll) {
-                    this.rollMapping.set(message.id, message);
-                } else if (message.entity === Entity.Laser) {
-                    if (message.id !== this.localNum) {
-                        this.lasers.set(message.id, message);
-                    }
-                } else if (message.entity === Entity.Token) {
-                    const currObj = this.storedObjectPayloads.get(message.id);
-                    if (currObj) {
-                        currObj.token = message.token;
-                        this.storedObjects
-                            .get(message.id)!
-                            .updateToken(message.token);
-                    }
-                } else if (message.entity === Entity.Meta) {
-                    if (message.action === Action.Finish) {
-                        loadWall.style.visibility = 'hidden';
-                    }
-                }
-            });
-            this.ping();
         } else {
-            this.socket = null;
+            this.socket = new WebSocket('ws://192.168.2.142:8765/');
         }
+        this.socket.addEventListener('message', (event) => {
+            const message = JSON.parse(event.data);
+            if (message.entity === Entity.Name && message.accepted) {
+                this.id = message.id;
+                this.isGm = message.gm;
+                console.log('yay');
+            } else if (message.entity === Entity.Name) {
+                console.log('boo');
+                alert('failed to log in');
+            }
+            if (message.entity === Entity.Layer) {
+                if (message.action === Action.Destroy) {
+                    if (this.storedLayers.has(message.layerId)) {
+                        this.layMenu!.destroyLayerElement(message.layerId);
+                        this.storedLayers.delete(message.layerId);
+                    }
+                } else if (this.storedLayerStates.has(message.layer.id)) {
+                    this.layMenu!.updateLayer(message.layer.id, message.layer);
+                    this.storedLayers
+                        .get(message.layer.id)!
+                        .updateFromLayerState(message.layer);
+                } else {
+                    this.createLayerLocal(message.layer);
+                }
+            } else if (message.entity === Entity.Object) {
+                if (
+                    message.action === Action.Destroy &&
+                    this.storedObjectPayloads.has(message.objectId)
+                ) {
+                    this.storedObjectPayloads.delete(message.objectId);
+                    if (this.board) {
+                        this.board.removeObject(message.objectId);
+                    }
+                } else if (message.action !== Action.Destroy) {
+                    if (
+                        message.userId === this.id &&
+                        !this.storedObjectPayloads.has(message.object.objectId)
+                    ) {
+                        this.secondIndex--;
+                        this.undoMap.set(
+                            this.undoCreateTracker.get(this.secondIndex)!,
+                            [message.object.objectId],
+                        );
+                        this.undoCreateTracker.delete(this.secondIndex);
+                    }
+                    this.storedObjectPayloads.set(
+                        message.object.objectId,
+                        message.object,
+                    );
+                    this.createObjectLocal(message);
+                }
+            } else if (message.entity === Entity.Roll) {
+                this.rollMapping.set(message.id, message);
+            } else if (message.entity === Entity.Laser) {
+                if (message.id !== this.localNum) {
+                    this.lasers.set(message.id, message);
+                }
+            } else if (message.entity === Entity.Token) {
+                const currObj = this.storedObjectPayloads.get(message.id);
+                if (currObj) {
+                    currObj.token = message.token;
+                    this.storedObjects
+                        .get(message.id)!
+                        .updateToken(message.token);
+                }
+            } else if (message.entity === Entity.Meta) {
+                if (message.action === Action.Finish) {
+                    loadWall.style.visibility = 'hidden';
+                }
+            }
+        });
+        this.ping();
     }
 
     getLasers() {
@@ -217,16 +213,14 @@ export class tempStore {
     }
 
     setup() {
-        if (!this.online) {
-            this.createLayer();
-        }
+        this.createLayer();
     }
 
     async ping() {
-        while (this.socket!.readyState === 0) {
+        while (this.socket.readyState === 0) {
             await new Promise((resolve) => setTimeout(resolve, 10));
         }
-        this.socket!.send(
+        this.socket.send(
             JSON.stringify({
                 userId: this.localNum,
                 event: {
@@ -240,7 +234,7 @@ export class tempStore {
     }
 
     async signIn(name: string, pass: string, id: string) {
-        this.socket!.send(
+        this.socket.send(
             JSON.stringify({
                 userId: this.localNum,
                 event: {
@@ -254,17 +248,15 @@ export class tempStore {
     }
 
     rollDice(newDice: DicePayload) {
-        if (this.online) {
-            this.socket!.send(
-                this.parcelServeEvent({
-                    dice: newDice,
-                    id: 0,
-                    action: Action.Create,
-                    entity: Entity.Roll,
-                    userId: this.id,
-                }),
-            );
-        }
+        this.socket.send(
+            this.parcelServeEvent({
+                dice: newDice,
+                id: 0,
+                action: Action.Create,
+                entity: Entity.Roll,
+                userId: this.id,
+            }),
+        );
     }
 
     getDice() {
@@ -285,18 +277,11 @@ export class tempStore {
             this.currIndex += 1;
             this.secondIndex += 1;
         }
-        if (this.online) {
-            this.socket!.send(this.parcelServeEvent(newObj));
-        } else {
-            this.createObjectLocal(newObj);
-        }
+        this.socket.send(this.parcelServeEvent(newObj));
         return -1;
     }
 
     createObjectLocal(newObj: ObjectCreateEvent) {
-        if (!this.online) {
-            newObj.object.objectId = this.storedObjects.size;
-        }
         if (this.storedObjects.has(newObj.object.objectId)) {
             this.storedObjects
                 .get(newObj.object.objectId)!
@@ -316,15 +301,13 @@ export class tempStore {
         if (!this.isGm) {
             return;
         }
-        if (this.online) {
-            this.socket!.send(
-                this.parcelServeEvent({
-                    entity: Entity.Token,
-                    token: newToken,
-                    id: newId,
-                }),
-            );
-        }
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Token,
+                token: newToken,
+                id: newId,
+            }),
+        );
     }
 
     // Tells the backend to create a layer.
@@ -332,15 +315,13 @@ export class tempStore {
         if (!this.isGm) {
             return;
         }
-        if (this.online) {
-            this.socket!.send(
-                this.parcelServeEvent({
-                    entity: Entity.Layer,
-                    action: Action.Create,
-                    layerId: -1,
-                }),
-            );
-        }
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Layer,
+                action: Action.Create,
+                layerId: -1,
+            }),
+        );
     }
 
     createLayerLocal(layerPacket: LayerState) {
@@ -373,15 +354,13 @@ export class tempStore {
                         token: this.storedObjectPayloads.get(id)!.token,
                     });
                 }
-                if (this.online) {
-                    this.socket!.send(
-                        this.parcelServeEvent({
-                            entity: Entity.Object,
-                            action: Action.Destroy,
-                            objectId: id,
-                        }),
-                    );
-                }
+                this.socket.send(
+                    this.parcelServeEvent({
+                        entity: Entity.Object,
+                        action: Action.Destroy,
+                        objectId: id,
+                    }),
+                );
                 this.storedObjectPayloads.delete(id);
                 if (this.board) {
                     this.board.removeObject(id);
@@ -407,9 +386,7 @@ export class tempStore {
             const targetObj = this.storedObjectPayloads.get(event.objectId);
             if (targetObj && (this.isGm || targetObj.token.active)) {
                 this.storedObjects.get(event.objectId)!.move(event.x, event.y);
-                if (this.online) {
-                    this.socket!.send(this.parcelServeEvent(event));
-                }
+                this.socket.send(this.parcelServeEvent(event));
             }
         }
         if (!undo) {
@@ -443,16 +420,14 @@ export class tempStore {
                 this.storedObjects
                     .get(event.objectId)!
                     .setColour(event.colour.toString());
-                if (this.online) {
-                    this.socket!.send(
-                        this.parcelServeEvent({
-                            entity: event.entity,
-                            action: event.action,
-                            objectId: event.objectId,
-                            colour: event.colour.toString(),
-                        }),
-                    );
-                }
+                this.socket.send(
+                    this.parcelServeEvent({
+                        entity: event.entity,
+                        action: event.action,
+                        objectId: event.objectId,
+                        colour: event.colour.toString(),
+                    }),
+                );
             }
         }
         if (!undo) {
@@ -469,31 +444,27 @@ export class tempStore {
         if (targetObj) {
             this.storedLayers.get(input.id)!.updateFromLayerState(input);
         }
-        if (this.online) {
-            this.socket!.send(
-                this.parcelServeEvent({
-                    entity: Entity.Layer,
-                    action: Action.Update,
-                    layer: input,
-                }),
-            );
-        }
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Layer,
+                action: Action.Update,
+                layer: input,
+            }),
+        );
     }
 
     async destroyLayer(input: LayerState) {
         if (!this.isGm) {
             return;
         }
-        if (this.online) {
-            this.board!.clearLayer(input.id);
-            this.socket!.send(
-                this.parcelServeEvent({
-                    entity: Entity.Layer,
-                    action: Action.Destroy,
-                    layerId: input.id,
-                }),
-            );
-        }
+        this.board!.clearLayer(input.id);
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Layer,
+                action: Action.Destroy,
+                layerId: input.id,
+            }),
+        );
     }
 
     parcelServeEvent(payload: ServerEvent) {
@@ -504,8 +475,8 @@ export class tempStore {
     }
 
     sendLaser(x: number, y: number, send: boolean) {
-        if (send && this.online) {
-            this.socket!.send(
+        if (send) {
+            this.socket.send(
                 this.parcelServeEvent({
                     entity: Entity.Laser,
                     id: this.localNum,
@@ -515,8 +486,8 @@ export class tempStore {
                 }),
             );
             this.designal = false;
-        } else if (!this.designal && this.online) {
-            this.socket!.send(
+        } else if (!this.designal) {
+            this.socket.send(
                 this.parcelServeEvent({
                     entity: Entity.Laser,
                     id: this.localNum,

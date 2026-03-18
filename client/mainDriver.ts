@@ -46,7 +46,6 @@ async function mainLoop() {
         counter = 0;
     } else if (
         board.modeMan.sendLaser &&
-        serveInter.online &&
         Date.now() - prevLaser > 30
     ) {
         serveInter.sendLaser(
@@ -55,7 +54,7 @@ async function mainLoop() {
             true,
         );
         prevLaser = Date.now();
-    } else if (serveInter.online && Date.now() - prevLaser > 40) {
+    } else if (Date.now() - prevLaser > 40) {
         serveInter.sendLaser(0, 0, false);
     }
     if (counter % 25 === 0) {

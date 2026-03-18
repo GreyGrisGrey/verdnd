@@ -91,12 +91,7 @@ export class BoardViewMode {
         }
     }
 
-    determineOffset(arcLength: number) {
-        const res = this.board.determineTile(
-            this.board.mouseCoords.x,
-            this.board.mouseCoords.y,
-            CoordModes.None,
-        );
+    determineOffset(res: Vec2) {
         const res2 = {
             x: this.start.x + 0.5,
             y: this.start.y + 0.5,
@@ -144,7 +139,7 @@ export class BoardViewMode {
         );
         ctx.beginPath();
         const radians = (Number(measureDegrees.value) * Math.PI) / 180;
-        const offset = this.determineOffset(radians);
+        const offset = this.determineOffset(res);
         const angles = [-(offset + radians / 2), -(offset - radians / 2)];
         if (radians !== 2 * Math.PI) {
             ctx.lineTo(res2.x, res2.y);
@@ -157,7 +152,7 @@ export class BoardViewMode {
         ctx.strokeStyle = '#cccccc';
         ctx.stroke();
 
-        if (radians >= Math.PI) {
+        if (radians >= 2 * Math.PI) {
             ctx.beginPath();
             ctx.moveTo(res2.x, res2.y);
             ctx.lineTo(res3.x, res3.y);
