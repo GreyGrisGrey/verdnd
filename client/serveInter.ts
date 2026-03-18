@@ -221,7 +221,7 @@ export class tempStore {
     }
 
     async ping() {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 7500));
         this.socket!.send(
             JSON.stringify({
                 userId: this.localNum,
@@ -345,7 +345,7 @@ export class tempStore {
         this.storedLayers.set(layerPacket.id, newLayer);
         this.layMenu!.constructLayer(layerPacket);
         this.board!.boardLayers.push(newLayer);
-        this.board!.boardLayers.sort();
+        this.board!.sortLayers();
     }
 
     // Tells the backend to destroy a bunch of objects.

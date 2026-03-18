@@ -41,7 +41,7 @@ let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
 
-const currGame = 1;
+const currGame = 2;
 const play = true;
 const allGm = false;
 
@@ -55,7 +55,6 @@ wss.on('connection', async function connection(ws) {
         handleEvent(data, newConnect);
     });
     gmMap.set(newConnect, allGm);
-    console.log(gmMap);
 
     console.log('connection established');
 });
@@ -116,6 +115,7 @@ async function handleEvent(event: any, ws: WebSocket) {
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice, message.userId);
         } else if (payload.entity === Entity.Laser) {
+            console.log(Date.now());
             return updateLaser(payload);
         } else if (payload.entity === Entity.Token) {
             return updateToken(payload.token, payload.id);
