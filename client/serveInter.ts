@@ -116,6 +116,9 @@ export class tempStore {
                 this.isGm = message.gm;
                 console.log('yay');
             } else if (message.entity === Entity.Name) {
+                localStorage['id'] = (
+                    Math.round(Math.random() * 1000000) + 500
+                ).toString();
                 console.log('boo');
                 alert('failed to log in');
             }

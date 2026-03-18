@@ -11,6 +11,7 @@ export class PostGresData {
     client: Client;
     secClient: Client;
     gameLock: boolean;
+    queue: string[];
 
     constructor() {
         this.client = new Client({
@@ -29,6 +30,7 @@ export class PostGresData {
         this.client.on('error', (err) => {
             console.error('something bad has happened!', err.stack);
         });
+        this.queue = [];
         this.client.connect();
     }
 

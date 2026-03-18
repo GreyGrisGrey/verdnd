@@ -96,28 +96,28 @@ async function handleEvent(event: any, ws: WebSocket) {
     if (message.event) {
         const payload = message.event;
         if (payload.entity === Entity.Object) {
-            if (payload.action === Action.Create) {
+            if (payload.action === Action.Create && gmMap.get(ws)) {
                 return createObj(payload);
-            } else if (payload.action === Action.Destroy) {
+            } else if (payload.action === Action.Destroy && gmMap.get(ws)) {
                 return destroyObj(payload.objectId);
             } else if (payload.action === Action.Move) {
-                return moveObj(payload.objectId, payload.x, payload.y);
-            } else if (payload.action === Action.Recolour) {
+                return moveObj(payload.objectId, payload.x, payload.y, ws);
+            } else if (payload.action === Action.Recolour && gmMap.get(ws)) {
                 return colourObj(payload.objectId, payload.colour);
             }
         } else if (payload.entity === Entity.Layer) {
-            if (payload.action === Action.Create) {
+            if (payload.action === Action.Create && gmMap.get(ws)) {
                 return createLayer();
-            } else if (payload.action === Action.Destroy) {
+            } else if (payload.action === Action.Destroy && gmMap.get(ws)) {
                 return destroyLayer(payload.layerId);
-            } else if (payload.action === Action.Update) {
+            } else if (payload.action === Action.Update && gmMap.get(ws)) {
                 return updateLayer(payload.layer.id, payload.layer);
             }
         } else if (payload.entity === Entity.Roll) {
             return addDice(payload.dice, message.userId);
         } else if (payload.entity === Entity.Laser) {
             return updateLaser(payload);
-        } else if (payload.entity === Entity.Token) {
+        } else if (payload.entity === Entity.Token && gmMap.get(ws)) {
             return updateToken(payload.token, payload.id);
         } else if (payload.entity === Entity.Name) {
             if (payload.pass && payload.name && payload.id) {
@@ -164,11 +164,16 @@ async function destroyObj(objId: number) {
     broadcast(sendObj);
 }
 
-async function moveObj(objId: number, xChange: number, yChange: number) {
+async function moveObj(
+    objId: number,
+    xChange: number,
+    yChange: number,
+    ws: WebSocket,
+) {
     await waitLock(objectLock);
     objectLock = true;
     const currObj = objectMap.get(objId);
-    if (currObj) {
+    if (currObj && (gmMap.get(ws) || currObj.token.active)) {
         currObj.object.x += xChange;
         currObj.object.y += yChange;
         const sendObj = JSON.stringify(currObj);
@@ -199,9 +204,6 @@ async function colourObj(objId: number, colour: string) {
 
 async function createLayer() {
     await waitLock(layerLock);
-    if (currLayer > 11) {
-        return 'NONE';
-    }
     layerLock = true;
     layerMap.set(currLayer, {
         entity: Entity.Layer,
@@ -361,7 +363,6 @@ async function updateToken(newToken: Token, id: number) {
 }
 
 async function establishUser(payload: NameEvent, ws: WebSocket) {
-    console.log(userLock);
     await waitLock(userLock);
     userLock = true;
     if (await cli.verifyUser(payload.id, payload.pass)) {
@@ -383,6 +384,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
             );
             console.log('user add success');
         } else {
+            gmMap.set(ws, allGm);
             userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
@@ -395,6 +397,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
             console.log('user add success');
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
+        gmMap.set(ws, allGm);
         userMap.set(payload.id, true);
         ws.send(
             JSON.stringify({
@@ -416,7 +419,6 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         );
         console.log('user add fail');
     }
-    console.log(userLock);
     userLock = false;
     sendAll(ws);
 }
