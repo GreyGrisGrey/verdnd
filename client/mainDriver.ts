@@ -15,13 +15,12 @@ const serveInter = new tempStore(
     storedLayers,
     storedLayerStates,
 );
-const loadWall = document.getElementById('loadBlock')!;
 const board = new Board(serveInter, storedObjects, storedLayers);
 const rightMan = new RightBarManager(serveInter, storedLayerStates);
 const leftMan = new LeftBarManager(board);
 const tempBox = getRequiredElement('signinTemporary', HTMLElement);
 const tooltips = new TooltipManager();
-let prevLaser = Date.now();
+let prevLaser = 0;
 
 tempBox.addEventListener('click', () => {
     const id = prompt('Id', serveInter.localNum.toString());
@@ -68,9 +67,6 @@ async function mainLoop() {
     board.activeLayer = rightMan.layerMan.currSelect;
     board.step();
     counter++;
-    if (counter === 5) {
-        loadWall.style.visibility = 'hidden';
-    }
     requestAnimationFrame(mainLoop);
 }
 

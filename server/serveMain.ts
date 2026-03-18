@@ -40,6 +40,7 @@ let userLock = false;
 let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
+let laserTimer = 0;
 
 const currGame = 2;
 const play = true;
@@ -362,7 +363,7 @@ async function updateToken(newToken: Token, id: number) {
 
 async function establishUser(payload: NameEvent, ws: WebSocket) {
     if (userMap.has(payload.id)) {
-        sendAll();
+        sendAll(ws);
     }
     await waitLock(userLock);
     userLock = true;
@@ -419,7 +420,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         console.log('user add fail');
     }
     userLock = false;
-    sendAll();
+    sendAll(ws);
 }
 
 async function waitLock(lock: boolean) {
@@ -437,24 +438,35 @@ async function sendMasses(targetLayer: number) {
     }
 }
 
-async function sendAll() {
+async function sendAll(ws: WebSocket) {
     for (const [key, val] of layerMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
-        broadcast(JSON.stringify(val));
+        ws.send(JSON.stringify(val));
     }
     for (const [key, val] of objectMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
-        broadcast(JSON.stringify(val), val.object.layerId);
+        ws.send(JSON.stringify(val));
     }
     for (const [key, val] of diceMap) {
         await new Promise((resolve) => setTimeout(resolve, 2));
-        broadcast(JSON.stringify(val));
+        ws.send(JSON.stringify(val));
     }
+    ws.send(JSON.stringify({ entity: Entity.Meta, action: Action.Finish }));
 }
 
 async function sendAllLasers() {
+    const currTime = Date.now();
+    if (currTime - laserTimer < 30) {
+        return;
+    } else {
+        laserTimer = currTime;
+    }
     for (const [key, val] of laserMap) {
-        broadcast(JSON.stringify(val));
+        if (laserTimer - val.time > 1000) {
+            laserMap.delete(key);
+        } else {
+            broadcast(JSON.stringify(val));
+        }
     }
 }
 

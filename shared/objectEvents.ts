@@ -47,6 +47,7 @@ export enum Action {
     ZOrder = 'ZORDER',
     Update = 'UPDATE',
     Rename = 'RENAME',
+    Finish = 'FINISH',
 }
 
 export interface LayerState {
@@ -196,6 +197,11 @@ export interface GameNameEvent {
     entity: Entity.Meta;
     action: Action.Rename;
     newName: string;
+}
+
+export interface FinishTransmissionEvent {
+    entity: Entity.Meta;
+    action: Action.Finish;
 }
 
 export type ServerEvent =

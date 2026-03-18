@@ -18,6 +18,7 @@ import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { Box, Polyline } from './boardCanvas/boardObject.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
 import { RollMenu } from './rightBar/rollBarMenu.ts';
+const loadWall = document.getElementById('loadBlock')!;
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
@@ -159,7 +160,6 @@ export class tempStore {
                         this.createObjectLocal(message);
                     }
                 } else if (message.entity === Entity.Roll) {
-                    console.log('arrival');
                     this.rollMapping.set(message.id, message);
                 } else if (message.entity === Entity.Laser) {
                     if (message.id !== this.localNum) {
@@ -172,6 +172,10 @@ export class tempStore {
                         this.storedObjects
                             .get(message.id)!
                             .updateToken(message.token);
+                    }
+                } else if (message.entity === Entity.Meta) {
+                    if (message.action === Action.Finish) {
+                        loadWall.style.visibility = 'hidden';
                     }
                 }
             });
@@ -215,14 +219,13 @@ export class tempStore {
     setup() {
         if (!this.online) {
             this.createLayer();
-        } else {
-            this.ping();
         }
     }
 
     async ping() {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        console.log(this.socket);
+        while (this.socket!.readyState === 0) {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+        }
         this.socket!.send(
             JSON.stringify({
                 userId: this.localNum,
