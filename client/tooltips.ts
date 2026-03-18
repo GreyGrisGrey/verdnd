@@ -5,6 +5,7 @@ const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
+const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 //This probably shouldn't be its own thing.
 
 export class TooltipManager {
@@ -30,6 +31,7 @@ export class TooltipManager {
         this.bottomContent = [];
         this.setEventListeners();
         this.getData();
+        measureDegrees.value = '360';
     }
 
     async getData() {
@@ -44,6 +46,7 @@ export class TooltipManager {
             this.bottomTooltip.style.visibility = 'hidden';
             nameInput.style.visibility = 'hidden';
             nameLabel.style.visibility = 'hidden';
+            measureDegrees.style.visibility = 'hidden';
         }
     }
 
@@ -77,6 +80,7 @@ export class TooltipManager {
                 this.bottomTooltipText.innerText = this.bottomContent[i].draw;
                 nameInput.style.visibility = 'hidden';
                 nameLabel.style.visibility = 'hidden';
+                measureDegrees.style.visibility = 'hidden';
                 this.bottomTooltip.style.visibility = 'visible';
             });
 
@@ -88,6 +92,11 @@ export class TooltipManager {
             this.boxViewItems[i].addEventListener('mouseover', () => {
                 this.bottomActive = true;
                 this.bottomTooltipText.innerText = this.bottomContent[i].view;
+                if (i === 8) {
+                    measureDegrees.style.visibility = 'visible';
+                } else {
+                    measureDegrees.style.visibility = 'hidden';
+                }
                 nameInput.style.visibility = 'hidden';
                 nameLabel.style.visibility = 'hidden';
                 this.bottomTooltip.style.visibility = 'visible';
@@ -108,6 +117,7 @@ export class TooltipManager {
                     nameInput.style.visibility = 'hidden';
                     nameLabel.style.visibility = 'hidden';
                 }
+                measureDegrees.style.visibility = 'hidden';
                 this.bottomTooltip.style.visibility = 'visible';
             });
 

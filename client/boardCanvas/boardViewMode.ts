@@ -6,6 +6,7 @@ import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
+const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
@@ -90,6 +91,31 @@ export class BoardViewMode {
         }
     }
 
+    determineOffset(arcLength: number) {
+        const res = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            CoordModes.None,
+        );
+        const res2 = {
+            x: this.start.x + 0.5,
+            y: this.start.y + 0.5,
+        };
+        const rad = Math.sqrt(
+            Math.pow(Math.abs(res2.x - res.x), 2) +
+                Math.pow(Math.abs(res2.y - res.y), 2),
+        );
+        const sin = (res2.y - res.y) / rad;
+        const cos = (res.x - res2.x) / rad;
+        if (sin >= 0 && cos >= 0) {
+            return Math.asin(sin);
+        } else if (sin < 0 && cos >= 0) {
+            return 2 * Math.PI + Math.asin(sin);
+        } else {
+            return Math.PI - Math.asin(sin);
+        }
+    }
+
     // Draws the current circle created by the measuring tool.
     // Kind of looks not great, something should be done about this.
     // TODO : Do that.
@@ -117,14 +143,27 @@ export class BoardViewMode {
                 Math.pow(Math.abs(res.y - this.start.y - 0.5), 2),
         );
         ctx.beginPath();
-        ctx.arc(res2.x, res2.y, rad, 0, 2 * Math.PI);
+        const radians = (Number(measureDegrees.value) * Math.PI) / 180;
+        const offset = this.determineOffset(radians);
+        const angles = [-(offset + radians / 2), -(offset - radians / 2)];
+        if (radians !== 2 * Math.PI) {
+            ctx.lineTo(res2.x, res2.y);
+            ctx.arc(res2.x, res2.y, rad, angles[0], angles[1]);
+            ctx.lineTo(res2.x, res2.y);
+        } else {
+            ctx.arc(res2.x, res2.y, rad, angles[0], angles[1]);
+        }
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#cccccc';
         ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(res2.x, res2.y);
-        ctx.lineTo(res3.x, res3.y);
-        ctx.stroke();
+
+        if (radians >= Math.PI) {
+            ctx.beginPath();
+            ctx.moveTo(res2.x, res2.y);
+            ctx.lineTo(res3.x, res3.y);
+            ctx.stroke();
+        }
+
         ctx.font = '20px serif';
         ctx.fillStyle = '#eeeeee';
         ctx.textAlign = 'center';
@@ -137,6 +176,14 @@ export class BoardViewMode {
 
     // Adds relevant event listeners
     addEventListeners() {
+        measureDegrees.addEventListener('input', () => {
+            let value = Number(measureDegrees.value);
+            if (Number.isNaN(value) || value > 360 || value < 0) {
+                measureDegrees.value = '360';
+                value = 360;
+            }
+        });
+
         can.addEventListener('mousemove', (event) => {
             can.focus();
             if (this.board.rightMouseDown) {
