@@ -167,7 +167,7 @@ export interface ServerPacket {
 
 export interface LaserEvent {
     entity: Entity.Laser;
-    id: number;
+    id: string;
     colour: ColInst | string;
     time: number;
     coords: Vec2;

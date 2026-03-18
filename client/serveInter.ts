@@ -52,7 +52,6 @@ function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.
 export class tempStore {
-    localNum: number;
     undoMap: Map<number, any>;
     undoCreateTracker: Map<number, number>;
     storedObjects: Map<number, BoardObject>;
@@ -78,7 +77,6 @@ export class tempStore {
         newLayers: Map<number, BoardLayer>,
         newStates: Map<number, LayerState>,
     ) {
-        this.localNum = Math.round(Math.random() * 1000000) + 500;
         this.undoMap = new Map();
         this.undoCreateTracker = new Map();
         this.storedObjects = newObjects;
@@ -95,9 +93,12 @@ export class tempStore {
         this.rollMenu = null;
         this.isGm = false;
 
-        this.id = '';
-        this.pass = '';
-        this.name = '';
+        console.log(localStorage);
+        this.id =
+            localStorage['id'] ||
+            (Math.round(Math.random() * 1000000) + 500).toString();
+        this.pass = localStorage['pass'] || '1';
+        this.name = localStorage['name'] || 'wuog';
         // Switch to say if we're using local network or not
         // No doubt a better way of doing this exists, but also it's so minor I don't care.
         const online = true;
@@ -111,6 +112,7 @@ export class tempStore {
             const message = JSON.parse(event.data);
             if (message.entity === Entity.Name && message.accepted) {
                 this.id = message.id;
+                localStorage['id'] = message.id;
                 this.isGm = message.gm;
                 console.log('yay');
             } else if (message.entity === Entity.Name) {
@@ -161,7 +163,7 @@ export class tempStore {
             } else if (message.entity === Entity.Roll) {
                 this.rollMapping.set(message.id, message);
             } else if (message.entity === Entity.Laser) {
-                if (message.id !== this.localNum) {
+                if (message.id !== this.id) {
                     this.lasers.set(message.id, message);
                 }
             } else if (message.entity === Entity.Token) {
@@ -222,21 +224,23 @@ export class tempStore {
         }
         this.socket.send(
             JSON.stringify({
-                userId: this.localNum,
+                userId: this.id,
                 event: {
                     entity: Entity.Name,
-                    pass: '1',
-                    name: 'wuog',
-                    id: this.localNum.toString(),
+                    pass: this.pass,
+                    name: this.name,
+                    id: this.id,
                 },
             }),
         );
     }
 
     async signIn(name: string, pass: string, id: string) {
+        localStorage['pass'] = pass;
+        localStorage['name'] = name;
         this.socket.send(
             JSON.stringify({
-                userId: this.localNum,
+                userId: this.id,
                 event: {
                     entity: Entity.Name,
                     pass: pass,
@@ -479,7 +483,7 @@ export class tempStore {
             this.socket.send(
                 this.parcelServeEvent({
                     entity: Entity.Laser,
-                    id: this.localNum,
+                    id: this.id,
                     colour: this.board!.laserCol,
                     coords: { x: x, y: y },
                     time: Date.now(),
@@ -490,7 +494,7 @@ export class tempStore {
             this.socket.send(
                 this.parcelServeEvent({
                     entity: Entity.Laser,
-                    id: this.localNum,
+                    id: this.id,
                     colour: '#cc00cc',
                     coords: { x: 0, y: 0 },
                     time: 0,

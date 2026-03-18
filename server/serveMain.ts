@@ -29,7 +29,7 @@ let objectMap: Map<number, ObjectCreateEvent> = new Map();
 let layerMap: Map<number, LayerUpdateEvent> = new Map();
 let diceMap: Map<number, RollComplete> = new Map();
 let userMap: Map<string, boolean> = new Map();
-const laserMap: Map<number, LaserEvent> = new Map();
+const laserMap: Map<string, LaserEvent> = new Map();
 const gmMap: Map<WebSocket, boolean> = new Map();
 
 let objectLock = false;
@@ -93,7 +93,7 @@ async function setUp() {
 
 async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
-    if (userMap.has(message.userId)) {
+    if (message.event) {
         const payload = message.event;
         if (payload.entity === Entity.Object) {
             if (payload.action === Action.Create) {
@@ -119,11 +119,10 @@ async function handleEvent(event: any, ws: WebSocket) {
             return updateLaser(payload);
         } else if (payload.entity === Entity.Token) {
             return updateToken(payload.token, payload.id);
-        }
-    } else if (message.event) {
-        const payload = message.event;
-        if (payload.pass && payload.name && payload.id) {
-            return establishUser(payload, ws);
+        } else if (payload.entity === Entity.Name) {
+            if (payload.pass && payload.name && payload.id) {
+                return establishUser(payload, ws);
+            }
         }
     }
 }
@@ -362,9 +361,7 @@ async function updateToken(newToken: Token, id: number) {
 }
 
 async function establishUser(payload: NameEvent, ws: WebSocket) {
-    if (userMap.has(payload.id)) {
-        sendAll(ws);
-    }
+    console.log(userLock);
     await waitLock(userLock);
     userLock = true;
     if (await cli.verifyUser(payload.id, payload.pass)) {
@@ -419,6 +416,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         );
         console.log('user add fail');
     }
+    console.log(userLock);
     userLock = false;
     sendAll(ws);
 }

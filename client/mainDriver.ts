@@ -23,9 +23,9 @@ const tooltips = new TooltipManager();
 let prevLaser = 0;
 
 tempBox.addEventListener('click', () => {
-    const id = prompt('Id', serveInter.localNum.toString());
-    const pass = prompt('Password', '1');
-    const name = prompt('Name', 'squiggle');
+    const id = prompt('Id', serveInter.id);
+    const pass = prompt('Password', serveInter.pass);
+    const name = prompt('Name', serveInter.name);
     if (name && pass && id) {
         serveInter.signIn(name, pass, id);
     }
@@ -44,10 +44,7 @@ function setup() {
 async function mainLoop() {
     if (board.layerMap.size === 0) {
         counter = 0;
-    } else if (
-        board.modeMan.sendLaser &&
-        Date.now() - prevLaser > 30
-    ) {
+    } else if (board.modeMan.sendLaser && Date.now() - prevLaser > 30) {
         serveInter.sendLaser(
             (board.mouseCoords.x - board.offset.x) / (5 * board.zoomVal),
             (board.mouseCoords.y - board.offset.y) / (5 * board.zoomVal),
