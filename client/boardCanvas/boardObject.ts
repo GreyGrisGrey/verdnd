@@ -345,7 +345,9 @@ export class Polyline extends BoardObjectBase {
             this.location.x,
             this.location.y,
         ];
-        this.currPath.closePath();
+        if (this.shape === Shape.Polyline) {
+            this.currPath.closePath();
+        }
     }
 
     setCenter() {

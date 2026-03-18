@@ -129,44 +129,56 @@ export class BoardViewMode {
             x: res.x * squareSize + this.board.offset.x,
             y: res.y * squareSize + this.board.offset.y,
         };
-        const rad = Math.sqrt(
-            Math.pow(Math.abs(res2.x - res3.x), 2) +
-                Math.pow(Math.abs(res2.y - res3.y), 2),
-        );
-        const rad2 = Math.sqrt(
-            Math.pow(Math.abs(res.x - this.start.x - 0.5), 2) +
-                Math.pow(Math.abs(res.y - this.start.y - 0.5), 2),
-        );
-        ctx.beginPath();
-        const radians = (Number(measureDegrees.value) * Math.PI) / 180;
-        const offset = this.determineOffset(res);
-        const angles = [-(offset + radians / 2), -(offset - radians / 2)];
-        if (radians !== 2 * Math.PI) {
-            ctx.lineTo(res2.x, res2.y);
-            ctx.arc(res2.x, res2.y, rad, angles[0], angles[1]);
-            ctx.lineTo(res2.x, res2.y);
-        } else {
-            ctx.arc(res2.x, res2.y, rad, angles[0], angles[1]);
-        }
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#cccccc';
-        ctx.stroke();
+        if (Number(measureDegrees.value) > 0) {
+            const rad = Math.sqrt(
+                Math.pow(Math.abs(res2.x - res3.x), 2) +
+                    Math.pow(Math.abs(res2.y - res3.y), 2),
+            );
+            const rad2 = Math.sqrt(
+                Math.pow(Math.abs(res.x - this.start.x - 0.5), 2) +
+                    Math.pow(Math.abs(res.y - this.start.y - 0.5), 2),
+            );
+            ctx.beginPath();
+            const radians = (Number(measureDegrees.value) * Math.PI) / 180;
+            const offset = this.determineOffset(res);
+            const angles = [-(offset + radians / 2), -(offset - radians / 2)];
+            if (radians !== 2 * Math.PI) {
+                ctx.lineTo(res2.x, res2.y);
+                ctx.arc(res2.x, res2.y, rad, angles[0], angles[1]);
+                ctx.lineTo(res2.x, res2.y);
+            } else {
+                ctx.arc(res2.x, res2.y, rad, angles[0], angles[1]);
+            }
+            ctx.stroke();
 
-        if (radians >= 2 * Math.PI) {
+            if (radians >= 2 * Math.PI) {
+                ctx.beginPath();
+                ctx.moveTo(res2.x, res2.y);
+                ctx.lineTo(res3.x, res3.y);
+                ctx.stroke();
+            }
+
+            ctx.font = '20px serif';
+            ctx.fillStyle = '#eeeeee';
+            ctx.textAlign = 'center';
+            const newText = `${Math.round(rad2 * 500) / 100} feet`;
+            const textSize = ctx.measureText(newText).width;
+            ctx.fillRect(
+                res3.x - textSize / 2 - 5,
+                res3.y - 15,
+                textSize + 10,
+                25,
+            );
+            ctx.fillStyle = '#222222';
+            ctx.fillText(newText, res3.x, res3.y);
+        } else {
             ctx.beginPath();
             ctx.moveTo(res2.x, res2.y);
             ctx.lineTo(res3.x, res3.y);
             ctx.stroke();
         }
-
-        ctx.font = '20px serif';
-        ctx.fillStyle = '#eeeeee';
-        ctx.textAlign = 'center';
-        const newText = `${Math.round(rad2 * 500) / 100} feet`;
-        const textSize = ctx.measureText(newText).width;
-        ctx.fillRect(res3.x - textSize / 2 - 5, res3.y - 15, textSize + 10, 25);
-        ctx.fillStyle = '#222222';
-        ctx.fillText(newText, res3.x, res3.y);
     }
 
     // Adds relevant event listeners

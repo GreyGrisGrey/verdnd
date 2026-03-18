@@ -181,13 +181,6 @@ export class RollMenu {
         }
     }
 
-    // Constructs a bunch of chat boxes for the roll menu.
-    async constructChats() {
-        for (let i = 0; i < 50; i++) {
-            this.constructChat(i);
-        }
-    }
-
     // Constructs a single chat box for the roll menu.
     constructChat(currIndex: number) {
         const newBox = document.createElement('div');

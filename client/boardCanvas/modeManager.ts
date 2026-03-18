@@ -6,6 +6,7 @@ import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
+const modeMenu = getRequiredElement('modeMenuId', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 
@@ -69,6 +70,11 @@ export class ModeManager {
             );
             this.boxItems[i].style.left = ((i + 9) % 10) * 60 + 'px';
         }
+    }
+
+    toggleModeSwitcher(active: boolean) {
+        modeMenu.style.visibility = active ? 'visible' : 'hidden';
+        this.modeSwitch(Mode.View);
     }
 
     // Adds event listeners for all modes, as well as some of its own.

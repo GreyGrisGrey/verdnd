@@ -115,6 +115,7 @@ export class tempStore {
                 localStorage['id'] = message.id;
                 this.isGm = message.gm;
                 console.log('yay');
+                this.board!.modeMan.toggleModeSwitcher(this.isGm);
             } else if (message.entity === Entity.Name) {
                 localStorage['id'] = (
                     Math.round(Math.random() * 1000000) + 500
