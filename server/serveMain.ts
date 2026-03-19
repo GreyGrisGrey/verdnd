@@ -43,7 +43,7 @@ let currDice = 0;
 let laserTimer = 0;
 let finishedSetup = false;
 
-const currGame = 2;
+const currGame = 0;
 const play = true;
 const allGm = false;
 

@@ -6,6 +6,7 @@ import {
 } from './converter.ts';
 
 import { Client } from 'pg';
+import crypto from 'crypto';
 
 export class PostGresData {
     client: Client;
@@ -145,7 +146,10 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
             rowMode: 'array',
         };
         const result = await this.client.query(query);
-        if (result.rows.length == 1 && this.testEncrypt(suppliedPass, 'a')) {
+        if (
+            result.rows.length == 1 &&
+            this.testEncrypt(suppliedPass, result.rows[0][0])
+        ) {
             return true;
         }
         return false;
@@ -273,14 +277,27 @@ FROM information_schema.tables WHERE table_schema = 'mainschema'`,
         return result.rows[0];
     }
 
-    // currently does nothing, will continue to do nothing until encryption is set up.
+    // checks if the supplied password matches the goal password.
+    // being as we're currently using http this is only so useful, but it's better than plaintext.
     testEncrypt(startVal: string, goalVal: string) {
-        return true;
+        for (let i = 0; i < 201; i++) {
+            const hash = crypto.createHash('sha256');
+            hash.update(startVal + i.toString());
+            const res = hash.digest('hex');
+            if (res === goalVal) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    // also does nothing
+    // mediocre salting + sha256 encryption.
+    // at least the passwords aren't in plaintext anymore.
     encrypt(val: string) {
-        return 'a';
+        val += Math.round(Math.random() * 200).toString();
+        const hash = crypto.createHash('sha256');
+        hash.update(val);
+        return hash.digest('hex');
     }
 
     async delayGameLock() {
