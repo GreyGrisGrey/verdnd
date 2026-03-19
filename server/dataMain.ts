@@ -251,6 +251,7 @@ export class PostGresData {
                     rowMode: 'array',
                 });
                 const firstRes = objectTableToPayloads(first.rows);
+                tokenTableToPayloads(fourth.rows, firstRes);
                 return [
                     firstRes,
                     layerTableToPayloads(second.rows),
