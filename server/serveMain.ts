@@ -147,10 +147,19 @@ async function createObj(newObject: ObjectCreateEvent) {
     newObject.object.objectId = currObj;
     const sendObj = JSON.stringify(newObject);
     cli.addObject(currGame, objectPayloadToRow(newObject));
-    cli.addToken(currGame, tokenPayloadToRow(newObject.token, currObj));
-    currObj++;
-    objectLock = false;
-    broadcast(sendObj);
+    if (
+        !(await cli.addToken(
+            currGame,
+            tokenPayloadToRow(newObject.token, currObj),
+        ))
+    ) {
+        cli.destroyObject(currGame, currObj);
+        objectLock = false;
+    } else {
+        currObj++;
+        objectLock = false;
+        broadcast(sendObj);
+    }
 }
 
 async function destroyObj(objId: number) {
@@ -163,6 +172,7 @@ async function destroyObj(objId: number) {
         objectId: objId,
     });
     cli.destroyObject(currGame, objId);
+    cli.destroyToken(currGame, objId);
     objectLock = false;
     broadcast(sendObj);
 }
