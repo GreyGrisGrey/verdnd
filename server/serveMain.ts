@@ -36,6 +36,7 @@ let objectLock = false;
 let layerLock = false;
 let diceLock = false;
 let userLock = false;
+let dbLock = false;
 
 let currObj = 0;
 let currLayer = 0;
@@ -146,6 +147,8 @@ async function createObj(newObject: ObjectCreateEvent) {
     objectMap.set(currObj, newObject);
     newObject.object.objectId = currObj;
     const sendObj = JSON.stringify(newObject);
+    await waitLock(dbLock);
+    dbLock = true;
     cli.addObject(currGame, objectPayloadToRow(newObject));
     if (
         !(await cli.addToken(
@@ -154,9 +157,11 @@ async function createObj(newObject: ObjectCreateEvent) {
         ))
     ) {
         cli.destroyObject(currGame, currObj);
+        dbLock = false;
         objectLock = false;
     } else {
         currObj++;
+        dbLock = false;
         objectLock = false;
         broadcast(sendObj);
     }
@@ -171,8 +176,11 @@ async function destroyObj(objId: number) {
         action: Action.Destroy,
         objectId: objId,
     });
+    await waitLock(dbLock);
+    dbLock = true;
     cli.destroyObject(currGame, objId);
     cli.destroyToken(currGame, objId);
+    dbLock = false;
     objectLock = false;
     broadcast(sendObj);
 }
@@ -190,7 +198,10 @@ async function moveObj(
         currObj.object.x += xChange;
         currObj.object.y += yChange;
         const sendObj = JSON.stringify(currObj);
+        await waitLock(dbLock);
+        dbLock = true;
         cli.updateObject(currGame, objId, updateObjectToRow(currObj));
+        dbLock = false;
         objectLock = false;
         broadcast(sendObj);
     } else {
@@ -206,7 +217,10 @@ async function colourObj(objId: number, colour: string) {
     if (currObj) {
         currObj.object.colour = colour;
         const sendObj = JSON.stringify(currObj);
+        await waitLock(dbLock);
+        dbLock = true;
         cli.updateObject(currGame, objId, updateObjectToRow(currObj));
+        dbLock = false;
         objectLock = false;
         broadcast(sendObj);
     } else {
@@ -232,7 +246,10 @@ async function createLayer() {
         },
     });
     const sendObj = JSON.stringify(layerMap.get(currLayer));
+    await waitLock(dbLock);
+    dbLock = true;
     cli.addLayer(currGame, layerPayloadToRow(layerMap.get(currLayer)!));
+    dbLock = false;
     currLayer++;
     layerLock = false;
     broadcast(sendObj);
@@ -252,6 +269,8 @@ async function updateLayer(layerId: number, newLayer: LayerState) {
         action: Action.Update,
         layer: newLayer,
     });
+    await waitLock(dbLock);
+    dbLock = true;
     cli.updateLayer(
         currGame,
         layerId,
@@ -261,6 +280,7 @@ async function updateLayer(layerId: number, newLayer: LayerState) {
             layer: newLayer,
         }),
     );
+    dbLock = false;
     if (oldVis !== newLayer.playerVisible) {
         sendMasses(newLayer.id);
     }
@@ -273,7 +293,10 @@ async function destroyLayer(layerId: number) {
     layerLock = true;
     if (layerMap.size > 1) {
         layerMap.delete(layerId);
+        await waitLock(dbLock);
+        dbLock = true;
         cli.destroyLayer(currGame, layerId);
+        dbLock = false;
         layerLock = false;
         const sendObj = JSON.stringify({
             entity: Entity.Layer,
@@ -350,6 +373,8 @@ async function addDice(newDice: DicePayload, userId: string, userName: string) {
         userId: userId,
         userName: userName,
     });
+    await waitLock(dbLock);
+    dbLock = true;
     cli.addRoll(
         currGame,
         rollPayloadToRow({
@@ -361,6 +386,7 @@ async function addDice(newDice: DicePayload, userId: string, userName: string) {
             userName: userName,
         }),
     );
+    dbLock = false;
     currDice++;
     broadcast(sendObj);
     diceLock = false;
@@ -368,20 +394,25 @@ async function addDice(newDice: DicePayload, userId: string, userName: string) {
 }
 
 async function updateToken(newToken: Token, id: number) {
-    cli.updateToken(currGame, id, updateTokenToRow(newToken));
     await waitLock(objectLock);
     objectLock = true;
+    await waitLock(dbLock);
+    dbLock = true;
+    cli.updateToken(currGame, id, updateTokenToRow(newToken));
     objectMap.get(id)!.token = newToken;
     objectMap.get(id)!.object.token = newToken;
     broadcast(
         JSON.stringify({ entity: Entity.Token, id: id, token: newToken }),
     );
+    dbLock = false;
     objectLock = false;
 }
 
 async function establishUser(payload: NameEvent, ws: WebSocket) {
     await waitLock(userLock);
     userLock = true;
+    await waitLock(dbLock);
+    dbLock = true;
     if (await cli.verifyUser(payload.id, payload.pass)) {
         if (
             payload.id === 'Verdi' ||
@@ -436,13 +467,14 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         );
         console.log('user add fail');
     }
+    dbLock = false;
     userLock = false;
     sendAll(ws);
 }
 
 async function waitLock(lock: boolean) {
     while (lock) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 50));
     }
 }
 

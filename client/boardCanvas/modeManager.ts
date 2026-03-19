@@ -95,7 +95,7 @@ export class ModeManager {
         can.addEventListener('keydown', (event) => {
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
-            } else if (event.key === 'd') {
+            } else if (event.key === 'd' && this.board.serveInter.isGm) {
                 this.modeSwitch(Mode.Draw);
             } else if (event.key === 'Control') {
                 this.controlClick = true;

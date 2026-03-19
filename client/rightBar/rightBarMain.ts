@@ -13,6 +13,7 @@ const tokenTab = getRequiredElement('tokenTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
+const can = getRequiredElement('board', HTMLCanvasElement);
 
 export enum RightBarTab {
     None = 'NONE',
@@ -83,7 +84,7 @@ export class RightBarManager {
             this.toggleVisible();
         });
 
-        document.addEventListener('keydown', (event) => {
+        can.addEventListener('keydown', (event) => {
             if (event.key === 'p') {
                 this.layerMan.toggleActive(false);
                 this.rollMan.toggleActive(true);
