@@ -18,7 +18,9 @@ import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { Box, Polyline } from './boardCanvas/boardObject.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
 import { RollMenu } from './rightBar/rollBarMenu.ts';
+import { getRequiredElement } from './dom.ts';
 const loadWall = document.getElementById('loadBlock')!;
+const can = getRequiredElement('board', HTMLCanvasElement);
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
@@ -181,6 +183,8 @@ export class tempStore {
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
+                } else if (message.action === Action.Recolour) {
+                    can.style.background = message.newColour;
                 }
             }
         });
@@ -507,5 +511,15 @@ export class tempStore {
             );
             this.designal = true;
         }
+    }
+
+    sendChangeBackground(newCol: string) {
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Meta,
+                action: Action.Recolour,
+                newColour: newCol,
+            }),
+        );
     }
 }

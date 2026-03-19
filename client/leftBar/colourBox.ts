@@ -4,6 +4,7 @@ import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
+const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 
 type ColourComponent = 'red' | 'green' | 'blue' | 'alpha';
@@ -87,6 +88,12 @@ export class ColourBox {
 
         colourPicker.addEventListener('click', () => {
             this.pickColour = true;
+        });
+
+        colourBackground.addEventListener('click', () => {
+            this.board.serveInter.sendChangeBackground(
+                this.currColour.toString(),
+            );
         });
 
         colourComponents.forEach((component) => {

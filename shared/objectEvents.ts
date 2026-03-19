@@ -206,6 +206,12 @@ export interface FinishTransmissionEvent {
     action: Action.Finish;
 }
 
+export interface BackgroundColourEvent {
+    entity: Entity.Meta;
+    action: Action.Recolour;
+    newColour: string;
+}
+
 export type ServerEvent =
     | LayerCreateEvent
     | LayerDestroyEvent
@@ -217,4 +223,5 @@ export type ServerEvent =
     | RollEvent
     | LaserEvent
     | NameEvent
-    | UpdateTokenEvent;
+    | UpdateTokenEvent
+    | BackgroundColourEvent;

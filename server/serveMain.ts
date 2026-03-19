@@ -38,6 +38,7 @@ let diceLock = false;
 let userLock = false;
 let dbLock = false;
 
+let currCol = '#444444';
 let currObj = 0;
 let currLayer = 0;
 let currDice = 0;
@@ -89,6 +90,7 @@ async function setUp() {
                 currDice = val.id + 1;
             }
         }
+        currCol = res[3];
         finishedSetup = true;
     } else {
         await cli.constructGame('0');
@@ -103,34 +105,53 @@ async function handleEvent(event: any, ws: WebSocket) {
         const payload = message.event;
         if (payload.entity === Entity.Object) {
             if (payload.action === Action.Create && gmMap.get(ws)) {
-                return createObj(payload);
+                createObj(payload);
             } else if (payload.action === Action.Destroy && gmMap.get(ws)) {
-                return destroyObj(payload.objectId);
+                destroyObj(payload.objectId);
             } else if (payload.action === Action.Move) {
-                return moveObj(payload.objectId, payload.x, payload.y, ws);
+                moveObj(payload.objectId, payload.x, payload.y, ws);
             } else if (payload.action === Action.Recolour && gmMap.get(ws)) {
-                return colourObj(payload.objectId, payload.colour);
+                colourObj(payload.objectId, payload.colour);
             }
         } else if (payload.entity === Entity.Layer) {
             if (payload.action === Action.Create && gmMap.get(ws)) {
-                return createLayer();
+                createLayer();
             } else if (payload.action === Action.Destroy && gmMap.get(ws)) {
-                return destroyLayer(payload.layerId);
+                destroyLayer(payload.layerId);
             } else if (payload.action === Action.Update && gmMap.get(ws)) {
-                return updateLayer(payload.layer.id, payload.layer);
+                updateLayer(payload.layer.id, payload.layer);
             }
         } else if (payload.entity === Entity.Roll) {
-            return addDice(payload.dice, message.userId, payload.userName);
+            addDice(payload.dice, message.userId, payload.userName);
         } else if (payload.entity === Entity.Laser) {
-            return updateLaser(payload);
+            updateLaser(payload);
         } else if (payload.entity === Entity.Token && gmMap.get(ws)) {
-            return updateToken(payload.token, payload.id);
+            updateToken(payload.token, payload.id);
         } else if (payload.entity === Entity.Name) {
             if (payload.pass && payload.name && payload.id) {
-                return establishUser(payload, ws);
+                establishUser(payload, ws);
             }
+        } else if (payload.entity === Entity.Meta && gmMap.get(ws)) {
+            console.log(payload.newColour);
+            console.log(currCol);
+            updateBackground(payload.newColour);
         }
     }
+}
+
+async function updateBackground(newCol: string) {
+    await waitLock(dbLock);
+    dbLock = true;
+    cli.updateGame(currGame, newCol);
+    currCol = newCol;
+    dbLock = false;
+    broadcast(
+        JSON.stringify({
+            entity: Entity.Meta,
+            action: Action.Recolour,
+            newColour: currCol,
+        }),
+    );
 }
 
 async function updateLaser(payload: LaserEvent) {
@@ -356,7 +377,6 @@ async function addDice(newDice: DicePayload, userId: string, userName: string) {
     }
     await waitLock(diceLock);
     diceLock = true;
-    console.log(userName);
     diceMap.set(currDice, {
         entity: Entity.Roll,
         action: Action.Update,
@@ -503,6 +523,13 @@ async function sendAll(ws: WebSocket) {
         await new Promise((resolve) => setTimeout(resolve, 2));
         ws.send(JSON.stringify(val));
     }
+    ws.send(
+        JSON.stringify({
+            entity: Entity.Meta,
+            action: Action.Recolour,
+            newColour: currCol,
+        }),
+    );
     ws.send(JSON.stringify({ entity: Entity.Meta, action: Action.Finish }));
 }
 

@@ -55,7 +55,7 @@ export class PostGresData {
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text)`,
+                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text, BgColour text)`,
                 rowMode: 'array',
             });
             await this.client.query({
@@ -211,7 +211,7 @@ export class PostGresData {
     async checkGame(gameId: number) {
         try {
             const res = await this.client.query({
-                text: `SELECT gameId FROM mainschema.games WHERE gameId = ${gameId}`,
+                text: `SELECT GameId FROM mainschema.games WHERE GameId = ${gameId}`,
                 rowMode: 'array',
             });
             if (res.rows.length > 0) {
@@ -246,12 +246,16 @@ export class PostGresData {
                     text: `SELECT * FROM mainschema.tokens${gameId}`,
                     rowMode: 'array',
                 });
+                const fifth = await this.client.query({
+                    text: `SELECT BgColour FROM mainschema.games WHERE GameId = ${gameId}`,
+                    rowMode: 'array',
+                });
                 const firstRes = objectTableToPayloads(first.rows);
                 return [
                     firstRes,
                     layerTableToPayloads(second.rows),
                     rollTableToPayloads(third.rows),
-                    tokenTableToPayloads(fourth.rows, firstRes),
+                    fifth.rows[0][0],
                 ];
             }
             return false;
@@ -260,6 +264,18 @@ export class PostGresData {
                 `Database error: Could not get game with Id ${gameId}`,
                 err,
             );
+            return false;
+        }
+    }
+
+    async updateGame(gameId: number, newCol: string) {
+        try {
+            await this.client.query({
+                text: `UPDATE mainschema.games SET BgColour = '${newCol}' WHERE GameId = ${gameId}`,
+            });
+            return true;
+        } catch (err) {
+            console.log(`Database error: Could not update game ${gameId}`, err);
             return false;
         }
     }
@@ -424,7 +440,7 @@ export class PostGresData {
             const result = await this.client.query(query);
 
             await this.client.query({
-                text: `INSERT INTO mainschema.games VALUES ('${result.rows[0]}', '${gmId}')`,
+                text: `INSERT INTO mainschema.games VALUES ('${result.rows[0]}', '${gmId}', '#444444')`,
                 rowMode: 'array',
             });
             await this.client.query({
