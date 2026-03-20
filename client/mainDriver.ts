@@ -23,7 +23,12 @@ const tooltips = new TooltipManager();
 let prevLaser = 0;
 
 tempBox.addEventListener('click', () => {
-    localStorage['game'] = Number(localStorage['game']) === 1 ? 0 : 1;
+    const id = prompt('Id', serveInter.id);
+    const pass = prompt('Password', serveInter.pass);
+    const name = prompt('Name', serveInter.name);
+    if (name && pass && id) {
+        serveInter.signIn(name, pass, id);
+    }
 });
 
 serveInter.setBoard(board);

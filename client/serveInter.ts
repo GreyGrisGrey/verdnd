@@ -96,9 +96,7 @@ export class tempStore {
         this.rollMenu = null;
         this.isGm = false;
 
-        console.log(localStorage);
-        console.log(window.location);
-        this.currGame = localStorage['game'] || 0;
+        this.currGame = Number(window.location.pathname.split('/')[2]) | 0;
         this.id =
             localStorage['id'] ||
             (Math.round(Math.random() * 1000000) + 500).toString();

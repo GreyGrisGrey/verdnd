@@ -17,7 +17,6 @@ const server = createServer((req: any, res: any) => {
             const split = req.url.split('.');
             if (split.length === 1) {
                 const split2 = req.url.split('/');
-                console.log(split2);
                 if (split2.length === 2) {
                     req.url = 'pages/' + req.url + '.html';
                 } else {
