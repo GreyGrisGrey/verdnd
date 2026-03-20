@@ -81,4 +81,21 @@ export class GameObject {
             return false;
         }
     }
+
+    async broadcast(newMessage: string, layerId: number = -1) {
+        console.log(newMessage);
+        if (newMessage) {
+            this.userMap.forEach((player) => {
+                if (player.ws.readyState === WebSocket.OPEN) {
+                    if (
+                        layerId === -1 ||
+                        this.layerMap.get(layerId)!.layer.playerVisible ||
+                        player.isGm
+                    ) {
+                        player.ws.send(newMessage!, { binary: false });
+                    }
+                }
+            });
+        }
+    }
 }
