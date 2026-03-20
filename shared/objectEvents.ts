@@ -213,6 +213,11 @@ export interface BackgroundColourEvent {
     newColour: string;
 }
 
+export interface ConstructGameEvent {
+    entity: Entity.Meta;
+    action: Action.Create;
+}
+
 export type ServerEvent =
     | LayerCreateEvent
     | LayerDestroyEvent

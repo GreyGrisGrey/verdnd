@@ -20,7 +20,7 @@ const server = createServer((req: any, res: any) => {
                 if (split2.length === 2) {
                     req.url = 'pages/' + req.url + '.html';
                 } else {
-                    req.url = 'pages/second.html';
+                    req.url = 'pages/game.html';
                 }
             } else {
                 req.url = req.url.split('/').slice(2).join('/');

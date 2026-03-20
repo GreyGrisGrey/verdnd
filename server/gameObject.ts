@@ -74,6 +74,9 @@ export class GameObject {
             }
             this.currCol = res[3];
             this.finishedSetup = true;
+            if (this.currLayer === 0) {
+                return false;
+            }
             return true;
         } else {
             await cli.constructGame('0');

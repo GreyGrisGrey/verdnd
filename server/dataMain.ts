@@ -435,7 +435,7 @@ export class PostGresData {
             await this.delayGameLock();
             this.gameLock = true;
             const query = {
-                text: 'SELECT freeGame FROM mainschema.meta',
+                text: 'SELECT FreeGame FROM mainschema.meta',
                 rowMode: 'array',
             };
             const result = await this.client.query(query);

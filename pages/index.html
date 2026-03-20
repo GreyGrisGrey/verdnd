@@ -1,6 +1,30 @@
 <a href="registration">Please sign up or something man.</a>
 <a href="game/0">Visit game 0, for real!</a>
 <a href="game/1">Visit game 1, for real!</a>
+<button id="newGame">Make a NEW game</button>
 <script>
-    console.log(localStorage);
+    const ws = new WebSocket('ws://47.55.46.138:4322/');
+
+    ws.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        alert(message)
+        window.location.pathname = "/game/" + message.newId
+    })
+
+    newGame.addEventListener('click', () => {
+        if (ws.readyState === 0) {
+            alert("jeez man leave 0.01 seconds for the websocket to connect")
+        } else {
+            ws.send(
+                JSON.stringify({
+                    userId: "aa",
+                    event: {
+                        entity: 'META',
+                        action: 'CREATE'
+                    },
+                    gameId: -2
+                }),
+            );
+        }
+    })
 </script>

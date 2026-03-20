@@ -26,6 +26,9 @@ const cli = new PostGresData();
 const gameMap: Map<number, GameObject> = new Map();
 constructGame(0);
 constructGame(1);
+constructGame(4);
+constructGame(5);
+constructGame(6);
 
 const gmMap: Map<WebSocket, boolean> = new Map();
 const allGm = false;
@@ -57,6 +60,7 @@ async function constructGame(gameId: number) {
     const newGame = new GameObject(gameId);
     gameMap.set(gameId, newGame);
     const res = await newGame.setUp(cli);
+    console.log(res);
     if (!res) {
         createLayer(newGame);
     }
@@ -75,6 +79,16 @@ async function handleEvent(event: any, ws: WebSocket) {
             payload.id
         ) {
             establishUser(payload, ws, null);
+        } else if (
+            payload.entity === Entity.Meta &&
+            payload.action === Action.Create
+        ) {
+            const res = await cli.constructGame('0');
+            if (res) {
+                await constructGame(res[0]);
+                console.log(gameMap);
+                ws.send(JSON.stringify({ newId: res }));
+            }
         }
         if (!currGame) {
             return;
@@ -100,7 +114,7 @@ async function handleEvent(event: any, ws: WebSocket) {
         } else if (payload.entity === Entity.Roll) {
             addDice(payload.dice, message.userId, payload.userName, currGame);
         } else if (payload.entity === Entity.Laser) {
-            return;
+            updateLaser(payload, currGame);
         } else if (payload.entity === Entity.Token && gmMap.get(ws)) {
             updateToken(payload.token, payload.id, currGame);
         } else if (payload.entity === Entity.Name) {
