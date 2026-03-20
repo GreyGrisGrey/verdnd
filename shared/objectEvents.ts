@@ -165,6 +165,7 @@ export interface RollResult {
 export interface ServerPacket {
     userId: string;
     event: ServerEvent;
+    gameId: number;
 }
 
 export interface LaserEvent {

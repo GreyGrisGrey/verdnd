@@ -232,14 +232,11 @@ export class tempStore {
             await new Promise((resolve) => setTimeout(resolve, 10));
         }
         this.socket.send(
-            JSON.stringify({
-                userId: this.id,
-                event: {
-                    entity: Entity.Name,
-                    pass: this.pass,
-                    name: this.name,
-                    id: this.id,
-                },
+            this.parcelServeEvent({
+                entity: Entity.Name,
+                pass: this.pass,
+                name: this.name,
+                id: this.id,
             }),
         );
     }
@@ -248,14 +245,11 @@ export class tempStore {
         localStorage['pass'] = pass;
         localStorage['name'] = name;
         this.socket.send(
-            JSON.stringify({
-                userId: this.id,
-                event: {
-                    entity: Entity.Name,
-                    pass: pass,
-                    name: name,
-                    id: id,
-                },
+            this.parcelServeEvent({
+                entity: Entity.Name,
+                pass: pass,
+                name: name,
+                id: id,
             }),
         );
     }
@@ -485,6 +479,7 @@ export class tempStore {
         return JSON.stringify({
             userId: this.id,
             event: payload,
+            gameId: 0,
         });
     }
 
