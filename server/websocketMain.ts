@@ -24,11 +24,6 @@ import WebSocket, { WebSocketServer } from 'ws';
 const cli = new PostGresData();
 
 const gameMap: Map<number, GameObject> = new Map();
-constructGame(0);
-constructGame(1);
-constructGame(4);
-constructGame(5);
-constructGame(6);
 
 const gmMap: Map<WebSocket, boolean> = new Map();
 const allGm = false;
@@ -70,7 +65,7 @@ async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
     if (message.event) {
         const payload = message.event;
-        const currGame = gameMap.get(Number(message.gameId));
+        let currGame = gameMap.get(Number(message.gameId));
         if (
             message.gameId === -1 &&
             payload.entity === Entity.Name &&
@@ -86,12 +81,20 @@ async function handleEvent(event: any, ws: WebSocket) {
             const res = await cli.constructGame('0');
             if (res) {
                 await constructGame(res[0]);
-                console.log(gameMap);
                 ws.send(JSON.stringify({ newId: res }));
             }
         }
         if (!currGame) {
-            return;
+            const res = await cli.checkGame(Number(message.gameId));
+            if (res) {
+                await constructGame(Number(message.gameId));
+                currGame = gameMap.get(Number(message.gameId));
+                if (!currGame) {
+                    return;
+                }
+            } else {
+                return;
+            }
         }
         if (payload.entity === Entity.Object) {
             if (payload.action === Action.Create && gmMap.get(ws)) {

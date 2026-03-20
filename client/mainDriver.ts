@@ -46,8 +46,14 @@ async function mainLoop() {
         counter = 0;
     } else if (board.modeMan.sendLaser && Date.now() - prevLaser > 30) {
         serveInter.sendLaser(
-            (board.mouseCoords.x - board.offset.x) / (5 * board.zoomVal),
-            (board.mouseCoords.y - board.offset.y) / (5 * board.zoomVal),
+            Math.round(
+                ((board.mouseCoords.x - board.offset.x) / (5 * board.zoomVal)) *
+                    200,
+            ) / 200,
+            Math.round(
+                ((board.mouseCoords.y - board.offset.y) / (5 * board.zoomVal)) *
+                    200,
+            ) / 200,
             true,
         );
         prevLaser = Date.now();
