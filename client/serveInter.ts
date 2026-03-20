@@ -96,6 +96,7 @@ export class tempStore {
         this.isGm = false;
 
         console.log(localStorage);
+        console.log(window.location);
         this.id =
             localStorage['id'] ||
             (Math.round(Math.random() * 1000000) + 500).toString();
