@@ -73,6 +73,7 @@ export class tempStore {
     id: string;
     pass: string;
     name: string;
+    currGame: number;
 
     constructor(
         newObjects: Map<number, BoardObject>,
@@ -97,6 +98,7 @@ export class tempStore {
 
         console.log(localStorage);
         console.log(window.location);
+        this.currGame = localStorage['game'] || 0;
         this.id =
             localStorage['id'] ||
             (Math.round(Math.random() * 1000000) + 500).toString();
@@ -479,7 +481,7 @@ export class tempStore {
         return JSON.stringify({
             userId: this.id,
             event: payload,
-            gameId: 0,
+            gameId: this.currGame,
         });
     }
 

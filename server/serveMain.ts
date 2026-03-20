@@ -62,8 +62,8 @@ server.listen(port, hostname, () => {
 });
 
 const gameMap: Map<number, GameObject> = new Map();
-gameMap.set(0, new GameObject(0, cli));
-gameMap.set(1, new GameObject(1, cli));
+constructGame(0);
+constructGame(1);
 
 const gmMap: Map<WebSocket, boolean> = new Map();
 const allGm = false;
@@ -88,15 +88,35 @@ wss.on('connection', async function connection(ws) {
     console.log('connection established');
 });
 
+async function constructGame(gameId: number) {
+    if (gameMap.has(gameId)) {
+        return true;
+    }
+    const newGame = new GameObject(gameId);
+    gameMap.set(gameId, newGame);
+    const res = await newGame.setUp(cli);
+    if (!res) {
+        createLayer(newGame);
+    }
+}
+
 async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
     if (message.event) {
-        const currGame = gameMap.get(message.gameId);
-        console.log(message.gameId);
+        const payload = message.event;
+        const currGame = gameMap.get(Number(message.gameId));
+        if (
+            message.gameId === -1 &&
+            payload.entity === Entity.Name &&
+            payload.pass &&
+            payload.name &&
+            payload.id
+        ) {
+            establishUser(payload, ws, null);
+        }
         if (!currGame) {
             return;
         }
-        const payload = message.event;
         if (payload.entity === Entity.Object) {
             if (payload.action === Action.Create && gmMap.get(ws)) {
                 createObj(payload, currGame);
@@ -143,6 +163,7 @@ async function updateBackground(newCol: string, currGame: GameObject) {
             action: Action.Recolour,
             newColour: currGame.currCol,
         }),
+        currGame,
     );
 }
 
@@ -176,7 +197,7 @@ async function createObj(newObject: ObjectCreateEvent, currGame: GameObject) {
         currGame.currObj++;
         dbLock = false;
         objectLock = false;
-        broadcast(sendObj);
+        broadcast(sendObj, currGame);
     }
 }
 
@@ -195,7 +216,7 @@ async function destroyObj(objId: number, currGame: GameObject) {
     cli.destroyToken(currGame.gameId, objId);
     dbLock = false;
     objectLock = false;
-    broadcast(sendObj);
+    broadcast(sendObj, currGame);
 }
 
 async function moveObj(
@@ -217,7 +238,7 @@ async function moveObj(
         cli.updateObject(currGame.gameId, objId, updateObjectToRow(currObj));
         dbLock = false;
         objectLock = false;
-        broadcast(sendObj);
+        broadcast(sendObj, currGame);
     } else {
         objectLock = false;
         return 'NONE';
@@ -236,7 +257,7 @@ async function colourObj(objId: number, colour: string, currGame: GameObject) {
         cli.updateObject(currGame.gameId, objId, updateObjectToRow(currObj));
         dbLock = false;
         objectLock = false;
-        broadcast(sendObj);
+        broadcast(sendObj, currGame);
     } else {
         objectLock = false;
         return 'NONE';
@@ -269,7 +290,7 @@ async function createLayer(currGame: GameObject) {
     dbLock = false;
     currGame.currLayer++;
     layerLock = false;
-    broadcast(sendObj);
+    broadcast(sendObj, currGame);
 }
 
 async function updateLayer(
@@ -306,7 +327,7 @@ async function updateLayer(
         sendMasses(newLayer.id, currGame);
     }
     layerLock = false;
-    broadcast(sendObj);
+    broadcast(sendObj, currGame);
 }
 
 async function destroyLayer(layerId: number, currGame: GameObject) {
@@ -324,7 +345,7 @@ async function destroyLayer(layerId: number, currGame: GameObject) {
             action: Action.Destroy,
             layerId: layerId,
         });
-        broadcast(sendObj);
+        broadcast(sendObj, currGame);
     }
     layerLock = false;
 }
@@ -413,7 +434,7 @@ async function addDice(
     );
     dbLock = false;
     currGame.currDice++;
-    broadcast(sendObj);
+    broadcast(sendObj, currGame);
     diceLock = false;
     return sendObj;
 }
@@ -428,6 +449,7 @@ async function updateToken(newToken: Token, id: number, currGame: GameObject) {
     currGame.objectMap.get(id)!.object.token = newToken;
     broadcast(
         JSON.stringify({ entity: Entity.Token, id: id, token: newToken }),
+        currGame,
     );
     dbLock = false;
     objectLock = false;
@@ -436,7 +458,7 @@ async function updateToken(newToken: Token, id: number, currGame: GameObject) {
 async function establishUser(
     payload: NameEvent,
     ws: WebSocket,
-    currGame: GameObject,
+    currGame: GameObject | null,
 ) {
     await waitLock(userLock);
     userLock = true;
@@ -460,6 +482,9 @@ async function establishUser(
                 }),
             );
             console.log('user add success');
+            if (currGame) {
+                currGame.addUser(payload.name, payload.id, true, ws);
+            }
         } else {
             gmMap.set(ws, allGm);
             userMap.set(payload.id, true);
@@ -472,6 +497,9 @@ async function establishUser(
                 }),
             );
             console.log('user add success');
+            if (currGame) {
+                currGame.addUser(payload.name, payload.id, allGm, ws);
+            }
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
         gmMap.set(ws, allGm);
@@ -485,6 +513,9 @@ async function establishUser(
             }),
         );
         console.log('user add success');
+        if (currGame) {
+            currGame.addUser(payload.name, payload.id, allGm, ws);
+        }
     } else {
         ws.send(
             JSON.stringify({
@@ -498,7 +529,9 @@ async function establishUser(
     }
     dbLock = false;
     userLock = false;
-    sendAll(ws, currGame);
+    if (currGame) {
+        sendAll(ws, currGame);
+    }
 }
 
 async function waitLock(lock: boolean) {
@@ -560,19 +593,18 @@ async function sendAllLasers(currGame: GameObject) {
 
 async function broadcast(
     newMessage: string,
-    currGame: GameObject | null = null,
+    currGame: GameObject,
     layerId: number = -1,
 ) {
     if (newMessage) {
-        wss.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
+        currGame.userMap.forEach(function each(player) {
+            if (player.ws.readyState === WebSocket.OPEN) {
                 if (
                     layerId === -1 ||
-                    (currGame &&
-                        currGame.layerMap.get(layerId)!.layer.playerVisible) ||
-                    gmMap.get(client)
+                    currGame.layerMap.get(layerId)!.layer.playerVisible ||
+                    player.isGm
                 ) {
-                    client.send(newMessage!, { binary: false });
+                    player.ws.send(newMessage!, { binary: false });
                 }
             }
         });

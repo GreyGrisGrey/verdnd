@@ -5,12 +5,14 @@ import type {
     RollComplete,
 } from '../shared/objectEvents.ts';
 import { PostGresData } from './dataMain.ts';
+import { PlayerPacket } from './gamePlayerPacket.ts';
+import WebSocket from 'ws';
 
 export class GameObject {
     objectMap: Map<number, ObjectCreateEvent>;
     layerMap: Map<number, LayerUpdateEvent>;
     diceMap: Map<number, RollComplete>;
-    userMap: Map<string, boolean>;
+    userMap: Map<string, PlayerPacket>;
     laserMap: Map<string, LaserEvent>;
     currCol: string;
     currObj: number;
@@ -22,7 +24,7 @@ export class GameObject {
     play: boolean;
     gameId: number;
 
-    constructor(gameId: number, cli: PostGresData) {
+    constructor(gameId: number) {
         this.objectMap = new Map();
         this.layerMap = new Map();
         this.diceMap = new Map();
@@ -39,7 +41,10 @@ export class GameObject {
         this.allGm = false;
         this.play = true;
         this.gameId = gameId;
-        this.setUp(cli);
+    }
+
+    addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {
+        this.userMap.set(id, new PlayerPacket(newUser, id, gm, ws));
     }
 
     async setUp(cli: PostGresData) {
@@ -69,7 +74,6 @@ export class GameObject {
             }
             this.currCol = res[3];
             this.finishedSetup = true;
-            console.log('aaa');
             return true;
         } else {
             await cli.constructGame('0');
