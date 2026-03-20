@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+</head>
+
+<body>
+    <slot />
+    <button id="signinTemporary">Change User</button>
+
+    <title>Gameboard</title>
+    <div id="loadBlock">
+        <h1 id="loadText">Loading</h1>
+    </div>
+    <style>
+        #loadBlock {
+            background: #222222;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 3000px;
+            height: 3000px;
+            z-index: 99;
+        }
+
+        #loadText {
+            position: absolute;
+            color: #3333dd;
+            left: 500px;
+            top: 300px;
+            z-index: 99;
+        }
+    </style>
+
+    <div id="modeMenuId">
+        <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
+        <button class="modeButton" id="drawMenuButton">Draw [D]</button>
+    </div>
+
+    <div id="bottomBar">
+        <div id="bottomTooltip">
+            <p id="bottomTooltipText"></p>
+            <input type="text" id="tokenName" />
+            <label id="tokenNameLabel">Insert token name:</label>
+            <input type="text" id="measureDegrees" />
+        </div>
+        <div class="bottomBox" id="bottomBox1">
+            <button class="bottomDrawBox" id="bottomDrawBox1">Rect [1]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox1">Exit [1] [Esc]</button>
+            <button class="bottomViewBox" id="bottomViewBox1">WIP1</button>
+        </div>
+        <div class="bottomBox" id="bottomBox2">
+            <button class="bottomDrawBox" id="bottomDrawBox2">Ellipse [2]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox2">Delete [2] [Back]</button>
+            <button class="bottomViewBox" id="bottomViewBox2">Zoom [Scroll]</button>
+        </div>
+        <div class="bottomBox" id="bottomBox3">
+            <button class="bottomDrawBox" id="bottomDrawBox3">Poly [3]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox3">Recolour [3]</button>
+            <button class="bottomViewBox" id="bottomViewBox3">Pan</button>
+        </div>
+        <div class="bottomBox" id="bottomBox4">
+            <button class="bottomDrawBox" id="bottomDrawBox4">Wall [4]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox4">LUp WIP1 [4]</button>
+            <button class="bottomViewBox" id="bottomViewBox4">Move</button>
+        </div>
+        <div class="bottomBox" id="bottomBox5">
+            <button class="bottomDrawBox" id="bottomDrawBox5">Close [5]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox5">LDown WIP2 [5]</button>
+            <button class="bottomViewBox" id="bottomViewBox5">Recenter</button>
+        </div>
+        <div class="bottomBox" id="bottomBox6">
+            <button class="bottomDrawBox" id="bottomDrawBox6">Select [6]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox6">Tokenize [6]</button>
+            <button class="bottomViewBox" id="bottomViewBox6">Toggle Laser</button>
+        </div>
+        <div class="bottomBox" id="bottomBox7">
+            <button class="bottomDrawBox" id="bottomDrawBox7">Cancel [7]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox7">Rename (T) [7]</button>
+            <button class="bottomViewBox" id="bottomViewBox7">Recolour Laser</button>
+        </div>
+        <div class="bottomBox" id="bottomBox8">
+            <button class="bottomDrawBox" id="bottomDrawBox8">WIP1 [8]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox8">Recolour (T) [8]</button>
+            <button class="bottomViewBox" id="bottomViewBox8">Start Measure</button>
+        </div>
+        <div class="bottomBox" id="bottomBox9">
+            <button class="bottomDrawBox" id="bottomDrawBox9">WIP2 [9]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox9">WIP3 [9]</button>
+            <button class="bottomViewBox" id="bottomViewBox9">Stop Measure</button>
+        </div>
+        <div class="bottomBox" id="bottomBox0">
+            <button class="bottomDrawBox" id="bottomDrawBox0">WIP3 [0]</button>
+            <button class="bottomSelectBox" id="bottomSelectBox0">WIP4 [0]</button>
+            <button class="bottomViewBox" id="bottomViewBox0">WIP2</button>
+        </div>
+    </div>
+
+    <style>
+        #bottomTooltip {
+            position: absolute;
+            height: 60px;
+            width: 400px;
+            bottom: 60px;
+            left: 100px;
+            visibility: hidden;
+            background-color: #eeeeee;
+            border: solid black;
+            font-size: 12px;
+        }
+
+        #bottomBar {
+            position: absolute;
+            height: 60px;
+            width: 600px;
+            bottom: 30px;
+            background-color: rgba(200, 200, 200, 1);
+            border: solid black;
+            z-index: 9;
+            left: 400px;
+            font-size: 8px;
+        }
+
+        .bottomBox {
+            position: absolute;
+            height: 56px;
+            width: 56px;
+            bottom: 0px;
+            left: 0px;
+            background-color: #c8c8c8;
+            border: solid black;
+        }
+
+        .bottomDrawBox {
+            position: absolute;
+            height: 56px;
+            width: 56px;
+            bottom: 0px;
+            left: 0px;
+            font-size: 12px;
+        }
+
+        .bottomSelectBox {
+            position: absolute;
+            height: 56px;
+            width: 56px;
+            bottom: 0px;
+            left: 0px;
+            visibility: hidden;
+            font-size: 12px;
+        }
+
+        .bottomViewBox {
+            position: absolute;
+            height: 56px;
+            width: 56px;
+            bottom: 0px;
+            left: 0px;
+            visibility: hidden;
+            font-size: 12px;
+        }
+
+        .bottomDrawBox:disabled {
+            background-color: #aaaaaa;
+        }
+
+        .bottomSelectBox:disabled {
+            background-color: #aaaaaa;
+        }
+
+        .bottomViewBox:disabled {
+            background-color: #aaaaaa;
+        }
+    </style>
+
+    <div id="rightBar">
+        <button class="rightTab" id="hideRightBar">Hide</button>
+
+        <button class="rightTab" id="rollTab">Roll [P]</button>
+        <button class="rightTab" id="tokenTab">T</button>
+        <button class="rightTab" id="layerTab">Layers [L]</button>
+        <button class="rightTab" id="characterTab">C</button>
+
+        <div id="chatBox">
+            <textarea id="chatBoxTextBox"></textarea>
+        </div>
+        <div id="layerLayerObj">
+            <div id="layerTop">
+                <p id="layerText">Edit Layer</p>
+                <p id="currLayerText">Currently Selected : Layer 0</p>
+                <p id="renameLayerText">Name:</p>
+                <p id="xLayerText">X offset:</p>
+                <p id="yLayerText">Y offset:</p>
+                <input id="rename">
+                </input>
+                <input id="xChange">
+                </input>
+                <input id="yChange">
+                </input>
+                <button id="layerUpButton">Move Up</button>
+                <button id="layerDownButton">Move Down</button>
+                <button id="deleteLayerButton">Remove Current Layer</button>
+            </div>
+            <div id="layerMid">
+                <div id="descLayerObj">
+                    <p id="descLayerObjNumText">Layer #</p>
+                    <p id="descLayerObjFirstCheck">GM<br>Vis</p>
+                    <p id="descLayerObjSecondCheck">Player<br>Vis</p>
+                </div>
+                <button id="tempButtonObj">Make Layer</button>
+            </div>
+            <div id="layerBottom"></div>
+        </div>
+    </div>
+
+    <style>
+        #signinTemporary {
+            position: absolute;
+            top: 5px;
+            left: 600px;
+            z-index: 7;
+        }
+
+        #layerUpButton {
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 40px;
+            height: 40px;
+            border-radius: 0px;
+            border: 2px solid #000000;
+            z-index: 3;
+        }
+
+        #layerDownButton {
+            position: absolute;
+            right: 0px;
+            top: 40px;
+            width: 40px;
+            height: 40px;
+            border-radius: 0px;
+            border: 2px solid #000000;
+            z-index: 3;
+        }
+
+        #layerText {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        #currLayerText {
+            position: absolute;
+            top: 45px;
+            left: 10px;
+        }
+
+        #rename {
+            position: absolute;
+            top: 90px;
+            left: 70px;
+        }
+
+        #renameLayerText {
+            position: absolute;
+            top: 77px;
+            left: 10px;
+        }
+
+        #xChange {
+            position: absolute;
+            top: 130px;
+            left: 70px;
+        }
+
+        #xLayerText {
+            position: absolute;
+            top: 117px;
+            left: 10px;
+        }
+
+        #yChange {
+            position: absolute;
+            top: 170px;
+            left: 70px;
+        }
+
+        #yLayerText {
+            position: absolute;
+            top: 157px;
+            left: 10px;
+        }
+
+        #layerLayerObj {
+            background-color: #cccccc;
+            font-size: 14px;
+            visibility: hidden;
+        }
+
+        #layerTop {
+            position: absolute;
+            width: 250px;
+            top: 0px;
+            height: 250px;
+            width: 246px;
+            border: solid black;
+        }
+
+        #layerMid {
+            position: absolute;
+            width: 250px;
+            top: 255px;
+            height: 100px;
+            border: black;
+        }
+
+        #layerBottom {
+            position: absolute;
+            width: 250px;
+            top: 350px;
+            height: 250px;
+            border: black;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        #descLayerObj {
+            border: solid black;
+            width: 250px;
+            height: 50px;
+            position: absolute;
+            top: 0px;
+        }
+
+        #descLayerObjFirstCheck {
+            position: absolute;
+            left: 187px;
+            width: 50px;
+            text-align: center;
+        }
+
+        #descLayerObjSecondCheck {
+            position: absolute;
+            left: 137px;
+            width: 50px;
+            text-align: center;
+        }
+
+        #tempButtonObj {
+            position: absolute;
+            left: 0px;
+            width: 246px;
+            top: 50px;
+            height: 50px;
+            border-radius: 0px;
+            border: 2px solid #000000;
+            z-index: 3;
+        }
+
+        #deleteLayerButton {
+            position: absolute;
+            left: 0px;
+            width: 246px;
+            bottom: 0px;
+            height: 50px;
+            border-radius: 0px;
+            border: 2px solid #000000;
+            z-index: 3;
+        }
+
+        #descLayerObjNumText {
+            position: absolute;
+            left: 10px;
+        }
+    </style>
+
+    <style>
+        #chatBox {
+            position: absolute;
+            background-color: #cccccc;
+            visibility: hidden;
+            pointer-events: none;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        #chatBoxTextBox {
+            background-color: #cccccc;
+            visibility: hidden;
+            pointer-events: none;
+        }
+    </style>
+    <div id="leftBar">
+        <button id="hideLeftBar">Hide</button>
+        <div id="colContainer">
+            <input type="range" id="redColSlide" min="0" max="255" />
+            <label class="colLabel" id="redLabel">R</label>
+            <input type="text" id="redColText" />
+            <input type="range" id="greenColSlide" min="0" max="255" />
+            <label class="colLabel" id="greenLabel">G</label>
+            <input type="text" id="greenColText" />
+            <input type="range" id="blueColSlide" min="0" max="255" />
+            <label class="colLabel" id="blueLabel">B</label>
+            <input type="text" id="blueColText" />
+            <input type="range" id="opacColSlide" min="0" max="100" />
+            <label class="colLabel" id="opacLabel">O</label>
+            <input type="text" id="opacColText" />
+            <canvas id="colourSquare"></canvas>
+
+            <button class="colourTab" id="colourPicker"> Pick </button>
+            <button class="colourTab" id="colourBackground"> BG </button>
+
+            <button class="colourTab" id="col1"> </button>
+            <button class="colourTab" id="col2"> </button>
+            <button class="colourTab" id="col3"> </button>
+            <button class="colourTab" id="col4"> </button>
+            <button class="colourTab" id="col5"> </button>
+            <button class="colourTab" id="col6"> </button>
+        </div>
+
+        <div id="rollContainer">
+        </div>
+    </div>
+
+    <style>
+        #hideLeftBar {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.25);
+            left: 260px;
+            width: 40px;
+            top: 88px;
+            border: solid black;
+            height: 30px;
+            pointer-events: auto;
+        }
+
+        #hideRightBar {
+            position: absolute;
+            top: 10px;
+        }
+
+        #colourPicker {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.25);
+            left: 260px;
+            width: 40px;
+        }
+
+        #colourBackground {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.25);
+            left: 260px;
+            width: 40px;
+            top: 48px;
+        }
+
+        .colLabel {
+            position: absolute;
+            left: 10px;
+        }
+
+        #redLabel {
+            top: 45px;
+        }
+
+        #greenLabel {
+            top: 75px;
+        }
+
+        #blueLabel {
+            top: 105px;
+        }
+
+        #opacLabel {
+            top: 135px;
+        }
+
+        #colContainer {
+            pointer-events: auto;
+        }
+
+        .colourTab {
+            background-color: rgba(200, 200, 200, 1);
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            top: 8px;
+            border: solid black;
+        }
+
+        #leftBar {
+            background-color: rgba(200, 200, 200, 1);
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 250px;
+            height: 280px;
+            border: solid black;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        #redColSlide {
+            position: absolute;
+            top: 45px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #redColText {
+            position: absolute;
+            top: 45px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #greenColSlide {
+            position: absolute;
+            top: 75px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #greenColText {
+            position: absolute;
+            top: 75px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #blueColSlide {
+            position: absolute;
+            top: 105px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #blueColText {
+            position: absolute;
+            top: 105px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #opacColSlide {
+            position: absolute;
+            top: 135px;
+            left: 25px;
+            width: 175px;
+        }
+
+        #opacColText {
+            position: absolute;
+            top: 135px;
+            left: 215px;
+            width: 25px;
+        }
+
+        #colourSquare {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 230px;
+            height: 100px;
+            background-color: rgba(200, 0, 0, 1);
+        }
+
+        #rollContainer {
+            visibility: hidden;
+        }
+
+        .rightTab {
+            background-color: rgba(200, 200, 200, 1);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            top: 10px;
+            left: -50px;
+            width: 50px;
+            height: 50px;
+            pointer-events: auto;
+        }
+
+        #tokenTab {
+            top: 190px;
+            visibility: hidden;
+        }
+
+        #layerTab {
+            top: 70px;
+        }
+
+        #characterTab {
+            top: 250px;
+            visibility: hidden;
+        }
+
+        #rollTab {
+            top: 130px;
+        }
+
+        #rightBar {
+            background-color: rgba(200, 200, 200, 1);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            top: 10px;
+            right: 10px;
+            width: 250px;
+            height: 300px;
+            pointer-events: none;
+        }
+    </style>
+
+    <div class="canvasContainer">
+        <script>
+            document.getElementById('loadText').style.left = window.innerWidth / 2 - 50 + "px";
+            document.getElementById('loadText').style.top = window.innerHeight / 2 - 20 + "px";
+            document.getElementById('loadBlock').style.width = window.innerWidth + "px";
+            document.getElementById('loadBlock').style.height = window.innerHeight + "px";
+        </script>
+        <canvas id="board" oncontextmenu="return false;" tabindex='1'></canvas>
+    </div>
+
+    <script src="./clientOut.js"></script>
+
+    <style>
+        #board {
+            background: #444444;
+            position: absolute;
+            z-index: 0;
+            left: 0px;
+            top: 0px;
+        }
+    </style>
+
+
+    <style>
+        #tokenNameLabel {
+            position: absolute;
+            left: 100px;
+            width: 100px;
+            bottom: 2px;
+            z-index: 3;
+        }
+
+        #tokenName {
+            position: absolute;
+            left: 200px;
+            width: 100px;
+            bottom: 0px;
+            pointer-events: auto;
+            background: rgba(200, 200, 200, 1);
+            z-index: 11;
+        }
+
+        .modeButton {
+            background: rgba(200, 200, 200, 1);
+            z-index: 3;
+            width: 100px;
+            height: 50px;
+            pointer-events: auto;
+        }
+
+        .modeButton:disabled {
+            background-color: rgba(150, 150, 150, 1);
+        }
+
+        #modeMenuId {
+            background-color: rgba(200, 200, 200, 1);
+            border: solid black;
+            position: absolute;
+            z-index: 2;
+            bottom: 10px;
+            left: 10px;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+        }
+    </style>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<p>Sign up. Or sign in. The server does not distinguish these requests yet.</p>
+<label id="userIdLabel">Insert user id:</label>
+<input type="text" id="userId" />
+<label id="userPassLabel">Insert user password:</label>
+<input type="text" id="userPass" />
+<label id="userNameLabel">Insert user name:</label>
+<input type="text" id="userName" />
+<button id="submit">Submit</button>
+
+<script>
+    const ws = new WebSocket('ws://47.55.46.138:4322/');
+
+    ws.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        if (message.entity === "NAME" && message.accepted) {
+            localStorage['pass'] = userPass.value;
+            localStorage['id'] = userId.value;
+            localStorage['name'] = userName.value;
+            alert("Successfully signed in/registered with current credentials.")
+        } else if (message.entity === "NAME" && !message.accepted) {
+            alert("Could not sign in/register with those credentials")
+        }
+    })
+
+    submit.addEventListener('click', () => {
+        if (ws.readyState === 0) {
+            alert("jeez man leave 0.01 seconds for the websocket to connect")
+        } else {
+            ws.send(
+                JSON.stringify({
+                    userId: userId.value,
+                    event: {
+                        entity: 'NAME',
+                        pass: userPass.value,
+                        name: userName.value,
+                        id: userId.value,
+                    },
+                }),
+            );
+        }
+    })
+</script>

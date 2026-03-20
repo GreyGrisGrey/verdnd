@@ -480,7 +480,7 @@ async function establishUser(payload: NameEvent, ws: WebSocket) {
         ws.send(
             JSON.stringify({
                 entity: Entity.Name,
-                accepted: true,
+                accepted: false,
                 gm: false,
                 id: payload.id,
             }),
