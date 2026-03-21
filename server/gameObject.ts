@@ -10,7 +10,7 @@ import { Action, Entity } from '../shared/objectEvents.ts';
 import WebSocket from 'ws';
 
 export class GameObject {
-    creator: string;
+    owner: string;
     objectMap: Map<number, ObjectCreateEvent>;
     layerMap: Map<number, LayerUpdateEvent>;
     diceMap: Map<number, RollComplete>;
@@ -23,7 +23,6 @@ export class GameObject {
     laserTimer: number;
     finishedSetup: boolean;
     allGm: boolean;
-    play: boolean;
     gameId: number;
     objectLock: boolean;
     layerLock: boolean;
@@ -32,7 +31,7 @@ export class GameObject {
     dbLock: boolean;
 
     constructor(gameId: number) {
-        this.creator = 'aa';
+        this.owner = '';
         this.objectMap = new Map();
         this.layerMap = new Map();
         this.diceMap = new Map();
@@ -47,7 +46,6 @@ export class GameObject {
         this.finishedSetup = false;
 
         this.allGm = false;
-        this.play = true;
         this.gameId = gameId;
 
         this.objectLock = false;
@@ -56,7 +54,7 @@ export class GameObject {
         this.userLock = false;
         this.dbLock = false;
     }
-    
+
     checkUserGm(id: string) {
         if (this.allGm) {
             return true;
@@ -69,13 +67,15 @@ export class GameObject {
     }
 
     addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {
-        this.userMap.set(id, new PlayerPacket(newUser, id, gm, ws));
+        if (this.owner === id) {
+            this.userMap.set(id, new PlayerPacket(newUser, id, true, ws));
+        } else {
+            this.userMap.set(id, new PlayerPacket(newUser, id, gm, ws));
+        }
+        return this.userMap.get(id)!.isGm;
     }
 
-    async setUp(cli: PostGresData) {
-        if (!this.play) {
-            return true;
-        }
+    async setUp(cli: PostGresData, gmId: string | null = null) {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const res = await cli.getGame(this.gameId);
         if (res) {
@@ -98,13 +98,14 @@ export class GameObject {
                 }
             }
             this.currCol = res[3];
+            this.owner = res[4];
             this.finishedSetup = true;
             if (this.currLayer === 0) {
                 return false;
             }
             return true;
-        } else {
-            await cli.constructGame('0');
+        } else if (gmId) {
+            await cli.constructGame(gmId);
             this.finishedSetup = true;
             return false;
         }

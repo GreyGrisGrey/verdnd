@@ -1,12 +1,15 @@
 import WebSocket from 'ws';
-import {GameObject} from '../gameObject.ts'
+import { GameObject } from '../gameObject.ts';
 import { createLayer } from '../gameEvents/layerEvents.ts';
 import { PostGresData } from '../dataMain.ts';
-import { NameEvent } from '../../shared/objectEvents.ts'
+import { NameEvent } from '../../shared/objectEvents.ts';
 import { Entity } from '../../shared/objectEvents.ts';
 
-
-export async function constructGame(gameId: number, gameMap: Map<number, GameObject>, cli: PostGresData) {
+export async function constructGame(
+    gameId: number,
+    gameMap: Map<number, GameObject>,
+    cli: PostGresData,
+) {
     if (gameMap.has(gameId)) {
         return true;
     }
@@ -22,7 +25,8 @@ export async function establishGlobalUser(
     payload: NameEvent,
     ws: WebSocket,
     userLock: boolean,
-    dbLock: boolean, cli: PostGresData,
+    dbLock: boolean,
+    cli: PostGresData,
     userMap: Map<string, boolean>,
 ) {
     await waitLock(userLock);

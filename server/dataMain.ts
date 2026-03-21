@@ -247,7 +247,7 @@ export class PostGresData {
                     rowMode: 'array',
                 });
                 const fifth = await this.client.query({
-                    text: `SELECT BgColour FROM mainschema.games WHERE GameId = ${gameId}`,
+                    text: `SELECT BgColour, GmId FROM mainschema.games WHERE GameId = ${gameId}`,
                     rowMode: 'array',
                 });
                 const firstRes = objectTableToPayloads(first.rows);
@@ -257,6 +257,7 @@ export class PostGresData {
                     layerTableToPayloads(second.rows),
                     rollTableToPayloads(third.rows),
                     fifth.rows[0][0],
+                    fifth.rows[0][1],
                 ];
             }
             return false;

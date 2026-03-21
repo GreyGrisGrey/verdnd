@@ -4,6 +4,7 @@ import { GameObject } from './gameObject.ts';
 import { handleGameEvent } from './gameEvents/gameHandler.ts';
 import { handleMetaEvent } from './metaEvents/metaHandler.ts';
 import { createLayer } from './gameEvents/layerEvents.ts';
+import { constructGame } from './metaEvents/metaEvents.ts';
 
 import WebSocket, { WebSocketServer } from 'ws';
 const cli = new PostGresData();
@@ -26,18 +27,6 @@ wss.on('connection', async function connection(ws) {
     console.log('connection established');
 });
 
-async function constructGame(gameId: number) {
-    if (gameMap.has(gameId)) {
-        return true;
-    }
-    const newGame = new GameObject(gameId);
-    gameMap.set(gameId, newGame);
-    const res = await newGame.setUp(cli);
-    if (!res) {
-        createLayer(newGame, cli);
-    }
-}
-
 async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
     if (message.event) {
@@ -46,7 +35,7 @@ async function handleEvent(event: any, ws: WebSocket) {
             if (!currGame) {
                 const res = await cli.checkGame(Number(message.gameId));
                 if (res) {
-                    await constructGame(Number(message.gameId));
+                    await constructGame(Number(message.gameId), gameMap, cli);
                     currGame = gameMap.get(Number(message.gameId));
                     if (!currGame) {
                         return;
@@ -57,7 +46,7 @@ async function handleEvent(event: any, ws: WebSocket) {
             }
             handleGameEvent(event, currGame, ws, cli, userMap);
         } else if (message.handler === Handler.Meta) {
-            handleMetaEvent(event, ws, cli, userMap, gameMap, metaUserLock, metaDbLock)
+            handleMetaEvent(event, ws, cli, userMap, metaUserLock, metaDbLock);
         }
     }
 }

@@ -1,7 +1,6 @@
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { PostGresData } from '../dataMain.ts';
-import { GameObject } from '../gameObject.ts';
-import { establishGlobalUser, constructGame } from './metaEvents.ts'
+import { establishGlobalUser } from './metaEvents.ts';
 import WebSocket from 'ws';
 
 export async function handleMetaEvent(
@@ -9,9 +8,8 @@ export async function handleMetaEvent(
     ws: WebSocket,
     cli: PostGresData,
     userMap: Map<string, boolean>,
-    gameMap: Map<number, GameObject>,
     userLock: boolean,
-    dbLock: boolean
+    dbLock: boolean,
 ) {
     const message = JSON.parse(event);
     const payload = message.event;
@@ -27,9 +25,8 @@ export async function handleMetaEvent(
         payload.entity === Entity.Meta &&
         payload.action === Action.Create
     ) {
-        const res = await cli.constructGame('0');
+        const res = await cli.constructGame(message.userId);
         if (res) {
-            await constructGame(res[0], gameMap, cli);
             ws.send(JSON.stringify({ newId: res }));
         }
     }

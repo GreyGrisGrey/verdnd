@@ -18,10 +18,10 @@
     newGame.addEventListener('click', () => {
         if (ws.readyState === 0) {
             alert("jeez man leave 0.01 seconds for the websocket to connect")
-        } else {
+        } else if (localStorage['id']) {
             ws.send(
                 JSON.stringify({
-                    userId: "aa",
+                    userId: localStorage['id'],
                     event: {
                         entity: 'META',
                         action: 'CREATE'

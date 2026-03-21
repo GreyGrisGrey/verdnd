@@ -46,6 +46,7 @@ export async function establishLocalUser(
             payload.id === 'Verd' ||
             payload.id === 'Verdigris'
         ) {
+            currGame.addUser(payload.name, payload.id, true, ws);
             userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
@@ -56,32 +57,41 @@ export async function establishLocalUser(
                 }),
             );
             console.log('user add success');
-            currGame.addUser(payload.name, payload.id, true, ws);
         } else {
+            const res = currGame.addUser(
+                payload.name,
+                payload.id,
+                currGame.allGm,
+                ws,
+            );
             userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
                     accepted: true,
-                    gm: currGame.allGm,
+                    gm: res,
                     id: payload.id,
                 }),
             );
             console.log('user add success');
-            currGame.addUser(payload.name, payload.id, currGame.allGm, ws);
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
+        const res = currGame.addUser(
+            payload.name,
+            payload.id,
+            currGame.allGm,
+            ws,
+        );
         userMap.set(payload.id, true);
         ws.send(
             JSON.stringify({
                 entity: Entity.Name,
                 accepted: true,
-                gm: currGame.allGm,
+                gm: res,
                 id: payload.id,
             }),
         );
         console.log('user add success');
-        currGame.addUser(payload.name, payload.id, currGame.allGm, ws);
     } else {
         ws.send(
             JSON.stringify({

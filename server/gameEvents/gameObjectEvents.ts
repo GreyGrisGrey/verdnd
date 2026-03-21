@@ -70,7 +70,8 @@ export async function moveObj(
     xChange: number,
     yChange: number,
     currGame: GameObject,
-    cli: PostGresData, userGm: boolean
+    cli: PostGresData,
+    userGm: boolean,
 ) {
     await currGame.waitLock(currGame.objectLock);
     currGame.objectLock = true;

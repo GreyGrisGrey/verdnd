@@ -26,7 +26,7 @@ export async function handleGameEvent(
 ) {
     const message = JSON.parse(event);
     const payload = message.event;
-    const userGm = currGame.checkUserGm(message.userId)
+    const userGm = currGame.checkUserGm(message.userId);
     if (payload.entity === Entity.Object) {
         if (payload.action === Action.Create && userGm) {
             createObj(payload, currGame, cli);
@@ -38,7 +38,8 @@ export async function handleGameEvent(
                 payload.x,
                 payload.y,
                 currGame,
-                cli, userGm
+                cli,
+                userGm,
             );
         } else if (payload.action === Action.Recolour && userGm) {
             colourObj(payload.objectId, payload.colour, currGame, cli);
