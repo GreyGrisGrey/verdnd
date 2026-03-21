@@ -3,11 +3,12 @@ import { PostGresData } from '../dataMain.ts';
 import { establishGlobalUser, getUserGames } from './metaEvents.ts';
 import WebSocket from 'ws';
 
+// Function handling all events the websocket server decides are not related to a specific game.
 export async function handleMetaEvent(
     event: any,
     ws: WebSocket,
     cli: PostGresData,
-    userMap: Map<string, boolean>,
+    userMap: Map<string, WebSocket>,
     userLock: boolean,
     dbLock: boolean,
 ) {

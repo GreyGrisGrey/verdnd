@@ -4,6 +4,7 @@ import { layerPayloadToRow, updateLayerToRow } from '../converter.ts';
 import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
 
+// Function for adding a new layer to a specified game.
 export async function createLayer(currGame: GameObject, cli: PostGresData) {
     await currGame.waitLock(currGame.layerLock);
     currGame.layerLock = true;
@@ -33,6 +34,7 @@ export async function createLayer(currGame: GameObject, cli: PostGresData) {
     currGame.broadcast(sendObj);
 }
 
+// Function for updating a specified layer on a specified game.
 export async function updateLayer(
     layerId: number,
     newLayer: LayerState,
@@ -71,6 +73,7 @@ export async function updateLayer(
     currGame.broadcast(sendObj);
 }
 
+// Function for destroying a specified layer on a specified game.
 export async function destroyLayer(
     layerId: number,
     currGame: GameObject,

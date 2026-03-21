@@ -5,6 +5,7 @@ import { rollPayloadToRow } from '../converter.ts';
 import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
 
+// Function for adding a new roll to a specified game.
 export async function addDice(
     newDice: DicePayload,
     userId: string,

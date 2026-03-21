@@ -74,6 +74,7 @@ export class tempStore {
     pass: string;
     name: string;
     currGame: number;
+    connected: boolean;
 
     constructor(
         newObjects: Map<number, BoardObject>,
@@ -95,6 +96,7 @@ export class tempStore {
         this.layMenu = null;
         this.rightMenu = null;
         this.isGm = false;
+        this.connected = false;
 
         this.currGame = Number(window.location.pathname.split('/')[2]) | 0;
         this.id =
@@ -114,12 +116,17 @@ export class tempStore {
         this.socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);
             if (message.entity === Entity.Name && message.accepted) {
-                this.id = message.id;
-                localStorage['id'] = message.id;
-                this.isGm = message.gm;
-                console.log('yay');
-                this.board!.modeMan.toggleModeSwitcher(this.isGm);
-                this.rightMenu!.toggleModeSwitcher(this.isGm);
+                if (!this.connected) {
+                    this.connected = true;
+                    this.connectLocal();
+                } else {
+                    this.id = message.id;
+                    localStorage['id'] = message.id;
+                    this.isGm = message.gm;
+                    console.log('yay');
+                    this.board!.modeMan.toggleModeSwitcher(this.isGm);
+                    this.rightMenu!.toggleModeSwitcher(this.isGm);
+                }
             } else if (message.entity === Entity.Name) {
                 localStorage['id'] = (
                     Math.round(Math.random() * 1000000) + 500
@@ -190,7 +197,7 @@ export class tempStore {
                 }
             }
         });
-        this.ping();
+        this.connectGlobal();
     }
 
     getLasers() {
@@ -232,10 +239,24 @@ export class tempStore {
         this.createLayer();
     }
 
-    async ping() {
+    async connectGlobal() {
         while (this.socket.readyState === 0) {
             await new Promise((resolve) => setTimeout(resolve, 10));
         }
+        this.socket.send(
+            this.parcelServeEvent(
+                {
+                    entity: Entity.Name,
+                    pass: this.pass,
+                    name: this.name,
+                    id: this.id,
+                },
+                false,
+            ),
+        );
+    }
+
+    async connectLocal() {
         this.socket.send(
             this.parcelServeEvent({
                 entity: Entity.Name,
@@ -480,12 +501,20 @@ export class tempStore {
         );
     }
 
-    parcelServeEvent(payload: ServerEvent) {
+    parcelServeEvent(payload: ServerEvent, game: boolean = true) {
+        if (game) {
+            return JSON.stringify({
+                userId: this.id,
+                event: payload,
+                gameId: this.currGame,
+                handler: Handler.Game,
+            });
+        }
         return JSON.stringify({
             userId: this.id,
             event: payload,
             gameId: this.currGame,
-            handler: Handler.Game,
+            handler: Handler.Meta,
         });
     }
 

@@ -6,7 +6,6 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
-const rollBox = getRequiredElement('rollContainer', HTMLElement);
 const layerBox = getRequiredElement('layerLayerObj', HTMLElement);
 const layerTab = getRequiredElement('layerTab', HTMLElement);
 const tokenTab = getRequiredElement('tokenTab', HTMLElement);
@@ -14,6 +13,7 @@ const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
+const chatBox = getRequiredElement('chatBox', HTMLElement);
 
 export enum RightBarTab {
     None = 'NONE',
@@ -116,7 +116,7 @@ export class RightBarManager {
     step() {
         rightBar.style.height = `${window.innerHeight - 50}px`;
         layerBox.style.height = `${window.innerHeight - 50}px`;
-        rollBox.style.height = `${window.innerHeight - 50}px`;
+        chatBox.style.height = `${window.innerHeight - 50}px`;
         if (this.currActive === RightBarTab.Layer) {
             this.layerMan.step();
         } else if (this.currActive === RightBarTab.Roll) {

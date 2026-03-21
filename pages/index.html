@@ -10,10 +10,26 @@
 </div>
 
 <script>
-    async function requestGames() {
+    async function signIn() {
         while (ws.readyState === 0) {
             await new Promise((resolve) => setTimeout(resolve, 10));
         }
+        if (localStorage['id']) {
+            ws.send(JSON.stringify({
+                userId: localStorage['id'],
+                event: {
+                    entity: 'NAME',
+                    pass: localStorage['pass'],
+                    name: localStorage['name'],
+                    id: localStorage['id'],
+                },
+                gameId: -1,
+                handler: 'META'
+            }))
+        }
+    }
+
+    async function requestGames() {
         ws.send(JSON.stringify({
             userId: localStorage['id'],
             event: {
@@ -30,6 +46,9 @@
 
     ws.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
+        if (message.entity && message.entity === 'NAME' && message.accepted) {
+            requestGames();
+        }
         if (message.newId) {
             window.location.pathname = "/game/" + message.newId
         } else if (message.list) {
@@ -65,7 +84,7 @@
         }
     })
 
-    requestGames();
+    signIn();
 </script>
 
 <style>

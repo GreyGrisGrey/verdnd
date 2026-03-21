@@ -10,6 +10,7 @@ import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
 import WebSocket from 'ws';
 
+// Function for creating a new object in a game.
 export async function createObj(
     newObject: ObjectCreateEvent,
     currGame: GameObject,
@@ -43,6 +44,7 @@ export async function createObj(
     }
 }
 
+// Function for destroying a specified object from a specified game.
 export async function destroyObj(
     objId: number,
     currGame: GameObject,
@@ -65,6 +67,7 @@ export async function destroyObj(
     currGame.broadcast(sendObj);
 }
 
+// Function for moving a specified object in a specified game.
 export async function moveObj(
     objId: number,
     xChange: number,
@@ -92,6 +95,7 @@ export async function moveObj(
     }
 }
 
+// Function for recolouring a specified object in a specified game.
 export async function colourObj(
     objId: number,
     colour: string,
@@ -116,6 +120,7 @@ export async function colourObj(
     }
 }
 
+// Function for updating the token corresponding to a specific token in a specific game.
 export async function updateToken(
     newToken: Token,
     id: number,

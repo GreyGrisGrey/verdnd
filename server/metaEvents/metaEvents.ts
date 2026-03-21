@@ -5,6 +5,7 @@ import { PostGresData } from '../dataMain.ts';
 import { NameEvent } from '../../shared/objectEvents.ts';
 import { Entity } from '../../shared/objectEvents.ts';
 
+// Function for constructing a new game object in the server's cache of game objects.
 export async function constructGame(
     gameId: number,
     gameMap: Map<number, GameObject>,
@@ -21,13 +22,14 @@ export async function constructGame(
     }
 }
 
+// Function for connecting a new user to the websocket server.
 export async function establishGlobalUser(
     payload: NameEvent,
     ws: WebSocket,
     userLock: boolean,
     dbLock: boolean,
     cli: PostGresData,
-    userMap: Map<string, boolean>,
+    userMap: Map<string, WebSocket>,
 ) {
     await waitLock(userLock);
     userLock = true;
@@ -40,7 +42,7 @@ export async function establishGlobalUser(
             payload.id === 'Verd' ||
             payload.id === 'Verdigris'
         ) {
-            userMap.set(payload.id, true);
+            userMap.set(payload.id, ws);
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
@@ -49,9 +51,9 @@ export async function establishGlobalUser(
                     id: payload.id,
                 }),
             );
-            console.log('user add success');
+            console.log('user add success (Global)');
         } else {
-            userMap.set(payload.id, true);
+            userMap.set(payload.id, ws);
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
@@ -60,10 +62,10 @@ export async function establishGlobalUser(
                     id: payload.id,
                 }),
             );
-            console.log('user add success');
+            console.log('user add success (Global)');
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
-        userMap.set(payload.id, true);
+        userMap.set(payload.id, ws);
         ws.send(
             JSON.stringify({
                 entity: Entity.Name,
@@ -72,7 +74,7 @@ export async function establishGlobalUser(
                 id: payload.id,
             }),
         );
-        console.log('user add success');
+        console.log('user add success (Global)');
     } else {
         ws.send(
             JSON.stringify({
@@ -82,12 +84,13 @@ export async function establishGlobalUser(
                 id: payload.id,
             }),
         );
-        console.log('user add fail');
+        console.log('user add fail (Global)');
     }
     dbLock = false;
     userLock = false;
 }
 
+// Function for getting all games corresponding to a particular user.
 export async function getUserGames(id: string, cli: PostGresData) {
     return await cli.getUserGames(id);
 }

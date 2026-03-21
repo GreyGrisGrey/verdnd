@@ -4,6 +4,7 @@ import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
 import WebSocket from 'ws';
 
+// Function updating the background colour of a specific game.
 export async function updateBackground(
     newCol: string,
     currGame: GameObject,
@@ -23,17 +24,18 @@ export async function updateBackground(
     );
 }
 
+// Function for updating a laser corresponding to a given game.
 export async function updateLaser(payload: LaserEvent, currGame: GameObject) {
     currGame.laserMap.set(payload.id, payload);
     currGame.sendAllLasers();
 }
 
+// Function signing a new user into a preexisting game.
 export async function establishLocalUser(
     payload: NameEvent,
     ws: WebSocket,
     currGame: GameObject,
     cli: PostGresData,
-    userMap: Map<string, boolean>,
 ) {
     await currGame.waitLock(currGame.userLock);
     currGame.userLock = true;
@@ -47,7 +49,6 @@ export async function establishLocalUser(
             payload.id === 'Verdigris'
         ) {
             currGame.addUser(payload.name, payload.id, true, ws);
-            userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
@@ -56,7 +57,7 @@ export async function establishLocalUser(
                     id: payload.id,
                 }),
             );
-            console.log('user add success');
+            console.log('user add success (Local)');
         } else {
             const res = currGame.addUser(
                 payload.name,
@@ -64,7 +65,6 @@ export async function establishLocalUser(
                 currGame.allGm,
                 ws,
             );
-            userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
@@ -73,7 +73,7 @@ export async function establishLocalUser(
                     id: payload.id,
                 }),
             );
-            console.log('user add success');
+            console.log('user add success (Local)');
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
         const res = currGame.addUser(
@@ -82,7 +82,6 @@ export async function establishLocalUser(
             currGame.allGm,
             ws,
         );
-        userMap.set(payload.id, true);
         ws.send(
             JSON.stringify({
                 entity: Entity.Name,
@@ -91,7 +90,7 @@ export async function establishLocalUser(
                 id: payload.id,
             }),
         );
-        console.log('user add success');
+        console.log('user add success (Local)');
     } else {
         ws.send(
             JSON.stringify({
@@ -101,7 +100,7 @@ export async function establishLocalUser(
                 id: payload.id,
             }),
         );
-        console.log('user add fail');
+        console.log('user add fail (Local)');
     }
     currGame.dbLock = false;
     currGame.userLock = false;

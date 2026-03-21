@@ -17,12 +17,12 @@ import {
 } from './miscEvents.ts';
 import WebSocket from 'ws';
 
+// Function handling all events the websocket server decides are related to a specific game.
 export async function handleGameEvent(
     event: any,
     currGame: GameObject,
     ws: WebSocket,
     cli: PostGresData,
-    userMap: Map<string, boolean>,
 ) {
     const message = JSON.parse(event);
     const payload = message.event;
@@ -60,7 +60,7 @@ export async function handleGameEvent(
         updateToken(payload.token, payload.id, currGame, cli);
     } else if (payload.entity === Entity.Name) {
         if (payload.pass && payload.name && payload.id) {
-            establishLocalUser(payload, ws, currGame, cli, userMap);
+            establishLocalUser(payload, ws, currGame, cli);
         }
     } else if (payload.entity === Entity.Meta && userGm) {
         updateBackground(payload.newColour, currGame, cli);
