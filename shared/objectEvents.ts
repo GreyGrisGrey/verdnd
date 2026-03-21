@@ -183,6 +183,13 @@ export interface NameEvent {
     id: string;
 }
 
+export interface GameConnectEvent {
+    entity: Entity.Name;
+    action: Action.Update;
+    name: string;
+    id: string;
+}
+
 export interface NameCheckedEvent {
     entity: Entity.Name;
     id: string;

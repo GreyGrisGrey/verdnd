@@ -7,6 +7,7 @@ import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { LayerState } from '../shared/objectEvents.ts';
 import { getRequiredElement } from './dom.ts';
 import { TooltipManager } from './tooltips.ts';
+import { TopBarManager } from './topBarMain.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -18,18 +19,9 @@ const serveInter = new tempStore(
 const board = new Board(serveInter, storedObjects, storedLayers);
 const rightMan = new RightBarManager(serveInter, storedLayerStates);
 const leftMan = new LeftBarManager(board);
-const tempBox = getRequiredElement('signinTemporary', HTMLElement);
+const topMan = new TopBarManager();
 const tooltips = new TooltipManager();
 let prevLaser = 0;
-
-tempBox.addEventListener('click', () => {
-    const id = prompt('Id', serveInter.id);
-    const pass = prompt('Password', serveInter.pass);
-    const name = prompt('Name', serveInter.name);
-    if (name && pass && id) {
-        serveInter.signIn(name, pass, id);
-    }
-});
 
 serveInter.setBoard(board);
 serveInter.setMan(rightMan.layerMan);

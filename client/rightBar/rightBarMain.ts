@@ -99,9 +99,9 @@ export class RightBarManager {
 
     // A single step updating the state of the currently active menu.
     step() {
-        rightBar.style.height = `${window.innerHeight - 20}px`;
-        layerBox.style.height = `${window.innerHeight - 20}px`;
-        rollBox.style.height = `${window.innerHeight - 20}px`;
+        rightBar.style.height = `${window.innerHeight - 50}px`;
+        layerBox.style.height = `${window.innerHeight - 50}px`;
+        rollBox.style.height = `${window.innerHeight - 50}px`;
         if (this.currActive === RightBarTab.Layer) {
             this.layerMan.step();
         } else if (this.currActive === RightBarTab.Roll) {

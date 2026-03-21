@@ -8,7 +8,6 @@
 
 <body>
     <slot />
-    <button id="signinTemporary">Change user</button>
 
     <title>Gameboard</title>
     <div id="loadBlock">
@@ -37,6 +36,10 @@
     <div id="modeMenuId">
         <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
         <button class="modeButton" id="drawMenuButton">Draw [D]</button>
+    </div>
+
+    <div id="topBar">
+        <p id="playerDataBox">blah ba</p>
     </div>
 
     <div id="bottomBar">
@@ -99,6 +102,26 @@
     </div>
 
     <style>
+        #topBar {
+            position: absolute;
+            height: 30px;
+            left: 0px;
+            width: 900px;
+            top: 0px;
+            background-color: #222222;
+            visibility: visible;
+            z-index: 9;
+        }
+
+        #playerDataBox {
+            position: absolute;
+            height: 20px;
+            top: -10px;
+            font-size: 15px;
+            color: #eeeeee;
+            left: 400px;
+        }
+
         #bottomTooltip {
             position: absolute;
             height: 60px;
@@ -216,13 +239,6 @@
     </div>
 
     <style>
-        #signinTemporary {
-            position: absolute;
-            top: 5px;
-            left: 600px;
-            z-index: 7;
-        }
-
         #layerUpButton {
             position: absolute;
             right: 0px;
@@ -493,7 +509,7 @@
         #leftBar {
             background-color: rgba(200, 200, 200, 1);
             position: absolute;
-            top: 10px;
+            top: 40px;
             left: 10px;
             width: 250px;
             height: 280px;
@@ -606,10 +622,10 @@
             border: solid black;
             position: absolute;
             z-index: 2;
-            top: 10px;
+            top: 40px;
             right: 10px;
             width: 250px;
-            height: 300px;
+            height: 270px;
             pointer-events: none;
         }
     </style>
@@ -678,6 +694,13 @@
             width: 100px;
             height: 100px;
             pointer-events: none;
+        }
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden
         }
     </style>
 
