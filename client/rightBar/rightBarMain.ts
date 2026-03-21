@@ -89,12 +89,27 @@ export class RightBarManager {
                 this.layerMan.toggleActive(false);
                 this.rollMan.toggleActive(true);
                 this.currActive = RightBarTab.Roll;
-            } else if (event.key === 'l') {
+            } else if (event.key === 'l' && this.serveInter.isGm) {
                 this.layerMan.toggleActive(true);
                 this.rollMan.toggleActive(false);
                 this.currActive = RightBarTab.Layer;
             }
         });
+    }
+
+    toggleModeSwitcher(gm: boolean) {
+        if (!gm) {
+            this.layerMan.toggleActive(false);
+            this.rollMan.toggleActive(true);
+            this.currActive = RightBarTab.Roll;
+            rollTab.style.visibility = 'hidden';
+            tokenTab.style.visibility = 'hidden';
+            layerTab.style.visibility = 'hidden';
+            characterTab.style.visibility = 'hidden';
+        } else {
+            layerTab.style.visibility = 'inherit';
+            rollTab.style.visibility = 'inherit';
+        }
     }
 
     // A single step updating the state of the currently active menu.

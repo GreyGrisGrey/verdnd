@@ -136,7 +136,9 @@ export class BoardSelectMode {
         this.currColour = colourSquare.style.background;
         this.selectClick = this.board.leftMouseDown;
         this.thirdOffset = { x: 0, y: 0 };
-        this.toggleBoxes();
+        if (this.board.serveInter.isGm) {
+            this.toggleBoxes();
+        }
     }
 
     // Adds all relevant event listeners.

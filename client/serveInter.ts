@@ -17,7 +17,7 @@ import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { Box, Polyline } from './boardCanvas/boardObject.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
-import { RollMenu } from './rightBar/rollBarMenu.ts';
+import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { getRequiredElement } from './dom.ts';
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -68,7 +68,7 @@ export class tempStore {
     lasers: Map<number, LaserEvent>;
     designal: boolean;
     layMenu: LayerMenu | null;
-    rollMenu: RollMenu | null;
+    rightMenu: RightBarManager | null;
     isGm: boolean;
     id: string;
     pass: string;
@@ -93,7 +93,7 @@ export class tempStore {
         this.board = null;
         this.designal = false;
         this.layMenu = null;
-        this.rollMenu = null;
+        this.rightMenu = null;
         this.isGm = false;
 
         this.currGame = Number(window.location.pathname.split('/')[2]) | 0;
@@ -119,6 +119,7 @@ export class tempStore {
                 this.isGm = message.gm;
                 console.log('yay');
                 this.board!.modeMan.toggleModeSwitcher(this.isGm);
+                this.rightMenu!.toggleModeSwitcher(this.isGm);
             } else if (message.entity === Entity.Name) {
                 localStorage['id'] = (
                     Math.round(Math.random() * 1000000) + 500
@@ -221,6 +222,10 @@ export class tempStore {
 
     setMan(newMan: LayerMenu) {
         this.layMenu = newMan;
+    }
+
+    setSecMan(newMan: RightBarManager) {
+        this.rightMenu = newMan;
     }
 
     setup() {

@@ -37,7 +37,10 @@ export class BoardViewMode {
         this.start.y = 0;
         this.measuring = false;
         this.completeSelectCheck = false;
-        this.toggleBoxes();
+        this.selectedToken = null;
+        if (setOn || this.board.serveInter.isGm) {
+            this.toggleBoxes();
+        }
     }
 
     // Sets up control buttons for viewing/clicking.
@@ -193,7 +196,12 @@ export class BoardViewMode {
 
         can.addEventListener('mousemove', (event) => {
             can.focus();
-            if (this.board.rightMouseDown) {
+            if (
+                this.board.rightMouseDown ||
+                (this.board.leftMouseDown &&
+                    !this.completeSelectCheck &&
+                    this.active)
+            ) {
                 const change: Vec2 = {
                     x: Math.round(this.board.mouseCoords.x - event.clientX),
                     y: Math.round(this.board.mouseCoords.y - event.clientY),

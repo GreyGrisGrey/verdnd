@@ -36,6 +36,7 @@ export class Board {
         newMap: Map<number, BoardObject>,
         newLay: Map<number, BoardLayer>,
     ) {
+        this.serveInter = server;
         this.zoomGlobal = 5;
         this.zoomLevels = [
             2, 3, 4, 6, 8, 10, 13, 16, 20, 24, 28, 32, 38, 44, 50,
@@ -50,7 +51,6 @@ export class Board {
         this.objectMap = newMap;
         this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
-        this.serveInter = server;
         this.laserCol = BLUE;
     }
 
@@ -164,13 +164,23 @@ export class Board {
 
     // Selects a single token.
     selectToken(fixedPoint: Vec2[], matchType: string = 'any') {
-        const layer = this.layerMap.get(this.activeLayer);
-        let newSelected = undefined;
-        if (layer) {
-            const selected = layer.selectObjects(fixedPoint, matchType)[0];
-            return selected;
+        if (this.serveInter.isGm) {
+            const layer = this.layerMap.get(this.activeLayer);
+            let newSelected = undefined;
+            if (layer) {
+                const selected = layer.selectObjects(fixedPoint, matchType)[0];
+                return selected;
+            }
+            return newSelected;
+        } else {
+            for (const [key, val] of this.layerMap) {
+                const selected = val.selectObjects(fixedPoint, matchType)[0];
+                if (selected) {
+                    return selected;
+                }
+            }
+            return undefined;
         }
-        return newSelected;
     }
 
     // Draws points at the vertices of the tiles for.

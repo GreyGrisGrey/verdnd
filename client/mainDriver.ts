@@ -25,6 +25,7 @@ let prevLaser = 0;
 
 serveInter.setBoard(board);
 serveInter.setMan(rightMan.layerMan);
+serveInter.setSecMan(rightMan);
 // The order of events up there is unfortunately quite important.
 // Try not to poke it too much.
 
