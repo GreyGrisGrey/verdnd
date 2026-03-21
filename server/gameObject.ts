@@ -66,11 +66,53 @@ export class GameObject {
         return false;
     }
 
+    removeUser(id: string) {
+        if (this.userMap.has(id)) {
+            this.broadcast(
+                JSON.stringify({
+                    entity: Entity.User,
+                    action: Action.Remove,
+                    id: id,
+                }),
+            );
+            this.userMap.delete(id);
+        }
+    }
+
     addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {
+        console.log('there is a user');
+        if (this.userMap.has(id)) {
+            this.broadcast(
+                JSON.stringify({
+                    entity: Entity.User,
+                    action: Action.Remove,
+                    id: id,
+                }),
+            );
+            this.userMap.delete(id);
+        }
         if (this.owner === id) {
             this.userMap.set(id, new PlayerPacket(newUser, id, true, ws));
+            this.broadcast(
+                JSON.stringify({
+                    entity: Entity.User,
+                    action: Action.Update,
+                    name: newUser,
+                    id: id,
+                    gm: true,
+                }),
+            );
         } else {
             this.userMap.set(id, new PlayerPacket(newUser, id, gm, ws));
+            this.broadcast(
+                JSON.stringify({
+                    entity: Entity.User,
+                    action: Action.Update,
+                    name: newUser,
+                    id: id,
+                    gm: gm,
+                }),
+            );
         }
         return this.userMap.get(id)!.isGm;
     }
@@ -157,6 +199,18 @@ export class GameObject {
         for (const [key, val] of this.diceMap) {
             await new Promise((resolve) => setTimeout(resolve, 2));
             ws.send(JSON.stringify(val));
+        }
+        for (const [key, val] of this.userMap) {
+            await new Promise((resolve) => setTimeout(resolve, 2));
+            ws.send(
+                JSON.stringify({
+                    entity: Entity.User,
+                    action: Action.Update,
+                    name: val.name,
+                    id: val.id,
+                    gm: val.isGm,
+                }),
+            );
         }
         ws.send(
             JSON.stringify({

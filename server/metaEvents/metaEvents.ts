@@ -4,6 +4,7 @@ import { createLayer } from '../gameEvents/layerEvents.ts';
 import { PostGresData } from '../dataMain.ts';
 import { NameEvent } from '../../shared/objectEvents.ts';
 import { Entity } from '../../shared/objectEvents.ts';
+import { WebSocketData } from '../wsData.ts';
 
 // Function for constructing a new game object in the server's cache of game objects.
 export async function constructGame(
@@ -30,6 +31,7 @@ export async function establishGlobalUser(
     dbLock: boolean,
     cli: PostGresData,
     userMap: Map<string, WebSocket>,
+    wsMap: Map<WebSocket, WebSocketData>,
 ) {
     await waitLock(userLock);
     userLock = true;
@@ -51,6 +53,7 @@ export async function establishGlobalUser(
                     id: payload.id,
                 }),
             );
+            wsMap.get(ws)!.updateId(payload.id, payload.name);
             console.log('user add success (Global)');
         } else {
             userMap.set(payload.id, ws);
@@ -62,6 +65,7 @@ export async function establishGlobalUser(
                     id: payload.id,
                 }),
             );
+            wsMap.get(ws)!.updateId(payload.id, payload.name);
             console.log('user add success (Global)');
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
@@ -74,6 +78,7 @@ export async function establishGlobalUser(
                 id: payload.id,
             }),
         );
+        wsMap.get(ws)!.updateId(payload.id, payload.name);
         console.log('user add success (Global)');
     } else {
         ws.send(

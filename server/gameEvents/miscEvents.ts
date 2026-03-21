@@ -3,6 +3,7 @@ import { Action, Entity } from '../../shared/objectEvents.ts';
 import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
 import WebSocket from 'ws';
+import { WebSocketData } from '../wsData.ts';
 
 // Function updating the background colour of a specific game.
 export async function updateBackground(
@@ -36,6 +37,7 @@ export async function establishLocalUser(
     ws: WebSocket,
     currGame: GameObject,
     cli: PostGresData,
+    wsMap: Map<WebSocket, WebSocketData>,
 ) {
     await currGame.waitLock(currGame.userLock);
     currGame.userLock = true;
@@ -48,6 +50,7 @@ export async function establishLocalUser(
             payload.id === 'Verd' ||
             payload.id === 'Verdigris'
         ) {
+            currGame.sendAll(ws);
             currGame.addUser(payload.name, payload.id, true, ws);
             ws.send(
                 JSON.stringify({
@@ -57,8 +60,10 @@ export async function establishLocalUser(
                     id: payload.id,
                 }),
             );
+            wsMap.get(ws)!.addGame(currGame.gameId);
             console.log('user add success (Local)');
         } else {
+            currGame.sendAll(ws);
             const res = currGame.addUser(
                 payload.name,
                 payload.id,
@@ -73,9 +78,11 @@ export async function establishLocalUser(
                     id: payload.id,
                 }),
             );
+            wsMap.get(ws)!.addGame(currGame.gameId);
             console.log('user add success (Local)');
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
+        currGame.sendAll(ws);
         const res = currGame.addUser(
             payload.name,
             payload.id,
@@ -90,6 +97,7 @@ export async function establishLocalUser(
                 id: payload.id,
             }),
         );
+        wsMap.get(ws)!.addGame(currGame.gameId);
         console.log('user add success (Local)');
     } else {
         ws.send(
@@ -104,5 +112,4 @@ export async function establishLocalUser(
     }
     currGame.dbLock = false;
     currGame.userLock = false;
-    currGame.sendAll(ws);
 }

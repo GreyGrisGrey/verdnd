@@ -2,6 +2,7 @@ import { Action, Entity } from '../../shared/objectEvents.ts';
 import { PostGresData } from '../dataMain.ts';
 import { establishGlobalUser, getUserGames } from './metaEvents.ts';
 import WebSocket from 'ws';
+import { WebSocketData } from '../wsData.ts';
 
 // Function handling all events the websocket server decides are not related to a specific game.
 export async function handleMetaEvent(
@@ -11,6 +12,7 @@ export async function handleMetaEvent(
     userMap: Map<string, WebSocket>,
     userLock: boolean,
     dbLock: boolean,
+    wsMap: Map<WebSocket, WebSocketData>,
 ) {
     const message = JSON.parse(event);
     const payload = message.event;
@@ -21,7 +23,7 @@ export async function handleMetaEvent(
         payload.name &&
         payload.id
     ) {
-        establishGlobalUser(payload, ws, userLock, dbLock, cli, userMap);
+        establishGlobalUser(payload, ws, userLock, dbLock, cli, userMap, wsMap);
     } else if (
         payload.entity === Entity.Meta &&
         payload.action === Action.Create

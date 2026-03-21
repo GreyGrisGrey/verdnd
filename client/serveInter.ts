@@ -19,8 +19,11 @@ import { Box, Polyline } from './boardCanvas/boardObject.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { getRequiredElement } from './dom.ts';
+import { UserBox } from './leftBar/userBox.ts';
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
+const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
+const userBox = new UserBox();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
@@ -194,6 +197,13 @@ export class tempStore {
                     loadWall.style.visibility = 'hidden';
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
+                }
+            } else if (message.entity === Entity.User) {
+                console.log(message);
+                if (message.action === Action.Update) {
+                    userBox.addUser(message.id, message.name, message.gm);
+                } else if (message.action === Action.Destroy) {
+                    userBox.removeUser(message.id);
                 }
             }
         });

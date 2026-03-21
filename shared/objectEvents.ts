@@ -40,6 +40,7 @@ export enum Entity {
     Laser = 'LASER',
     Token = 'TOKEN',
     Meta = 'META',
+    User = 'USER',
 }
 
 export enum Action {
@@ -241,6 +242,20 @@ export interface GameListResultEvent {
     entity: Entity.Meta;
     action: Action.Enumerate;
     list: Number[];
+}
+
+export interface UserStatusUpdateEvent {
+    entity: Entity.User;
+    action: Action.Update;
+    name: string;
+    id: string;
+    gm: boolean;
+}
+
+export interface UserRemoveEvent {
+    entity: Entity.User;
+    action: Action.Remove;
+    id: string;
 }
 
 export type ServerEvent =

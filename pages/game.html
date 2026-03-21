@@ -410,6 +410,7 @@
     </style>
     <div id="leftBar">
         <button id="hideLeftBar">Hide</button>
+        <button id="showUser">Users</button>
         <div id="colContainer">
             <input type="range" id="redColSlide" min="0" max="255" />
             <label class="colLabel" id="redLabel">R</label>
@@ -438,6 +439,9 @@
 
         <div id="rollContainer">
         </div>
+
+        <div id="userContainer">
+        </div>
     </div>
 
     <style>
@@ -462,7 +466,7 @@
             background-color: rgba(255, 255, 255, 0.25);
             left: 260px;
             width: 45px;
-            top: 48px;
+            top: 88px;
         }
 
         #colourBackground {
@@ -470,7 +474,29 @@
             background-color: rgba(255, 255, 255, 0.25);
             left: 260px;
             width: 45px;
-            top: 88px;
+            top: 128px;
+        }
+
+        #showUser {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.25);
+            left: 260px;
+            width: 45px;
+            top: 48px;
+            border: solid black;
+            height: 30px;
+            pointer-events: auto;
+        }
+
+        #userContainer {
+            position: absolute;
+            visibility: hidden;
+            background-color: rgba(255, 255, 255, 1);
+            z-index: 9;
+            height: 280px;
+            width: 250px;
+            overflow-y: scroll;
+            overflow-x: hidden;
         }
 
         .colLabel {
