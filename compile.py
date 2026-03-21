@@ -84,6 +84,7 @@ def clientCompile():
 def serverCompile():
     items = listdir("C:/greybox/verdDnD/shared/")
     files = []
+    dirs = []
     currIndex = 0
     while (currIndex < len(items)):
         nextItem = items[currIndex].split(".")
@@ -95,7 +96,12 @@ def serverCompile():
     currIndex = 0
     while (currIndex < len(items)):
         nextItem = items[currIndex].split(".")
-        if (len(nextItem) == 2 and nextItem[1] == "ts"):
+        if (len(nextItem) == 1):
+            newItems = listdir("C:/greybox/verdDnD/server/" + items[currIndex])
+            for i in newItems:
+                items.append(items[currIndex] + "/" + i)
+            dirs.append("C:/greybox/verdDnD/server/" + items[currIndex])
+        elif (nextItem[1] == "ts"):
             files.append("C:/greybox/verdDnD/server/" + items[currIndex])
         currIndex += 1
 
@@ -103,11 +109,10 @@ def serverCompile():
     codeBlock = ""
 
     for i in files:
-        if i != "C:/greybox/verdDnD/server/mainDriver.ts":
-            res = splitFile(i)
-            for j in res[0]:
-                constDict[j] = True
-            codeBlock += res[1]
+        res = splitFile(i)
+        for j in res[0]:
+            constDict[j] = True
+        codeBlock += res[1]
 
     finalBlock = ""
     finalBlock += codeBlock

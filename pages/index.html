@@ -2,8 +2,12 @@
 <a href="game/0">Visit game 0, for real!</a>
 <a href="game/1">Visit game 1, for real!</a>
 <button id="newGame">Make a NEW game</button>
+
+<p id="credBox">Current user: </p>
+<div id="gameBox"></div>
 <script>
     const ws = new WebSocket('ws://47.55.46.138:4322/');
+    credBox.innerText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`
 
     ws.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
@@ -22,9 +26,21 @@
                         entity: 'META',
                         action: 'CREATE'
                     },
-                    gameId: -2
+                    gameId: -2,
+                    handler: 'META'
                 }),
             );
         }
     })
 </script>
+<style>
+    #gameBox {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 250px;
+        height: 300px;
+        background-color: #eeeeee;
+        border: solid black;
+    }
+</style>

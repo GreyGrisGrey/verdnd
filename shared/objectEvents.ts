@@ -19,6 +19,11 @@ export interface Token {
     active: boolean;
 }
 
+export enum Handler {
+    Game = 'GAME',
+    Meta = 'META',
+}
+
 export enum Shape {
     Rect = 'RECT',
     Ellipse = 'ELLIPSE',
@@ -166,6 +171,7 @@ export interface ServerPacket {
     userId: string;
     event: ServerEvent;
     gameId: number;
+    handler: Handler;
 }
 
 export interface LaserEvent {

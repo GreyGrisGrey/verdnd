@@ -12,7 +12,7 @@ import type {
 } from '../shared/objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from '../shared/colours.ts';
-import { Action, Entity, Shape } from '../shared/objectEvents.ts';
+import { Action, Entity, Shape, Handler } from '../shared/objectEvents.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { Box, Polyline } from './boardCanvas/boardObject.ts';
@@ -480,6 +480,7 @@ export class tempStore {
             userId: this.id,
             event: payload,
             gameId: this.currGame,
+            handler: Handler.Game,
         });
     }
 
