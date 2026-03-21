@@ -5,7 +5,6 @@ import { tempStore } from './serveInter.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { LayerState } from '../shared/objectEvents.ts';
-import { getRequiredElement } from './dom.ts';
 import { TooltipManager } from './tooltips.ts';
 import { TopBarManager } from './topBarMain.ts';
 const storedObjects: Map<number, BoardObject> = new Map();

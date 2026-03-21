@@ -135,7 +135,7 @@ export class BoardDrawMode {
 
     // Adds all relevant event listeners.
     addEventListeners() {
-        document.addEventListener('keydown', (event) => {
+        can.addEventListener('keydown', (event) => {
             if (this.active) {
                 this.handleKeySwitchEvent(event.key);
                 this.flipBoxes();

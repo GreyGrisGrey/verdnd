@@ -53,7 +53,7 @@ async function handleEvent(event: any, ws: WebSocket) {
             ws === userMap.get(message.userId)
         ) {
             handleMetaEvent(
-                event,
+                message,
                 ws,
                 cli,
                 userMap,
@@ -99,7 +99,7 @@ async function handleEvent(event: any, ws: WebSocket) {
                     return;
                 }
             }
-            handleGameEvent(event, currGame, ws, cli, wsMap);
+            handleGameEvent(message, currGame, ws, cli, wsMap);
         } else {
             console.log('message rejected');
         }

@@ -6,7 +6,7 @@ import { WebSocketData } from '../wsData.ts';
 
 // Function handling all events the websocket server decides are not related to a specific game.
 export async function handleMetaEvent(
-    event: any,
+    message: any,
     ws: WebSocket,
     cli: PostGresData,
     userMap: Map<string, WebSocket>,
@@ -14,7 +14,6 @@ export async function handleMetaEvent(
     dbLock: boolean,
     wsMap: Map<WebSocket, WebSocketData>,
 ) {
-    const message = JSON.parse(event);
     const payload = message.event;
     if (
         message.gameId === -1 &&

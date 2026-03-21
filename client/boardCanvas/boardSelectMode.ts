@@ -143,7 +143,7 @@ export class BoardSelectMode {
 
     // Adds all relevant event listeners.
     addEventListeners() {
-        document.addEventListener('keydown', (event) => {
+        can.addEventListener('keydown', (event) => {
             if (this.active) {
                 this.handleSwitchEvent(event.key);
             }

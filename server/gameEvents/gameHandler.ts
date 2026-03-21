@@ -20,13 +20,12 @@ import { WebSocketData } from '../wsData.ts';
 
 // Function handling all events the websocket server decides are related to a specific game.
 export async function handleGameEvent(
-    event: any,
+    message: any,
     currGame: GameObject,
     ws: WebSocket,
     cli: PostGresData,
     wsMap: Map<WebSocket, WebSocketData>,
 ) {
-    const message = JSON.parse(event);
     const payload = message.event;
     const userGm = currGame.checkUserGm(message.userId);
     if (payload.entity === Entity.Object) {

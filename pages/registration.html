@@ -20,6 +20,7 @@
             localStorage['id'] = userId.value;
             localStorage['name'] = userName.value;
             alert("Successfully signed in/registered with current credentials.")
+            window.location.pathname = '/'
         } else if (message.entity === "NAME" && !message.accepted) {
             alert("Could not sign in/register with those credentials")
         }
