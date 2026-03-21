@@ -282,6 +282,22 @@ export class PostGresData {
         }
     }
 
+    async getUserGames(gmId: string) {
+        try {
+            const res = await this.client.query({
+                text: `SELECT GameId FROM mainschema.games WHERE GmId = '${gmId}'`,
+                rowMode: 'array',
+            });
+            return res.rows;
+        } catch (err) {
+            console.log(
+                `Database error: Could not select games for ${gmId}`,
+                err,
+            );
+            return false;
+        }
+    }
+
     async addToken(gameId: number, token: string) {
         try {
             await this.client.query({

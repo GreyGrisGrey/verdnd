@@ -1,18 +1,50 @@
 <a href="registration">Please sign up or something man.</a>
 <a href="game/0">Visit game 0, for real!</a>
 <a href="game/1">Visit game 1, for real!</a>
-<button id="newGame">Make a NEW game</button>
 
 <p id="credBox">Current user: </p>
-<div id="gameBox"></div>
+<div id="gameBox">
+    <div id="gameDescriptor">Your games</div>
+    <button id="newGame">Create new game</button>
+    <div id="gameContainer"></div>
+</div>
+
 <script>
+    async function requestGames() {
+        while (ws.readyState === 0) {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+        ws.send(JSON.stringify({
+            userId: localStorage['id'],
+            event: {
+                entity: 'META',
+                action: 'ENUMERATE'
+            },
+            gameId: -3,
+            handler: 'META'
+        }))
+    }
+
     const ws = new WebSocket('ws://47.55.46.138:4322/');
     credBox.innerText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`
 
     ws.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
-        alert(message)
-        window.location.pathname = "/game/" + message.newId
+        if (message.newId) {
+            window.location.pathname = "/game/" + message.newId
+        } else if (message.list) {
+            for (const val of message.list) {
+                const newBox = document.createElement('div');
+                const newText = document.createElement('a');
+                newText.href = '/game/' + val.toString();
+                newBox.append(newText)
+                gameContainer.append(newBox)
+                newBox.style.position = 'relative';
+                newBox.style.left = "20px";
+
+                newText.innerText = 'Game #' + val.toString();
+            }
+        }
     })
 
     newGame.addEventListener('click', () => {
@@ -32,15 +64,41 @@
             );
         }
     })
+
+    requestGames();
 </script>
+
 <style>
+    #newGame {
+        position: absolute;
+        width: 250px;
+        bottom: 300px;
+        border-radius: 0px;
+        border-top: solid black;
+        border-bottom: solid black;
+        border-left: none;
+        border-right: none;
+    }
+
     #gameBox {
         position: absolute;
         bottom: 10px;
         right: 10px;
         width: 250px;
-        height: 300px;
+        height: 360px;
         background-color: #eeeeee;
         border: solid black;
+        overflow: scroll;
+    }
+
+    #gameContainer {
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        width: 260px;
+        height: 300px;
+        background-color: #eeeeee;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
 </style>

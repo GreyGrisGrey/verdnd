@@ -53,6 +53,7 @@ export enum Action {
     Update = 'UPDATE',
     Rename = 'RENAME',
     Finish = 'FINISH',
+    Enumerate = 'ENUMERATE',
 }
 
 export interface LayerState {
@@ -229,6 +230,17 @@ export interface BackgroundColourEvent {
 export interface ConstructGameEvent {
     entity: Entity.Meta;
     action: Action.Create;
+}
+
+export interface GameListEvent {
+    entity: Entity.Meta;
+    action: Action.Enumerate;
+}
+
+export interface GameListResultEvent {
+    entity: Entity.Meta;
+    action: Action.Enumerate;
+    list: Number[];
 }
 
 export type ServerEvent =

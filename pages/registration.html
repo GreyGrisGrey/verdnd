@@ -7,8 +7,11 @@
 <input type="text" id="userName" />
 <button id="submit">Submit</button>
 
+<p id="credBox">Current user: </p>
+
 <script>
     const ws = new WebSocket('ws://47.55.46.138:4322/');
+    credBox.innerText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`
 
     ws.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);

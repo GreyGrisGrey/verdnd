@@ -1,6 +1,6 @@
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { PostGresData } from '../dataMain.ts';
-import { establishGlobalUser } from './metaEvents.ts';
+import { establishGlobalUser, getUserGames } from './metaEvents.ts';
 import WebSocket from 'ws';
 
 export async function handleMetaEvent(
@@ -29,5 +29,17 @@ export async function handleMetaEvent(
         if (res) {
             ws.send(JSON.stringify({ newId: res }));
         }
+    } else if (
+        payload.entity === Entity.Meta &&
+        payload.action === Action.Enumerate
+    ) {
+        const res = await getUserGames(message.userId, cli);
+        ws.send(
+            JSON.stringify({
+                entity: Entity.Meta,
+                action: Action.Enumerate,
+                list: res,
+            }),
+        );
     }
 }
