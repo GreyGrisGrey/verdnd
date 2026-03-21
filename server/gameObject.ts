@@ -10,6 +10,7 @@ import { Action, Entity } from '../shared/objectEvents.ts';
 import WebSocket from 'ws';
 
 export class GameObject {
+    creator: string;
     objectMap: Map<number, ObjectCreateEvent>;
     layerMap: Map<number, LayerUpdateEvent>;
     diceMap: Map<number, RollComplete>;
@@ -31,6 +32,7 @@ export class GameObject {
     dbLock: boolean;
 
     constructor(gameId: number) {
+        this.creator = 'aa';
         this.objectMap = new Map();
         this.layerMap = new Map();
         this.diceMap = new Map();
@@ -53,6 +55,17 @@ export class GameObject {
         this.diceLock = false;
         this.userLock = false;
         this.dbLock = false;
+    }
+    
+    checkUserGm(id: string) {
+        if (this.allGm) {
+            return true;
+        }
+        const playerPacket = this.userMap.get(id);
+        if (playerPacket && playerPacket.isGm) {
+            return true;
+        }
+        return false;
     }
 
     addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {

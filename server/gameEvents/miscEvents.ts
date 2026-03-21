@@ -33,7 +33,6 @@ export async function establishLocalUser(
     ws: WebSocket,
     currGame: GameObject,
     cli: PostGresData,
-    gmMap: Map<WebSocket, boolean>,
     userMap: Map<string, boolean>,
 ) {
     await currGame.waitLock(currGame.userLock);
@@ -47,7 +46,6 @@ export async function establishLocalUser(
             payload.id === 'Verd' ||
             payload.id === 'Verdigris'
         ) {
-            gmMap.set(ws, true);
             userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
@@ -58,11 +56,8 @@ export async function establishLocalUser(
                 }),
             );
             console.log('user add success');
-            if (currGame) {
-                currGame.addUser(payload.name, payload.id, true, ws);
-            }
+            currGame.addUser(payload.name, payload.id, true, ws);
         } else {
-            gmMap.set(ws, currGame.allGm);
             userMap.set(payload.id, true);
             ws.send(
                 JSON.stringify({
@@ -73,12 +68,9 @@ export async function establishLocalUser(
                 }),
             );
             console.log('user add success');
-            if (currGame) {
-                currGame.addUser(payload.name, payload.id, currGame.allGm, ws);
-            }
+            currGame.addUser(payload.name, payload.id, currGame.allGm, ws);
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
-        gmMap.set(ws, currGame.allGm);
         userMap.set(payload.id, true);
         ws.send(
             JSON.stringify({
@@ -89,9 +81,7 @@ export async function establishLocalUser(
             }),
         );
         console.log('user add success');
-        if (currGame) {
-            currGame.addUser(payload.name, payload.id, currGame.allGm, ws);
-        }
+        currGame.addUser(payload.name, payload.id, currGame.allGm, ws);
     } else {
         ws.send(
             JSON.stringify({
@@ -105,7 +95,5 @@ export async function establishLocalUser(
     }
     currGame.dbLock = false;
     currGame.userLock = false;
-    if (currGame) {
-        currGame.sendAll(ws);
-    }
+    currGame.sendAll(ws);
 }

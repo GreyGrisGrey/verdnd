@@ -69,15 +69,13 @@ export async function moveObj(
     objId: number,
     xChange: number,
     yChange: number,
-    ws: WebSocket,
     currGame: GameObject,
-    cli: PostGresData,
-    gmMap: Map<WebSocket, boolean>,
+    cli: PostGresData, userGm: boolean
 ) {
     await currGame.waitLock(currGame.objectLock);
     currGame.objectLock = true;
     const currObj = currGame.objectMap.get(objId);
-    if (currObj && (gmMap.get(ws) || currObj.token.active)) {
+    if (currObj && (userGm || currObj.token.active)) {
         currObj.object.x += xChange;
         currObj.object.y += yChange;
         const sendObj = JSON.stringify(currObj);

@@ -9,8 +9,6 @@ import WebSocket, { WebSocketServer } from 'ws';
 const cli = new PostGresData();
 
 const gameMap: Map<number, GameObject> = new Map();
-
-const gmMap: Map<WebSocket, boolean> = new Map();
 let userMap: Map<string, boolean> = new Map();
 let metaDbLock = false;
 let metaUserLock = false;
@@ -24,7 +22,6 @@ wss.on('connection', async function connection(ws) {
     ws.on('message', async function message(data, ws) {
         handleEvent(data, newConnect);
     });
-    gmMap.set(newConnect, true);
 
     console.log('connection established');
 });
@@ -58,7 +55,7 @@ async function handleEvent(event: any, ws: WebSocket) {
                     return;
                 }
             }
-            handleGameEvent(event, currGame, ws, cli, gmMap, userMap);
+            handleGameEvent(event, currGame, ws, cli, userMap);
         } else if (message.handler === Handler.Meta) {
             handleMetaEvent(event, ws, cli, userMap, gameMap, metaUserLock, metaDbLock)
         }

@@ -22,48 +22,46 @@ export async function handleGameEvent(
     currGame: GameObject,
     ws: WebSocket,
     cli: PostGresData,
-    gmMap: Map<WebSocket, boolean>,
     userMap: Map<string, boolean>,
 ) {
     const message = JSON.parse(event);
     const payload = message.event;
+    const userGm = currGame.checkUserGm(message.userId)
     if (payload.entity === Entity.Object) {
-        if (payload.action === Action.Create && gmMap.get(ws)) {
+        if (payload.action === Action.Create && userGm) {
             createObj(payload, currGame, cli);
-        } else if (payload.action === Action.Destroy && gmMap.get(ws)) {
+        } else if (payload.action === Action.Destroy && userGm) {
             destroyObj(payload.objectId, currGame, cli);
         } else if (payload.action === Action.Move) {
             moveObj(
                 payload.objectId,
                 payload.x,
                 payload.y,
-                ws,
                 currGame,
-                cli,
-                gmMap,
+                cli, userGm
             );
-        } else if (payload.action === Action.Recolour && gmMap.get(ws)) {
+        } else if (payload.action === Action.Recolour && userGm) {
             colourObj(payload.objectId, payload.colour, currGame, cli);
         }
     } else if (payload.entity === Entity.Layer) {
-        if (payload.action === Action.Create && gmMap.get(ws)) {
+        if (payload.action === Action.Create && userGm) {
             createLayer(currGame, cli);
-        } else if (payload.action === Action.Destroy && gmMap.get(ws)) {
+        } else if (payload.action === Action.Destroy && userGm) {
             destroyLayer(payload.layerId, currGame, cli);
-        } else if (payload.action === Action.Update && gmMap.get(ws)) {
+        } else if (payload.action === Action.Update && userGm) {
             updateLayer(payload.layer.id, payload.layer, currGame, cli);
         }
     } else if (payload.entity === Entity.Roll) {
         addDice(payload.dice, message.userId, payload.userName, currGame, cli);
     } else if (payload.entity === Entity.Laser) {
         updateLaser(payload, currGame);
-    } else if (payload.entity === Entity.Token && gmMap.get(ws)) {
+    } else if (payload.entity === Entity.Token && userGm) {
         updateToken(payload.token, payload.id, currGame, cli);
     } else if (payload.entity === Entity.Name) {
         if (payload.pass && payload.name && payload.id) {
-            establishLocalUser(payload, ws, currGame, cli, gmMap, userMap);
+            establishLocalUser(payload, ws, currGame, cli, userMap);
         }
-    } else if (payload.entity === Entity.Meta && gmMap.get(ws)) {
+    } else if (payload.entity === Entity.Meta && userGm) {
         updateBackground(payload.newColour, currGame, cli);
     }
 }
