@@ -266,6 +266,5 @@ export class GameObject {
                 this.broadcast(JSON.stringify(val));
             }
         }
-        console.log('laser finished', Date.now(), this.count);
     }
 }

@@ -35,6 +35,10 @@ wss.on('connection', async function connection(ws) {
             const gameObj = gameMap.get(closingWs.game);
             if (gameObj) {
                 gameObj.removeUser(closingWs.id);
+                if (gameObj.userMap.size === 0) {
+                    gameMap.delete(closingWs.game);
+                    console.log('game object closed.');
+                }
             }
             const user = userMap.get(closingWs.id);
             if (user) {
@@ -44,6 +48,7 @@ wss.on('connection', async function connection(ws) {
                 }
             }
         }
+        wsMap.delete(newConnect);
     });
 
     console.log('connection established', Date.now());
