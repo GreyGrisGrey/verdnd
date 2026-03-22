@@ -12,7 +12,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 const cli = new PostGresData();
 
 const gameMap: Map<number, GameObject> = new Map();
-const userMap: Map<string, WebSocket> = new Map();
+const userMap: Map<string, Set<WebSocket>> = new Map();
 const wsMap: Map<WebSocket, WebSocketData> = new Map();
 let metaDbLock = false;
 let metaUserLock = false;
@@ -29,29 +29,31 @@ wss.on('connection', async function connection(ws) {
     });
 
     ws.on('close', async function onClose(ws) {
-        console.log('connection closed');
+        console.log('connection closed', Date.now());
         const closingWs = wsMap.get(newConnect);
         if (closingWs) {
             const gameObj = gameMap.get(closingWs.game);
             if (gameObj) {
                 gameObj.removeUser(closingWs.id);
             }
-            if (userMap.has(closingWs.id)) {
-                userMap.delete(closingWs.id);
+            const user = userMap.get(closingWs.id);
+            if (user) {
+                user.delete(newConnect);
+                if (user.size === 0) {
+                    userMap.delete(closingWs.id);
+                }
             }
         }
     });
 
-    console.log('connection established');
+    console.log('connection established', Date.now());
 });
 
 async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
     if (message.event) {
-        if (
-            message.handler === Handler.Meta &&
-            ws === userMap.get(message.userId)
-        ) {
+        const user = userMap.get(message.userId);
+        if (message.handler === Handler.Meta && user && user.has(ws)) {
             handleMetaEvent(
                 message,
                 ws,
@@ -63,7 +65,7 @@ async function handleEvent(event: any, ws: WebSocket) {
             );
         } else if (
             message.handler === Handler.Meta &&
-            ws !== userMap.get(message.userId)
+            (!user || !user.has(ws))
         ) {
             const payload = message.event;
             if (
@@ -82,10 +84,7 @@ async function handleEvent(event: any, ws: WebSocket) {
                     wsMap,
                 );
             }
-        } else if (
-            message.handler === Handler.Game &&
-            ws === userMap.get(message.userId)
-        ) {
+        } else if (message.handler === Handler.Game && user && user.has(ws)) {
             let currGame = gameMap.get(Number(message.gameId));
             if (!currGame) {
                 const res = await cli.checkGame(Number(message.gameId));

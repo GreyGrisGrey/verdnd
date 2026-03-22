@@ -9,7 +9,7 @@ export async function handleMetaEvent(
     message: any,
     ws: WebSocket,
     cli: PostGresData,
-    userMap: Map<string, WebSocket>,
+    userMap: Map<string, Set<WebSocket>>,
     userLock: boolean,
     dbLock: boolean,
     wsMap: Map<WebSocket, WebSocketData>,

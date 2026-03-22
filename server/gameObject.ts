@@ -29,6 +29,7 @@ export class GameObject {
     diceLock: boolean;
     userLock: boolean;
     dbLock: boolean;
+    count: number;
 
     constructor(gameId: number) {
         this.owner = '';
@@ -53,6 +54,7 @@ export class GameObject {
         this.diceLock = false;
         this.userLock = false;
         this.dbLock = false;
+        this.count = 0;
     }
 
     checkUserGm(id: string) {
@@ -80,7 +82,6 @@ export class GameObject {
     }
 
     addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {
-        console.log('there is a user');
         if (this.userMap.has(id)) {
             this.broadcast(
                 JSON.stringify({
@@ -169,9 +170,37 @@ export class GameObject {
         }
     }
 
-    async waitLock(lock: boolean) {
-        while (lock) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
+    async waitLock(name: string) {
+        if (name === 'db') {
+            while (this.dbLock) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 50 + Math.round(Math.random() * 5)),
+                );
+            }
+        } else if (name === 'obj') {
+            while (this.objectLock) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 50 + Math.round(Math.random() * 5)),
+                );
+            }
+        } else if (name === 'layer') {
+            while (this.layerLock) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 50 + Math.round(Math.random() * 5)),
+                );
+            }
+        } else if (name === 'user') {
+            while (this.userLock) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 50 + Math.round(Math.random() * 5)),
+                );
+            }
+        } else if (name === 'dice') {
+            while (this.diceLock) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, 50 + Math.round(Math.random() * 5)),
+                );
+            }
         }
     }
 
@@ -223,6 +252,7 @@ export class GameObject {
     }
 
     async sendAllLasers() {
+        this.count += 1;
         const currTime = Date.now();
         if (currTime - this.laserTimer < 30) {
             return;
@@ -230,11 +260,12 @@ export class GameObject {
             this.laserTimer = currTime;
         }
         for (const [key, val] of this.laserMap) {
-            if (this.laserTimer - val.time > 1000) {
+            if (this.laserTimer - val.time > 2000) {
                 this.laserMap.delete(key);
             } else {
                 this.broadcast(JSON.stringify(val));
             }
         }
+        console.log('laser finished', Date.now(), this.count);
     }
 }

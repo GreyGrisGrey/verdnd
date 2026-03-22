@@ -58,7 +58,7 @@ export async function addDice(
             newDice.diceCount -= 1;
         }
     }
-    await currGame.waitLock(currGame.diceLock);
+    await currGame.waitLock('dice');
     currGame.diceLock = true;
     currGame.diceMap.set(currGame.currDice, {
         entity: Entity.Roll,
@@ -76,7 +76,7 @@ export async function addDice(
         userId: userId,
         userName: userName,
     });
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.addRoll(
         currGame.gameId,

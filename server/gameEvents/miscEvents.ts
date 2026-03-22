@@ -11,7 +11,7 @@ export async function updateBackground(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.updateGame(currGame.gameId, newCol);
     currGame.currCol = newCol;
@@ -39,9 +39,9 @@ export async function establishLocalUser(
     cli: PostGresData,
     wsMap: Map<WebSocket, WebSocketData>,
 ) {
-    await currGame.waitLock(currGame.userLock);
+    await currGame.waitLock('user');
     currGame.userLock = true;
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     if (await cli.verifyUser(payload.id, payload.pass)) {
         if (

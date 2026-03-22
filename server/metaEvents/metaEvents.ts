@@ -30,7 +30,7 @@ export async function establishGlobalUser(
     userLock: boolean,
     dbLock: boolean,
     cli: PostGresData,
-    userMap: Map<string, WebSocket>,
+    userMap: Map<string, Set<WebSocket>>,
     wsMap: Map<WebSocket, WebSocketData>,
 ) {
     await waitLock(userLock);
@@ -44,7 +44,12 @@ export async function establishGlobalUser(
             payload.id === 'Verd' ||
             payload.id === 'Verdigris'
         ) {
-            userMap.set(payload.id, ws);
+            const user = userMap.get(payload.id);
+            if (user) {
+                user.add(ws);
+            } else {
+                userMap.set(payload.id, new Set([ws]));
+            }
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
@@ -56,7 +61,12 @@ export async function establishGlobalUser(
             wsMap.get(ws)!.updateId(payload.id, payload.name);
             console.log('user add success (Global)');
         } else {
-            userMap.set(payload.id, ws);
+            const user = userMap.get(payload.id);
+            if (user) {
+                user.add(ws);
+            } else {
+                userMap.set(payload.id, new Set([ws]));
+            }
             ws.send(
                 JSON.stringify({
                     entity: Entity.Name,
@@ -69,7 +79,12 @@ export async function establishGlobalUser(
             console.log('user add success (Global)');
         }
     } else if (await cli.addUser(payload.name, payload.pass, payload.id)) {
-        userMap.set(payload.id, ws);
+        const user = userMap.get(payload.id);
+        if (user) {
+            user.add(ws);
+        } else {
+            userMap.set(payload.id, new Set([ws]));
+        }
         ws.send(
             JSON.stringify({
                 entity: Entity.Name,

@@ -54,6 +54,12 @@ function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     }
 }
 
+interface selfLaser {
+    x: number;
+    y: number;
+    time: number;
+}
+
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.
 export class tempStore {
@@ -78,6 +84,7 @@ export class tempStore {
     name: string;
     currGame: number;
     connected: boolean;
+    lastLaser: selfLaser;
 
     constructor(
         newObjects: Map<number, BoardObject>,
@@ -100,6 +107,11 @@ export class tempStore {
         this.rightMenu = null;
         this.isGm = false;
         this.connected = false;
+        this.lastLaser = {
+            x: 0,
+            y: 0,
+            time: 0,
+        };
 
         this.currGame = Number(window.location.pathname.split('/')[2]) | 0;
         this.id =
@@ -161,6 +173,7 @@ export class tempStore {
                         this.board.removeObject(message.objectId);
                     }
                 } else if (message.action !== Action.Destroy) {
+                    console.log('create object return arrival', Date.now());
                     if (
                         message.userId === this.id &&
                         !this.storedObjectPayloads.has(message.object.objectId)
@@ -177,6 +190,7 @@ export class tempStore {
                         message.object,
                     );
                     this.createObjectLocal(message);
+                    console.log('create object return complete', Date.now());
                 }
             } else if (message.entity === Entity.Roll) {
                 this.rollMapping.set(message.id, message);
@@ -309,6 +323,7 @@ export class tempStore {
 
     // Sends a packet telling the backend to create an object with those parameters.
     async createObject(newObj: ObjectCreateEvent, undo: boolean = false) {
+        console.log('create object send start', Date.now());
         if (!this.isGm) {
             return;
         }
@@ -529,6 +544,17 @@ export class tempStore {
     }
 
     sendLaser(x: number, y: number, send: boolean) {
+        if (
+            this.lastLaser.x === x &&
+            this.lastLaser.y === y &&
+            this.lastLaser.time > Date.now() - 1000
+        ) {
+            return;
+        } else {
+            this.lastLaser.x = x;
+            this.lastLaser.y = y;
+            this.lastLaser.time = Date.now();
+        }
         if (send) {
             this.socket.send(
                 this.parcelServeEvent({

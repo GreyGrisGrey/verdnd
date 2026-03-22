@@ -6,7 +6,7 @@ import { GameObject } from '../gameObject.ts';
 
 // Function for adding a new layer to a specified game.
 export async function createLayer(currGame: GameObject, cli: PostGresData) {
-    await currGame.waitLock(currGame.layerLock);
+    await currGame.waitLock('layer');
     currGame.layerLock = true;
     currGame.layerMap.set(currGame.currLayer, {
         entity: Entity.Layer,
@@ -22,7 +22,7 @@ export async function createLayer(currGame: GameObject, cli: PostGresData) {
         },
     });
     const sendObj = JSON.stringify(currGame.layerMap.get(currGame.currLayer));
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.addLayer(
         currGame.gameId,
@@ -41,7 +41,7 @@ export async function updateLayer(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.layerLock);
+    await currGame.waitLock('layer');
     currGame.layerLock = true;
     const oldVis = currGame.layerMap.get(layerId)!.layer.playerVisible;
     currGame.layerMap.set(layerId, {
@@ -54,7 +54,7 @@ export async function updateLayer(
         action: Action.Update,
         layer: newLayer,
     });
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.updateLayer(
         currGame.gameId,
@@ -79,11 +79,11 @@ export async function destroyLayer(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.layerLock);
+    await currGame.waitLock('layer');
     currGame.layerLock = true;
     if (currGame.layerMap.size > 1) {
         currGame.layerMap.delete(layerId);
-        await currGame.waitLock(currGame.dbLock);
+        await currGame.waitLock('db');
         currGame.dbLock = true;
         cli.destroyLayer(currGame.gameId, layerId);
         currGame.dbLock = false;

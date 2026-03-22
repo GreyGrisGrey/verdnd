@@ -16,7 +16,7 @@ export async function createObj(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.objectLock);
+    await currGame.waitLock('obj');
     if (!newObject.token) {
         return;
     }
@@ -24,7 +24,7 @@ export async function createObj(
     currGame.objectMap.set(currGame.currObj, newObject);
     newObject.object.objectId = currGame.currObj;
     const sendObj = JSON.stringify(newObject);
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.addObject(currGame.gameId, objectPayloadToRow(newObject));
     if (
@@ -42,6 +42,7 @@ export async function createObj(
         currGame.objectLock = false;
         currGame.broadcast(sendObj);
     }
+    console.log('object creation complete', Date.now());
 }
 
 // Function for destroying a specified object from a specified game.
@@ -50,7 +51,7 @@ export async function destroyObj(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.objectLock);
+    await currGame.waitLock('obj');
     currGame.objectLock = true;
     currGame.objectMap.delete(objId);
     const sendObj = JSON.stringify({
@@ -58,7 +59,7 @@ export async function destroyObj(
         action: Action.Destroy,
         objectId: objId,
     });
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.destroyObject(currGame.gameId, objId);
     cli.destroyToken(currGame.gameId, objId);
@@ -76,14 +77,14 @@ export async function moveObj(
     cli: PostGresData,
     userGm: boolean,
 ) {
-    await currGame.waitLock(currGame.objectLock);
+    await currGame.waitLock('obj');
     currGame.objectLock = true;
     const currObj = currGame.objectMap.get(objId);
     if (currObj && (userGm || currObj.token.active)) {
         currObj.object.x += xChange;
         currObj.object.y += yChange;
         const sendObj = JSON.stringify(currObj);
-        await currGame.waitLock(currGame.dbLock);
+        await currGame.waitLock('db');
         currGame.dbLock = true;
         cli.updateObject(currGame.gameId, objId, updateObjectToRow(currObj));
         currGame.dbLock = false;
@@ -102,13 +103,13 @@ export async function colourObj(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.objectLock);
+    await currGame.waitLock('obj');
     currGame.objectLock = true;
     const currObj = currGame.objectMap.get(objId);
     if (currObj) {
         currObj.object.colour = colour;
         const sendObj = JSON.stringify(currObj);
-        await currGame.waitLock(currGame.dbLock);
+        await currGame.waitLock('db');
         currGame.dbLock = true;
         cli.updateObject(currGame.gameId, objId, updateObjectToRow(currObj));
         currGame.dbLock = false;
@@ -127,9 +128,9 @@ export async function updateToken(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock(currGame.objectLock);
+    await currGame.waitLock('obj');
     currGame.objectLock = true;
-    await currGame.waitLock(currGame.dbLock);
+    await currGame.waitLock('db');
     currGame.dbLock = true;
     cli.updateToken(currGame.gameId, id, updateTokenToRow(newToken));
     currGame.objectMap.get(id)!.token = newToken;
