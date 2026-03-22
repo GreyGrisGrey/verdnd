@@ -12,7 +12,7 @@ import type {
 } from '../shared/objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
 import { ColInst } from '../shared/colours.ts';
-import { Action, Entity, Shape, Handler } from '../shared/objectEvents.ts';
+import { Action, Entity, Handler } from '../shared/objectEvents.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
@@ -25,25 +25,16 @@ const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
 const userBox = new UserBox();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
-    switch (p.kind) {
-        case Shape.Ellipse:
-        case Shape.Rect:
-        case Shape.Line:
-        case Shape.Polyline:
-            return new BoardObject(
-                p.objectId,
-                p.x,
-                p.y,
-                p.colour,
-                p.kind,
-                p.width,
-                p.height,
-                p.points,
-            );
-        default: {
-            throw new Error('Unknown shape');
-        }
-    }
+    return new BoardObject(
+        p.objectId,
+        p.x,
+        p.y,
+        p.colour,
+        p.params,
+        p.width,
+        p.height,
+        p.points,
+    );
 }
 
 interface selfLaser {

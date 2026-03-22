@@ -144,7 +144,7 @@ export class PostGresData {
     async constructGameTables(newId: number) {
         try {
             await this.client.query({
-                text: `CREATE TABLE mainschema.objects${newId} (Shape text NOT NULL, Colour text, LayerId int, ObjectId int PRIMARY KEY, StructureData text NOT NULL, Owner text)`,
+                text: `CREATE TABLE mainschema.objects${newId} (Params int NOT NULL, Colour text, LayerId int, ObjectId int PRIMARY KEY, StructureData text NOT NULL, Owner text)`,
                 rowMode: 'array',
             });
             await this.client.query({

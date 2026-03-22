@@ -19,17 +19,16 @@ export interface Token {
     active: boolean;
 }
 
+export interface ObjectParams {
+    ellipse: boolean;
+    fill: boolean;
+    close: boolean;
+    rect?: boolean;
+}
+
 export enum Handler {
     Game = 'GAME',
     Meta = 'META',
-}
-
-export enum Shape {
-    Rect = 'RECT',
-    Ellipse = 'ELLIPSE',
-    Polyline = 'POLYLINE',
-    Line = 'LINE',
-    None = 'NONE',
 }
 
 export enum Entity {
@@ -69,7 +68,7 @@ export interface LayerState {
 }
 
 export interface ObjectCreatePayload {
-    kind: Shape;
+    params: ObjectParams;
     x: number;
     y: number;
     width: number;

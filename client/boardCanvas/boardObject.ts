@@ -1,8 +1,10 @@
 import type { ColInst } from '../../shared/colours.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { GOLD } from '../../shared/colours.ts';
-import { Shape } from '../../shared/objectEvents.ts';
-import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
+import type {
+    ObjectCreatePayload,
+    ObjectParams,
+} from '../../shared/objectEvents.ts';
 import { Token } from '../../shared/objectEvents.ts';
 
 // General purpose superclass for any shape that appears on the board.
@@ -22,21 +24,22 @@ export class BoardObject {
     currPathSpecs: Array<number>;
     currPath: Path2D;
     ctx?: CanvasRenderingContext2D;
-    shape: Shape;
     token: Token;
     owner: string;
     points: Vec2[];
+    drawParams: ObjectParams;
 
     constructor(
         objectId: number,
         x: number,
         y: number,
         colour: ColInst | string,
-        kind: Shape,
+        drawParams: ObjectParams,
         width: number = 1,
         height: number = 1,
         structure: Vec2[] = [],
     ) {
+        this.drawParams = drawParams;
         this.objectId = objectId;
         this.zOrder = 0;
         this.scale = { x: width, y: height };
@@ -49,7 +52,6 @@ export class BoardObject {
         this.currPathSpecs = [0, 0, 0, 0, 0];
         this.currPath = new Path2D();
         this.ctx = undefined;
-        this.shape = kind;
         this.token = {
             name: 'na',
             movable: true,
@@ -57,10 +59,7 @@ export class BoardObject {
             colour: '#cccccc',
         };
         this.owner = 'None';
-        this.points =
-            kind === Shape.Polyline || kind === Shape.Line
-                ? structure
-                : this.constructPoints();
+        this.points = drawParams.rect ? this.constructPoints() : structure;
         this.offset = { x, y };
     }
 
@@ -120,7 +119,7 @@ export class BoardObject {
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }
-        if (this.shape === Shape.Line) {
+        if (!this.drawParams.fill) {
             ctx.lineWidth = 3;
             ctx.strokeStyle = this.colour.toString();
             ctx.stroke(this.currPath);
@@ -170,7 +169,7 @@ export class BoardObject {
 
     // Blank function for building the path of the object.
     buildPath(squareSize: number, offset: Vec2) {
-        this.shape === Shape.Ellipse
+        this.drawParams.ellipse
             ? this.pathEllipse(squareSize, offset)
             : this.pathOther(squareSize, offset);
     }
@@ -243,7 +242,7 @@ export class BoardObject {
 
     payloadFromObject(): ObjectCreatePayload {
         return {
-            kind: this.shape,
+            params: this.drawParams,
             x: this.offset.x,
             y: this.offset.y,
             width: this.scale.x,
@@ -268,7 +267,7 @@ export class BoardObject {
 
     getPoints() {
         const vals = [];
-        if (this.shape !== Shape.Ellipse) {
+        if (!this.drawParams.ellipse) {
             const loc = this.offset;
             vals.push(loc);
             for (const pt of this.points) {
@@ -343,7 +342,7 @@ export class BoardObject {
             this.offset.x,
             this.offset.y,
         ];
-        if (this.shape !== Shape.Line) {
+        if (this.drawParams.close) {
             this.currPath.closePath();
         }
     }

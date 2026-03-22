@@ -6,7 +6,7 @@ import {
     SingleRoll,
 } from '../shared/objectEvents.ts';
 import { Vec2 } from '../shared/coords.ts';
-import { Action, Entity, Shape } from '../shared/objectEvents.ts';
+import { Action, Entity, ObjectParams } from '../shared/objectEvents.ts';
 
 export function objectTableToPayloads(rows: any[]) {
     const mapping: Map<number, ObjectCreateEvent> = new Map();
@@ -15,6 +15,11 @@ export function objectTableToPayloads(rows: any[]) {
             let newItem = item.split(',');
             return { x: Number(newItem[0]), y: Number(newItem[1]) };
         });
+        const newParams = {
+            ellipse: row[0] % 2 === 0,
+            fill: row[0] % 4 < 2,
+            close: row[0] < 4,
+        };
         mapping.set(row[3], {
             entity: Entity.Object,
             action: Action.Create,
@@ -28,7 +33,7 @@ export function objectTableToPayloads(rows: any[]) {
                 colour: row[1],
                 layerId: row[2],
                 objectId: row[3],
-                kind: row[0],
+                params: newParams,
                 token: {
                     name: 'na',
                     colour: '#cccccc',
@@ -116,7 +121,11 @@ export function tokenTableToPayloads(
 }
 
 export function objectPayloadToRow(payload: ObjectCreateEvent) {
-    let returnString = `('${payload.object.kind}', '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
+    let newVal = 0;
+    newVal += payload.object.params.ellipse ? 0 : 1;
+    newVal += payload.object.params.fill ? 0 : 2;
+    newVal += payload.object.params.close ? 0 : 4;
+    let returnString = `(${newVal}, '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
     returnString += `${payload.object.x},${payload.object.y}:`;
     returnString += `${payload.object.width},${payload.object.height}:`;
     returnString += `${(payload.object as any).points

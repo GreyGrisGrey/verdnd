@@ -3,8 +3,11 @@ import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
-import { Action, Entity, Shape } from '../../shared/objectEvents.ts';
+import type {
+    ObjectCreatePayload,
+    ObjectParams,
+} from '../../shared/objectEvents.ts';
+import { Action, Entity } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
@@ -21,26 +24,31 @@ function rectangleFromPoints(point1: Vec2, point2: Vec2) {
 export class BoardDrawMode {
     board: Board;
     active: boolean;
-    shape: Shape;
     params: Vec2[];
-    completeObjCheck: boolean;
     selectMode: boolean;
     selectState: number;
     tempObject: ObjectCreatePayload | null;
     stickTemp: boolean;
     boxItems: HTMLButtonElement[];
+    currParams: ObjectParams;
+    currDraw: number;
 
     constructor(parentBoard: Board) {
+        this.currDraw = 1;
         this.board = parentBoard;
         this.active = false;
-        this.shape = Shape.Rect;
         this.params = [];
-        this.completeObjCheck = false;
         this.selectMode = false;
         this.selectState = 0;
         this.tempObject = null;
         this.stickTemp = false;
         this.boxItems = [];
+        this.currParams = {
+            ellipse: false,
+            fill: true,
+            close: true,
+            rect: true,
+        };
 
         this.addEventListeners();
         this.setUpBoxes();
@@ -76,10 +84,10 @@ export class BoardDrawMode {
 
     // Flips which control buttons are disabled.
     flipBoxes() {
-        this.boxItems[1].disabled = this.shape === Shape.Rect;
-        this.boxItems[2].disabled = this.shape === Shape.Ellipse;
-        this.boxItems[3].disabled = this.shape === Shape.Polyline;
-        this.boxItems[4].disabled = this.shape === Shape.Line;
+        this.boxItems[1].disabled = this.currDraw === 1;
+        this.boxItems[2].disabled = this.currDraw === 2;
+        this.boxItems[3].disabled = this.currDraw === 3;
+        this.boxItems[4].disabled = this.currDraw === 4;
         this.boxItems[6].disabled = this.selectMode;
         this.boxItems[8].disabled = true;
         this.boxItems[9].disabled = true;
@@ -92,21 +100,34 @@ export class BoardDrawMode {
         this.params = [];
         this.selectMode = false;
         this.selectState = 0;
-        this.completeObjCheck = false;
         this.toggleBoxes();
     }
 
     // Handles key press events when draw mode is active.
     handleSwitchEvent(key: string) {
         if (key === '1') {
-            this.shape = Shape.Rect;
+            this.currParams = {
+                ellipse: false,
+                fill: true,
+                close: true,
+                rect: true,
+            };
+            this.currDraw = 1;
         } else if (key === '2') {
-            this.shape = Shape.Ellipse;
+            this.currParams = {
+                ellipse: true,
+                fill: true,
+                close: true,
+                rect: true,
+            };
+            this.currDraw = 2;
         } else if (key === '3') {
-            this.shape = Shape.Polyline;
+            this.currParams = { ellipse: false, fill: true, close: true };
+            this.currDraw = 3;
         } else if (key === '4') {
-            this.shape = Shape.Line;
-        } else if (key === '5') {
+            this.currParams = { ellipse: false, fill: false, close: false };
+            this.currDraw = 4;
+        } else if (key === '5' && !this.selectMode) {
             this.setNewObject();
         }
         if (key === '6') {
@@ -125,7 +146,7 @@ export class BoardDrawMode {
             this.active &&
             key === '5' &&
             this.params.length > 2 &&
-            (this.shape === Shape.Polyline || this.shape === Shape.Line)
+            this.currDraw >= 3
         ) {
             this.handleSwitchEvent(key);
         } else if (this.active && key === '7') {
@@ -144,11 +165,7 @@ export class BoardDrawMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                if (
-                    (this.shape !== Shape.Polyline &&
-                        this.shape !== Shape.Line) ||
-                    this.selectMode
-                ) {
+                if (this.currDraw < 3 || this.selectMode) {
                     this.params.push(
                         this.board.determineTile(
                             this.board.mouseCoords.x,
@@ -198,11 +215,7 @@ export class BoardDrawMode {
                         this.params.push(topLeft);
                         this.params.push(bottomRight);
                     }
-                } else if (
-                    this.active &&
-                    this.shape !== Shape.Polyline &&
-                    this.shape !== Shape.Line
-                ) {
+                } else if (this.active && this.currDraw < 3) {
                     const res = this.board.determineTile(
                         this.board.mouseCoords.x,
                         this.board.mouseCoords.y,
@@ -218,21 +231,21 @@ export class BoardDrawMode {
     // Finalizes the current object and sends it to the server.
     setNewObject() {
         let tempObj: ObjectCreatePayload;
-        if (
-            (this.shape === Shape.Rect ||
-                this.shape === Shape.Ellipse ||
-                this.selectMode) &&
-            this.params.length === 2
-        ) {
+        if (this.currDraw < 3 && this.params.length === 2) {
             const res = rectangleFromPoints(this.params[0], this.params[1]);
-            const kind = this.selectMode ? Shape.Rect : this.shape;
+            const newPoints = [
+                { x: 0, y: 0 },
+                { x: 1, y: 0 },
+                { x: 1, y: 1 },
+                { x: 0, y: 1 },
+            ];
             tempObj = {
-                kind: kind as any,
+                params: this.currParams,
                 x: res[0],
                 y: res[1],
                 width: res[2],
                 height: res[3],
-                points: this.params.slice(1),
+                points: newPoints,
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
@@ -243,13 +256,10 @@ export class BoardDrawMode {
                     movable: false,
                 },
             };
-            this.completeObjCheck = true;
-        } else if (
-            (this.shape === Shape.Polyline || this.shape === Shape.Line) &&
-            this.params.length > 2
-        ) {
+            console.log('aaaaa');
+        } else if (this.currDraw >= 3 && this.params.length > 2) {
             tempObj = {
-                kind: this.shape,
+                params: this.currParams,
                 x: 0,
                 y: 0,
                 width: 1,
@@ -265,7 +275,6 @@ export class BoardDrawMode {
                     movable: false,
                 },
             };
-            this.completeObjCheck = true;
         } else {
             return;
         }
@@ -297,17 +306,13 @@ export class BoardDrawMode {
                 this.tempObject.x,
                 this.tempObject.y,
                 this.tempObject.colour,
-                this.tempObject.kind,
+                this.currParams,
                 this.tempObject.width,
                 this.tempObject.height,
                 this.tempObject.points,
             );
         }
-        if (
-            ((this.shape !== Shape.Polyline && this.shape !== Shape.Line) ||
-                this.selectMode) &&
-            this.params.length >= 1
-        ) {
+        if ((this.currDraw < 3 || this.selectMode) && this.params.length >= 1) {
             const res = this.board.determineTile(
                 this.board.mouseCoords.x,
                 this.board.mouseCoords.y,
@@ -317,26 +322,22 @@ export class BoardDrawMode {
             const col = this.selectMode
                 ? WHITE_50
                 : colourSquare.style.background;
-            const shape = this.selectMode ? Shape.Rect : this.shape;
             return new BoardObject(
                 -1,
                 res2[0],
                 res2[1],
                 col,
-                shape as any,
+                this.currParams,
                 res2[2],
                 res2[3],
             );
-        } else if (
-            this.params.length >= 2 &&
-            (this.shape === Shape.Polyline || this.shape === Shape.Line)
-        ) {
+        } else if (this.params.length >= 2 && this.currDraw >= 3) {
             const newObj = new BoardObject(
                 -1,
                 0,
                 0,
                 colourSquare.style.background,
-                this.shape,
+                this.currParams,
                 1,
                 1,
                 this.params,
