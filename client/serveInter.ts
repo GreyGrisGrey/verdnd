@@ -15,7 +15,6 @@ import { ColInst } from '../shared/colours.ts';
 import { Action, Entity, Shape, Handler } from '../shared/objectEvents.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
-import { Box, Polyline } from './boardCanvas/boardObject.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { getRequiredElement } from './dom.ts';
@@ -29,24 +28,17 @@ function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     switch (p.kind) {
         case Shape.Ellipse:
         case Shape.Rect:
-            return new Box(
-                p.objectId,
-                p.x,
-                p.y,
-                p.width,
-                p.height,
-                p.colour,
-                p.kind,
-            );
         case Shape.Line:
         case Shape.Polyline:
-            return new Polyline(
+            return new BoardObject(
                 p.objectId,
                 p.x,
                 p.y,
-                p.points,
                 p.colour,
                 p.kind,
+                p.width,
+                p.height,
+                p.points,
             );
         default: {
             throw new Error('Unknown shape');
@@ -173,7 +165,7 @@ export class tempStore {
                         this.board.removeObject(message.objectId);
                     }
                 } else if (message.action !== Action.Destroy) {
-                    console.log('create object return arrival', Date.now());
+                    console.log(message);
                     if (
                         message.userId === this.id &&
                         !this.storedObjectPayloads.has(message.object.objectId)
@@ -190,7 +182,6 @@ export class tempStore {
                         message.object,
                     );
                     this.createObjectLocal(message);
-                    console.log('create object return complete', Date.now());
                 }
             } else if (message.entity === Entity.Roll) {
                 this.rollMapping.set(message.id, message);

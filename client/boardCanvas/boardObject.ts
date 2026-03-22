@@ -2,19 +2,13 @@ import type { ColInst } from '../../shared/colours.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { GOLD } from '../../shared/colours.ts';
 import { Shape } from '../../shared/objectEvents.ts';
-import type {
-    ObjectCreatePayload,
-    PolyCreatePayload,
-    RectCreatePayload,
-} from '../../shared/objectEvents.ts';
+import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
 import { Token } from '../../shared/objectEvents.ts';
-
-export type BoardObject = Polyline | Box;
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
 // Future plans to include more specific subclasses
-export class BoardObjectBase {
+export class BoardObject {
     objectId: number;
     zOrder: number;
     offset: Vec2;
@@ -31,19 +25,20 @@ export class BoardObjectBase {
     shape: Shape;
     token: Token;
     owner: string;
+    points: Vec2[];
 
     constructor(
         objectId: number,
         x: number,
         y: number,
-        width: number,
-        height: number,
         colour: ColInst | string,
         kind: Shape,
+        width: number = 1,
+        height: number = 1,
+        structure: Vec2[] = [],
     ) {
         this.objectId = objectId;
         this.zOrder = 0;
-        this.offset = { x, y };
         this.scale = { x: width, y: height };
         this.colour = colour;
         this.hasImage = false;
@@ -62,6 +57,34 @@ export class BoardObjectBase {
             colour: '#cccccc',
         };
         this.owner = 'None';
+        this.points =
+            kind === Shape.Polyline || kind === Shape.Line
+                ? structure
+                : this.constructPoints();
+        this.offset = { x, y };
+    }
+
+    getTopLeft() {
+        let minX = this.points[0].x;
+        let minY = this.points[0].y;
+        for (const pt of this.points) {
+            if (pt.x < minX) {
+                minX = pt.x;
+            }
+            if (pt.y < minY) {
+                minY = pt.y;
+            }
+        }
+        return { x: minX, y: minY };
+    }
+
+    constructPoints() {
+        const points: Vec2[] = [];
+        points.push({ x: 0, y: 0 });
+        points.push({ x: 1, y: 0 });
+        points.push({ x: 1, y: 1 });
+        points.push({ x: 0, y: 1 });
+        return points;
     }
 
     // Checks if the object's token is active.
@@ -147,7 +170,9 @@ export class BoardObjectBase {
 
     // Blank function for building the path of the object.
     buildPath(squareSize: number, offset: Vec2) {
-        return;
+        this.shape === Shape.Ellipse
+            ? this.pathEllipse(squareSize, offset)
+            : this.pathOther(squareSize, offset);
     }
 
     // Moves the object a set amount.
@@ -196,7 +221,10 @@ export class BoardObjectBase {
 
     // Function to set the center point of the object.
     setCenter() {
-        this.centerPoint = { x: 0, y: 0 };
+        this.centerPoint = {
+            x: this.offset.x + this.scale.x / 2,
+            y: this.offset.y + this.scale.y / 2,
+        };
     }
 
     setSelected(newSelection: boolean) {
@@ -212,69 +240,45 @@ export class BoardObjectBase {
         this.setCenter();
         this.updateToken(newSetting.token);
     }
-}
 
-// Subclass for both rectangle/circle objects.
-export class Box extends BoardObjectBase {
-    points: Vec2[];
-    declare shape: Shape.Rect | Shape.Ellipse;
-
-    constructor(
-        id: number,
-        x: number,
-        y: number,
-        xSize: number,
-        ySize: number,
-        colour: ColInst | string,
-        kind: Shape.Rect | Shape.Ellipse,
-    ) {
-        super(id, x, y, xSize, ySize, colour, kind);
-        this.points = this.constructPoints();
-        this.setCenter();
-        this.shape = kind;
+    payloadFromObject(): ObjectCreatePayload {
+        return {
+            kind: this.shape,
+            x: this.offset.x,
+            y: this.offset.y,
+            width: this.scale.x,
+            height: this.scale.y,
+            points: this.points,
+            colour: this.colour,
+            layerId: this.layerId,
+            objectId: this.objectId,
+            token: this.token,
+        };
     }
 
-    constructPoints() {
-        const points: Vec2[] = [];
-        points.push({ x: 0, y: 0 });
-        points.push({ x: 1, y: 0 });
-        points.push({ x: 1, y: 1 });
-        points.push({ x: 0, y: 1 });
-        return points;
+    getCorners() {
+        const corners = [];
+        const loc = this.offset;
+        corners.push(loc);
+        corners.push({ x: loc.x + this.scale.x, y: loc.y });
+        corners.push({ x: loc.x + this.scale.x, y: loc.y + this.scale.y });
+        corners.push({ x: loc.x, y: loc.y + this.scale.y });
+        return corners;
     }
 
-    buildPath(squareSize: number, offset: Vec2) {
-        this.shape === Shape.Rect
-            ? this.pathRect(squareSize, offset)
-            : this.pathEllipse(squareSize, offset);
-    }
-
-    pathRect(squareSize: number, outerOffset: Vec2) {
-        this.currPath = new Path2D();
-        this.currPath.moveTo(
-            Math.round(this.offset.x * squareSize + outerOffset.x),
-            Math.round(this.offset.y * squareSize + outerOffset.y),
-        );
-        for (const pt of this.points) {
-            this.currPath.lineTo(
-                Math.round(
-                    (pt.x * this.scale.x + this.offset.x) * squareSize +
-                        outerOffset.x,
-                ),
-                Math.round(
-                    (pt.y * this.scale.y + this.offset.y) * squareSize +
-                        outerOffset.y,
-                ),
-            );
+    getPoints() {
+        const vals = [];
+        if (this.shape !== Shape.Ellipse) {
+            const loc = this.offset;
+            vals.push(loc);
+            for (const pt of this.points) {
+                vals.push({
+                    x: pt.x * this.scale.x + loc.x,
+                    y: pt.y * this.scale.y + loc.y,
+                });
+            }
         }
-        this.currPathSpecs = [
-            squareSize,
-            outerOffset.x,
-            outerOffset.y,
-            this.offset.x,
-            this.offset.y,
-        ];
-        this.currPath.closePath();
+        return vals;
     }
 
     pathEllipse(squareSize: number, outerOffset: Vec2) {
@@ -308,73 +312,28 @@ export class Box extends BoardObjectBase {
         this.currPath.closePath();
     }
 
-    setCenter() {
-        this.centerPoint = {
-            x: this.offset.x + this.scale.x / 2,
-            y: this.offset.y + this.scale.y / 2,
-        };
-    }
-
-    payloadFromObject(): RectCreatePayload {
-        return {
-            kind: this.shape,
-            x: this.offset.x,
-            y: this.offset.y,
-            width: this.scale.x,
-            height: this.scale.y,
-            colour: this.colour,
-            layerId: this.layerId,
-            objectId: this.objectId,
-            token: this.token,
-        };
-    }
-
-    getCorners() {
-        const corners = [];
-        const loc = this.offset;
-        corners.push(loc);
-        corners.push({ x: loc.x + this.scale.x, y: loc.y });
-        corners.push({ x: loc.x + this.scale.x, y: loc.y + this.scale.y });
-        corners.push({ x: loc.x, y: loc.y + this.scale.y });
-        return corners;
-    }
-}
-
-// Subclass for polyline/line objects.
-export class Polyline extends BoardObjectBase {
-    topLeft: any;
-    points: Vec2[];
-    declare shape: Shape.Polyline | Shape.Line;
-
-    constructor(
-        id: number,
-        x: number,
-        y: number,
-        structure: Vec2[],
-        colour: ColInst | string,
-        kind: Shape.Polyline | Shape.Line,
-    ) {
-        super(id, x, y, 1, 1, colour, kind);
-        this.points = structure;
-        this.shape = kind;
-        this.setCenter();
-        this.topLeft = this.getCorners()[0];
-    }
-
-    buildPath(squareSize: number, outerOffset: Vec2) {
+    pathOther(squareSize: number, outerOffset: Vec2) {
         this.currPath = new Path2D();
         this.currPath.moveTo(
             Math.round(
-                (this.offset.x + this.points[0].x) * squareSize + outerOffset.x,
+                (this.points[0].x * this.scale.x + this.offset.x) * squareSize +
+                    outerOffset.x,
             ),
             Math.round(
-                (this.offset.y + this.points[0].y) * squareSize + outerOffset.y,
+                (this.points[0].y * this.scale.y + this.offset.y) * squareSize +
+                    outerOffset.y,
             ),
         );
         for (const pt of this.points) {
             this.currPath.lineTo(
-                Math.round((this.offset.x + pt.x) * squareSize + outerOffset.x),
-                Math.round((this.offset.y + pt.y) * squareSize + outerOffset.y),
+                Math.round(
+                    (pt.x * this.scale.x + this.offset.x) * squareSize +
+                        outerOffset.x,
+                ),
+                Math.round(
+                    (pt.y * this.scale.y + this.offset.y) * squareSize +
+                        outerOffset.y,
+                ),
             );
         }
         this.currPathSpecs = [
@@ -384,80 +343,8 @@ export class Polyline extends BoardObjectBase {
             this.offset.x,
             this.offset.y,
         ];
-        if (this.shape === Shape.Polyline) {
+        if (this.shape !== Shape.Line) {
             this.currPath.closePath();
         }
-    }
-
-    setCenter() {
-        const topLeft: Vec2 = { x: 0, y: 0 };
-        const bottomRight: Vec2 = { x: 0, y: 0 };
-        for (const pt of this.points) {
-            if (pt.x < topLeft.x) {
-                topLeft.x = pt.x;
-            } else if (pt.x > bottomRight.x) {
-                bottomRight.x = pt.x;
-            }
-            if (pt.y < topLeft.y) {
-                topLeft.y = pt.y;
-            } else if (pt.y > bottomRight.y) {
-                bottomRight.y = pt.y;
-            }
-        }
-        this.centerPoint = {
-            x: (bottomRight.x + topLeft.x) / 2 + this.offset.x,
-            y: (bottomRight.y + topLeft.y) / 2 + this.offset.y,
-        };
-    }
-
-    payloadFromObject(): PolyCreatePayload {
-        return {
-            kind: this.shape,
-            x: this.offset.x,
-            y: this.offset.y,
-            points: this.points,
-            colour: this.colour,
-            layerId: this.layerId,
-            objectId: this.objectId,
-            token: this.token,
-        };
-    }
-
-    getCorners() {
-        const vals: (null | number)[] = [null, null, null, null];
-        const loc = this.offset;
-        for (const pt of this.points) {
-            if (!vals[0] || vals[0] > pt.x * this.scale.x + loc.x) {
-                vals[0] === pt.x * this.scale.x + loc.x;
-            }
-            if (!vals[1] || vals[1] < pt.x * this.scale.x + loc.x) {
-                vals[1] === pt.x * this.scale.x + loc.x;
-            }
-            if (!vals[2] || vals[2] > pt.y * this.scale.y + loc.y) {
-                vals[2] === pt.y * this.scale.y + loc.y;
-            }
-            if (!vals[3] || vals[3] < pt.y * this.scale.y + loc.y) {
-                vals[3] === pt.y * this.scale.y + loc.y;
-            }
-        }
-        return [
-            { x: vals[0], y: vals[2] },
-            { x: vals[1], y: vals[2] },
-            { x: vals[1], y: vals[3] },
-            { x: vals[0], y: vals[3] },
-        ];
-    }
-
-    getPoints() {
-        const vals = [];
-        const loc = this.offset;
-        vals.push(loc);
-        for (const pt of this.points) {
-            vals.push({
-                x: pt.x * this.scale.x + loc.x,
-                y: pt.y * this.scale.y + loc.y,
-            });
-        }
-        return vals;
     }
 }

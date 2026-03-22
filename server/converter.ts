@@ -15,62 +15,34 @@ export function objectTableToPayloads(rows: any[]) {
             let newItem = item.split(',');
             return { x: Number(newItem[0]), y: Number(newItem[1]) };
         });
-        if (row[0] === Shape.Polyline || row[0] === Shape.Line) {
-            mapping.set(row[3], {
-                entity: Entity.Object,
-                action: Action.Create,
-                userId: '0',
-                object: {
-                    x: structData[0].x,
-                    y: structData[0].y,
-                    points: structData.splice(1),
-                    colour: row[1],
-                    layerId: row[2],
-                    objectId: row[3],
-                    kind: row[0],
-                    token: {
-                        name: 'na',
-                        colour: '#cccccc',
-                        active: false,
-                        movable: false,
-                    },
-                },
+        mapping.set(row[3], {
+            entity: Entity.Object,
+            action: Action.Create,
+            userId: '0',
+            object: {
+                x: structData[0].x,
+                y: structData[0].y,
+                width: structData[1].x,
+                height: structData[1].y,
+                points: structData.splice(2),
+                colour: row[1],
+                layerId: row[2],
+                objectId: row[3],
+                kind: row[0],
                 token: {
                     name: 'na',
                     colour: '#cccccc',
                     active: false,
                     movable: false,
                 },
-            });
-        } else {
-            mapping.set(row[3], {
-                entity: Entity.Object,
-                action: Action.Create,
-                userId: '0',
-                token: {
-                    name: 'na',
-                    colour: '#cccccc',
-                    active: false,
-                    movable: false,
-                },
-                object: {
-                    x: structData[0].x,
-                    y: structData[0].y,
-                    width: structData[1].x,
-                    height: structData[1].y,
-                    colour: row[1],
-                    layerId: row[2],
-                    objectId: row[3],
-                    kind: row[0],
-                    token: {
-                        name: 'na',
-                        colour: '#cccccc',
-                        active: false,
-                        movable: false,
-                    },
-                },
-            });
-        }
+            },
+            token: {
+                name: 'na',
+                colour: '#cccccc',
+                active: false,
+                movable: false,
+            },
+        });
     }
     return mapping;
 }
@@ -145,36 +117,25 @@ export function tokenTableToPayloads(
 
 export function objectPayloadToRow(payload: ObjectCreateEvent) {
     let returnString = `('${payload.object.kind}', '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
-    if (
-        payload.object.kind === Shape.Ellipse ||
-        payload.object.kind === Shape.Rect
-    ) {
-        returnString += `${payload.object.x},${payload.object.y}:`;
-        returnString += `${payload.object.width},${payload.object.height}')`;
-    } else {
-        returnString +=
-            `${payload.object.x},${payload.object.y}:` +
-            `${(payload.object as any).points
-                .map((item: Vec2) => {
-                    return `${item.x},${item.y}`;
-                })
-                .join(':')}')`;
-    }
+    returnString += `${payload.object.x},${payload.object.y}:`;
+    returnString += `${payload.object.width},${payload.object.height}:`;
+    returnString += `${(payload.object as any).points
+        .map((item: Vec2) => {
+            return `${item.x},${item.y}`;
+        })
+        .join(':')}')`;
     return returnString;
 }
 
 export function updateObjectToRow(payload: ObjectCreateEvent) {
     return [
         payload.object.colour.toString(),
-        payload.object.kind === Shape.Ellipse ||
-        payload.object.kind === Shape.Rect
-            ? `${payload.object.x},${payload.object.y}:${payload.object.width},${payload.object.height}`
-            : `${payload.object.x},${payload.object.y}:` +
-              (payload.object as any).points
-                  .map((item: Vec2) => {
-                      return `${item.x},${item.y}`;
-                  })
-                  .join(':'),
+        `${payload.object.x},${payload.object.y}:${payload.object.width},${payload.object.height}:` +
+            (payload.object as any).points
+                .map((item: Vec2) => {
+                    return `${item.x},${item.y}`;
+                })
+                .join(':'),
     ];
 }
 

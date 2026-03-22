@@ -1,4 +1,4 @@
-import { Polyline, Box } from './boardObject.ts';
+import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import type { Board } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
@@ -156,16 +156,6 @@ export class BoardDrawMode {
                             CoordModes.Center,
                         ),
                     );
-                } else if (this.params.length > 0) {
-                    const res = this.board.determineTile(
-                        this.board.mouseCoords.x,
-                        this.board.mouseCoords.y,
-                        CoordModes.Vertex,
-                    );
-                    this.params.push({
-                        x: res.x - this.params[0].x,
-                        y: res.y - this.params[0].y,
-                    });
                 } else {
                     this.params.push(
                         this.board.determineTile(
@@ -242,6 +232,7 @@ export class BoardDrawMode {
                 y: res[1],
                 width: res[2],
                 height: res[3],
+                points: this.params.slice(1),
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
@@ -259,9 +250,11 @@ export class BoardDrawMode {
         ) {
             tempObj = {
                 kind: this.shape,
-                x: this.params[0].x,
-                y: this.params[0].y,
-                points: this.params.slice(1),
+                x: 0,
+                y: 0,
+                width: 1,
+                height: 1,
+                points: this.params,
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
@@ -299,33 +292,16 @@ export class BoardDrawMode {
             return undefined;
         }
         if (this.tempObject !== null) {
-            if (
-                this.tempObject.kind === Shape.Rect ||
-                this.tempObject.kind === Shape.Ellipse
-            ) {
-                return new Box(
-                    -1,
-                    this.tempObject.x,
-                    this.tempObject.y,
-                    this.tempObject.width,
-                    this.tempObject.height,
-                    this.tempObject.colour,
-                    this.tempObject.kind,
-                );
-            } else if (
-                this.tempObject.kind === Shape.Polyline ||
-                this.tempObject.kind === Shape.Line
-            ) {
-                return new Polyline(
-                    -1,
-                    this.tempObject.x,
-                    this.tempObject.y,
-                    this.tempObject.points,
-                    this.tempObject.colour,
-                    this.tempObject.kind,
-                );
-            }
-            return this.tempObject;
+            return new BoardObject(
+                -1,
+                this.tempObject.x,
+                this.tempObject.y,
+                this.tempObject.colour,
+                this.tempObject.kind,
+                this.tempObject.width,
+                this.tempObject.height,
+                this.tempObject.points,
+            );
         }
         if (
             ((this.shape !== Shape.Polyline && this.shape !== Shape.Line) ||
@@ -342,27 +318,28 @@ export class BoardDrawMode {
                 ? WHITE_50
                 : colourSquare.style.background;
             const shape = this.selectMode ? Shape.Rect : this.shape;
-            return new Box(
+            return new BoardObject(
                 -1,
                 res2[0],
                 res2[1],
-                res2[2],
-                res2[3],
                 col,
                 shape as any,
+                res2[2],
+                res2[3],
             );
         } else if (
             this.params.length >= 2 &&
             (this.shape === Shape.Polyline || this.shape === Shape.Line)
         ) {
-            const newParams = this.params.slice(1);
-            const newObj = new Polyline(
+            const newObj = new BoardObject(
                 -1,
-                this.params[0].x,
-                this.params[0].y,
-                newParams,
+                0,
+                0,
                 colourSquare.style.background,
                 this.shape,
+                1,
+                1,
+                this.params,
             );
             return newObj;
         }

@@ -68,30 +68,18 @@ export interface LayerState {
     element?: HTMLElement;
 }
 
-export interface RectCreatePayload {
-    kind: Shape.Rect | Shape.Ellipse;
+export interface ObjectCreatePayload {
+    kind: Shape;
     x: number;
     y: number;
     width: number;
     height: number;
-    colour: ColInst | string;
-    layerId: number;
-    objectId: number;
-    token: Token;
-}
-
-export interface PolyCreatePayload {
-    kind: Shape.Polyline | Shape.Line;
-    x: number;
-    y: number;
     points: Vec2[];
     colour: ColInst | string;
     layerId: number;
     objectId: number;
     token: Token;
 }
-
-export type ObjectCreatePayload = PolyCreatePayload | RectCreatePayload;
 
 export interface LayerCreateEvent {
     entity: Entity.Layer;
