@@ -118,7 +118,6 @@ export class BoardDrawMode {
                 ellipse: true,
                 fill: true,
                 close: true,
-                rect: true,
             };
             this.currDraw = 2;
         } else if (key === '3') {
@@ -202,18 +201,12 @@ export class BoardDrawMode {
                     ) {
                         this.selectState = 1;
                     } else {
-                        const topLeft: Vec2 = {
-                            x: Math.min(newPos.x, this.params[0].x),
-                            y: Math.min(newPos.y, this.params[0].y),
-                        };
-                        const bottomRight: Vec2 = {
-                            x: Math.max(newPos.x, this.params[0].x) + 1,
-                            y: Math.max(newPos.y, this.params[0].y) + 1,
-                        };
+                        const res = rectangleFromPoints(this.params[0], newPos);
+                        this.params = [
+                            { x: res[0], y: res[1] },
+                            { x: res[0] + res[2], y: res[1] + res[3] },
+                        ];
                         this.selectState = 2;
-                        this.params = [];
-                        this.params.push(topLeft);
-                        this.params.push(bottomRight);
                     }
                 } else if (this.active && this.currDraw < 3) {
                     const res = this.board.determineTile(
@@ -233,19 +226,18 @@ export class BoardDrawMode {
         let tempObj: ObjectCreatePayload;
         if (this.currDraw < 3 && this.params.length === 2) {
             const res = rectangleFromPoints(this.params[0], this.params[1]);
-            const newPoints = [
-                { x: 0, y: 0 },
-                { x: 1, y: 0 },
-                { x: 1, y: 1 },
-                { x: 0, y: 1 },
-            ];
             tempObj = {
                 params: this.currParams,
                 x: res[0],
                 y: res[1],
                 width: res[2],
                 height: res[3],
-                points: newPoints,
+                points: [
+                    { x: 0, y: 0 },
+                    { x: 1, y: 0 },
+                    { x: 1, y: 1 },
+                    { x: 0, y: 1 },
+                ],
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
                 objectId: -1,
@@ -312,16 +304,38 @@ export class BoardDrawMode {
                 this.tempObject.points,
             );
         }
-        if ((this.currDraw < 3 || this.selectMode) && this.params.length >= 1) {
+        if (this.selectMode) {
+            if (this.params.length >= 1) {
+                const res = this.board.determineTile(
+                    this.board.mouseCoords.x,
+                    this.board.mouseCoords.y,
+                    CoordModes.Center,
+                );
+                const res2 = rectangleFromPoints(this.params[0], res);
+                const col = WHITE_50;
+                return new BoardObject(
+                    -1,
+                    res2[0],
+                    res2[1],
+                    col,
+                    {
+                        ellipse: false,
+                        fill: true,
+                        close: true,
+                        rect: true,
+                    },
+                    res2[2],
+                    res2[3],
+                );
+            }
+        } else if (this.currDraw < 3 && this.params.length >= 1) {
             const res = this.board.determineTile(
                 this.board.mouseCoords.x,
                 this.board.mouseCoords.y,
                 CoordModes.Center,
             );
             const res2 = rectangleFromPoints(this.params[0], res);
-            const col = this.selectMode
-                ? WHITE_50
-                : colourSquare.style.background;
+            const col = colourSquare.style.background;
             return new BoardObject(
                 -1,
                 res2[0],

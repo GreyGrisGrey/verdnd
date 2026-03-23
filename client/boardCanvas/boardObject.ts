@@ -42,6 +42,7 @@ export class BoardObject {
         this.drawParams = drawParams;
         this.objectId = objectId;
         this.zOrder = 0;
+        this.offset = { x, y };
         this.scale = { x: width, y: height };
         this.colour = colour;
         this.hasImage = false;
@@ -60,7 +61,7 @@ export class BoardObject {
         };
         this.owner = 'None';
         this.points = drawParams.rect ? this.constructPoints() : structure;
-        this.offset = { x, y };
+        this.setCenter();
     }
 
     getTopLeft() {
@@ -77,12 +78,27 @@ export class BoardObject {
         return { x: minX, y: minY };
     }
 
+    getBottomRight() {
+        let maxX = this.points[0].x;
+        let maxY = this.points[0].y;
+        for (const pt of this.points) {
+            if (pt.x > maxX) {
+                maxX = pt.x;
+            }
+            if (pt.y > maxY) {
+                maxY = pt.y;
+            }
+        }
+        return { x: maxX, y: maxY };
+    }
+
     constructPoints() {
         const points: Vec2[] = [];
         points.push({ x: 0, y: 0 });
-        points.push({ x: 1, y: 0 });
-        points.push({ x: 1, y: 1 });
-        points.push({ x: 0, y: 1 });
+        points.push({ x: this.scale.x, y: 0 });
+        points.push({ x: this.scale.x, y: this.scale.y });
+        points.push({ x: 0, y: this.scale.y });
+        this.scale = { x: 1, y: 1 };
         return points;
     }
 
@@ -220,10 +236,26 @@ export class BoardObject {
 
     // Function to set the center point of the object.
     setCenter() {
-        this.centerPoint = {
-            x: this.offset.x + this.scale.x / 2,
-            y: this.offset.y + this.scale.y / 2,
-        };
+        if (this.drawParams.ellipse) {
+            this.centerPoint = {
+                x: this.offset.x + this.scale.x / 2,
+                y: this.offset.y + this.scale.y / 2,
+            };
+        } else {
+            const topLeft = this.getTopLeft();
+            const bottomRight = this.getBottomRight();
+            this.centerPoint = {
+                x:
+                    this.offset.x +
+                    topLeft.x +
+                    ((bottomRight.x - topLeft.x) * this.scale.x) / 2,
+                y:
+                    this.offset.y +
+                    topLeft.y +
+                    ((bottomRight.y - topLeft.y) * this.scale.y) / 2,
+            };
+            console.log(this.centerPoint);
+        }
     }
 
     setSelected(newSelection: boolean) {
