@@ -223,8 +223,50 @@ export class BoardSelectMode {
                     this.exitOnNextStep = true;
                 }
                 this.updateCornerOffset();
+            } else if (this.active && event.button === 0) {
+                if (this.orbs.length > 0) {
+                    this.updateObject();
+                }
             }
         });
+    }
+
+    updateObject() {
+        let modification = false;
+        let movedOrb = this.orbs[0];
+        for (const orb of this.orbs) {
+            if (orb.moving) {
+                movedOrb = orb;
+                orb.moving = false;
+                modification = true;
+                break;
+            }
+        }
+        console.log(modification);
+        if (!modification) {
+            return;
+        }
+        if (this.boxDraw) {
+            this.resizeObject(movedOrb);
+        } else {
+            this.restructureObject(movedOrb);
+        }
+    }
+
+    resizeObject(movedOrb: SelectBall) {}
+
+    restructureObject(movedOrb: SelectBall) {
+        const newCoord = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            CoordModes.Vertex,
+        );
+        this.selectedObjects[0].updatePoint(
+            newCoord.x,
+            newCoord.y,
+            movedOrb.id,
+        );
+        movedOrb.updateOrbLoc(newCoord);
     }
 
     // Moves each selected object individually.

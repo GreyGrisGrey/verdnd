@@ -6,6 +6,8 @@ import type {
     ObjectParams,
 } from '../../shared/objectEvents.ts';
 import { Token } from '../../shared/objectEvents.ts';
+import { tempStore } from '../serveInter.ts';
+const serveInter = new tempStore();
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
@@ -62,6 +64,11 @@ export class BoardObject {
         this.owner = 'None';
         this.points = drawParams.rect ? this.constructPoints() : structure;
         this.setCenter();
+        console.log(this.points);
+    }
+
+    updateObject() {
+        serveInter.updateObject(this.payloadFromObject());
     }
 
     getTopLeft() {
@@ -299,6 +306,21 @@ export class BoardObject {
             }
         }
         return vals;
+    }
+
+    updatePoint(newX: number, newY: number, specificPoint: number) {
+        this.points[specificPoint].x = newX - this.offset.x;
+        this.points[specificPoint].y = newY - this.offset.y;
+        this.currPathSpecs = [0, 0, 0, 0, 0];
+        this.setCenter();
+        this.updateObject();
+    }
+
+    updateScale(newScale: Vec2, newTopLeft: Vec2) {
+        this.scale = newScale;
+        this.offset = newTopLeft;
+        this.setCenter();
+        this.updateObject();
     }
 
     pathEllipse(squareSize: number, outerOffset: Vec2) {

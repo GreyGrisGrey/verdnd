@@ -10,11 +10,7 @@ import { TopBarManager } from './topBarMain.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
-const serveInter = new tempStore(
-    storedObjects,
-    storedLayers,
-    storedLayerStates,
-);
+const serveInter = new tempStore();
 const board = new Board(serveInter, storedObjects, storedLayers);
 const rightMan = new RightBarManager(serveInter, storedLayerStates);
 const leftMan = new LeftBarManager(board);

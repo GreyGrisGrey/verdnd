@@ -16,11 +16,15 @@ export async function createObj(
     currGame: GameObject,
     cli: PostGresData,
 ) {
-    await currGame.waitLock('obj');
     if (!newObject.token) {
         return;
     }
+    await currGame.waitLock('obj');
     currGame.objectLock = true;
+    if (currGame.objectMap.has(newObject.object.objectId)) {
+        updateObj(newObject, currGame, cli);
+        return;
+    }
     currGame.objectMap.set(currGame.currObj, newObject);
     newObject.object.objectId = currGame.currObj;
     const sendObj = JSON.stringify(newObject);
@@ -43,6 +47,23 @@ export async function createObj(
         currGame.broadcast(sendObj);
     }
     console.log('object creation complete', Date.now());
+}
+
+async function updateObj(
+    newObject: ObjectCreateEvent,
+    currGame: GameObject,
+    cli: PostGresData,
+) {
+    await currGame.waitLock('db');
+    currGame.dbLock = true;
+    currGame.objectMap.set(newObject.object.objectId, newObject);
+    cli.updateObject(
+        currGame.gameId,
+        newObject.object.objectId,
+        updateObjectToRow(newObject),
+    );
+    currGame.dbLock = false;
+    currGame.objectLock = false;
 }
 
 // Function for destroying a specified object from a specified game.

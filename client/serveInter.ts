@@ -19,6 +19,9 @@ import { LayerMenu } from './rightBar/layerBarMenu.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { getRequiredElement } from './dom.ts';
 import { UserBox } from './leftBar/userBox.ts';
+const storedObjects: Map<number, BoardObject> = new Map();
+const storedLayers: Map<number, BoardLayer> = new Map();
+const storedLayerStates: Map<number, LayerState> = new Map();
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
@@ -69,17 +72,13 @@ export class tempStore {
     connected: boolean;
     lastLaser: selfLaser;
 
-    constructor(
-        newObjects: Map<number, BoardObject>,
-        newLayers: Map<number, BoardLayer>,
-        newStates: Map<number, LayerState>,
-    ) {
+    constructor() {
         this.undoMap = new Map();
         this.undoCreateTracker = new Map();
-        this.storedObjects = newObjects;
+        this.storedObjects = storedObjects;
         this.storedObjectPayloads = new Map();
-        this.storedLayerStates = newStates;
-        this.storedLayers = newLayers;
+        this.storedLayerStates = storedLayerStates;
+        this.storedLayers = storedLayers;
         this.currIndex = 0;
         this.secondIndex = 0;
         this.rollMapping = new Map();
@@ -303,14 +302,12 @@ export class tempStore {
 
     // Sends a packet telling the backend to create an object with those parameters.
     async createObject(newObj: ObjectCreateEvent, undo: boolean = false) {
-        console.log('create object send start', Date.now());
         if (!this.isGm) {
             return;
         }
         newObj.object.objectId = -1;
         newObj.userId = this.id;
         if (!undo) {
-            newObj.object.objectId = -1;
             this.undoMap.set(this.currIndex, [-1]);
             this.undoCreateTracker.set(this.secondIndex, this.currIndex);
             this.currIndex += 1;
@@ -318,6 +315,33 @@ export class tempStore {
         }
         this.socket.send(this.parcelServeEvent(newObj));
         return -1;
+    }
+
+    async updateObject(payload: ObjectCreatePayload, undo: boolean = false) {
+        if (!this.isGm) {
+            return;
+        }
+        const newObj = {
+            entity: Entity.Object,
+            action: Action.Create,
+            object: payload,
+            token: payload.token,
+            userId: this.id,
+        };
+        if (!undo) {
+            this.undoMap.set(this.currIndex, [
+                {
+                    entity: Entity.Object,
+                    action: Action.Create,
+                    object: this.storedObjectPayloads.get(payload.objectId)!,
+                    userId: this.id,
+                    token: this.storedObjectPayloads.get(payload.objectId)!
+                        .token,
+                },
+            ]);
+            this.currIndex += 1;
+        }
+        this.socket.send(this.parcelServeEvent(newObj as any));
     }
 
     createObjectLocal(newObj: ObjectCreateEvent) {
