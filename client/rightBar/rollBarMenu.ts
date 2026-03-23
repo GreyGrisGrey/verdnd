@@ -216,7 +216,6 @@ export class RollMenu {
     // Updates a chat box.
     updateChat(dataLine: RollResult, currIndex: number, userName: string) {
         while (this.currChats.length <= currIndex) {
-            console.log(this.currChats.length);
             this.constructChat(this.currChats.length);
         }
         let newString = '';

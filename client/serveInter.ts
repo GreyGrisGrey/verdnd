@@ -156,7 +156,6 @@ export class tempStore {
                         this.board.removeObject(message.objectId);
                     }
                 } else if (message.action !== Action.Destroy) {
-                    console.log(message);
                     if (
                         message.userId === this.id &&
                         !this.storedObjectPayloads.has(message.object.objectId)
@@ -195,7 +194,6 @@ export class tempStore {
                     can.style.background = message.newColour;
                 }
             } else if (message.entity === Entity.User) {
-                console.log(message);
                 if (message.action === Action.Update) {
                     userBox.addUser(message.id, message.name, message.gm);
                 } else if (message.action === Action.Destroy) {

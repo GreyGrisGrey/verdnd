@@ -250,5 +250,8 @@ export class ModeManager {
         if (this.viewMan.measuring) {
             this.viewMan.drawMeasure();
         }
+        if (this.selectMan.active) {
+            this.selectMan.updateCornerOffset();
+        }
     }
 }

@@ -6,6 +6,8 @@ import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { ObjectRecolourEvent } from '../../shared/objectEvents.ts';
 import { stringToColInst } from '../../shared/colours.ts';
 import { CoordModes } from './localBoard.ts';
+import { SelectBall } from './selectBall.ts';
+import { BoardLayer } from './boardLayer.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
@@ -20,6 +22,8 @@ export class BoardSelectMode {
     thirdOffset: Vec2;
     currColour: string;
     boxItems: HTMLButtonElement[];
+    orbs: SelectBall[];
+    currLayer: BoardLayer;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -30,6 +34,8 @@ export class BoardSelectMode {
         this.thirdOffset = { x: 0, y: 0 };
         this.currColour = 'none';
         this.boxItems = [];
+        this.orbs = [];
+        this.currLayer = new BoardLayer(0, true, true);
         this.setUpBoxes();
 
         this.addEventListeners();
@@ -132,6 +138,10 @@ export class BoardSelectMode {
         }
         this.active = setOn;
         this.selectedObjects = [];
+        for (const obj of this.orbs) {
+            obj.deconstruct();
+        }
+        this.orbs = [];
         this.exitOnNextStep = false;
         this.currColour = colourSquare.style.background;
         this.selectClick = this.board.leftMouseDown;
@@ -190,6 +200,7 @@ export class BoardSelectMode {
                 ) {
                     this.exitOnNextStep = true;
                 }
+                this.updateCornerOffset();
             }
         });
     }
@@ -212,6 +223,7 @@ export class BoardSelectMode {
             });
         }
         this.board.serveInter.moveObjects(moveList as any);
+        this.updateCornerPos(point);
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;
     }
@@ -238,8 +250,50 @@ export class BoardSelectMode {
     // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;
+        this.currLayer = this.board.layerMap.get(newObjs[0].layerId)!;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
         }
+        if (this.selectedObjects.length === 1) {
+            this.setUpCorners();
+            this.updateCornerOffset();
+        }
+    }
+
+    updateCornerPos(point: Vec2) {
+        if (this.orbs.length === 0) {
+            return;
+        }
+        for (const orb of this.orbs) {
+            orb.updateOrbOffset(point.x, point.y);
+        }
+    }
+
+    updateCornerOffset() {
+        if (this.orbs.length === 0) {
+            return;
+        }
+        const res = {
+            x:
+                this.board.offset.x +
+                this.currLayer.layerOffset.x +
+                this.thirdOffset.x,
+            y:
+                this.board.offset.y +
+                this.currLayer.layerOffset.y +
+                this.thirdOffset.y,
+        };
+        for (const orb of this.orbs) {
+            orb.updateDocumentOffset(this.board.zoomVal * 5, res.x, res.y);
+        }
+    }
+
+    setUpCorners() {
+        const topLeft = this.selectedObjects[0].getTopLeft();
+        const bottomRight = this.selectedObjects[0].getBottomRight();
+        this.orbs.push(new SelectBall(topLeft.x, topLeft.y, 0));
+        this.orbs.push(new SelectBall(bottomRight.x, topLeft.y, 1));
+        this.orbs.push(new SelectBall(bottomRight.x, bottomRight.y, 2));
+        this.orbs.push(new SelectBall(topLeft.x, bottomRight.y, 3));
     }
 }

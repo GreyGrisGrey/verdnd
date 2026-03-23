@@ -75,7 +75,10 @@ export class BoardObject {
                 minY = pt.y;
             }
         }
-        return { x: minX, y: minY };
+        return {
+            x: minX * this.scale.x + this.offset.x,
+            y: minY * this.scale.y + this.offset.y,
+        };
     }
 
     getBottomRight() {
@@ -89,7 +92,10 @@ export class BoardObject {
                 maxY = pt.y;
             }
         }
-        return { x: maxX, y: maxY };
+        return {
+            x: maxX * this.scale.x + this.offset.x,
+            y: maxY * this.scale.y + this.offset.y,
+        };
     }
 
     constructPoints() {
@@ -245,16 +251,9 @@ export class BoardObject {
             const topLeft = this.getTopLeft();
             const bottomRight = this.getBottomRight();
             this.centerPoint = {
-                x:
-                    this.offset.x +
-                    topLeft.x +
-                    ((bottomRight.x - topLeft.x) * this.scale.x) / 2,
-                y:
-                    this.offset.y +
-                    topLeft.y +
-                    ((bottomRight.y - topLeft.y) * this.scale.y) / 2,
+                x: topLeft.x + (bottomRight.x - topLeft.x) / 2,
+                y: topLeft.y + (bottomRight.y - topLeft.y) / 2,
             };
-            console.log(this.centerPoint);
         }
     }
 
@@ -285,16 +284,6 @@ export class BoardObject {
             objectId: this.objectId,
             token: this.token,
         };
-    }
-
-    getCorners() {
-        const corners = [];
-        const loc = this.offset;
-        corners.push(loc);
-        corners.push({ x: loc.x + this.scale.x, y: loc.y });
-        corners.push({ x: loc.x + this.scale.x, y: loc.y + this.scale.y });
-        corners.push({ x: loc.x, y: loc.y + this.scale.y });
-        return corners;
     }
 
     getPoints() {
