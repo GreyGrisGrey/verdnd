@@ -27,6 +27,7 @@ export class BoardSelectMode {
     orbs: SelectBall[];
     currLayer: BoardLayer;
     currPath: Path2D;
+    boxDraw: boolean;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -40,6 +41,7 @@ export class BoardSelectMode {
         this.orbs = [];
         this.currLayer = new BoardLayer(0, true, true);
         this.currPath = new Path2D();
+        this.boxDraw = true;
         this.setUpBoxes();
 
         this.addEventListeners();
@@ -53,7 +55,7 @@ export class BoardSelectMode {
                     HTMLButtonElement,
                 ),
             );
-            if (i === 0 || (i > 3 && i < 6) || i > 8) {
+            if (i > 3 && i < 6) {
                 this.boxItems[i].disabled = true;
             }
             this.boxItems[i].addEventListener('click', () => {
@@ -132,6 +134,22 @@ export class BoardSelectMode {
             this.attemptRename();
         } else if (key === '8') {
             this.attemptTokenRecolour();
+        } else if (key === '9') {
+            for (const obj of this.orbs) {
+                obj.deconstruct();
+            }
+            this.orbs = [];
+            this.setUpCorners();
+            this.updateCornerOffset();
+            this.boxDraw = true;
+        } else if (key === '0') {
+            for (const obj of this.orbs) {
+                obj.deconstruct();
+            }
+            this.orbs = [];
+            this.setUpPoints();
+            this.updateCornerOffset();
+            this.boxDraw = false;
         }
     }
 
@@ -254,14 +272,11 @@ export class BoardSelectMode {
     // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;
+        this.boxItems[9].disabled = this.selectedObjects.length > 1;
+        this.boxItems[0].disabled = this.selectedObjects.length > 1;
         this.currLayer = this.board.layerMap.get(newObjs[0].layerId)!;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
-        }
-        if (this.selectedObjects.length === 1) {
-            this.setUpCorners();
-            this.updateCornerOffset();
-            this.currPath = this.selectedObjects[0].currPath;
         }
     }
 
@@ -291,6 +306,28 @@ export class BoardSelectMode {
         for (const orb of this.orbs) {
             orb.updateDocumentOffset(this.board.zoomVal * 5, res.x, res.y);
         }
+        if (!this.boxDraw) {
+            const topLeft = this.selectedObjects[0].getTopLeft();
+            const bottomRight = this.selectedObjects[0].getBottomRight();
+            this.currPath = new Path2D();
+            this.currPath.moveTo(
+                topLeft.x * (this.board.zoomVal * 5) + res.x,
+                topLeft.y * (this.board.zoomVal * 5) + res.y,
+            );
+            this.currPath.lineTo(
+                bottomRight.x * (this.board.zoomVal * 5) + res.x,
+                topLeft.y * (this.board.zoomVal * 5) + res.y,
+            );
+            this.currPath.lineTo(
+                bottomRight.x * (this.board.zoomVal * 5) + res.x,
+                bottomRight.y * (this.board.zoomVal * 5) + res.y,
+            );
+            this.currPath.lineTo(
+                topLeft.x * (this.board.zoomVal * 5) + res.x,
+                bottomRight.y * (this.board.zoomVal * 5) + res.y,
+            );
+            this.currPath.closePath();
+        }
     }
 
     setUpCorners() {
@@ -302,11 +339,28 @@ export class BoardSelectMode {
         this.orbs.push(new SelectBall(topLeft.x, bottomRight.y, 3));
     }
 
+    setUpPoints() {
+        let count = 0;
+        const currObj = this.selectedObjects[0];
+        for (const pt of currObj.points) {
+            this.orbs.push(
+                new SelectBall(
+                    pt.x * currObj.scale.x + currObj.offset.x,
+                    pt.y * currObj.scale.y + currObj.offset.y,
+                    count,
+                ),
+            );
+            count++;
+        }
+    }
+
     drawSkeleton() {
         if (this.selectedObjects.length === 1) {
-            this.currPath = this.selectedObjects[0].currPath;
+            if (!this.boxDraw) {
+                this.currPath = this.selectedObjects[0].currPath;
+            }
             ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }
     }
