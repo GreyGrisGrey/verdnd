@@ -9,10 +9,13 @@ import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { GOLD } from '../../shared/colours.ts';
+import { tempStore } from '../serveInter.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
+const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
+const serveInter = new tempStore();
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {
@@ -74,7 +77,7 @@ export class BoardSelectMode {
                     movable: obj.token.movable,
                 };
                 obj.updateToken(newToken);
-                this.board.serveInter.updateToken(newToken, obj.objectId);
+                serveInter.updateToken(newToken, obj.objectId);
             }
         }
     }
@@ -89,7 +92,7 @@ export class BoardSelectMode {
                     movable: obj.token.movable,
                 };
                 obj.updateToken(newToken);
-                this.board.serveInter.updateToken(newToken, obj.objectId);
+                serveInter.updateToken(newToken, obj.objectId);
             }
         }
     }
@@ -104,7 +107,7 @@ export class BoardSelectMode {
                     movable: true,
                 };
                 obj.updateToken(newToken);
-                this.board.serveInter.updateToken(newToken, obj.objectId);
+                serveInter.updateToken(newToken, obj.objectId);
             }
         }
     }
@@ -124,7 +127,7 @@ export class BoardSelectMode {
             for (const obj of this.selectedObjects) {
                 idList.push(obj.objectId);
             }
-            this.board.serveInter.destroyObjects(idList);
+            serveInter.destroyObjects(idList);
             this.exitOnNextStep = true;
         } else if (key === '3') {
             this.recolour();
@@ -169,7 +172,7 @@ export class BoardSelectMode {
         this.currColour = colourSquare.style.background;
         this.selectClick = this.board.leftMouseDown;
         this.thirdOffset = { x: 0, y: 0 };
-        if (this.board.serveInter.isGm) {
+        if (serveInter.isGm) {
             this.toggleBoxes();
         }
     }
@@ -243,7 +246,6 @@ export class BoardSelectMode {
                 break;
             }
         }
-        console.log(modification);
         if (!modification) {
             return;
         }
@@ -298,7 +300,7 @@ export class BoardSelectMode {
                 y: point.y,
             });
         }
-        this.board.serveInter.moveObjects(moveList as any);
+        serveInter.moveObjects(moveList as any);
         this.updateCornerPos(point);
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;
@@ -316,7 +318,7 @@ export class BoardSelectMode {
             });
             obj.setColour(colourSquare.style.background);
         }
-        this.board.serveInter.recolourObjects(
+        serveInter.recolourObjects(
             recolourList,
             stringToColInst(this.currColour),
         );
@@ -330,7 +332,7 @@ export class BoardSelectMode {
         this.boxItems[0].disabled =
             this.selectedObjects.length > 1 ||
             this.selectedObjects[0].drawParams.ellipse;
-        this.currLayer = this.board.layerMap.get(newObjs[0].layerId)!;
+        this.currLayer = storedLayers.get(newObjs[0].layerId)!;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
         }
@@ -363,7 +365,6 @@ export class BoardSelectMode {
             orb.updateDocumentOffset(this.board.zoomVal * 5, res.x, res.y);
         }
         if (this.boxDraw) {
-            console.log('screech');
             const topLeft = this.selectedObjects[0].getTopLeft();
             const bottomRight = this.selectedObjects[0].getBottomRight();
             this.currPath = new Path2D();

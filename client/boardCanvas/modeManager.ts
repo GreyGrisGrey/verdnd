@@ -4,6 +4,8 @@ import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
 import type { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
+import { tempStore } from '../serveInter.ts';
+const serveInter = new tempStore();
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenuId', HTMLElement);
@@ -95,12 +97,12 @@ export class ModeManager {
         can.addEventListener('keydown', (event) => {
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
-            } else if (event.key === 'd' && this.board.serveInter.isGm) {
+            } else if (event.key === 'd' && serveInter.isGm) {
                 this.modeSwitch(Mode.Draw);
             } else if (event.key === 'Control') {
                 this.controlClick = true;
             } else if (event.key === 'z' && this.controlClick) {
-                this.board.serveInter.undoLast();
+                serveInter.undoLast();
             }
         });
 

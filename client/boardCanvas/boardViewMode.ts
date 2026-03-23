@@ -3,10 +3,12 @@ import type { Board } from './localBoard.ts';
 import type { BoardObject } from './boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
+import { tempStore } from '../serveInter.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
+const serveInter = new tempStore();
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
@@ -38,7 +40,7 @@ export class BoardViewMode {
         this.measuring = false;
         this.completeSelectCheck = false;
         this.selectedToken = null;
-        if (setOn || this.board.serveInter.isGm) {
+        if (setOn || serveInter.isGm) {
             this.toggleBoxes();
         }
     }

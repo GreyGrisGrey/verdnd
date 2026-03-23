@@ -2,10 +2,13 @@ import { ColInst, stringToColInst } from '../../shared/colours.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';
+import { tempStore } from '../serveInter.ts';
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
+const board = new Board();
+const serveInter = new tempStore();
 
 type ColourComponent = 'red' | 'green' | 'blue' | 'alpha';
 const colourComponents: ColourComponent[] = ['red', 'green', 'blue', 'alpha'];
@@ -33,9 +36,8 @@ export class ColourBox {
     can: HTMLElement;
     shiftIsPressed: boolean;
     pickColour: boolean;
-    board: Board;
 
-    constructor(newBoard: Board) {
+    constructor() {
         this.savedColours = [
             '#ff0000',
             '#00ff00',
@@ -51,7 +53,6 @@ export class ColourBox {
         this.can = colourSquare;
         this.shiftIsPressed = false;
         this.pickColour = false;
-        this.board = newBoard;
         for (const i of [0, 1, 2, 3, 4, 5]) {
             this.adjBoxes.push(getRequiredElement(`col${i + 1}`, HTMLElement));
             this.adjBoxes[i].style.left = `${i * 40 + 10}px`;
@@ -66,12 +67,12 @@ export class ColourBox {
     addEventListeners() {
         can.addEventListener('mousedown', (event) => {
             if (this.pickColour) {
-                const coords = this.board.determineTile(
+                const coords = board.determineTile(
                     event.clientX,
                     event.clientY,
                     CoordModes.Center,
                 );
-                const resObj = this.board.selectObjects('any', [coords]);
+                const resObj = board.selectObjects('any', [coords]);
                 if (resObj.length > 0) {
                     if (typeof resObj[0].colour === typeof 'asd') {
                         this.currColour = stringToColInst(
@@ -91,9 +92,7 @@ export class ColourBox {
         });
 
         colourBackground.addEventListener('click', () => {
-            this.board.serveInter.sendChangeBackground(
-                this.currColour.toString(),
-            );
+            serveInter.sendChangeBackground(this.currColour.toString());
         });
 
         colourComponents.forEach((component) => {

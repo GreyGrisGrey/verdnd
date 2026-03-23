@@ -29,8 +29,6 @@ export class SelectBall {
     setEventListeners() {
         this.element.addEventListener('mousedown', (event) => {
             this.moving = true;
-            console.log(event.button);
-            console.log('moving');
         });
     }
 

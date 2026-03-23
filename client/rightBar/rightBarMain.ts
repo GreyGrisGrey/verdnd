@@ -14,6 +14,7 @@ const characterTab = getRequiredElement('characterTab', HTMLElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
+const serveInter = new tempStore();
 
 export enum RightBarTab {
     None = 'NONE',
@@ -30,15 +31,13 @@ export class RightBarManager {
     characterMan: CharacterMenu;
     rollMan: RollMenu;
     currActive: RightBarTab;
-    serveInter: tempStore;
     visible: boolean;
 
-    constructor(server: tempStore, layMap: Map<number, LayerState>) {
-        this.serveInter = server;
-        this.layerMan = new LayerMenu(this.serveInter, layMap);
+    constructor() {
+        this.layerMan = new LayerMenu();
         this.tokenMan = new TokenMenu();
         this.characterMan = new CharacterMenu();
-        this.rollMan = new RollMenu(this.serveInter);
+        this.rollMan = new RollMenu();
         this.currActive = RightBarTab.Layer;
         this.visible = true;
         rightBar.style.width = '250px';
@@ -89,7 +88,7 @@ export class RightBarManager {
                 this.layerMan.toggleActive(false);
                 this.rollMan.toggleActive(true);
                 this.currActive = RightBarTab.Roll;
-            } else if (event.key === 'l' && this.serveInter.isGm) {
+            } else if (event.key === 'l' && serveInter.isGm) {
                 this.layerMan.toggleActive(true);
                 this.rollMan.toggleActive(false);
                 this.currActive = RightBarTab.Layer;

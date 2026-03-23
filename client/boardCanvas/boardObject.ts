@@ -56,7 +56,6 @@ export class BoardObject {
         this.owner = 'None';
         this.points = structure;
         this.setCenter();
-        console.log(this.points);
     }
 
     updateObject() {

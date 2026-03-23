@@ -9,8 +9,10 @@ import type {
 } from '../../shared/objectEvents.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
+import { tempStore } from '../serveInter.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
+const serveInter = new tempStore();
 
 function rectangleFromPoints(point1: Vec2, point2: Vec2) {
     const x = Math.min(point1.x, point2.x);
@@ -261,7 +263,7 @@ export class BoardDrawMode {
         } else {
             return;
         }
-        this.board.serveInter.createObject({
+        serveInter.createObject({
             entity: Entity.Object,
             action: Action.Create,
             object: tempObj,

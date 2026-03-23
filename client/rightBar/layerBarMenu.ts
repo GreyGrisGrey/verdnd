@@ -13,6 +13,8 @@ const layerYInput = getRequiredElement('yChange', HTMLInputElement);
 const deleteButton = getRequiredElement('deleteLayerButton', HTMLElement);
 const upButton = getRequiredElement('layerUpButton', HTMLElement);
 const downButton = getRequiredElement('layerDownButton', HTMLElement);
+const storedLayerStates: Map<number, LayerState> = new Map();
+const serveInter = new tempStore();
 
 // Class managing the right-bar's layer menu.
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
@@ -21,20 +23,16 @@ export class LayerMenu {
     button: HTMLElement;
     layers: LayerState[];
     descObj: HTMLElement;
-    layerMap: Map<number, LayerState>;
     layerObj: HTMLElement;
     boxHeight: number;
     currSelect: number;
     tempButtonObj: HTMLElement;
-    serveInter: tempStore;
 
-    constructor(server: tempStore, layerMap: Map<number, LayerState>) {
+    constructor() {
         this.active = false;
-        this.serveInter = server;
         this.button = getRequiredElement('layerTab', HTMLElement);
         this.layers = [];
         this.descObj = getRequiredElement('descLayerObj', HTMLElement);
-        this.layerMap = layerMap;
         this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);
         this.boxHeight = 50;
         this.currSelect = 0;
@@ -47,45 +45,45 @@ export class LayerMenu {
         this.moveLayers();
 
         upButton.addEventListener('click', () => {
-            const layer = this.layerMap.get(this.currSelect)!;
-            if (layer.zOrder === this.layerMap.size - 1) {
+            const layer = storedLayerStates.get(this.currSelect)!;
+            if (layer.zOrder === storedLayerStates.size - 1) {
                 return;
             }
             layer.zOrder += 1;
-            for (const [key, val] of this.layerMap) {
+            for (const [key, val] of storedLayerStates) {
                 if (val.zOrder === layer.zOrder && val.id !== layer.id) {
                     val.zOrder -= 1;
-                    this.serveInter.updateLayer(val);
+                    serveInter.updateLayer(val);
                 }
             }
-            this.serveInter.updateLayer(layer);
+            serveInter.updateLayer(layer);
             this.moveLayers();
         });
 
         downButton.addEventListener('click', () => {
-            const layer = this.layerMap.get(this.currSelect)!;
+            const layer = storedLayerStates.get(this.currSelect)!;
             if (layer.zOrder === 0) {
                 return;
             }
             layer.zOrder -= 1;
-            for (const [key, val] of this.layerMap) {
+            for (const [key, val] of storedLayerStates) {
                 if (val.zOrder === layer.zOrder && val.id !== layer.id) {
                     val.zOrder += 1;
-                    this.serveInter.updateLayer(val);
+                    serveInter.updateLayer(val);
                 }
             }
-            this.serveInter.updateLayer(layer);
+            serveInter.updateLayer(layer);
             this.moveLayers();
         });
 
         layerRenameInput.addEventListener('change', () => {
-            const layer = this.layerMap.get(this.currSelect)!;
+            const layer = storedLayerStates.get(this.currSelect)!;
             (layer.element!.children[0] as any).innerText =
                 layerRenameInput.value === 'none'
                     ? `Layer ${this.currSelect}`
                     : layerRenameInput.value;
             layer.name = layerRenameInput.value;
-            this.serveInter.updateLayer(layer);
+            serveInter.updateLayer(layer);
         });
 
         layerXInput.addEventListener('change', () => {
@@ -93,10 +91,10 @@ export class LayerMenu {
             if (Number.isNaN(Number(newX))) {
                 layerXInput.value = '0';
             } else {
-                const layer = this.layerMap.get(this.currSelect);
+                const layer = storedLayerStates.get(this.currSelect);
                 if (layer) {
                     layer.x = Number(newX);
-                    this.serveInter.updateLayer(layer);
+                    serveInter.updateLayer(layer);
                 }
             }
         });
@@ -106,23 +104,23 @@ export class LayerMenu {
             if (Number.isNaN(Number(newY))) {
                 layerYInput.value = '0';
             } else {
-                const layer = this.layerMap.get(this.currSelect);
+                const layer = storedLayerStates.get(this.currSelect);
                 if (layer) {
                     layer.y = Number(newY);
-                    this.serveInter.updateLayer(layer);
+                    serveInter.updateLayer(layer);
                 }
             }
         });
 
         deleteButton.addEventListener('click', () => {
-            const targLayer = this.layerMap.get(this.currSelect)!;
-            for (const [key, val] of this.layerMap) {
+            const targLayer = storedLayerStates.get(this.currSelect)!;
+            for (const [key, val] of storedLayerStates) {
                 if (val.zOrder > targLayer.zOrder) {
                     val.zOrder -= 1;
-                    this.serveInter.updateLayer(val);
+                    serveInter.updateLayer(val);
                 }
             }
-            this.serveInter.destroyLayer(targLayer);
+            serveInter.destroyLayer(targLayer);
         });
     }
 
@@ -136,7 +134,7 @@ export class LayerMenu {
 
     // Calls the server interface to create a new layer.
     createLayer() {
-        this.serveInter.createLayer();
+        serveInter.createLayer();
     }
 
     updateInputs(val: LayerState) {
@@ -149,7 +147,7 @@ export class LayerMenu {
 
     // Updates the layer corresponding to a key value from a LayerState.
     updateLayer(key: number, val: LayerState) {
-        const toUpdate = this.layerMap.get(key)!;
+        const toUpdate = storedLayerStates.get(key)!;
         toUpdate.gmVisible = val.gmVisible;
         toUpdate.playerVisible = val.playerVisible;
         toUpdate.zOrder = val.zOrder;
@@ -171,7 +169,7 @@ export class LayerMenu {
         const newText = document.createElement('p');
         const checkVisibleAll = document.createElement('input');
         const checkVisibleGM = document.createElement('input');
-        this.layerMap.set(buildData.id!, {
+        storedLayerStates.set(buildData.id!, {
             id: buildData.id,
             gmVisible: buildData.gmVisible,
             playerVisible: buildData.playerVisible,
@@ -227,20 +225,20 @@ export class LayerMenu {
 
         checkVisibleGM.addEventListener('change', () => {
             if (this.active) {
-                const layer = this.layerMap.get(num);
+                const layer = storedLayerStates.get(num);
                 if (layer) {
                     layer.gmVisible = checkVisibleGM.checked;
-                    this.serveInter.updateLayer(layer);
+                    serveInter.updateLayer(layer);
                 }
             }
         });
 
         checkVisibleAll.addEventListener('change', () => {
             if (this.active) {
-                const layer = this.layerMap.get(num);
+                const layer = storedLayerStates.get(num);
                 if (layer) {
                     layer.playerVisible = checkVisibleAll.checked;
-                    this.serveInter.updateLayer(layer);
+                    serveInter.updateLayer(layer);
                 }
             }
         });
@@ -254,7 +252,7 @@ export class LayerMenu {
     // Changes the location of the HTMLElements of each layer.
     // Something of a misnomer.
     moveLayers() {
-        this.layerMap.forEach((val, key) => {
+        storedLayerStates.forEach((val, key) => {
             val.element!.style.top = `${(this.boxHeight + 4) * val.zOrder}px`;
         });
     }
@@ -262,7 +260,7 @@ export class LayerMenu {
     // Resizes the HTMLElements of each layer.
     resizeLayerBoxes() {
         const w = `${parseInt(this.layerObj.style.width, 10) - 4}px`;
-        for (const [key, val] of this.layerMap) {
+        for (const [key, val] of storedLayerStates) {
             val.element!.style.width = w;
         }
         this.tempButtonObj.style.width = `${parseInt(this.layerObj.style.width, 10)}px`;
@@ -270,27 +268,27 @@ export class LayerMenu {
 
     // Unselects the currently selected layer, in preparation for it not being the currently selected layer.
     exitCurrSelect() {
-        const layer = this.layerMap.get(this.currSelect);
+        const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = GREY.toString();
         }
     }
 
     destroyLayerElement(id: number) {
-        const currLayer = this.layerMap.get(id);
+        const currLayer = storedLayerStates.get(id);
         if (currLayer) {
             currLayer.element!.remove();
             currLayer.element!.style.visibility = 'hidden';
             currLayer.element!.style.pointerEvents = 'none';
             currLayer.element!.innerHTML = '';
         }
-        this.layerMap.delete(id);
+        storedLayerStates.delete(id);
         this.moveLayers();
     }
 
     // Selects the currently selected layer.
     enterCurrSelect() {
-        const layer = this.layerMap.get(this.currSelect);
+        const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = RED.toString();
             layerXInput.value = layer.x.toString();
@@ -304,7 +302,7 @@ export class LayerMenu {
     // Performs a single step updating the layer menu.
     step() {
         layerBottom.style.height = `${window.innerHeight - 370}px`;
-        const layer = this.layerMap.get(this.currSelect);
+        const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = RED.toString();
         }

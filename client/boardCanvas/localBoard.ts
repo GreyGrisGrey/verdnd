@@ -7,6 +7,9 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
+const storedObjects: Map<number, BoardObject> = new Map();
+const storedLayers: Map<number, BoardLayer> = new Map();
+const serveInter = new tempStore();
 
 export enum CoordModes {
     Vertex = 0,
@@ -24,19 +27,11 @@ export class Board {
     leftMouseDown: boolean;
     rightMouseDown: boolean;
     boardLayers: BoardLayer[];
-    layerMap: Map<number, BoardLayer>;
-    objectMap: Map<number, BoardObject>;
     modeMan: ModeManager;
     activeLayer: number;
-    serveInter: tempStore;
     laserCol: string;
 
-    constructor(
-        server: tempStore,
-        newMap: Map<number, BoardObject>,
-        newLay: Map<number, BoardLayer>,
-    ) {
-        this.serveInter = server;
+    constructor() {
         this.zoomGlobal = 5;
         this.zoomLevels = [
             2, 3, 4, 6, 8, 10, 13, 16, 20, 24, 28, 32, 38, 44, 50,
@@ -47,8 +42,6 @@ export class Board {
         this.leftMouseDown = false;
         this.rightMouseDown = false;
         this.boardLayers = [];
-        this.layerMap = newLay;
-        this.objectMap = newMap;
         this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
         this.laserCol = BLUE;
@@ -60,13 +53,13 @@ export class Board {
 
     // Clears a layer of all of its objects, and tells the server to do the same.
     clearLayer(layerId: number) {
-        const layer = this.layerMap.get(layerId);
+        const layer = storedLayers.get(layerId);
         if (layer) {
             const destroyItems = [];
             for (const [key, val] of layer.heldMap) {
                 destroyItems.push(key);
             }
-            this.serveInter.destroyObjects(destroyItems, true);
+            serveInter.destroyObjects(destroyItems, true);
         }
     }
 
@@ -125,7 +118,7 @@ export class Board {
 
     // Deletes an object based on the Id of the object and the layer it belongs on.
     removeObject(objectId: number, layerId: number = -1) {
-        this.objectMap.delete(objectId);
+        storedObjects.delete(objectId);
         if (layerId === -1) {
             for (const layer of this.boardLayers) {
                 if (layer.removeObject(objectId)) {
@@ -134,7 +127,7 @@ export class Board {
             }
             return false;
         } else {
-            const layer = this.layerMap.get(layerId);
+            const layer = storedLayers.get(layerId);
             if (layer) {
                 layer.removeObject(objectId);
             }
@@ -144,7 +137,7 @@ export class Board {
 
     // Changes the offset of specified layer.
     moveLayer(moveId: number, moveX: number, moveY: number) {
-        const layer = this.layerMap.get(moveId);
+        const layer = storedLayers.get(moveId);
         if (layer) {
             layer.shiftLayer({ x: moveX, y: moveY });
         }
@@ -155,7 +148,7 @@ export class Board {
         targetType: string = 'any',
         coords: Vec2[] = this.modeMan.getSelectCoords(),
     ) {
-        const layer = this.layerMap.get(this.activeLayer);
+        const layer = storedLayers.get(this.activeLayer);
         if (layer) {
             return layer.selectObjects(coords, targetType);
         }
@@ -164,8 +157,8 @@ export class Board {
 
     // Selects a single token.
     selectToken(fixedPoint: Vec2[], matchType: string = 'any') {
-        if (this.serveInter.isGm) {
-            const layer = this.layerMap.get(this.activeLayer);
+        if (serveInter.isGm) {
+            const layer = storedLayers.get(this.activeLayer);
             let newSelected = undefined;
             if (layer) {
                 const selected = layer.selectObjects(fixedPoint, matchType)[0];
@@ -173,7 +166,7 @@ export class Board {
             }
             return newSelected;
         } else {
-            for (const [key, val] of this.layerMap) {
+            for (const [key, val] of storedLayers) {
                 const selected = val.selectObjects(fixedPoint, matchType)[0];
                 if (selected) {
                     return selected;
@@ -240,7 +233,7 @@ export class Board {
                 squareSize,
                 this.offset,
                 this.modeMan.selectMan.thirdOffset,
-                this.serveInter.isGm,
+                serveInter.isGm,
             );
             if (i === this.activeLayer) {
                 const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as
@@ -266,7 +259,7 @@ export class Board {
         }
         ctx.clearRect(0, 0, can.width, can.height);
         this.draw();
-        const newLasers = this.serveInter.getLasers();
+        const newLasers = serveInter.getLasers();
         for (const [key, val] of newLasers) {
             if (Date.now() - val.time < 1500) {
                 this.drawLaser(

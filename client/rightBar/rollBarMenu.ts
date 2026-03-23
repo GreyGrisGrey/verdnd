@@ -1,6 +1,7 @@
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { RollComplete, RollResult } from '../../shared/objectEvents.ts';
+const serveInter = new tempStore();
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const rollBox = getRequiredElement('rollContainer', HTMLElement);
@@ -15,9 +16,8 @@ export class RollMenu {
     modBox: HTMLElement;
     currChats: HTMLElement[];
     currBoxes: HTMLElement[];
-    serveInter: tempStore;
 
-    constructor(server: tempStore) {
+    constructor() {
         this.textBox = getRequiredElement('chatBoxTextBox', HTMLElement);
         this.active = false;
         this.modifier = '0';
@@ -25,7 +25,6 @@ export class RollMenu {
         this.currChats = [];
         this.currBoxes = [];
         this.setRollElements();
-        this.serveInter = server;
     }
 
     // Constructs the HTML elements corresponding to each roll option.
@@ -175,7 +174,7 @@ export class RollMenu {
             chatBox.style.width = rW;
             chatBox.style.height = rH;
         }
-        const data = this.serveInter.getDice();
+        const data = serveInter.getDice();
         if (data) {
             this.updateChats(data);
         }
@@ -253,6 +252,6 @@ export class RollMenu {
             modifier: Number(this.modifier),
             result: 0,
         };
-        this.serveInter.rollDice(currLoad);
+        serveInter.rollDice(currLoad);
     }
 }

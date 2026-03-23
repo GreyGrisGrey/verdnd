@@ -3,16 +3,15 @@ import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
+const board = new Board();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
 export class LeftBarManager {
     colourPicker: ColourBox;
-    board: Board;
     visible: boolean;
-    constructor(newBoard: Board) {
-        this.colourPicker = new ColourBox(newBoard);
-        this.board = newBoard;
+    constructor() {
+        this.colourPicker = new ColourBox();
         this.visible = true;
         this.addEventListeners();
     }

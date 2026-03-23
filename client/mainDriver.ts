@@ -11,9 +11,9 @@ const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
 const serveInter = new tempStore();
-const board = new Board(serveInter, storedObjects, storedLayers);
-const rightMan = new RightBarManager(serveInter, storedLayerStates);
-const leftMan = new LeftBarManager(board);
+const board = new Board();
+const rightMan = new RightBarManager();
+const leftMan = new LeftBarManager();
 const topMan = new TopBarManager();
 const tooltips = new TooltipManager();
 let prevLaser = 0;
@@ -30,7 +30,7 @@ function setup() {
 }
 
 async function mainLoop() {
-    if (board.layerMap.size === 0) {
+    if (storedLayers.size === 0) {
         counter = 0;
     } else if (board.modeMan.sendLaser && Date.now() - prevLaser > 30) {
         serveInter.sendLaser(
