@@ -28,16 +28,7 @@ const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
 const userBox = new UserBox();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
-    return new BoardObject(
-        p.objectId,
-        p.x,
-        p.y,
-        p.colour,
-        p.params,
-        p.width,
-        p.height,
-        p.points,
-    );
+    return new BoardObject(p.objectId, p.colour, p.params, p.points);
 }
 
 interface selfLaser {

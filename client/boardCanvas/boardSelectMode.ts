@@ -253,20 +253,31 @@ export class BoardSelectMode {
         }
     }
 
-    resizeObject(movedOrb: SelectBall) {}
-
-    restructureObject(movedOrb: SelectBall) {
-        const newCoord = this.board.determineTile(
+    resizeObject(movedOrb: SelectBall) {
+        const currObj = this.selectedObjects[0];
+        const point = this.board.determineTile(
             this.board.mouseCoords.x,
             this.board.mouseCoords.y,
             CoordModes.Vertex,
         );
-        this.selectedObjects[0].updatePoint(
-            newCoord.x,
-            newCoord.y,
-            movedOrb.id,
+        currObj.updateSize(point, movedOrb.id);
+        for (const orb of this.orbs) {
+            orb.deconstruct();
+        }
+        this.orbs = [];
+        this.setUpCorners();
+        return;
+    }
+
+    restructureObject(movedOrb: SelectBall) {
+        const point = this.board.determineTile(
+            this.board.mouseCoords.x,
+            this.board.mouseCoords.y,
+            CoordModes.Vertex,
         );
-        movedOrb.updateOrbLoc(newCoord);
+        movedOrb.coord = point;
+        this.selectedObjects[0].updatePoint(point.x, point.y, movedOrb.id);
+        return;
     }
 
     // Moves each selected object individually.
@@ -385,13 +396,7 @@ export class BoardSelectMode {
         let count = 0;
         const currObj = this.selectedObjects[0];
         for (const pt of currObj.points) {
-            this.orbs.push(
-                new SelectBall(
-                    pt.x * currObj.scale.x + currObj.offset.x,
-                    pt.y * currObj.scale.y + currObj.offset.y,
-                    count,
-                ),
-            );
+            this.orbs.push(new SelectBall(pt.x, pt.y, count));
             count++;
         }
     }

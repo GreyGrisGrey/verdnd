@@ -25,11 +25,7 @@ export function objectTableToPayloads(rows: any[]) {
             action: Action.Create,
             userId: '0',
             object: {
-                x: structData[0].x,
-                y: structData[0].y,
-                width: structData[1].x,
-                height: structData[1].y,
-                points: structData.splice(2),
+                points: structData,
                 colour: row[1],
                 layerId: row[2],
                 objectId: row[3],
@@ -126,8 +122,6 @@ export function objectPayloadToRow(payload: ObjectCreateEvent) {
     newVal += payload.object.params.fill ? 0 : 2;
     newVal += payload.object.params.close ? 0 : 4;
     let returnString = `(${newVal}, '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
-    returnString += `${payload.object.x},${payload.object.y}:`;
-    returnString += `${payload.object.width},${payload.object.height}:`;
     returnString += `${(payload.object as any).points
         .map((item: Vec2) => {
             return `${item.x},${item.y}`;
@@ -139,12 +133,11 @@ export function objectPayloadToRow(payload: ObjectCreateEvent) {
 export function updateObjectToRow(payload: ObjectCreateEvent) {
     return [
         payload.object.colour.toString(),
-        `${payload.object.x},${payload.object.y}:${payload.object.width},${payload.object.height}:` +
-            (payload.object as any).points
-                .map((item: Vec2) => {
-                    return `${item.x},${item.y}`;
-                })
-                .join(':'),
+        (payload.object as any).points
+            .map((item: Vec2) => {
+                return `${item.x},${item.y}`;
+            })
+            .join(':'),
     ];
 }
 

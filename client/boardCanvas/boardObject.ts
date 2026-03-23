@@ -15,8 +15,6 @@ const serveInter = new tempStore();
 export class BoardObject {
     objectId: number;
     zOrder: number;
-    offset: Vec2;
-    scale: Vec2;
     colour: ColInst | string;
     hasImage: boolean;
     imagePath: string;
@@ -33,26 +31,20 @@ export class BoardObject {
 
     constructor(
         objectId: number,
-        x: number,
-        y: number,
         colour: ColInst | string,
         drawParams: ObjectParams,
-        width: number = 1,
-        height: number = 1,
-        structure: Vec2[] = [],
+        structure: Vec2[],
     ) {
         this.drawParams = drawParams;
         this.objectId = objectId;
         this.zOrder = 0;
-        this.offset = { x, y };
-        this.scale = { x: width, y: height };
         this.colour = colour;
         this.hasImage = false;
         this.imagePath = '';
         this.selected = false;
         this.centerPoint = { x: 0, y: 0 };
         this.layerId = 0;
-        this.currPathSpecs = [0, 0, 0, 0, 0];
+        this.currPathSpecs = [0, 0, 0];
         this.currPath = new Path2D();
         this.ctx = undefined;
         this.token = {
@@ -62,7 +54,7 @@ export class BoardObject {
             colour: '#cccccc',
         };
         this.owner = 'None';
-        this.points = drawParams.rect ? this.constructPoints() : structure;
+        this.points = structure;
         this.setCenter();
         console.log(this.points);
     }
@@ -83,8 +75,8 @@ export class BoardObject {
             }
         }
         return {
-            x: minX * this.scale.x + this.offset.x,
-            y: minY * this.scale.y + this.offset.y,
+            x: minX,
+            y: minY,
         };
     }
 
@@ -100,19 +92,9 @@ export class BoardObject {
             }
         }
         return {
-            x: maxX * this.scale.x + this.offset.x,
-            y: maxY * this.scale.y + this.offset.y,
+            x: maxX,
+            y: maxY,
         };
-    }
-
-    constructPoints() {
-        const points: Vec2[] = [];
-        points.push({ x: 0, y: 0 });
-        points.push({ x: this.scale.x, y: 0 });
-        points.push({ x: this.scale.x, y: this.scale.y });
-        points.push({ x: 0, y: this.scale.y });
-        this.scale = { x: 1, y: 1 };
-        return points;
     }
 
     // Checks if the object's token is active.
@@ -133,9 +115,7 @@ export class BoardObject {
         if (
             squareSize !== this.currPathSpecs[0] ||
             offset.x !== this.currPathSpecs[1] ||
-            offset.y !== this.currPathSpecs[2] ||
-            this.offset.x !== this.currPathSpecs[3] ||
-            this.offset.y !== this.currPathSpecs[4]
+            offset.y !== this.currPathSpecs[2]
         ) {
             this.buildPath(squareSize, offset);
             this.ctx = ctx;
@@ -205,10 +185,10 @@ export class BoardObject {
 
     // Moves the object a set amount.
     move(xChange: number, yChange: number) {
-        this.offset.x += xChange;
-        this.offset.y += yChange;
-        this.setCenter();
-        return this.offset;
+        for (const pt of this.points) {
+            pt.x += xChange;
+            pt.y += yChange;
+        }
     }
 
     setColour(newColour: ColInst | string) {
@@ -251,8 +231,8 @@ export class BoardObject {
     setCenter() {
         if (this.drawParams.ellipse) {
             this.centerPoint = {
-                x: this.offset.x + this.scale.x / 2,
-                y: this.offset.y + this.scale.y / 2,
+                x: this.points[0].x + this.points[2].x / 2,
+                y: this.points[0].y + this.points[2].y / 2,
             };
         } else {
             const topLeft = this.getTopLeft();
@@ -270,21 +250,15 @@ export class BoardObject {
 
     // Updates the object to match that of a provided payload.
     updateFromPayload(newSetting: ObjectCreatePayload) {
-        this.offset.x = newSetting.x;
-        this.offset.y = newSetting.y;
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
         this.setCenter();
         this.updateToken(newSetting.token);
     }
 
-    payloadFromObject(): ObjectCreatePayload {
+    payloadFromObject() {
         return {
             params: this.drawParams,
-            x: this.offset.x,
-            y: this.offset.y,
-            width: this.scale.x,
-            height: this.scale.y,
             points: this.points,
             colour: this.colour,
             layerId: this.layerId,
@@ -294,97 +268,103 @@ export class BoardObject {
     }
 
     getPoints() {
-        const vals = [];
-        if (!this.drawParams.ellipse) {
-            const loc = this.offset;
-            vals.push(loc);
-            for (const pt of this.points) {
-                vals.push({
-                    x: pt.x * this.scale.x + loc.x,
-                    y: pt.y * this.scale.y + loc.y,
-                });
-            }
-        }
-        return vals;
+        return this.points;
     }
 
     updatePoint(newX: number, newY: number, specificPoint: number) {
-        this.points[specificPoint].x = newX - this.offset.x;
-        this.points[specificPoint].y = newY - this.offset.y;
-        this.currPathSpecs = [0, 0, 0, 0, 0];
+        this.points[specificPoint].x = newX;
+        this.points[specificPoint].y = newY;
+        this.currPathSpecs = [0, 0, 0];
         this.setCenter();
         this.updateObject();
     }
 
-    updateScale(newScale: Vec2, newTopLeft: Vec2) {
-        this.scale = newScale;
-        this.offset = newTopLeft;
+    // the devil wrote this
+    updateSize(newPoint: Vec2, corner: number) {
+        const topLeft = this.getTopLeft();
+        const bottomRight = this.getBottomRight();
+        for (const pt of this.points) {
+            if (corner === 0) {
+                const transform = {
+                    x: topLeft.x - newPoint.x,
+                    y: topLeft.y - newPoint.y,
+                };
+                const percentX =
+                    (bottomRight.x - pt.x) / (bottomRight.x - topLeft.x);
+                const percentY =
+                    (bottomRight.y - pt.y) / (bottomRight.y - topLeft.y);
+                pt.x = pt.x - transform.x * percentX;
+                pt.y = pt.y - transform.y * percentY;
+            } else if (corner === 1) {
+                const transform = {
+                    x: newPoint.x - bottomRight.x,
+                    y: topLeft.y - newPoint.y,
+                };
+                const percentX =
+                    (pt.x - topLeft.x) / (bottomRight.x - topLeft.x);
+                const percentY =
+                    (bottomRight.y - pt.y) / (bottomRight.y - topLeft.y);
+                pt.x = transform.x * percentX + pt.x;
+                pt.y = pt.y - transform.y * percentY;
+            } else if (corner === 2) {
+                const transform = {
+                    x: newPoint.x - bottomRight.x,
+                    y: newPoint.y - bottomRight.y,
+                };
+                const percentX =
+                    (pt.x - topLeft.x) / (bottomRight.x - topLeft.x);
+                const percentY =
+                    (pt.y - topLeft.y) / (bottomRight.y - topLeft.y);
+                pt.x = transform.x * percentX + pt.x;
+                pt.y = transform.y * percentY + pt.y;
+            } else if (corner === 3) {
+                const transform = {
+                    x: topLeft.x - newPoint.x,
+                    y: newPoint.y - bottomRight.y,
+                };
+                const percentX =
+                    (bottomRight.x - pt.x) / (bottomRight.x - topLeft.x);
+                const percentY =
+                    (pt.y - topLeft.y) / (bottomRight.y - topLeft.y);
+                pt.x = pt.x - transform.x * percentX;
+                pt.y = transform.y * percentY + pt.y;
+            }
+        }
+        this.currPathSpecs = [0, 0, 0];
         this.setCenter();
         this.updateObject();
     }
 
     pathEllipse(squareSize: number, outerOffset: Vec2) {
-        const coords: Vec2 = {
-            x:
-                this.offset.x * squareSize +
-                outerOffset.x +
-                (squareSize * this.scale.x) / 2,
-            y:
-                this.offset.y * squareSize +
-                outerOffset.y +
-                (squareSize * this.scale.y) / 2,
-        };
         this.currPath = new Path2D();
         this.currPath.ellipse(
-            coords.x,
-            coords.y,
-            (this.scale.x * squareSize) / 2,
-            (this.scale.y * squareSize) / 2,
+            ((this.points[0].x + this.points[2].x) / 2) * squareSize +
+                outerOffset.x,
+            ((this.points[0].y + this.points[2].y) / 2) * squareSize +
+                outerOffset.y,
+            (Math.abs(this.points[0].x - this.points[2].x) * squareSize) / 2,
+            (Math.abs(this.points[0].y - this.points[2].y) * squareSize) / 2,
             0,
             0,
             2 * Math.PI,
         );
-        this.currPathSpecs = [
-            squareSize,
-            outerOffset.x,
-            outerOffset.y,
-            this.offset.x,
-            this.offset.y,
-        ];
+        this.currPathSpecs = [squareSize, outerOffset.x, outerOffset.y];
         this.currPath.closePath();
     }
 
     pathOther(squareSize: number, outerOffset: Vec2) {
         this.currPath = new Path2D();
         this.currPath.moveTo(
-            Math.round(
-                (this.points[0].x * this.scale.x + this.offset.x) * squareSize +
-                    outerOffset.x,
-            ),
-            Math.round(
-                (this.points[0].y * this.scale.y + this.offset.y) * squareSize +
-                    outerOffset.y,
-            ),
+            Math.round(this.points[0].x * squareSize + outerOffset.x),
+            Math.round(this.points[0].y * squareSize + outerOffset.y),
         );
         for (const pt of this.points) {
             this.currPath.lineTo(
-                Math.round(
-                    (pt.x * this.scale.x + this.offset.x) * squareSize +
-                        outerOffset.x,
-                ),
-                Math.round(
-                    (pt.y * this.scale.y + this.offset.y) * squareSize +
-                        outerOffset.y,
-                ),
+                Math.round(pt.x * squareSize + outerOffset.x),
+                Math.round(pt.y * squareSize + outerOffset.y),
             );
         }
-        this.currPathSpecs = [
-            squareSize,
-            outerOffset.x,
-            outerOffset.y,
-            this.offset.x,
-            this.offset.y,
-        ];
+        this.currPathSpecs = [squareSize, outerOffset.x, outerOffset.y];
         if (this.drawParams.close) {
             this.currPath.closePath();
         }

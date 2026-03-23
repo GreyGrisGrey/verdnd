@@ -69,10 +69,6 @@ export interface LayerState {
 
 export interface ObjectCreatePayload {
     params: ObjectParams;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
     points: Vec2[];
     colour: ColInst | string;
     layerId: number;

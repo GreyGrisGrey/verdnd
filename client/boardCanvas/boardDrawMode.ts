@@ -228,15 +228,11 @@ export class BoardDrawMode {
             const res = rectangleFromPoints(this.params[0], this.params[1]);
             tempObj = {
                 params: this.currParams,
-                x: res[0],
-                y: res[1],
-                width: res[2],
-                height: res[3],
                 points: [
-                    { x: 0, y: 0 },
-                    { x: 1, y: 0 },
-                    { x: 1, y: 1 },
-                    { x: 0, y: 1 },
+                    { x: res[0], y: res[1] },
+                    { x: res[0] + res[2], y: res[1] },
+                    { x: res[0] + res[2], y: res[1] + res[3] },
+                    { x: res[0], y: res[1] + res[3] },
                 ],
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
@@ -248,14 +244,9 @@ export class BoardDrawMode {
                     movable: false,
                 },
             };
-            console.log('aaaaa');
         } else if (this.currDraw >= 3 && this.params.length > 2) {
             tempObj = {
                 params: this.currParams,
-                x: 0,
-                y: 0,
-                width: 1,
-                height: 1,
                 points: this.params,
                 colour: colourSquare.style.background,
                 layerId: this.board.activeLayer,
@@ -295,12 +286,8 @@ export class BoardDrawMode {
         if (this.tempObject !== null) {
             return new BoardObject(
                 -1,
-                this.tempObject.x,
-                this.tempObject.y,
                 this.tempObject.colour,
                 this.currParams,
-                this.tempObject.width,
-                this.tempObject.height,
                 this.tempObject.points,
             );
         }
@@ -315,8 +302,6 @@ export class BoardDrawMode {
                 const col = WHITE_50;
                 return new BoardObject(
                     -1,
-                    res2[0],
-                    res2[1],
                     col,
                     {
                         ellipse: false,
@@ -324,8 +309,12 @@ export class BoardDrawMode {
                         close: true,
                         rect: true,
                     },
-                    res2[2],
-                    res2[3],
+                    [
+                        { x: res2[0], y: res2[1] },
+                        { x: res2[0] + res2[2], y: res2[1] },
+                        { x: res2[0] + res2[2], y: res2[1] + res2[3] },
+                        { x: res2[0], y: res2[1] + res2[3] },
+                    ],
                 );
             }
         } else if (this.currDraw < 3 && this.params.length >= 1) {
@@ -336,24 +325,17 @@ export class BoardDrawMode {
             );
             const res2 = rectangleFromPoints(this.params[0], res);
             const col = colourSquare.style.background;
-            return new BoardObject(
-                -1,
-                res2[0],
-                res2[1],
-                col,
-                this.currParams,
-                res2[2],
-                res2[3],
-            );
+            return new BoardObject(-1, col, this.currParams, [
+                { x: res2[0], y: res2[1] },
+                { x: res2[0] + res2[2], y: res2[1] },
+                { x: res2[0] + res2[2], y: res2[1] + res2[3] },
+                { x: res2[0], y: res2[1] + res2[3] },
+            ]);
         } else if (this.params.length >= 2 && this.currDraw >= 3) {
             const newObj = new BoardObject(
                 -1,
-                0,
-                0,
                 colourSquare.style.background,
                 this.currParams,
-                1,
-                1,
                 this.params,
             );
             return newObj;

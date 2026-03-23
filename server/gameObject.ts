@@ -57,6 +57,16 @@ export class GameObject {
         this.count = 0;
     }
 
+    moveObject(id: number, xChange: number, yChange: number) {
+        const currObj = this.objectMap.get(id);
+        if (currObj) {
+            for (const pt of currObj.object.points) {
+                pt.x += xChange;
+                pt.y += yChange;
+            }
+        }
+    }
+
     checkUserGm(id: string) {
         if (this.allGm) {
             return true;

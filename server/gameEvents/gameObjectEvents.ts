@@ -90,6 +90,7 @@ export async function destroyObj(
 }
 
 // Function for moving a specified object in a specified game.
+// TODO make it move things again.
 export async function moveObj(
     objId: number,
     xChange: number,
@@ -102,8 +103,7 @@ export async function moveObj(
     currGame.objectLock = true;
     const currObj = currGame.objectMap.get(objId);
     if (currObj && (userGm || currObj.token.active)) {
-        currObj.object.x += xChange;
-        currObj.object.y += yChange;
+        currGame.moveObject(objId, xChange, yChange);
         const sendObj = JSON.stringify(currObj);
         await currGame.waitLock('db');
         currGame.dbLock = true;
