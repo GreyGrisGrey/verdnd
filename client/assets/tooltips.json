@@ -2,7 +2,7 @@
     "bottomContent": [
         {
             "draw": "Incomplete",
-            "select": "Incomplete",
+            "select": "Restructure object. Click and drag a vertex to change its position.",
             "view": "Incomplete"
         },
         {
@@ -47,7 +47,7 @@
         },
         {
             "draw": "Incomplete",
-            "select": "Incomplete",
+            "select": "Resize object. Click and drag a corner to resize.",
             "view": "Backspace/Escape/9 : Stop measuring distance."
         }
     ]

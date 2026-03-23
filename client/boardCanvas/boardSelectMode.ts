@@ -164,6 +164,7 @@ export class BoardSelectMode {
             obj.deconstruct();
         }
         this.orbs = [];
+        this.currPath = new Path2D();
         this.exitOnNextStep = false;
         this.currColour = colourSquare.style.background;
         this.selectClick = this.board.leftMouseDown;
@@ -326,7 +327,9 @@ export class BoardSelectMode {
     setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;
         this.boxItems[9].disabled = this.selectedObjects.length > 1;
-        this.boxItems[0].disabled = this.selectedObjects.length > 1;
+        this.boxItems[0].disabled =
+            this.selectedObjects.length > 1 ||
+            this.selectedObjects[0].drawParams.ellipse;
         this.currLayer = this.board.layerMap.get(newObjs[0].layerId)!;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
@@ -359,7 +362,8 @@ export class BoardSelectMode {
         for (const orb of this.orbs) {
             orb.updateDocumentOffset(this.board.zoomVal * 5, res.x, res.y);
         }
-        if (!this.boxDraw) {
+        if (this.boxDraw) {
+            console.log('screech');
             const topLeft = this.selectedObjects[0].getTopLeft();
             const bottomRight = this.selectedObjects[0].getBottomRight();
             this.currPath = new Path2D();
@@ -395,9 +399,11 @@ export class BoardSelectMode {
     setUpPoints() {
         let count = 0;
         const currObj = this.selectedObjects[0];
-        for (const pt of currObj.points) {
-            this.orbs.push(new SelectBall(pt.x, pt.y, count));
-            count++;
+        if (!currObj.drawParams.ellipse) {
+            for (const pt of currObj.points) {
+                this.orbs.push(new SelectBall(pt.x, pt.y, count));
+                count++;
+            }
         }
     }
 
