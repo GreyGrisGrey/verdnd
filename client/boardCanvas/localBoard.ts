@@ -78,7 +78,7 @@ export class Board {
         ctx.arc(
             this.mouseCoords.x,
             this.mouseCoords.y,
-            1 * this.zoomVal,
+            5,
             0,
             2 * Math.PI,
             false,
@@ -94,7 +94,7 @@ export class Board {
         ctx.arc(
             x * 5 * this.zoomVal + this.offset.x,
             y * 5 * this.zoomVal + this.offset.y,
-            1 * this.zoomVal,
+            5,
             0,
             2 * Math.PI,
             false,

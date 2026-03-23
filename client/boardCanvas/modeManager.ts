@@ -252,6 +252,7 @@ export class ModeManager {
         }
         if (this.selectMan.active) {
             this.selectMan.updateCornerOffset();
+            this.selectMan.drawSkeleton();
         }
     }
 }

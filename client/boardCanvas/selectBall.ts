@@ -1,4 +1,5 @@
 import type { Vec2 } from '../../shared/coords.ts';
+import { GOLD } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 const body = getRequiredElement('body', HTMLElement);
 
@@ -13,13 +14,13 @@ export class SelectBall {
         this.id = id;
 
         this.element.style.position = 'absolute';
+        this.element.style.border = 'none';
         this.element.style.borderRadius = '50%';
         this.element.style.width = '20px';
         this.element.style.height = '20px';
         this.element.style.zIndex = '9';
         this.element.style.visibility = 'visible';
-        this.element.style.backgroundColor = '#00ff59';
-        this.element.innerText = 'AAAAAA';
+        this.element.style.backgroundColor = GOLD;
     }
 
     updateDocumentOffset(zoom: number, newX: number, newY: number) {

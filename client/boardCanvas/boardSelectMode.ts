@@ -8,7 +8,9 @@ import { stringToColInst } from '../../shared/colours.ts';
 import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
+import { GOLD } from '../../shared/colours.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
+const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 
@@ -24,6 +26,7 @@ export class BoardSelectMode {
     boxItems: HTMLButtonElement[];
     orbs: SelectBall[];
     currLayer: BoardLayer;
+    currPath: Path2D;
 
     constructor(parentBoard: Board) {
         this.board = parentBoard;
@@ -36,6 +39,7 @@ export class BoardSelectMode {
         this.boxItems = [];
         this.orbs = [];
         this.currLayer = new BoardLayer(0, true, true);
+        this.currPath = new Path2D();
         this.setUpBoxes();
 
         this.addEventListeners();
@@ -257,6 +261,7 @@ export class BoardSelectMode {
         if (this.selectedObjects.length === 1) {
             this.setUpCorners();
             this.updateCornerOffset();
+            this.currPath = this.selectedObjects[0].currPath;
         }
     }
 
@@ -295,5 +300,14 @@ export class BoardSelectMode {
         this.orbs.push(new SelectBall(bottomRight.x, topLeft.y, 1));
         this.orbs.push(new SelectBall(bottomRight.x, bottomRight.y, 2));
         this.orbs.push(new SelectBall(topLeft.x, bottomRight.y, 3));
+    }
+
+    drawSkeleton() {
+        if (this.selectedObjects.length === 1) {
+            this.currPath = this.selectedObjects[0].currPath;
+            ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = 4;
+            ctx.stroke(this.currPath);
+        }
     }
 }
