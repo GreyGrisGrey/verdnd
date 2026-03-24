@@ -10,6 +10,7 @@ const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const serveInter = new tempStore();
+const modeMan = new ModeManager();
 
 export enum CoordModes {
     Vertex = 0,
@@ -27,7 +28,6 @@ export class Board {
     leftMouseDown: boolean;
     rightMouseDown: boolean;
     boardLayers: BoardLayer[];
-    modeMan: ModeManager;
     activeLayer: number;
     laserCol: string;
 
@@ -42,7 +42,6 @@ export class Board {
         this.leftMouseDown = false;
         this.rightMouseDown = false;
         this.boardLayers = [];
-        this.modeMan = new ModeManager(this);
         this.activeLayer = 0;
         this.laserCol = BLUE;
     }
@@ -146,7 +145,7 @@ export class Board {
     // Retrieves objects corresponding to set of coordinates
     selectObjects(
         targetType: string = 'any',
-        coords: Vec2[] = this.modeMan.getSelectCoords(),
+        coords: Vec2[] = modeMan.getSelectCoords(),
     ) {
         const layer = storedLayers.get(this.activeLayer);
         if (layer) {
@@ -232,11 +231,11 @@ export class Board {
                 ctx,
                 squareSize,
                 this.offset,
-                this.modeMan.selectMan.thirdOffset,
+                modeMan.selectMan.thirdOffset,
                 serveInter.isGm,
             );
             if (i === this.activeLayer) {
-                const tempObj = this.modeMan.getObject(GetObjectReason.Draw) as
+                const tempObj = modeMan.getObject(GetObjectReason.Draw) as
                     | BoardObject
                     | undefined;
                 if (tempObj) {
@@ -245,10 +244,10 @@ export class Board {
             }
         }
         this.drawPointGrid(squareSize);
-        if (this.modeMan.sendLaser) {
+        if (modeMan.sendLaser) {
             this.drawMousePointer();
         }
-        this.modeMan.step();
+        modeMan.step();
     }
 
     // Performs a single drawing step.

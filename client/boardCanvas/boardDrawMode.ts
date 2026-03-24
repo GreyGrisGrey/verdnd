@@ -1,6 +1,6 @@
 import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import type { Board } from './localBoard.ts';
+import { Board } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type {
@@ -10,6 +10,7 @@ import type {
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 import { tempStore } from '../serveInter.ts';
+const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const serveInter = new tempStore();
@@ -24,7 +25,6 @@ function rectangleFromPoints(point1: Vec2, point2: Vec2) {
 
 // Class handling canvas' draw mode.
 export class BoardDrawMode {
-    board: Board;
     active: boolean;
     params: Vec2[];
     selectMode: boolean;
@@ -35,9 +35,8 @@ export class BoardDrawMode {
     currParams: ObjectParams;
     currDraw: number;
 
-    constructor(parentBoard: Board) {
+    constructor() {
         this.currDraw = 1;
-        this.board = parentBoard;
         this.active = false;
         this.params = [];
         this.selectMode = false;
@@ -168,17 +167,17 @@ export class BoardDrawMode {
             if (this.active && event.button === 0) {
                 if (this.currDraw < 3 || this.selectMode) {
                     this.params.push(
-                        this.board.determineTile(
-                            this.board.mouseCoords.x,
-                            this.board.mouseCoords.y,
+                        board.determineTile(
+                            board.mouseCoords.x,
+                            board.mouseCoords.y,
                             CoordModes.Center,
                         ),
                     );
                 } else {
                     this.params.push(
-                        this.board.determineTile(
-                            this.board.mouseCoords.x,
-                            this.board.mouseCoords.y,
+                        board.determineTile(
+                            board.mouseCoords.x,
+                            board.mouseCoords.y,
                             CoordModes.Vertex,
                         ),
                     );
@@ -192,9 +191,9 @@ export class BoardDrawMode {
                 if (this.params.length === 0) {
                     return;
                 } else if (this.active && this.selectMode) {
-                    const newPos = this.board.determineTile(
-                        this.board.mouseCoords.x + 1,
-                        this.board.mouseCoords.y + 1,
+                    const newPos = board.determineTile(
+                        board.mouseCoords.x + 1,
+                        board.mouseCoords.y + 1,
                         CoordModes.Center,
                     );
                     if (
@@ -211,9 +210,9 @@ export class BoardDrawMode {
                         this.selectState = 2;
                     }
                 } else if (this.active && this.currDraw < 3) {
-                    const res = this.board.determineTile(
-                        this.board.mouseCoords.x,
-                        this.board.mouseCoords.y,
+                    const res = board.determineTile(
+                        board.mouseCoords.x,
+                        board.mouseCoords.y,
                         CoordModes.Center,
                     );
                     this.params.push({ x: res.x, y: res.y });
@@ -237,7 +236,7 @@ export class BoardDrawMode {
                     { x: res[0], y: res[1] + res[3] },
                 ],
                 colour: colourSquare.style.background,
-                layerId: this.board.activeLayer,
+                layerId: board.activeLayer,
                 objectId: -1,
                 token: {
                     name: 'none',
@@ -251,7 +250,7 @@ export class BoardDrawMode {
                 params: this.currParams,
                 points: this.params,
                 colour: colourSquare.style.background,
-                layerId: this.board.activeLayer,
+                layerId: board.activeLayer,
                 objectId: -1,
                 token: {
                     name: 'none',
@@ -295,9 +294,9 @@ export class BoardDrawMode {
         }
         if (this.selectMode) {
             if (this.params.length >= 1) {
-                const res = this.board.determineTile(
-                    this.board.mouseCoords.x,
-                    this.board.mouseCoords.y,
+                const res = board.determineTile(
+                    board.mouseCoords.x,
+                    board.mouseCoords.y,
                     CoordModes.Center,
                 );
                 const res2 = rectangleFromPoints(this.params[0], res);
@@ -320,9 +319,9 @@ export class BoardDrawMode {
                 );
             }
         } else if (this.currDraw < 3 && this.params.length >= 1) {
-            const res = this.board.determineTile(
-                this.board.mouseCoords.x,
-                this.board.mouseCoords.y,
+            const res = board.determineTile(
+                board.mouseCoords.x,
+                board.mouseCoords.y,
                 CoordModes.Center,
             );
             const res2 = rectangleFromPoints(this.params[0], res);

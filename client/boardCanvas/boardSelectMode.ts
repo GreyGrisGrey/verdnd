@@ -1,6 +1,6 @@
 import type { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import type { Board } from './localBoard.ts';
+import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { ObjectRecolourEvent } from '../../shared/objectEvents.ts';
@@ -10,6 +10,7 @@ import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { GOLD } from '../../shared/colours.ts';
 import { tempStore } from '../serveInter.ts';
+const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
@@ -19,7 +20,6 @@ const serveInter = new tempStore();
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {
-    board: Board;
     active: boolean;
     exitOnNextStep: boolean;
     selectedObjects: BoardObject[];
@@ -32,8 +32,7 @@ export class BoardSelectMode {
     currPath: Path2D;
     boxDraw: boolean;
 
-    constructor(parentBoard: Board) {
-        this.board = parentBoard;
+    constructor() {
         this.active = false;
         this.exitOnNextStep = false;
         this.selectedObjects = [];
@@ -170,7 +169,7 @@ export class BoardSelectMode {
         this.currPath = new Path2D();
         this.exitOnNextStep = false;
         this.currColour = colourSquare.style.background;
-        this.selectClick = this.board.leftMouseDown;
+        this.selectClick = board.leftMouseDown;
         this.thirdOffset = { x: 0, y: 0 };
         if (serveInter.isGm) {
             this.toggleBoxes();
@@ -188,10 +187,10 @@ export class BoardSelectMode {
         can.addEventListener('mousemove', (event) => {
             if (this.active && this.selectClick) {
                 const change: Vec2 = {
-                    x: Math.round(this.board.mouseCoords.x - event.clientX),
-                    y: Math.round(this.board.mouseCoords.y - event.clientY),
+                    x: Math.round(board.mouseCoords.x - event.clientX),
+                    y: Math.round(board.mouseCoords.y - event.clientY),
                 };
-                if (!this.board.rightMouseDown) {
+                if (!board.rightMouseDown) {
                     this.thirdOffset.x -= change.x;
                     this.thirdOffset.y -= change.y;
                 }
@@ -200,7 +199,7 @@ export class BoardSelectMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                const point = this.board.determineTile(
+                const point = board.determineTile(
                     event.clientX,
                     event.clientY,
                     CoordModes.Center,
@@ -258,9 +257,9 @@ export class BoardSelectMode {
 
     resizeObject(movedOrb: SelectBall) {
         const currObj = this.selectedObjects[0];
-        const point = this.board.determineTile(
-            this.board.mouseCoords.x,
-            this.board.mouseCoords.y,
+        const point = board.determineTile(
+            board.mouseCoords.x,
+            board.mouseCoords.y,
             CoordModes.Vertex,
         );
         currObj.updateSize(point, movedOrb.id);
@@ -273,9 +272,9 @@ export class BoardSelectMode {
     }
 
     restructureObject(movedOrb: SelectBall) {
-        const point = this.board.determineTile(
-            this.board.mouseCoords.x,
-            this.board.mouseCoords.y,
+        const point = board.determineTile(
+            board.mouseCoords.x,
+            board.mouseCoords.y,
             CoordModes.Vertex,
         );
         movedOrb.coord = point;
@@ -285,9 +284,9 @@ export class BoardSelectMode {
 
     // Moves each selected object individually.
     moveObjects() {
-        const point = this.board.determineTile(
-            this.board.offset.x + this.thirdOffset.x,
-            this.board.offset.y + this.thirdOffset.y,
+        const point = board.determineTile(
+            board.offset.x + this.thirdOffset.x,
+            board.offset.y + this.thirdOffset.y,
             CoordModes.Vertex,
         );
         const moveList = [];
@@ -353,36 +352,36 @@ export class BoardSelectMode {
         }
         const res = {
             x:
-                this.board.offset.x +
+                board.offset.x +
                 this.currLayer.layerOffset.x +
                 this.thirdOffset.x,
             y:
-                this.board.offset.y +
+                board.offset.y +
                 this.currLayer.layerOffset.y +
                 this.thirdOffset.y,
         };
         for (const orb of this.orbs) {
-            orb.updateDocumentOffset(this.board.zoomVal * 5, res.x, res.y);
+            orb.updateDocumentOffset(board.zoomVal * 5, res.x, res.y);
         }
         if (this.boxDraw) {
             const topLeft = this.selectedObjects[0].getTopLeft();
             const bottomRight = this.selectedObjects[0].getBottomRight();
             this.currPath = new Path2D();
             this.currPath.moveTo(
-                topLeft.x * (this.board.zoomVal * 5) + res.x,
-                topLeft.y * (this.board.zoomVal * 5) + res.y,
+                topLeft.x * (board.zoomVal * 5) + res.x,
+                topLeft.y * (board.zoomVal * 5) + res.y,
             );
             this.currPath.lineTo(
-                bottomRight.x * (this.board.zoomVal * 5) + res.x,
-                topLeft.y * (this.board.zoomVal * 5) + res.y,
+                bottomRight.x * (board.zoomVal * 5) + res.x,
+                topLeft.y * (board.zoomVal * 5) + res.y,
             );
             this.currPath.lineTo(
-                bottomRight.x * (this.board.zoomVal * 5) + res.x,
-                bottomRight.y * (this.board.zoomVal * 5) + res.y,
+                bottomRight.x * (board.zoomVal * 5) + res.x,
+                bottomRight.y * (board.zoomVal * 5) + res.y,
             );
             this.currPath.lineTo(
-                topLeft.x * (this.board.zoomVal * 5) + res.x,
-                bottomRight.y * (this.board.zoomVal * 5) + res.y,
+                topLeft.x * (board.zoomVal * 5) + res.x,
+                bottomRight.y * (board.zoomVal * 5) + res.y,
             );
             this.currPath.closePath();
         }

@@ -2,7 +2,7 @@ import { BoardDrawMode } from './boardDrawMode.ts';
 import type { BoardObject } from './boardObject.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
-import type { Board } from './localBoard.ts';
+import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 const serveInter = new tempStore();
@@ -11,6 +11,7 @@ const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenuId', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
+const board = new Board();
 
 export enum Mode {
     View = 'VIEW',
@@ -28,7 +29,6 @@ type BoardMode = BoardViewMode | BoardDrawMode;
 // Also handles behaviour when a selection of board objects has been made. This may be split off later.
 export class ModeManager {
     sendLaser: boolean;
-    board: Board;
     currMode: Mode;
     viewMan: BoardViewMode;
     drawMan: BoardDrawMode;
@@ -39,13 +39,12 @@ export class ModeManager {
     boxItems: HTMLElement[];
     controlClick: boolean;
 
-    constructor(parentBoard: Board) {
+    constructor() {
         this.sendLaser = true;
-        this.board = parentBoard;
         this.currMode = Mode.View;
-        this.viewMan = new BoardViewMode(parentBoard);
-        this.drawMan = new BoardDrawMode(parentBoard);
-        this.selectMan = new BoardSelectMode(parentBoard);
+        this.viewMan = new BoardViewMode();
+        this.drawMan = new BoardDrawMode();
+        this.selectMan = new BoardSelectMode();
         this.modes = {
             DRAW: this.drawMan,
             VIEW: this.viewMan,
@@ -90,8 +89,8 @@ export class ModeManager {
         });
 
         can.addEventListener('mousemove', (event) => {
-            this.board.mouseCoords.x = event.clientX;
-            this.board.mouseCoords.y = event.clientY;
+            board.mouseCoords.x = event.clientX;
+            board.mouseCoords.y = event.clientY;
         });
 
         can.addEventListener('keydown', (event) => {
@@ -116,9 +115,9 @@ export class ModeManager {
             'mousedown',
             (event) => {
                 if (event.button === 0) {
-                    this.board.leftMouseDown = true;
+                    board.leftMouseDown = true;
                 } else if (event.button === 2) {
-                    this.board.rightMouseDown = true;
+                    board.rightMouseDown = true;
                 }
             },
             { capture: true },
@@ -128,9 +127,9 @@ export class ModeManager {
             'mouseup',
             (event) => {
                 if (event.button === 0) {
-                    this.board.leftMouseDown = false;
+                    board.leftMouseDown = false;
                 } else if (event.button === 2) {
-                    this.board.rightMouseDown = false;
+                    board.rightMouseDown = false;
                 }
             },
             { capture: true },
@@ -206,7 +205,7 @@ export class ModeManager {
             this.viewMan.flipListeners(false);
             return;
         }
-        let res: (BoardObject | undefined)[] = this.board.selectObjects();
+        let res: (BoardObject | undefined)[] = board.selectObjects();
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {
             this.selectMan.flipListeners(true);

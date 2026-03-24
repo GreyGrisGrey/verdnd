@@ -1,8 +1,11 @@
 import type { Vec2 } from '../../shared/coords.ts';
-import type { Board } from './localBoard.ts';
+import { Board } from './localBoard.ts';
 import type { BoardObject } from './boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
+import { ModeManager } from './modeManager.ts';
+const modeMan = new ModeManager();
+const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
@@ -10,7 +13,6 @@ const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
-    board: Board;
     active: boolean;
     start: Vec2;
     measuring: boolean;
@@ -18,8 +20,7 @@ export class BoardViewMode {
     completeSelectCheck: boolean;
     selectedToken: BoardObject | null;
 
-    constructor(parentBoard: Board) {
-        this.board = parentBoard;
+    constructor() {
         this.active = true;
         this.addEventListeners();
         this.start = { x: 0, y: 0 };
@@ -38,9 +39,7 @@ export class BoardViewMode {
         this.measuring = false;
         this.completeSelectCheck = false;
         this.selectedToken = null;
-        if (setOn) {
-            this.toggleBoxes();
-        }
+        this.toggleBoxes();
     }
 
     // Sets up control buttons for viewing/clicking.
@@ -72,16 +71,16 @@ export class BoardViewMode {
     // Handles key press events when view mode is active.
     handleSwitchEvent(key: string) {
         if (key === '6') {
-            this.board.modeMan.sendLaser = !this.board.modeMan.sendLaser;
+            modeMan.sendLaser = !modeMan.sendLaser;
         } else if (key === '5') {
-            this.board.offset.x = 0;
-            this.board.offset.y = 0;
+            board.offset.x = 0;
+            board.offset.y = 0;
         } else if (key === '7') {
-            this.board.laserCol = colourSquare.style.background;
+            board.laserCol = colourSquare.style.background;
         } else if (key === '8') {
-            const res = this.board.determineTile(
-                this.board.mouseCoords.x,
-                this.board.mouseCoords.y,
+            const res = board.determineTile(
+                board.mouseCoords.x,
+                board.mouseCoords.y,
                 CoordModes.Center,
             );
             this.start.x = res.x;
@@ -118,19 +117,19 @@ export class BoardViewMode {
     // Kind of looks not great, something should be done about this.
     // TODO : Do that.
     drawMeasure() {
-        const squareSize = 5 * this.board.zoomVal;
-        const res = this.board.determineTile(
-            this.board.mouseCoords.x,
-            this.board.mouseCoords.y,
+        const squareSize = 5 * board.zoomVal;
+        const res = board.determineTile(
+            board.mouseCoords.x,
+            board.mouseCoords.y,
             CoordModes.None,
         );
         const res2 = {
-            x: (this.start.x + 0.5) * squareSize + this.board.offset.x,
-            y: (this.start.y + 0.5) * squareSize + this.board.offset.y,
+            x: (this.start.x + 0.5) * squareSize + board.offset.x,
+            y: (this.start.y + 0.5) * squareSize + board.offset.y,
         };
         const res3 = {
-            x: res.x * squareSize + this.board.offset.x,
-            y: res.y * squareSize + this.board.offset.y,
+            x: res.x * squareSize + board.offset.x,
+            y: res.y * squareSize + board.offset.y,
         };
         ctx.lineWidth = 3;
         ctx.strokeStyle = '#cccccc';
@@ -197,26 +196,26 @@ export class BoardViewMode {
         can.addEventListener('mousemove', (event) => {
             can.focus();
             if (
-                this.board.rightMouseDown ||
-                (this.board.leftMouseDown &&
+                board.rightMouseDown ||
+                (board.leftMouseDown &&
                     !this.completeSelectCheck &&
                     this.active)
             ) {
                 const change: Vec2 = {
-                    x: Math.round(this.board.mouseCoords.x - event.clientX),
-                    y: Math.round(this.board.mouseCoords.y - event.clientY),
+                    x: Math.round(board.mouseCoords.x - event.clientX),
+                    y: Math.round(board.mouseCoords.y - event.clientY),
                 };
-                this.board.moveCamera(change.x, change.y);
+                board.moveCamera(change.x, change.y);
             }
         });
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                const res = this.board.selectToken(
+                const res = board.selectToken(
                     [
-                        this.board.determineTile(
-                            this.board.mouseCoords.x,
-                            this.board.mouseCoords.y,
+                        board.determineTile(
+                            board.mouseCoords.x,
+                            board.mouseCoords.y,
                             CoordModes.Center,
                         ),
                     ],
@@ -238,43 +237,39 @@ export class BoardViewMode {
         // Changes the zoom level when scrolled
         can.addEventListener('wheel', (event) => {
             if (true) {
-                const old = this.board.zoomVal;
+                const old = board.zoomVal;
                 if (
                     event.deltaY < 0 &&
-                    this.board.zoomGlobal < this.board.zoomLevels.length - 1
+                    board.zoomGlobal < board.zoomLevels.length - 1
                 ) {
-                    this.board.zoomGlobal += 1;
-                    this.board.zoomVal =
-                        this.board.zoomLevels[this.board.zoomGlobal];
+                    board.zoomGlobal += 1;
+                    board.zoomVal = board.zoomLevels[board.zoomGlobal];
                     const originDist: Vec2 = {
-                        x: this.board.mouseCoords.x - this.board.offset.x,
-                        y: this.board.mouseCoords.y - this.board.offset.y,
+                        x: board.mouseCoords.x - board.offset.x,
+                        y: board.mouseCoords.y - board.offset.y,
                     };
                     const goals: Vec2 = {
-                        x: (originDist.x * this.board.zoomVal) / old,
-                        y: (originDist.y * this.board.zoomVal) / old,
+                        x: (originDist.x * board.zoomVal) / old,
+                        y: (originDist.y * board.zoomVal) / old,
                     };
-                    this.board.offset.x -= goals.x - originDist.x;
-                    this.board.offset.y -= goals.y - originDist.y;
-                } else if (event.deltaY > 0 && this.board.zoomGlobal > 0) {
-                    this.board.zoomGlobal -= 1;
-                    this.board.zoomVal =
-                        this.board.zoomLevels[this.board.zoomGlobal];
+                    board.offset.x -= goals.x - originDist.x;
+                    board.offset.y -= goals.y - originDist.y;
+                } else if (event.deltaY > 0 && board.zoomGlobal > 0) {
+                    board.zoomGlobal -= 1;
+                    board.zoomVal = board.zoomLevels[board.zoomGlobal];
                     const originDist: Vec2 = {
-                        x: this.board.mouseCoords.x - this.board.offset.x,
-                        y: this.board.mouseCoords.y - this.board.offset.y,
+                        x: board.mouseCoords.x - board.offset.x,
+                        y: board.mouseCoords.y - board.offset.y,
                     };
                     const goals: Vec2 = {
-                        x: (originDist.x * this.board.zoomVal) / old,
-                        y: (originDist.y * this.board.zoomVal) / old,
+                        x: (originDist.x * board.zoomVal) / old,
+                        y: (originDist.y * board.zoomVal) / old,
                     };
-                    this.board.offset.x -= goals.x - originDist.x;
-                    this.board.offset.y -= goals.y - originDist.y;
+                    board.offset.x -= goals.x - originDist.x;
+                    board.offset.y -= goals.y - originDist.y;
                 }
-                this.board.offset.x =
-                    Math.round(this.board.offset.x * 10000) / 10000;
-                this.board.offset.y =
-                    Math.round(this.board.offset.y * 10000) / 10000;
+                board.offset.x = Math.round(board.offset.x * 10000) / 10000;
+                board.offset.y = Math.round(board.offset.y * 10000) / 10000;
             }
         });
     }
