@@ -417,4 +417,9 @@ export class BoardSelectMode {
             ctx.stroke(this.currPath);
         }
     }
+
+    step() {
+        this.updateCornerOffset();
+        this.drawSkeleton();
+    }
 }

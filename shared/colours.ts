@@ -32,6 +32,10 @@ export class ColInst {
     toString(): string {
         return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha / 100})`;
     }
+
+    toAlphalessString(): string {
+        return `rgb(${this.red}, ${this.green}, ${this.blue})`;
+    }
 }
 
 export function stringToColInst(newS: string) {

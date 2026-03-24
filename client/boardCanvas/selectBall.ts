@@ -20,7 +20,7 @@ export class SelectBall {
         this.element.style.borderRadius = '50%';
         this.element.style.width = '20px';
         this.element.style.height = '20px';
-        this.element.style.zIndex = '5';
+        this.element.style.zIndex = '1';
         this.element.style.visibility = 'visible';
         this.element.style.backgroundColor = GOLD;
         this.setEventListeners();

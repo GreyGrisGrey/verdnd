@@ -92,7 +92,9 @@ export class ColourBox {
         });
 
         colourBackground.addEventListener('click', () => {
-            serveInter.sendChangeBackground(this.currColour.toString());
+            serveInter.sendChangeBackground(
+                this.currColour.toAlphalessString(),
+            );
         });
 
         colourComponents.forEach((component) => {
