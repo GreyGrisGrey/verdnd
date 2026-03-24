@@ -2,25 +2,19 @@ import { Board } from './boardCanvas/localBoard.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { tempStore } from './serveInter.ts';
-import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
-import { LayerState } from '../shared/objectEvents.ts';
 import { TooltipManager } from './tooltips.ts';
+import { LayerMenu } from './rightBar/layerBarMenu.ts';
 import { TopBarManager } from './topBarMain.ts';
-const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
-const storedLayerStates: Map<number, LayerState> = new Map();
+const rightMan = new RightBarManager();
 const serveInter = new tempStore();
 const board = new Board();
-const rightMan = new RightBarManager();
 const leftMan = new LeftBarManager();
 const topMan = new TopBarManager();
 const tooltips = new TooltipManager();
+const layerMan = new LayerMenu();
 let prevLaser = 0;
-
-serveInter.setBoard(board);
-serveInter.setMan(rightMan.layerMan);
-serveInter.setSecMan(rightMan);
 // The order of events up there is unfortunately quite important.
 // Try not to poke it too much.
 
@@ -54,7 +48,7 @@ async function mainLoop() {
     if (counter % 25 === 0) {
         rightMan.step();
     }
-    board.activeLayer = rightMan.layerMan.currSelect;
+    board.activeLayer = layerMan.currSelect;
     board.step();
     counter++;
     requestAnimationFrame(mainLoop);

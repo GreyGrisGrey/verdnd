@@ -22,10 +22,12 @@ import { UserBox } from './leftBar/userBox.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
+const layerMan = new LayerMenu();
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
-const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
 const userBox = new UserBox();
+const rightMan = new RightBarManager();
+const board = new Board();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     return new BoardObject(p.objectId, p.colour, p.params, p.points);
@@ -50,11 +52,8 @@ export class tempStore {
     secondIndex: number;
     rollMapping: Map<number, RollComplete>;
     socket: WebSocket;
-    board: Board | null;
     lasers: Map<number, LaserEvent>;
     designal: boolean;
-    layMenu: LayerMenu | null;
-    rightMenu: RightBarManager | null;
     isGm: boolean;
     id: string;
     pass: string;
@@ -74,10 +73,7 @@ export class tempStore {
         this.secondIndex = 0;
         this.rollMapping = new Map();
         this.lasers = new Map();
-        this.board = null;
         this.designal = false;
-        this.layMenu = null;
-        this.rightMenu = null;
         this.isGm = false;
         this.connected = false;
         this.lastLaser = {
@@ -112,8 +108,8 @@ export class tempStore {
                     localStorage['id'] = message.id;
                     this.isGm = message.gm;
                     console.log('yay');
-                    this.board!.modeMan.toggleModeSwitcher(this.isGm);
-                    this.rightMenu!.toggleModeSwitcher(this.isGm);
+                    board.modeMan.toggleModeSwitcher(this.isGm);
+                    rightMan.toggleModeSwitcher(this.isGm);
                 }
             } else if (message.entity === Entity.Name) {
                 localStorage['id'] = (
@@ -125,11 +121,11 @@ export class tempStore {
             if (message.entity === Entity.Layer) {
                 if (message.action === Action.Destroy) {
                     if (this.storedLayers.has(message.layerId)) {
-                        this.layMenu!.destroyLayerElement(message.layerId);
+                        layerMan.destroyLayerElement(message.layerId);
                         this.storedLayers.delete(message.layerId);
                     }
                 } else if (this.storedLayerStates.has(message.layer.id)) {
-                    this.layMenu!.updateLayer(message.layer.id, message.layer);
+                    layerMan.updateLayer(message.layer.id, message.layer);
                     this.storedLayers
                         .get(message.layer.id)!
                         .updateFromLayerState(message.layer);
@@ -142,8 +138,8 @@ export class tempStore {
                     this.storedObjectPayloads.has(message.objectId)
                 ) {
                     this.storedObjectPayloads.delete(message.objectId);
-                    if (this.board) {
-                        this.board.removeObject(message.objectId);
+                    if (board) {
+                        board.removeObject(message.objectId);
                     }
                 } else if (message.action !== Action.Destroy) {
                     if (
@@ -215,18 +211,6 @@ export class tempStore {
         } else if (last[0].action === Action.Move) {
             this.moveObjects(last, true);
         }
-    }
-
-    setBoard(newBoard: Board) {
-        this.board = newBoard;
-    }
-
-    setMan(newMan: LayerMenu) {
-        this.layMenu = newMan;
-    }
-
-    setSecMan(newMan: RightBarManager) {
-        this.rightMenu = newMan;
     }
 
     setup() {
@@ -382,9 +366,9 @@ export class tempStore {
         const newLayer = new BoardLayer(layerPacket.id, true, true);
         newLayer.updateFromLayerState(layerPacket);
         this.storedLayers.set(layerPacket.id, newLayer);
-        this.layMenu!.constructLayer(layerPacket);
-        this.board!.boardLayers.push(newLayer);
-        this.board!.sortLayers();
+        layerMan.constructLayer(layerPacket);
+        board.boardLayers.push(newLayer);
+        board.sortLayers();
     }
 
     // Tells the backend to destroy a bunch of objects.
@@ -416,8 +400,8 @@ export class tempStore {
                     }),
                 );
                 this.storedObjectPayloads.delete(id);
-                if (this.board) {
-                    this.board.removeObject(id);
+                if (board) {
+                    board.removeObject(id);
                 }
             }
         }
@@ -511,7 +495,7 @@ export class tempStore {
         if (!this.isGm) {
             return;
         }
-        this.board!.clearLayer(input.id);
+        board.clearLayer(input.id);
         this.socket.send(
             this.parcelServeEvent({
                 entity: Entity.Layer,
@@ -555,7 +539,7 @@ export class tempStore {
                 this.parcelServeEvent({
                     entity: Entity.Laser,
                     id: this.id,
-                    colour: this.board!.laserCol,
+                    colour: board.laserCol,
                     coords: { x: x, y: y },
                     time: Date.now(),
                 }),
