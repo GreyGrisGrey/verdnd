@@ -64,6 +64,7 @@ async function updateObj(
     );
     currGame.dbLock = false;
     currGame.objectLock = false;
+    currGame.broadcast(JSON.stringify(newObject));
 }
 
 // Function for destroying a specified object from a specified game.

@@ -46,10 +46,7 @@ interface selfLaser {
 export class tempStore {
     undoMap: Map<number, any>;
     undoCreateTracker: Map<number, number>;
-    storedObjects: Map<number, BoardObject>;
     storedObjectPayloads: Map<number, ObjectCreatePayload>;
-    storedLayerStates: Map<number, LayerState>;
-    storedLayers: Map<number, BoardLayer>;
     currIndex: number;
     secondIndex: number;
     rollMapping: Map<number, RollComplete>;
@@ -67,10 +64,7 @@ export class tempStore {
     constructor() {
         this.undoMap = new Map();
         this.undoCreateTracker = new Map();
-        this.storedObjects = storedObjects;
         this.storedObjectPayloads = new Map();
-        this.storedLayerStates = storedLayerStates;
-        this.storedLayers = storedLayers;
         this.currIndex = 0;
         this.secondIndex = 0;
         this.rollMapping = new Map();
@@ -122,13 +116,13 @@ export class tempStore {
             }
             if (message.entity === Entity.Layer) {
                 if (message.action === Action.Destroy) {
-                    if (this.storedLayers.has(message.layerId)) {
+                    if (storedLayers.has(message.layerId)) {
                         layerMan.destroyLayerElement(message.layerId);
-                        this.storedLayers.delete(message.layerId);
+                        storedLayers.delete(message.layerId);
                     }
-                } else if (this.storedLayerStates.has(message.layer.id)) {
+                } else if (storedLayerStates.has(message.layer.id)) {
                     layerMan.updateLayer(message.layer.id, message.layer);
-                    this.storedLayers
+                    storedLayers
                         .get(message.layer.id)!
                         .updateFromLayerState(message.layer);
                 } else {
@@ -171,9 +165,7 @@ export class tempStore {
                 const currObj = this.storedObjectPayloads.get(message.id);
                 if (currObj) {
                     currObj.token = message.token;
-                    this.storedObjects
-                        .get(message.id)!
-                        .updateToken(message.token);
+                    storedObjects.get(message.id)!.updateToken(message.token);
                 }
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
@@ -322,16 +314,16 @@ export class tempStore {
     }
 
     createObjectLocal(newObj: ObjectCreateEvent) {
-        if (this.storedObjects.has(newObj.object.objectId)) {
-            this.storedObjects
+        if (storedObjects.has(newObj.object.objectId)) {
+            storedObjects
                 .get(newObj.object.objectId)!
                 .updateFromPayload(newObj.object);
             return;
         }
         const finalObj = payloadToBoardObject(newObj.object);
         finalObj.updateToken(newObj.token);
-        this.storedObjects.set(newObj.object.objectId, finalObj);
-        const layer = this.storedLayers.get(newObj.object.layerId);
+        storedObjects.set(newObj.object.objectId, finalObj);
+        const layer = storedLayers.get(newObj.object.layerId);
         if (layer) {
             layer.addObject(finalObj, finalObj.objectId);
         }
@@ -367,7 +359,7 @@ export class tempStore {
     createLayerLocal(layerPacket: LayerState) {
         const newLayer = new BoardLayer(layerPacket.id, true, true);
         newLayer.updateFromLayerState(layerPacket);
-        this.storedLayers.set(layerPacket.id, newLayer);
+        storedLayers.set(layerPacket.id, newLayer);
         layerMan.constructLayer(layerPacket);
         board.boardLayers.push(newLayer);
         board.sortLayers();
@@ -425,7 +417,7 @@ export class tempStore {
             }
             const targetObj = this.storedObjectPayloads.get(event.objectId);
             if (targetObj && (this.isGm || targetObj.token.active)) {
-                this.storedObjects.get(event.objectId)!.move(event.x, event.y);
+                storedObjects.get(event.objectId)!.move(event.x, event.y);
                 this.socket.send(this.parcelServeEvent(event));
             }
         }
@@ -457,7 +449,7 @@ export class tempStore {
             }
             const targetObj = this.storedObjectPayloads.get(event.objectId);
             if (targetObj) {
-                this.storedObjects
+                storedObjects
                     .get(event.objectId)!
                     .setColour(event.colour.toString());
                 this.socket.send(
@@ -480,9 +472,9 @@ export class tempStore {
         if (!this.isGm) {
             return;
         }
-        const targetObj = this.storedLayerStates.get(input.id);
+        const targetObj = storedLayerStates.get(input.id);
         if (targetObj) {
-            this.storedLayers.get(input.id)!.updateFromLayerState(input);
+            storedLayers.get(input.id)!.updateFromLayerState(input);
         }
         this.socket.send(
             this.parcelServeEvent({

@@ -3,8 +3,6 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
-const layerTop = getRequiredElement('layerTop', HTMLElement);
-const layerMid = getRequiredElement('layerMid', HTMLElement);
 const currLayerText = getRequiredElement('currLayerText', HTMLElement);
 const layerBottom = getRequiredElement('layerBottom', HTMLElement);
 const layerRenameInput = getRequiredElement('rename', HTMLInputElement);
@@ -20,7 +18,6 @@ const serveInter = new tempStore();
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
 export class LayerMenu {
     active: boolean;
-    button: HTMLElement;
     layers: LayerState[];
     descObj: HTMLElement;
     layerObj: HTMLElement;
@@ -30,7 +27,6 @@ export class LayerMenu {
 
     constructor() {
         this.active = false;
-        this.button = getRequiredElement('layerTab', HTMLElement);
         this.layers = [];
         this.descObj = getRequiredElement('descLayerObj', HTMLElement);
         this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);

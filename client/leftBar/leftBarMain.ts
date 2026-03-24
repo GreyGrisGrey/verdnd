@@ -1,9 +1,7 @@
 import { ColourBox } from './colourBox.ts';
-import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
-const board = new Board();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
