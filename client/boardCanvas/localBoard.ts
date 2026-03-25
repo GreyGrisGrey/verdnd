@@ -29,6 +29,7 @@ export class Board {
     rightMouseDown: boolean;
     activeLayer: number;
     laserCol: string;
+    zLayers: Map<number, BoardLayer>;
 
     constructor() {
         this.zoomGlobal = 5;
@@ -42,6 +43,7 @@ export class Board {
         this.rightMouseDown = false;
         this.activeLayer = 0;
         this.laserCol = BLUE;
+        this.zLayers = new Map();
     }
 
     recolourLaser(newCol: string) {
@@ -57,6 +59,13 @@ export class Board {
                 destroyItems.push(key);
             }
             serveInter.destroyObjects(destroyItems, true);
+        }
+    }
+
+    updateZLayers() {
+        this.zLayers = new Map();
+        for (const [key, val] of storedLayers) {
+            this.zLayers.set(val.zOrder, val);
         }
     }
 
@@ -211,8 +220,8 @@ export class Board {
     // Draws the board.
     draw() {
         const squareSize = 5 * this.zoomVal;
-        for (let i = 0; i < storedLayers.size; i++) {
-            const layer = storedLayers.get(i)!;
+        for (let i = 0; i < this.zLayers.size; i++) {
+            const layer = this.zLayers.get(i)!;
             layer.drawLayer(
                 ctx,
                 squareSize,

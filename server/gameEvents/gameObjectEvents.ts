@@ -82,9 +82,7 @@ export async function updateObjLayer(
         updateObjectToRow(curr),
     );
     currGame.dbLock = false;
-    console.log(layerEvent);
-    console.log(curr);
-    currGame.broadcast(JSON.stringify(curr));
+    currGame.broadcast(JSON.stringify(layerEvent));
 }
 
 async function updateObj(

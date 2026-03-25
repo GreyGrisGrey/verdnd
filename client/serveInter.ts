@@ -133,6 +133,7 @@ export class tempStore {
                 } else {
                     this.createLayerLocal(message.layer);
                 }
+                board.updateZLayers();
             } else if (message.entity === Entity.Object) {
                 if (
                     message.action === Action.Destroy &&
@@ -143,6 +144,7 @@ export class tempStore {
                         board.removeObject(message.objectId);
                     }
                 } else if (message.action === Action.Relayer) {
+                    console.log(message);
                     const curr = storedObjects.get(message.objectId);
                     if (curr) {
                         const currLayer = storedLayers.get(curr.layerId);
