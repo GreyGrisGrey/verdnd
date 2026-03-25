@@ -7,6 +7,8 @@ const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
 const showColourButton = getRequiredElement('showColour', HTMLButtonElement);
 const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
+const colourPicker = getRequiredElement('colourPicker', HTMLElement);
+const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const userBox = new UserBox();
 const colourBox = new ColourBox();
 const rollBox = new RollBox();
@@ -18,6 +20,15 @@ export class LeftBarManager {
     constructor() {
         this.visible = true;
         this.addEventListeners();
+    }
+
+    toggleModeSwitcher(isGm: boolean) {
+        if (!isGm) {
+            showColourButton.style.visibility = 'hidden';
+            colourPicker.style.visibility = 'hidden';
+            colourBackground.style.visibility = 'hidden';
+            showRollButton.style.top = '88px';
+        }
     }
 
     toggleVisible() {

@@ -20,6 +20,7 @@ import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { getRequiredElement } from './dom.ts';
 import { UserBox } from './leftBar/userBox.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
+import { LeftBarManager } from './leftBar/leftBarMain.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -30,6 +31,7 @@ const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
 const modeMan = new ModeManager();
+const leftMan = new LeftBarManager();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     return new BoardObject(p.objectId, p.colour, p.params, p.points);
@@ -106,6 +108,7 @@ export class tempStore {
                     console.log('yay');
                     modeMan.toggleModeSwitcher(this.isGm);
                     rightMan.toggleModeSwitcher(this.isGm);
+                    leftMan.toggleModeSwitcher(this.isGm);
                 }
             } else if (message.entity === Entity.Name) {
                 localStorage['id'] = (
@@ -125,6 +128,7 @@ export class tempStore {
                     storedLayers
                         .get(message.layer.id)!
                         .updateFromLayerState(message.layer);
+                    board.sortLayers();
                 } else {
                     this.createLayerLocal(message.layer);
                 }
