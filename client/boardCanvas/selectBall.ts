@@ -30,6 +30,10 @@ export class SelectBall {
         this.element.addEventListener('mousedown', (event) => {
             this.moving = true;
         });
+
+        this.element.addEventListener('dragstart', (event) => {
+            event.preventDefault();
+        });
     }
 
     updateDocumentOffset(zoom: number, newX: number, newY: number) {

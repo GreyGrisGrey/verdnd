@@ -664,7 +664,8 @@
             document.getElementById('loadBlock').style.width = window.innerWidth + "px";
             document.getElementById('loadBlock').style.height = window.innerHeight + "px";
         </script>
-        <canvas id="board" oncontextmenu="return false;" tabindex='1'></canvas>
+        <canvas ondragstart="return false;" ondrop="return false;" id="board" oncontextmenu="return false;"
+            tabindex='1'></canvas>
     </div>
 
     <script src="./clientOut.js"></script>

@@ -207,8 +207,7 @@ export class BoardSelectMode {
                 for (const candidate of this.selectedObjects) {
                     if (
                         'isPointInside' in candidate &&
-                        candidate.isPointInside(point) &&
-                        this.orbs.length === 0
+                        candidate.isPointInside(point)
                     ) {
                         this.selectClick = true;
                     }
@@ -235,6 +234,10 @@ export class BoardSelectMode {
                     this.updateObject(true);
                 }
             }
+        });
+
+        can.addEventListener('drag', (event) => {
+            console.log('can dragging');
         });
     }
 
