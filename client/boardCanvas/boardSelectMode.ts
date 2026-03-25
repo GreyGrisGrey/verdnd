@@ -235,10 +235,6 @@ export class BoardSelectMode {
                 }
             }
         });
-
-        can.addEventListener('drag', (event) => {
-            console.log('can dragging');
-        });
     }
 
     updateObject(commit: boolean) {

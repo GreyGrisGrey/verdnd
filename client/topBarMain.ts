@@ -11,5 +11,6 @@ export class TopBarManager {
     updateUserBox() {
         const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
         nameBox.innerText = newText;
+        nameBox.style.left = window.innerWidth / 2 - 100 + 'px';
     }
 }
