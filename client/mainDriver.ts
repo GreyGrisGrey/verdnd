@@ -45,10 +45,9 @@ async function mainLoop() {
         serveInter.sendLaser(0, 0, false);
     }
     if (counter % 25 === 0) {
-        modeMan.clearTemp();
-    }
-    if (counter % 25 === 0) {
         rightMan.step();
+        tooltips.step();
+        modeMan.clearTemp();
     }
     if (serveInter.isDone) {
         board.activeLayer = layerMan.currSelect;

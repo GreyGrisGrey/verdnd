@@ -6,6 +6,7 @@ const characterTab = getRequiredElement('characterTab', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
+const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 //This probably shouldn't be its own thing.
 
 export class TooltipManager {
@@ -71,6 +72,10 @@ export class TooltipManager {
                 ),
             );
         }
+    }
+
+    step() {
+        bottomBar.style.left = window.innerWidth / 2 - 300 + 'px';
     }
 
     setEventListeners() {

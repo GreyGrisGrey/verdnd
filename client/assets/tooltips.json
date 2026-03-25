@@ -22,12 +22,12 @@
         },
         {
             "draw": "Left click : Begin drawing wall\nLeft Click again : Add vertext to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
-            "select": "Incomplete",
+            "select": "4 : Pushes the currently selected objects up a layer.",
             "view": "Left click and drag : Move token."
         },
         {
             "draw": "Complete in progress polyline or wall object.",
-            "select": "Incomplete",
+            "select": "5 : Pushes the currently selected objects down a layer.",
             "view": "5 : Recenter camera."
         },
         {
