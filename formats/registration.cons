@@ -1,5 +1,5 @@
-ADD body.html
-ADD grid.html
-ADD topBar.html
-ADD registration.html
-INSERT </body>
+ADD	body.html
+ADD	grid.html
+ADD	topBar.html
+ADD	registration.html
+INSERT	</body>

@@ -1,4 +1,5 @@
-ADD body.html
-ADD topBar.html
-ADD game.html
-INSERT </body>
+ADD	body.html
+ADD	topBar.html
+DIRADD	game/
+INSERT	<script src="./clientOut.js"></script>
+INSERT	</body>

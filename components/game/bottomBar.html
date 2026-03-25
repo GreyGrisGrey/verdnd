@@ -1,0 +1,153 @@
+<div id="bottomBar">
+    <div id="bottomTooltip">
+        <p id="bottomTooltipText"></p>
+        <input type="text" id="tokenName" />
+        <label id="tokenNameLabel">Insert token name:</label>
+        <input type="text" id="measureDegrees" />
+    </div>
+    <div class="bottomBox" id="bottomBox1">
+        <button class="bottomDrawBox" id="bottomDrawBox1">Rect [1]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox1">Exit [1] [Esc]</button>
+        <button class="bottomViewBox" id="bottomViewBox1">WIP1</button>
+    </div>
+    <div class="bottomBox" id="bottomBox2">
+        <button class="bottomDrawBox" id="bottomDrawBox2">Ellipse [2]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox2">Delete [2] [Back]</button>
+        <button class="bottomViewBox" id="bottomViewBox2">Zoom [Scroll]</button>
+    </div>
+    <div class="bottomBox" id="bottomBox3">
+        <button class="bottomDrawBox" id="bottomDrawBox3">Poly [3]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox3">Recolour [3]</button>
+        <button class="bottomViewBox" id="bottomViewBox3">Pan</button>
+    </div>
+    <div class="bottomBox" id="bottomBox4">
+        <button class="bottomDrawBox" id="bottomDrawBox4">Wall [4]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox4">LUp WIP1 [4]</button>
+        <button class="bottomViewBox" id="bottomViewBox4">Move</button>
+    </div>
+    <div class="bottomBox" id="bottomBox5">
+        <button class="bottomDrawBox" id="bottomDrawBox5">Close [5]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox5">LDown WIP2 [5]</button>
+        <button class="bottomViewBox" id="bottomViewBox5">Recenter</button>
+    </div>
+    <div class="bottomBox" id="bottomBox6">
+        <button class="bottomDrawBox" id="bottomDrawBox6">Select [6]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox6">Tokenize [6]</button>
+        <button class="bottomViewBox" id="bottomViewBox6">Toggle Laser</button>
+    </div>
+    <div class="bottomBox" id="bottomBox7">
+        <button class="bottomDrawBox" id="bottomDrawBox7">Cancel [7]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox7">Rename (T) [7]</button>
+        <button class="bottomViewBox" id="bottomViewBox7">Recolour Laser</button>
+    </div>
+    <div class="bottomBox" id="bottomBox8">
+        <button class="bottomDrawBox" id="bottomDrawBox8">WIP1 [8]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox8">Recolour (T) [8]</button>
+        <button class="bottomViewBox" id="bottomViewBox8">Start Measure</button>
+    </div>
+    <div class="bottomBox" id="bottomBox9">
+        <button class="bottomDrawBox" id="bottomDrawBox9">WIP2 [9]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox9">Resize WIP3 [9]</button>
+        <button class="bottomViewBox" id="bottomViewBox9">Stop Measure</button>
+    </div>
+    <div class="bottomBox" id="bottomBox0">
+        <button class="bottomDrawBox" id="bottomDrawBox0">WIP3 [0]</button>
+        <button class="bottomSelectBox" id="bottomSelectBox0">Rebuild WIP4 [0]</button>
+        <button class="bottomViewBox" id="bottomViewBox0">WIP2</button>
+    </div>
+</div>
+
+<style>
+    #tokenNameLabel {
+        position: absolute;
+        left: 100px;
+        width: 100px;
+        bottom: 2px;
+        z-index: 3;
+    }
+
+    #tokenName {
+        position: absolute;
+        left: 200px;
+        width: 100px;
+        bottom: 0px;
+        pointer-events: auto;
+        background: rgba(200, 200, 200, 1);
+        z-index: 11;
+    }
+
+    #bottomTooltip {
+        position: absolute;
+        height: 60px;
+        width: 400px;
+        bottom: 60px;
+        left: 100px;
+        visibility: hidden;
+        background-color: #eeeeee;
+        border: solid black;
+        font-size: 12px;
+    }
+
+    .bottomDrawBox:disabled {
+        background-color: #aaaaaa;
+    }
+
+    .bottomSelectBox:disabled {
+        background-color: #aaaaaa;
+    }
+
+    .bottomViewBox:disabled {
+        background-color: #aaaaaa;
+    }
+
+    #bottomBar {
+        position: absolute;
+        height: 60px;
+        width: 600px;
+        bottom: 30px;
+        background-color: rgba(200, 200, 200, 1);
+        border: solid black;
+        z-index: 9;
+        left: 400px;
+        font-size: 8px;
+    }
+
+    .bottomBox {
+        position: absolute;
+        height: 56px;
+        width: 56px;
+        bottom: 0px;
+        left: 0px;
+        background-color: #c8c8c8;
+        border: solid black;
+    }
+
+    .bottomDrawBox {
+        position: absolute;
+        height: 56px;
+        width: 56px;
+        bottom: 0px;
+        left: 0px;
+        font-size: 12px;
+    }
+
+    .bottomSelectBox {
+        position: absolute;
+        height: 56px;
+        width: 56px;
+        bottom: 0px;
+        left: 0px;
+        visibility: hidden;
+        font-size: 12px;
+    }
+
+    .bottomViewBox {
+        position: absolute;
+        height: 56px;
+        width: 56px;
+        bottom: 0px;
+        left: 0px;
+        visibility: hidden;
+        font-size: 12px;
+    }
+</style>

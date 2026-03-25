@@ -36,38 +36,7 @@
     const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
     playerDataBox.innerText = newText;
     playerDataBox.style.left = window.innerWidth / 2 - 100 + 'px'
-</script><slot />
-
-<title>Gameboard</title>
-<div id="loadBlock">
-    <h1 id="loadText">Loading</h1>
-</div>
-<style>
-    #loadBlock {
-        background: #222222;
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        width: 3000px;
-        height: 3000px;
-        z-index: 90;
-    }
-
-    #loadText {
-        position: absolute;
-        color: #3333dd;
-        left: 500px;
-        top: 300px;
-        z-index: 90;
-    }
-</style>
-
-<div id="modeMenuId">
-    <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
-    <button class="modeButton" id="drawMenuButton">Draw [D]</button>
-</div>
-
-<div id="bottomBar">
+</script><div id="bottomBar">
     <div id="bottomTooltip">
         <p id="bottomTooltipText"></p>
         <input type="text" id="tokenName" />
@@ -127,6 +96,24 @@
 </div>
 
 <style>
+    #tokenNameLabel {
+        position: absolute;
+        left: 100px;
+        width: 100px;
+        bottom: 2px;
+        z-index: 3;
+    }
+
+    #tokenName {
+        position: absolute;
+        left: 200px;
+        width: 100px;
+        bottom: 0px;
+        pointer-events: auto;
+        background: rgba(200, 200, 200, 1);
+        z-index: 11;
+    }
+
     #bottomTooltip {
         position: absolute;
         height: 60px;
@@ -137,6 +124,18 @@
         background-color: #eeeeee;
         border: solid black;
         font-size: 12px;
+    }
+
+    .bottomDrawBox:disabled {
+        background-color: #aaaaaa;
+    }
+
+    .bottomSelectBox:disabled {
+        background-color: #aaaaaa;
+    }
+
+    .bottomViewBox:disabled {
+        background-color: #aaaaaa;
     }
 
     #bottomBar {
@@ -189,231 +188,89 @@
         visibility: hidden;
         font-size: 12px;
     }
-
-    .bottomDrawBox:disabled {
-        background-color: #aaaaaa;
+</style><title>Gameboard</title>
+<div id="loadBlock">
+    <h1 id="loadText">Loading</h1>
+</div>
+<style>
+    #loadBlock {
+        background: #222222;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 3000px;
+        height: 3000px;
+        z-index: 90;
     }
 
-    .bottomSelectBox:disabled {
-        background-color: #aaaaaa;
-    }
-
-    .bottomViewBox:disabled {
-        background-color: #aaaaaa;
+    #loadText {
+        position: absolute;
+        color: #3333dd;
+        left: 500px;
+        top: 300px;
+        z-index: 90;
     }
 </style>
 
-<div id="rightBar">
-    <button class="rightTab" id="hideRightBar">Hide</button>
+<div id="modeMenuId">
+    <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
+    <button class="modeButton" id="drawMenuButton">Draw [D]</button>
+</div>
 
-    <button class="rightTab" id="rollTab">Roll [P]</button>
-    <button class="rightTab" id="tokenTab">T</button>
-    <button class="rightTab" id="layerTab">Layers [L]</button>
-    <button class="rightTab" id="characterTab">C</button>
-
-    <div id="chatBox">
-        <textarea id="chatBoxTextBox"></textarea>
-    </div>
-    <div id="layerLayerObj">
-        <div id="layerTop">
-            <p id="layerText">Edit Layer</p>
-            <p id="currLayerText">Currently Selected : Layer 0</p>
-            <p id="renameLayerText">Name:</p>
-            <p id="xLayerText">X offset:</p>
-            <p id="yLayerText">Y offset:</p>
-            <input id="rename">
-            </input>
-            <input id="xChange">
-            </input>
-            <input id="yChange">
-            </input>
-            <button id="layerUpButton">Move Up</button>
-            <button id="layerDownButton">Move Down</button>
-            <button id="deleteLayerButton">Remove Current Layer</button>
-        </div>
-        <div id="layerMid">
-            <div id="descLayerObj">
-                <p id="descLayerObjNumText">Layer #</p>
-                <p id="descLayerObjFirstCheck">GM<br>Vis</p>
-                <p id="descLayerObjSecondCheck">Player<br>Vis</p>
-            </div>
-            <button id="tempButtonObj">Make Layer</button>
-        </div>
-        <div id="layerBottom"></div>
-    </div>
+<div class="canvasContainer">
+    <script>
+        document.getElementById('loadText').style.left = window.innerWidth / 2 - 50 + "px";
+        document.getElementById('loadText').style.top = window.innerHeight / 2 - 20 + "px";
+        document.getElementById('loadBlock').style.width = window.innerWidth + "px";
+        document.getElementById('loadBlock').style.height = window.innerHeight + "px";
+    </script>
+    <canvas ondragstart="return false;" ondrop="return false;" id="board" oncontextmenu="return false;"
+        tabindex='1'></canvas>
 </div>
 
 <style>
-    #layerUpButton {
+    #board {
+        background: #444444;
         position: absolute;
-        right: 0px;
-        top: 0px;
-        width: 40px;
-        height: 40px;
-        border-radius: 0px;
-        border: 2px solid #000000;
-        z-index: 3;
-    }
-
-    #layerDownButton {
-        position: absolute;
-        right: 0px;
-        top: 40px;
-        width: 40px;
-        height: 40px;
-        border-radius: 0px;
-        border: 2px solid #000000;
-        z-index: 3;
-    }
-
-    #layerText {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-    }
-
-    #currLayerText {
-        position: absolute;
-        top: 45px;
-        left: 10px;
-    }
-
-    #rename {
-        position: absolute;
-        top: 90px;
-        left: 70px;
-    }
-
-    #renameLayerText {
-        position: absolute;
-        top: 77px;
-        left: 10px;
-    }
-
-    #xChange {
-        position: absolute;
-        top: 130px;
-        left: 70px;
-    }
-
-    #xLayerText {
-        position: absolute;
-        top: 117px;
-        left: 10px;
-    }
-
-    #yChange {
-        position: absolute;
-        top: 170px;
-        left: 70px;
-    }
-
-    #yLayerText {
-        position: absolute;
-        top: 157px;
-        left: 10px;
-    }
-
-    #layerLayerObj {
-        background-color: #cccccc;
-        font-size: 14px;
-        visibility: hidden;
-    }
-
-    #layerTop {
-        position: absolute;
-        width: 250px;
-        top: 0px;
-        height: 250px;
-        width: 246px;
-        border: solid black;
-    }
-
-    #layerMid {
-        position: absolute;
-        width: 250px;
-        top: 255px;
-        height: 100px;
-        border: black;
-    }
-
-    #layerBottom {
-        position: absolute;
-        width: 250px;
-        top: 350px;
-        height: 250px;
-        border: black;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    #descLayerObj {
-        border: solid black;
-        width: 250px;
-        height: 50px;
-        position: absolute;
-        top: 0px;
-    }
-
-    #descLayerObjFirstCheck {
-        position: absolute;
-        left: 187px;
-        width: 50px;
-        text-align: center;
-    }
-
-    #descLayerObjSecondCheck {
-        position: absolute;
-        left: 137px;
-        width: 50px;
-        text-align: center;
-    }
-
-    #tempButtonObj {
-        position: absolute;
+        z-index: 0;
         left: 0px;
-        width: 246px;
-        top: 50px;
-        height: 50px;
-        border-radius: 0px;
-        border: 2px solid #000000;
-        z-index: 3;
-    }
-
-    #deleteLayerButton {
-        position: absolute;
-        left: 0px;
-        width: 246px;
-        bottom: 0px;
-        height: 50px;
-        border-radius: 0px;
-        border: 2px solid #000000;
-        z-index: 3;
-    }
-
-    #descLayerObjNumText {
-        position: absolute;
-        left: 10px;
+        top: 0px;
     }
 </style>
+
 
 <style>
-    #chatBox {
-        position: absolute;
-        background-color: #cccccc;
-        visibility: hidden;
-        pointer-events: none;
-        overflow-y: scroll;
-        overflow-x: hidden;
+    .modeButton {
+        background: rgba(200, 200, 200, 1);
+        z-index: 3;
+        width: 100px;
+        height: 50px;
+        pointer-events: auto;
     }
 
-    #chatBoxTextBox {
-        background-color: #cccccc;
-        visibility: hidden;
+    .modeButton:disabled {
+        background-color: rgba(150, 150, 150, 1);
+    }
+
+    #modeMenuId {
+        background-color: rgba(200, 200, 200, 1);
+        border: solid black;
+        position: absolute;
+        z-index: 2;
+        bottom: 10px;
+        left: 10px;
+        width: 100px;
+        height: 100px;
         pointer-events: none;
     }
-</style>
-<div id="leftBar">
+
+    html,
+    body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden
+    }
+</style><div id="leftBar">
     <button id="hideLeftBar">Hide</button>
     <button id="showUser">Users</button>
     <div id="colContainer">
@@ -459,11 +316,6 @@
         border: solid black;
         height: 30px;
         pointer-events: auto;
-    }
-
-    #hideRightBar {
-        position: absolute;
-        top: 10px;
     }
 
     #colourPicker {
@@ -618,7 +470,47 @@
     #rollContainer {
         visibility: hidden;
     }
+</style><div id="rightBar">
+    <button class="rightTab" id="hideRightBar">Hide</button>
 
+    <button class="rightTab" id="rollTab">Roll [P]</button>
+    <button class="rightTab" id="tokenTab">T</button>
+    <button class="rightTab" id="layerTab">Layers [L]</button>
+    <button class="rightTab" id="characterTab">C</button>
+
+    <div id="chatBox">
+        <textarea id="chatBoxTextBox"></textarea>
+    </div>
+    <div id="layerLayerObj">
+        <div id="layerTop">
+            <p id="layerText">Edit Layer</p>
+            <p id="currLayerText">Currently Selected : Layer 0</p>
+            <p id="renameLayerText">Name:</p>
+            <p id="xLayerText">X offset:</p>
+            <p id="yLayerText">Y offset:</p>
+            <input id="rename">
+            </input>
+            <input id="xChange">
+            </input>
+            <input id="yChange">
+            </input>
+            <button id="layerUpButton">Move Up</button>
+            <button id="layerDownButton">Move Down</button>
+            <button id="deleteLayerButton">Remove Current Layer</button>
+        </div>
+        <div id="layerMid">
+            <div id="descLayerObj">
+                <p id="descLayerObjNumText">Layer #</p>
+                <p id="descLayerObjFirstCheck">GM<br>Vis</p>
+                <p id="descLayerObjSecondCheck">Player<br>Vis</p>
+            </div>
+            <button id="tempButtonObj">Make Layer</button>
+        </div>
+        <div id="layerBottom"></div>
+    </div>
+</div>
+
+<style>
     .rightTab {
         background-color: rgba(200, 200, 200, 1);
         border: solid black;
@@ -649,6 +541,11 @@
         top: 130px;
     }
 
+    #hideRightBar {
+        position: absolute;
+        top: 10px;
+    }
+
     #rightBar {
         background-color: rgba(200, 200, 200, 1);
         border: solid black;
@@ -660,79 +557,171 @@
         height: 270px;
         pointer-events: none;
     }
-</style>
 
-<div class="canvasContainer">
-    <script>
-        document.getElementById('loadText').style.left = window.innerWidth / 2 - 50 + "px";
-        document.getElementById('loadText').style.top = window.innerHeight / 2 - 20 + "px";
-        document.getElementById('loadBlock').style.width = window.innerWidth + "px";
-        document.getElementById('loadBlock').style.height = window.innerHeight + "px";
-    </script>
-    <canvas ondragstart="return false;" ondrop="return false;" id="board" oncontextmenu="return false;"
-        tabindex='1'></canvas>
-</div>
-
-<script src="./clientOut.js"></script>
-
-<style>
-    #board {
-        background: #444444;
+    #layerUpButton {
         position: absolute;
-        z-index: 0;
-        left: 0px;
+        right: 0px;
+        top: 0px;
+        width: 40px;
+        height: 40px;
+        border-radius: 0px;
+        border: 2px solid #000000;
+        z-index: 3;
+    }
+
+    #layerDownButton {
+        position: absolute;
+        right: 0px;
+        top: 40px;
+        width: 40px;
+        height: 40px;
+        border-radius: 0px;
+        border: 2px solid #000000;
+        z-index: 3;
+    }
+
+    #layerText {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+
+    #currLayerText {
+        position: absolute;
+        top: 45px;
+        left: 10px;
+    }
+
+    #rename {
+        position: absolute;
+        top: 90px;
+        left: 70px;
+    }
+
+    #renameLayerText {
+        position: absolute;
+        top: 77px;
+        left: 10px;
+    }
+
+    #xChange {
+        position: absolute;
+        top: 130px;
+        left: 70px;
+    }
+
+    #xLayerText {
+        position: absolute;
+        top: 117px;
+        left: 10px;
+    }
+
+    #yChange {
+        position: absolute;
+        top: 170px;
+        left: 70px;
+    }
+
+    #yLayerText {
+        position: absolute;
+        top: 157px;
+        left: 10px;
+    }
+
+    #layerLayerObj {
+        background-color: #cccccc;
+        font-size: 14px;
+        visibility: hidden;
+    }
+
+    #layerTop {
+        position: absolute;
+        width: 250px;
+        top: 0px;
+        height: 250px;
+        width: 246px;
+        border: solid black;
+    }
+
+    #layerMid {
+        position: absolute;
+        width: 250px;
+        top: 255px;
+        height: 100px;
+        border: black;
+    }
+
+    #layerBottom {
+        position: absolute;
+        width: 250px;
+        top: 350px;
+        height: 250px;
+        border: black;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+    #descLayerObj {
+        border: solid black;
+        width: 250px;
+        height: 50px;
+        position: absolute;
         top: 0px;
     }
-</style>
 
-
-<style>
-    #tokenNameLabel {
+    #descLayerObjFirstCheck {
         position: absolute;
-        left: 100px;
-        width: 100px;
-        bottom: 2px;
-        z-index: 3;
+        left: 187px;
+        width: 50px;
+        text-align: center;
     }
 
-    #tokenName {
+    #descLayerObjSecondCheck {
         position: absolute;
-        left: 200px;
-        width: 100px;
-        bottom: 0px;
-        pointer-events: auto;
-        background: rgba(200, 200, 200, 1);
-        z-index: 11;
+        left: 137px;
+        width: 50px;
+        text-align: center;
     }
 
-    .modeButton {
-        background: rgba(200, 200, 200, 1);
-        z-index: 3;
-        width: 100px;
+    #tempButtonObj {
+        position: absolute;
+        left: 0px;
+        width: 246px;
+        top: 50px;
         height: 50px;
-        pointer-events: auto;
+        border-radius: 0px;
+        border: 2px solid #000000;
+        z-index: 3;
     }
 
-    .modeButton:disabled {
-        background-color: rgba(150, 150, 150, 1);
-    }
-
-    #modeMenuId {
-        background-color: rgba(200, 200, 200, 1);
-        border: solid black;
+    #deleteLayerButton {
         position: absolute;
-        z-index: 2;
-        bottom: 10px;
+        left: 0px;
+        width: 246px;
+        bottom: 0px;
+        height: 50px;
+        border-radius: 0px;
+        border: 2px solid #000000;
+        z-index: 3;
+    }
+
+    #descLayerObjNumText {
+        position: absolute;
         left: 10px;
-        width: 100px;
-        height: 100px;
+    }
+
+    #chatBox {
+        position: absolute;
+        background-color: #cccccc;
+        visibility: hidden;
+        pointer-events: none;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+    #chatBoxTextBox {
+        background-color: #cccccc;
+        visibility: hidden;
         pointer-events: none;
     }
-
-    html,
-    body {
-        margin: 0;
-        height: 100%;
-        overflow: hidden
-    }
-</style></body>
+</style><script src="./clientOut.js"></script></body>
