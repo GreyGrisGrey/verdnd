@@ -24,10 +24,7 @@ export class LeftBarManager {
 
     toggleModeSwitcher(isGm: boolean) {
         if (!isGm) {
-            showColourButton.style.visibility = 'hidden';
-            colourPicker.style.visibility = 'hidden';
             colourBackground.style.visibility = 'hidden';
-            showRollButton.style.top = '88px';
         }
     }
 

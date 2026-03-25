@@ -54,6 +54,7 @@ export enum Action {
     Rename = 'RENAME',
     Finish = 'FINISH',
     Enumerate = 'ENUMERATE',
+    Relayer = 'RELAYER',
 }
 
 export interface LayerState {
@@ -121,6 +122,13 @@ export interface ObjectRecolourEvent {
     action: Action.Recolour;
     objectId: number;
     colour: ColInst | string;
+}
+
+export interface ObjectRelayerEvent {
+    entity: Entity.Object;
+    action: Action.Relayer;
+    objectId: number;
+    layerId: number;
 }
 
 export interface RollEvent {
@@ -253,4 +261,5 @@ export type ServerEvent =
     | LaserEvent
     | NameEvent
     | UpdateTokenEvent
+    | ObjectRelayerEvent
     | BackgroundColourEvent;

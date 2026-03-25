@@ -6,7 +6,7 @@ import {
     SingleRoll,
 } from '../shared/objectEvents.ts';
 import { Vec2 } from '../shared/coords.ts';
-import { Action, Entity, ObjectParams } from '../shared/objectEvents.ts';
+import { Action, Entity } from '../shared/objectEvents.ts';
 
 export function objectTableToPayloads(rows: any[]) {
     const mapping: Map<number, ObjectCreateEvent> = new Map();
@@ -138,6 +138,7 @@ export function updateObjectToRow(payload: ObjectCreateEvent) {
                 return `${item.x},${item.y}`;
             })
             .join(':'),
+        payload.object.layerId,
     ];
 }
 

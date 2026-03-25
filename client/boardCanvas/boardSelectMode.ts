@@ -57,9 +57,6 @@ export class BoardSelectMode {
                     HTMLButtonElement,
                 ),
             );
-            if (i > 3 && i < 6) {
-                this.boxItems[i].disabled = true;
-            }
             this.boxItems[i].addEventListener('click', () => {
                 this.handleSwitchEvent(i.toString());
             });
@@ -130,6 +127,10 @@ export class BoardSelectMode {
             this.exitOnNextStep = true;
         } else if (key === '3') {
             this.recolour();
+        } else if (key === '4') {
+            this.layerSwitch(true);
+        } else if (key === '5') {
+            this.layerSwitch(false);
         } else if (key === '6') {
             this.tokenize();
         } else if (key === '7') {
@@ -152,6 +153,18 @@ export class BoardSelectMode {
             this.setUpPoints();
             this.updateCornerOffset();
             this.boxDraw = false;
+        }
+    }
+
+    layerSwitch(up: boolean) {
+        const curr = this.selectedObjects[0].layerId;
+        if (curr === 0 && !up) {
+            return;
+        } else if (curr === storedLayers.size - 1 && up) {
+            return;
+        }
+        for (const obj of this.selectedObjects) {
+            serveInter.changeObjLayer(obj, up);
         }
     }
 

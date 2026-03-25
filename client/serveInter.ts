@@ -62,6 +62,7 @@ export class tempStore {
     currGame: number;
     connected: boolean;
     lastLaser: selfLaser;
+    isDone: boolean;
 
     constructor() {
         this.undoMap = new Map();
@@ -74,6 +75,7 @@ export class tempStore {
         this.designal = false;
         this.isGm = false;
         this.connected = false;
+        this.isDone = false;
         this.lastLaser = {
             x: 0,
             y: 0,
@@ -128,7 +130,6 @@ export class tempStore {
                     storedLayers
                         .get(message.layer.id)!
                         .updateFromLayerState(message.layer);
-                    board.sortLayers();
                 } else {
                     this.createLayerLocal(message.layer);
                 }
@@ -140,6 +141,20 @@ export class tempStore {
                     this.storedObjectPayloads.delete(message.objectId);
                     if (board) {
                         board.removeObject(message.objectId);
+                    }
+                } else if (message.action === Action.Relayer) {
+                    const curr = storedObjects.get(message.objectId);
+                    if (curr) {
+                        const currLayer = storedLayers.get(curr.layerId);
+                        const newLayer = storedLayers.get(message.layerId);
+                        if (currLayer && newLayer) {
+                            currLayer.removeObject(message.objectId);
+                            newLayer.addObject(curr, message.objectId);
+                        }
+                        this.storedObjectPayloads.get(
+                            message.objectId,
+                        )!.layerId = message.layerId;
+                        curr.layerId = message.layerId;
                     }
                 } else if (message.action !== Action.Destroy) {
                     if (
@@ -174,6 +189,7 @@ export class tempStore {
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
+                    this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
                 }
@@ -186,6 +202,17 @@ export class tempStore {
             }
         });
         this.connectGlobal();
+    }
+
+    changeObjLayer(obj: BoardObject, up: boolean) {
+        this.socket.send(
+            this.parcelServeEvent({
+                objectId: obj.objectId,
+                entity: Entity.Object,
+                action: Action.Relayer,
+                layerId: obj.layerId + (up ? 1 : -1),
+            }),
+        );
     }
 
     getLasers() {
@@ -326,6 +353,7 @@ export class tempStore {
         }
         const finalObj = payloadToBoardObject(newObj.object);
         finalObj.updateToken(newObj.token);
+        finalObj.layerId = newObj.object.layerId;
         storedObjects.set(newObj.object.objectId, finalObj);
         const layer = storedLayers.get(newObj.object.layerId);
         if (layer) {
@@ -365,8 +393,6 @@ export class tempStore {
         newLayer.updateFromLayerState(layerPacket);
         storedLayers.set(layerPacket.id, newLayer);
         layerMan.constructLayer(layerPacket);
-        board.boardLayers.push(newLayer);
-        board.sortLayers();
     }
 
     // Tells the backend to destroy a bunch of objects.

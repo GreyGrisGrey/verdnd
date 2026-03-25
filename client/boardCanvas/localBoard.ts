@@ -27,7 +27,6 @@ export class Board {
     mouseCoords: Vec2;
     leftMouseDown: boolean;
     rightMouseDown: boolean;
-    boardLayers: BoardLayer[];
     activeLayer: number;
     laserCol: string;
 
@@ -41,7 +40,6 @@ export class Board {
         this.mouseCoords = { x: 0, y: 0 };
         this.leftMouseDown = false;
         this.rightMouseDown = false;
-        this.boardLayers = [];
         this.activeLayer = 0;
         this.laserCol = BLUE;
     }
@@ -102,25 +100,12 @@ export class Board {
         this.offset.y -= yMod;
     }
 
-    // Sorts held board layers by zOrder.
-    sortLayers() {
-        this.boardLayers = this.boardLayers.sort((n1, n2) => {
-            if (n1.zOrder > n2.zOrder) {
-                return 1;
-            }
-            if (n1.zOrder < n2.zOrder) {
-                return -1;
-            }
-            return 0;
-        });
-    }
-
     // Deletes an object based on the Id of the object and the layer it belongs on.
     removeObject(objectId: number, layerId: number = -1) {
         storedObjects.delete(objectId);
         if (layerId === -1) {
-            for (const layer of this.boardLayers) {
-                if (layer.removeObject(objectId)) {
+            for (const [key, val] of storedLayers) {
+                if (val.removeObject(objectId)) {
                     return true;
                 }
             }
@@ -226,7 +211,8 @@ export class Board {
     // Draws the board.
     draw() {
         const squareSize = 5 * this.zoomVal;
-        for (const [i, layer] of this.boardLayers.entries()) {
+        for (let i = 0; i < storedLayers.size; i++) {
+            const layer = storedLayers.get(i)!;
             layer.drawLayer(
                 ctx,
                 squareSize,

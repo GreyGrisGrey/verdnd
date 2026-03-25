@@ -8,6 +8,7 @@ import {
     moveObj,
     colourObj,
     updateToken,
+    updateObjLayer,
 } from './gameObjectEvents.ts';
 import { createLayer, destroyLayer, updateLayer } from './layerEvents.ts';
 import {
@@ -44,6 +45,8 @@ export async function handleGameEvent(
             );
         } else if (payload.action === Action.Recolour && userGm) {
             colourObj(payload.objectId, payload.colour, currGame, cli);
+        } else if (payload.action === Action.Relayer && userGm) {
+            updateObjLayer(payload, currGame, cli);
         }
     } else if (payload.entity === Entity.Layer) {
         if (payload.action === Action.Create && userGm) {

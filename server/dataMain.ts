@@ -360,7 +360,7 @@ export class PostGresData {
     async updateObject(gameId: number, objectId: number, object: string[]) {
         try {
             await this.client.query({
-                text: `UPDATE mainschema.objects${gameId} SET Colour = '${object[0]}', StructureData = '${object[1]}' WHERE ObjectId = ${objectId}`,
+                text: `UPDATE mainschema.objects${gameId} SET Colour = '${object[0]}', StructureData = '${object[1]}', LayerId = ${object[2]} WHERE ObjectId = ${objectId}`,
             });
             return true;
         } catch (err) {

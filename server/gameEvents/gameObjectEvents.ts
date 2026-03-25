@@ -1,4 +1,8 @@
-import type { ObjectCreateEvent, Token } from '../../shared/objectEvents.ts';
+import type {
+    ObjectCreateEvent,
+    ObjectRelayerEvent,
+    Token,
+} from '../../shared/objectEvents.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import {
     objectPayloadToRow,
@@ -47,6 +51,40 @@ export async function createObj(
         currGame.broadcast(sendObj);
     }
     console.log('object creation complete', Date.now());
+}
+
+export async function updateObjLayer(
+    layerEvent: ObjectRelayerEvent,
+    currGame: GameObject,
+    cli: PostGresData,
+) {
+    await currGame.waitLock('obj');
+    currGame.objectLock = true;
+    const curr = currGame.objectMap.get(layerEvent.objectId);
+    await currGame.waitLock('layer');
+    currGame.layerLock = true;
+    if (
+        curr &&
+        currGame.layerMap.has(layerEvent.layerId) &&
+        currGame.layerMap.has(curr.object.layerId)
+    ) {
+        curr.object.layerId = layerEvent.layerId;
+    } else {
+        return;
+    }
+    currGame.layerLock = false;
+    currGame.objectLock = false;
+    await currGame.waitLock('db');
+    currGame.dbLock = true;
+    cli.updateObject(
+        currGame.gameId,
+        curr.object.objectId,
+        updateObjectToRow(curr),
+    );
+    currGame.dbLock = false;
+    console.log(layerEvent);
+    console.log(curr);
+    currGame.broadcast(JSON.stringify(curr));
 }
 
 async function updateObj(

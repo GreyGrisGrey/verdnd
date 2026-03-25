@@ -50,8 +50,10 @@ async function mainLoop() {
     if (counter % 25 === 0) {
         rightMan.step();
     }
-    board.activeLayer = layerMan.currSelect;
-    board.step();
+    if (serveInter.isDone) {
+        board.activeLayer = layerMan.currSelect;
+        board.step();
+    }
     counter++;
     requestAnimationFrame(mainLoop);
 }
