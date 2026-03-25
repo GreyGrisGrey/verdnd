@@ -9,23 +9,17 @@ export interface UserData {
 }
 
 export class UserBox {
-    active: boolean;
     userMap: Map<string, UserData>;
     elements: Map<string, HTMLElement>;
 
     constructor() {
-        this.active = true;
         this.userMap = new Map();
         this.elements = new Map();
-        this.setUpButton();
     }
 
-    async setUpButton() {
-        showUserButton.addEventListener('click', () => {
-            userContainer.style.visibility = this.active ? 'inherit' : 'hidden';
-            userContainer.style.pointerEvents = this.active ? 'auto' : 'none';
-            this.active = !this.active;
-        });
+    toggleActive(newActive: boolean) {
+        userContainer.style.visibility = newActive ? 'inherit' : 'hidden';
+        userContainer.style.pointerEvents = newActive ? 'auto' : 'none';
     }
 
     addUser(id: string, name: string, gm: boolean) {

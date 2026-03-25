@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width" />
 </head>
 
-<body id="body"><div id="topBar">
+<body id="body">
+<div id="topBar">
     <p id="playerDataBox">blah ba</p>
 </div>
 
@@ -36,7 +37,8 @@
     const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
     playerDataBox.innerText = newText;
     playerDataBox.style.left = window.innerWidth / 2 - 100 + 'px'
-</script><div id="bottomBar">
+</script>
+<div id="bottomBar">
     <div id="bottomTooltip">
         <p id="bottomTooltipText"></p>
         <input type="text" id="tokenName" />
@@ -188,7 +190,8 @@
         visibility: hidden;
         font-size: 12px;
     }
-</style><title>Gameboard</title>
+</style>
+<title>Gameboard</title>
 <div id="loadBlock">
     <h1 id="loadText">Loading</h1>
 </div>
@@ -270,10 +273,13 @@
         height: 100%;
         overflow: hidden
     }
-</style><div id="leftBar">
-    <button id="hideLeftBar">Hide</button>
-    <button id="showUser">Users</button>
-    <div id="colContainer">
+</style>
+<div id="leftBar">
+    <button class="leftTab" id="hideLeftBar">Hide</button>
+    <button class="leftTab" id="showUser">Users</button>
+    <button class="leftTab" id="showColour">Colour</button>
+    <button class="leftTab" id="showRoll">Roll</button>
+    <div id="colourContainer">
         <input type="range" id="redColSlide" min="0" max="255" />
         <label class="colLabel" id="redLabel">R</label>
         <input type="text" id="redColText" />
@@ -288,8 +294,8 @@
         <input type="text" id="opacColText" />
         <canvas id="colourSquare"></canvas>
 
-        <button class="colourTab" id="colourPicker"> Pick </button>
-        <button class="colourTab" id="colourBackground"> BG </button>
+        <button class="leftTab" id="colourPicker"> Pick </button>
+        <button class="leftTab" id="colourBackground"> BG </button>
 
         <button class="colourTab" id="col1"> </button>
         <button class="colourTab" id="col2"> </button>
@@ -307,11 +313,20 @@
 </div>
 
 <style>
+    .leftTab {
+        background-color: rgba(200, 200, 200, 1);
+        border: solid black;
+        position: absolute;
+        z-index: 2;
+        right: -50px;
+        width: 50px;
+        height: 30px;
+        pointer-events: auto;
+    }
+
     #hideLeftBar {
         position: absolute;
         background-color: rgba(255, 255, 255, 0.25);
-        left: 260px;
-        width: 45px;
         top: 8px;
         border: solid black;
         height: 30px;
@@ -321,25 +336,37 @@
     #colourPicker {
         position: absolute;
         background-color: rgba(255, 255, 255, 0.25);
-        left: 260px;
-        width: 45px;
-        top: 88px;
+        top: 168px;
     }
 
     #colourBackground {
         position: absolute;
         background-color: rgba(255, 255, 255, 0.25);
-        left: 260px;
-        width: 45px;
-        top: 128px;
+        top: 208px;
     }
 
     #showUser {
         position: absolute;
         background-color: rgba(255, 255, 255, 0.25);
-        left: 260px;
-        width: 45px;
         top: 48px;
+        border: solid black;
+        height: 30px;
+        pointer-events: auto;
+    }
+
+    #showColour {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.25);
+        top: 88px;
+        border: solid black;
+        height: 30px;
+        pointer-events: auto;
+    }
+
+    #showRoll {
+        position: absolute;
+        background-color: rgba(255, 255, 255, 0.25);
+        top: 128px;
         border: solid black;
         height: 30px;
         pointer-events: auto;
@@ -348,7 +375,7 @@
     #userContainer {
         position: absolute;
         visibility: hidden;
-        background-color: rgba(255, 255, 255, 1);
+        background-color: rgba(200, 200, 200, 1);
         z-index: 9;
         height: 280px;
         width: 250px;
@@ -377,7 +404,7 @@
         top: 135px;
     }
 
-    #colContainer {
+    #colourContainer {
         pointer-events: auto;
     }
 
@@ -470,7 +497,8 @@
     #rollContainer {
         visibility: hidden;
     }
-</style><div id="rightBar">
+</style>
+<div id="rightBar">
     <button class="rightTab" id="hideRightBar">Hide</button>
 
     <button class="rightTab" id="rollTab">Roll [P]</button>
@@ -724,4 +752,5 @@
         visibility: hidden;
         pointer-events: none;
     }
-</style><script src="./clientOut.js"></script></body>
+</style>
+<script src="./clientOut.js"></script></body>

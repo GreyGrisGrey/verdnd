@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width" />
 </head>
 
-<body id="body"><canvas id="can"></canvas>
+<body id="body">
+<canvas id="can"></canvas>
 
 <style>
     #can {
@@ -40,7 +41,8 @@
         }
         currX += squareSize;
     }
-</script><div id="topBar">
+</script>
+<div id="topBar">
     <p id="playerDataBox">blah ba</p>
 </div>
 
@@ -70,7 +72,8 @@
     const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
     playerDataBox.innerText = newText;
     playerDataBox.style.left = window.innerWidth / 2 - 100 + 'px'
-</script><div id="inputs">
+</script>
+<div id="inputs">
     <p>Sign up. Or sign in. The server does not distinguish these requests yet.</p>
     <label id="userIdLabel">Insert user id:</label>
     <input type="text" id="userId" />
@@ -179,4 +182,5 @@
             );
         }
     })
-</script></body>
+</script>
+</body>

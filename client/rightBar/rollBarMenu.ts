@@ -4,8 +4,6 @@ import { RollComplete, RollResult } from '../../shared/objectEvents.ts';
 const serveInter = new tempStore();
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
-const rollBox = getRequiredElement('rollContainer', HTMLElement);
-const colBox = getRequiredElement('colContainer', HTMLElement);
 
 // Class manaing the roll menu on the right bar.
 // Also manages the roll menu on the left bar. Questionable.
@@ -24,127 +22,6 @@ export class RollMenu {
         this.modBox = this.textBox;
         this.currChats = [];
         this.currBoxes = [];
-        this.setRollElements();
-    }
-
-    // Constructs the HTML elements corresponding to each roll option.
-    // This looks dubious but it's not, because the structure of that will change substantially.
-    // More importantly I don't want to write all this out by hand.
-    setRollElements() {
-        let count = 0;
-        for (const i of [3, 4, 6, 8, 10, 12, 20, 100, 101]) {
-            const newBox = document.createElement('div');
-            rollBox.append(newBox);
-            newBox.style.position = 'absolute';
-            newBox.style.width = '100px';
-            newBox.style.height = '20px';
-            newBox.style.top = count * 30 + 5 + 'px';
-            newBox.style.left = '10px';
-            if (i !== 3 && i !== 101) {
-                const newText = document.createElement('p');
-                const setCount = document.createElement('input');
-                const roll = document.createElement('input');
-
-                roll.type = 'button';
-
-                newBox.append(newText);
-                newBox.append(setCount);
-                newBox.append(roll);
-
-                newText.style.position = 'absolute';
-                newText.style.width = '30px';
-                newText.style.height = '20px';
-                newText.style.top = '-13px';
-                newText.style.left = '0px';
-                newText.innerText = 'Roll';
-
-                setCount.style.position = 'absolute';
-                setCount.style.width = '40px';
-                setCount.style.height = '20px';
-                setCount.style.top = '0px';
-                setCount.style.left = '30px';
-                setCount.value = '1';
-
-                roll.style.position = 'absolute';
-                roll.style.width = '50px';
-                roll.style.height = '20px';
-                roll.style.left = '80px';
-                roll.style.top = '3px';
-                roll.value = `D${i}`;
-
-                roll.addEventListener('click', () => {
-                    if (
-                        Number.isNaN(Number(setCount.value)) ||
-                        Math.abs(Number(setCount.value)) > 101
-                    ) {
-                        setCount.value = '0';
-                        return;
-                    }
-                    this.constructPayload(
-                        i,
-                        Number(setCount.value),
-                        false,
-                        false,
-                    );
-                });
-            } else if (i === 3) {
-                const rollAdv = document.createElement('input');
-                const rollDis = document.createElement('input');
-                rollAdv.type = 'button';
-                rollDis.type = 'button';
-                rollAdv.value = 'Roll 2d20 (Adv)';
-                rollDis.value = 'Roll 2d20 (Disadv)';
-                newBox.append(rollAdv);
-                newBox.append(rollDis);
-
-                rollAdv.style.position = 'absolute';
-                rollAdv.style.width = '100px';
-                rollAdv.style.height = '20px';
-                rollAdv.style.left = '0px';
-                rollAdv.style.top = '3px';
-
-                rollDis.style.position = 'absolute';
-                rollDis.style.width = '120px';
-                rollDis.style.height = '20px';
-                rollDis.style.left = '110px';
-                rollDis.style.top = '3px';
-
-                rollAdv.addEventListener('click', () => {
-                    this.constructPayload(20, 2, true, false);
-                });
-
-                rollDis.addEventListener('click', () => {
-                    this.constructPayload(20, 2, false, true);
-                });
-            } else if (i === 101) {
-                const newText = document.createElement('p');
-                const setCount = document.createElement('input');
-
-                newBox.append(newText);
-                newBox.append(setCount);
-
-                newText.style.position = 'absolute';
-                newText.style.width = '30px';
-                newText.style.height = '20px';
-                newText.style.top = '-13px';
-                newText.style.left = '0px';
-                newText.innerText = 'Mod';
-
-                setCount.style.position = 'absolute';
-                setCount.style.width = '40px';
-                setCount.style.height = '20px';
-                setCount.style.top = '0px';
-                setCount.style.left = '30px';
-                setCount.value = '0';
-
-                setCount.addEventListener('input', () => {
-                    this.modifier = setCount.value;
-                });
-
-                this.modBox = setCount;
-            }
-            count++;
-        }
     }
 
     // Toggles if the roll menu is active or not.
@@ -152,10 +29,6 @@ export class RollMenu {
     toggleActive(newAct: boolean) {
         this.active = newAct;
         this.step();
-        rollBox.style.visibility = this.active ? 'inherit' : 'hidden';
-        rollBox.style.pointerEvents = this.active ? 'auto' : 'none';
-        colBox.style.visibility = this.active ? 'hidden' : 'inherit';
-        colBox.style.pointerEvents = this.active ? 'none' : 'auto';
         chatBox.style.visibility = this.active ? 'inherit' : 'hidden';
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
         for (const text of this.currChats) {
@@ -227,31 +100,5 @@ export class RollMenu {
             `\nResult = ${dataLine.result}`;
         this.currChats[currIndex].style.visibility = 'inherit';
         this.currBoxes[currIndex].style.visibility = 'inherit';
-    }
-
-    // Constructs a new roll payload and sends it to the backend.
-    constructPayload(
-        diceSize: number,
-        diceCount: number,
-        advantage: boolean,
-        disadvantage: boolean,
-    ) {
-        if (
-            Number.isNaN(Number(this.modifier)) ||
-            Math.abs(Number(this.modifier)) > 101
-        ) {
-            this.modifier = '0';
-            (this.modBox as any).value = '0';
-            return;
-        }
-        let currLoad = {
-            diceSize: diceSize,
-            diceCount: diceCount,
-            advantage: advantage,
-            disadvantage: disadvantage,
-            modifier: Number(this.modifier),
-            result: 0,
-        };
-        serveInter.rollDice(currLoad);
     }
 }

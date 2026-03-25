@@ -1,15 +1,21 @@
 import { ColourBox } from './colourBox.ts';
+import { UserBox } from './userBox.ts';
+import { RollBox } from './rollBox.ts';
 import { getRequiredElement } from '../dom.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
+const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
+const showColourButton = getRequiredElement('showColour', HTMLButtonElement);
+const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
+const userBox = new UserBox();
+const colourBox = new ColourBox();
+const rollBox = new RollBox();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
 export class LeftBarManager {
-    colourPicker: ColourBox;
     visible: boolean;
     constructor() {
-        this.colourPicker = new ColourBox();
         this.visible = true;
         this.addEventListeners();
     }
@@ -26,5 +32,33 @@ export class LeftBarManager {
             this.visible = !this.visible;
             this.toggleVisible();
         });
+
+        showUserButton.addEventListener('click', () => {
+            this.toggleActive('USER');
+        });
+
+        showRollButton.addEventListener('click', () => {
+            this.toggleActive('ROLL');
+        });
+
+        showColourButton.addEventListener('click', () => {
+            this.toggleActive('COLOUR');
+        });
+    }
+
+    toggleActive(newAct: string) {
+        if (newAct === 'COLOUR') {
+            userBox.toggleActive(false);
+            colourBox.toggleActive(true);
+            rollBox.toggleActive(false);
+        } else if (newAct === 'ROLL') {
+            userBox.toggleActive(false);
+            colourBox.toggleActive(false);
+            rollBox.toggleActive(true);
+        } else if (newAct === 'USER') {
+            userBox.toggleActive(true);
+            colourBox.toggleActive(false);
+            rollBox.toggleActive(false);
+        }
     }
 }

@@ -12,16 +12,16 @@ function constructPage(pageName: string, objects: string[]) {
     for (const line of currFile) {
         const args = line.split('\t');
         if (args[0] === 'ADD') {
-            newOutput += fs.readFileSync('./' + compDir + args[1], 'utf8');
+            newOutput +=
+                fs.readFileSync('./' + compDir + args[1], 'utf8') + '\n';
         } else if (args[0] === 'INSERT') {
             newOutput += args[1];
         } else if (args[0] === 'DIRADD') {
             const toAdd = fs.readdirSync('./' + compDir + args[1]);
             for (const newAdd of toAdd) {
-                newOutput += fs.readFileSync(
-                    './' + compDir + args[1] + newAdd,
-                    'utf8',
-                );
+                newOutput +=
+                    fs.readFileSync('./' + compDir + args[1] + newAdd, 'utf8') +
+                    '\n';
             }
         }
     }

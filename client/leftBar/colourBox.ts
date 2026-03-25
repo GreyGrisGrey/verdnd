@@ -6,6 +6,7 @@ import { tempStore } from '../serveInter.ts';
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
+const colourContainer = getRequiredElement('colourContainer', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const board = new Board();
 const serveInter = new tempStore();
@@ -60,6 +61,11 @@ export class ColourBox {
         }
         this.addEventListeners();
         this.changeCurrColour();
+    }
+
+    toggleActive(newActive: boolean) {
+        colourContainer.style.visibility = newActive ? 'inherit' : 'hidden';
+        colourContainer.style.pointerEvents = newActive ? 'auto' : 'none';
     }
 
     // Adds relevant event listeners.

@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width" />
 </head>
 
-<body id="body"><canvas id="can"></canvas>
+<body id="body">
+<canvas id="can"></canvas>
 
 <style>
     #can {
@@ -40,7 +41,8 @@
         }
         currX += squareSize;
     }
-</script><div id="leftBar">
+</script>
+<div id="leftBar">
     <a href="registration">Please sign up or something man.</a>
 </div>
 
@@ -172,7 +174,8 @@
     })
 
     signIn();
-</script><div id="topBar">
+</script>
+<div id="topBar">
     <p id="playerDataBox">blah ba</p>
 </div>
 
@@ -202,4 +205,5 @@
     const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
     playerDataBox.innerText = newText;
     playerDataBox.style.left = window.innerWidth / 2 - 100 + 'px'
-</script></body>
+</script>
+</body>
