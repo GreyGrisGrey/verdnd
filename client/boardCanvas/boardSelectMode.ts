@@ -275,10 +275,12 @@ export class BoardSelectMode {
         const br = currObj.getBottomRight();
         const newTl = { x: tl.x, y: tl.y };
         const newBr = { x: br.x, y: br.y };
-        newTl.x = movedOrb.id === 0 || movedOrb.id === 3 ? point.x : tl.x;
-        newTl.y = movedOrb.id === 0 || movedOrb.id === 1 ? point.y : tl.y;
-        newBr.x = movedOrb.id === 2 || movedOrb.id === 1 ? point.x : br.x;
-        newBr.y = movedOrb.id === 2 || movedOrb.id === 3 ? point.y : br.y;
+        if (!commit) {
+            newTl.x = movedOrb.id === 0 || movedOrb.id === 3 ? point.x : tl.x;
+            newTl.y = movedOrb.id === 0 || movedOrb.id === 1 ? point.y : tl.y;
+            newBr.x = movedOrb.id === 2 || movedOrb.id === 1 ? point.x : br.x;
+            newBr.y = movedOrb.id === 2 || movedOrb.id === 3 ? point.y : br.y;
+        }
         for (const orb of this.orbs) {
             orb.resize(newTl, newBr);
         }
