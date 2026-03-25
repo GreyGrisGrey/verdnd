@@ -1,0 +1,31 @@
+<div id="topBar">
+    <p id="playerDataBox">blah ba</p>
+</div>
+
+<style>
+    #topBar {
+        position: absolute;
+        height: 30px;
+        left: 0px;
+        top: 0px;
+        background-color: #222222;
+        visibility: visible;
+        z-index: 9;
+    }
+
+    #playerDataBox {
+        position: absolute;
+        height: 20px;
+        top: -10px;
+        font-size: 15px;
+        color: #eeeeee;
+        left: 400px;
+    }
+</style>
+
+<script>
+    topBar.style.width = window.innerWidth + 'px';
+    const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
+    playerDataBox.innerText = newText;
+    playerDataBox.style.left = window.innerWidth / 2 - 100 + 'px'
+</script>
