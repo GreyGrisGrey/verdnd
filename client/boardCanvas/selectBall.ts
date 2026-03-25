@@ -46,6 +46,20 @@ export class SelectBall {
         this.coord = newCoord;
     }
 
+    resize(tl: Vec2, br: Vec2) {
+        if (this.id === 0) {
+            this.coord = tl;
+        } else if (this.id === 2) {
+            this.coord = br;
+        } else if (this.id === 1) {
+            this.coord.x = br.x;
+            this.coord.y = tl.y;
+        } else if (this.id === 3) {
+            this.coord.x = tl.x;
+            this.coord.y = br.y;
+        }
+    }
+
     deconstruct() {
         this.element.remove();
     }

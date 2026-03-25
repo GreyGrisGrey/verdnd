@@ -207,7 +207,8 @@ export class BoardSelectMode {
                 for (const candidate of this.selectedObjects) {
                     if (
                         'isPointInside' in candidate &&
-                        candidate.isPointInside(point)
+                        candidate.isPointInside(point) &&
+                        this.orbs.length === 0
                     ) {
                         this.selectClick = true;
                     }
@@ -225,22 +226,27 @@ export class BoardSelectMode {
                 ) {
                     this.exitOnNextStep = true;
                 }
-                this.updateCornerOffset();
-            } else if (this.active && event.button === 0) {
+            }
+        });
+
+        document.addEventListener('mouseup', (event) => {
+            if (this.active && event.button === 0) {
                 if (this.orbs.length > 0) {
-                    this.updateObject();
+                    this.updateObject(true);
                 }
             }
         });
     }
 
-    updateObject() {
+    updateObject(commit: boolean) {
         let modification = false;
         let movedOrb = this.orbs[0];
         for (const orb of this.orbs) {
             if (orb.moving) {
                 movedOrb = orb;
-                orb.moving = false;
+                if (commit) {
+                    movedOrb.moving = false;
+                }
                 modification = true;
                 break;
             }
@@ -249,36 +255,46 @@ export class BoardSelectMode {
             return;
         }
         if (this.boxDraw) {
-            this.resizeObject(movedOrb);
+            this.resizeObject(movedOrb, commit);
         } else {
-            this.restructureObject(movedOrb);
+            this.restructureObject(movedOrb, commit);
         }
     }
 
-    resizeObject(movedOrb: SelectBall) {
+    resizeObject(movedOrb: SelectBall, commit: boolean) {
         const currObj = this.selectedObjects[0];
         const point = board.determineTile(
             board.mouseCoords.x,
             board.mouseCoords.y,
             CoordModes.Vertex,
         );
-        currObj.updateSize(point, movedOrb.id);
-        for (const orb of this.orbs) {
-            orb.deconstruct();
+        if (commit) {
+            currObj.updateSize(point, movedOrb.id);
         }
-        this.orbs = [];
-        this.setUpCorners();
+        const tl = currObj.getTopLeft();
+        const br = currObj.getBottomRight();
+        const newTl = { x: tl.x, y: tl.y };
+        const newBr = { x: br.x, y: br.y };
+        newTl.x = movedOrb.id === 0 || movedOrb.id === 3 ? point.x : tl.x;
+        newTl.y = movedOrb.id === 0 || movedOrb.id === 1 ? point.y : tl.y;
+        newBr.x = movedOrb.id === 2 || movedOrb.id === 1 ? point.x : br.x;
+        newBr.y = movedOrb.id === 2 || movedOrb.id === 3 ? point.y : br.y;
+        for (const orb of this.orbs) {
+            orb.resize(newTl, newBr);
+        }
         return;
     }
 
-    restructureObject(movedOrb: SelectBall) {
+    restructureObject(movedOrb: SelectBall, commit: boolean) {
         const point = board.determineTile(
             board.mouseCoords.x,
             board.mouseCoords.y,
             CoordModes.Vertex,
         );
         movedOrb.coord = point;
-        this.selectedObjects[0].updatePoint(point.x, point.y, movedOrb.id);
+        if (commit) {
+            this.selectedObjects[0].updatePoint(point.x, point.y, movedOrb.id);
+        }
         return;
     }
 
@@ -363,28 +379,6 @@ export class BoardSelectMode {
         for (const orb of this.orbs) {
             orb.updateDocumentOffset(board.zoomVal * 5, res.x, res.y);
         }
-        if (this.boxDraw) {
-            const topLeft = this.selectedObjects[0].getTopLeft();
-            const bottomRight = this.selectedObjects[0].getBottomRight();
-            this.currPath = new Path2D();
-            this.currPath.moveTo(
-                topLeft.x * (board.zoomVal * 5) + res.x,
-                topLeft.y * (board.zoomVal * 5) + res.y,
-            );
-            this.currPath.lineTo(
-                bottomRight.x * (board.zoomVal * 5) + res.x,
-                topLeft.y * (board.zoomVal * 5) + res.y,
-            );
-            this.currPath.lineTo(
-                bottomRight.x * (board.zoomVal * 5) + res.x,
-                bottomRight.y * (board.zoomVal * 5) + res.y,
-            );
-            this.currPath.lineTo(
-                topLeft.x * (board.zoomVal * 5) + res.x,
-                bottomRight.y * (board.zoomVal * 5) + res.y,
-            );
-            this.currPath.closePath();
-        }
     }
 
     setUpCorners() {
@@ -407,11 +401,31 @@ export class BoardSelectMode {
         }
     }
 
+    updatePath() {
+        this.currPath = new Path2D();
+        const currSpecs = this.selectedObjects[0].currPathSpecs;
+        this.currPath.moveTo(
+            Math.round(
+                this.orbs[0].coord.x * (board.zoomVal * 5) + currSpecs[1],
+            ),
+            Math.round(
+                this.orbs[0].coord.y * (board.zoomVal * 5) + currSpecs[2],
+            ),
+        );
+        for (const pt of this.orbs) {
+            this.currPath.lineTo(
+                Math.round(pt.coord.x * (board.zoomVal * 5) + currSpecs[1]),
+                Math.round(pt.coord.y * (board.zoomVal * 5) + currSpecs[2]),
+            );
+        }
+        this.currPath.closePath();
+        if (this.selectedObjects[0].drawParams.close) {
+            this.currPath.closePath();
+        }
+    }
+
     drawSkeleton() {
         if (this.selectedObjects.length === 1) {
-            if (!this.boxDraw) {
-                this.currPath = this.selectedObjects[0].currPath;
-            }
             ctx.strokeStyle = GOLD.toString();
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
@@ -419,6 +433,10 @@ export class BoardSelectMode {
     }
 
     step() {
+        if (this.orbs.length > 0) {
+            this.updateObject(false);
+            this.updatePath();
+        }
         this.updateCornerOffset();
         this.drawSkeleton();
     }
