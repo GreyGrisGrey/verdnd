@@ -146,6 +146,7 @@ export class BoardDrawMode {
             this.setNewObject();
         }
         if (key === '1') {
+            this.currDraw = 1;
             this.selectMode = !this.selectMode;
         } else {
             this.selectMode = false;

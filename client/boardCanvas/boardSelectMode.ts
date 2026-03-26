@@ -222,8 +222,10 @@ export class BoardSelectMode {
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
                 const point = board.determineTile(
-                    event.clientX,
-                    event.clientY,
+                    event.clientX -
+                        this.currLayer.layerOffset.x * board.zoomVal * 5,
+                    event.clientY -
+                        this.currLayer.layerOffset.y * board.zoomVal * 5,
                     CoordModes.Center,
                 );
                 for (const candidate of this.selectedObjects) {

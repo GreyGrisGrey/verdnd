@@ -217,6 +217,10 @@ export class LayerMenu {
                     this.exitCurrSelect();
                     this.currSelect = num;
                     modeMan.drawMan.updateLayer(num);
+                    modeMan.viewMan.updateLayerOffset({
+                        x: buildData.x,
+                        y: buildData.y,
+                    });
                     this.enterCurrSelect();
                 }
             }

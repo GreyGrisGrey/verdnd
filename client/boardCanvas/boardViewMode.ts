@@ -19,16 +19,23 @@ export class BoardViewMode {
     boxItems: HTMLButtonElement[];
     completeSelectCheck: boolean;
     selectedToken: BoardObject | null;
+    layerOffset: Vec2;
 
     constructor() {
         this.active = true;
         this.addEventListeners();
         this.start = { x: 0, y: 0 };
         this.measuring = false;
+        this.layerOffset = { x: 0, y: 0 };
         this.boxItems = [];
         this.setUpBoxes();
         this.completeSelectCheck = false;
         this.selectedToken = null;
+    }
+
+    // Updates the layer offset for the purposes of token selection.
+    updateLayerOffset(newOff: Vec2) {
+        this.layerOffset = newOff;
     }
 
     // Flips the active state of the mode.
@@ -233,8 +240,10 @@ export class BoardViewMode {
                 const res = board.selectToken(
                     [
                         board.determineTile(
-                            board.mouseCoords.x,
-                            board.mouseCoords.y,
+                            board.mouseCoords.x -
+                                this.layerOffset.x * board.zoomVal * 5,
+                            board.mouseCoords.y -
+                                this.layerOffset.y * board.zoomVal * 5,
                             CoordModes.Center,
                         ),
                     ],

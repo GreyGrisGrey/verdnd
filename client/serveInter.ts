@@ -191,6 +191,13 @@ export class tempStore {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
                     modeMan.drawMan.updateLayer(0);
+                    const curr = storedLayers.get(0);
+                    if (curr) {
+                        modeMan.viewMan.updateLayerOffset({
+                            x: curr.layerOffset.x,
+                            y: curr.layerOffset.y,
+                        });
+                    }
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;

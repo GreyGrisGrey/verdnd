@@ -228,19 +228,12 @@ export class BoardObject {
 
     // Function to set the center point of the object.
     setCenter() {
-        if (this.drawParams.ellipse) {
-            this.centerPoint = {
-                x: this.points[0].x + this.points[2].x / 2,
-                y: this.points[0].y + this.points[2].y / 2,
-            };
-        } else {
-            const topLeft = this.getTopLeft();
-            const bottomRight = this.getBottomRight();
-            this.centerPoint = {
-                x: topLeft.x + (bottomRight.x - topLeft.x) / 2,
-                y: topLeft.y + (bottomRight.y - topLeft.y) / 2,
-            };
-        }
+        const topLeft = this.getTopLeft();
+        const bottomRight = this.getBottomRight();
+        this.centerPoint = {
+            x: topLeft.x + (bottomRight.x - topLeft.x) / 2,
+            y: topLeft.y + (bottomRight.y - topLeft.y) / 2,
+        };
     }
 
     setSelected(newSelection: boolean) {
