@@ -49,6 +49,7 @@ export class BoardSelectMode {
         this.addEventListeners();
     }
 
+    // Sets up bottom toolbar boxes.
     setUpBoxes() {
         for (let i = 0; i < 10; i++) {
             this.boxItems.push(
@@ -64,6 +65,7 @@ export class BoardSelectMode {
         this.toggleBoxes();
     }
 
+    // Renames currently selected tokens.
     attemptRename() {
         for (const obj of this.selectedObjects) {
             if (obj.token.active) {
@@ -79,6 +81,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Recolours the edge of currently selected tokens.
     attemptTokenRecolour() {
         for (const obj of this.selectedObjects) {
             if (obj.token.active) {
@@ -94,6 +97,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Turns the currently selected object into a token.
     tokenize() {
         for (const obj of this.selectedObjects) {
             if (!obj.token.active) {
@@ -109,6 +113,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Updates the visibility of bottom toolbar boxes.
     toggleBoxes() {
         for (const box of this.boxItems) {
             box.style.visibility = this.active ? 'visible' : 'hidden';
@@ -116,6 +121,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Handles any event switching between different select tools.
     handleSwitchEvent(key: string) {
         if (key === 'Escape' || key === '1') {
             this.exitOnNextStep = true;
@@ -157,6 +163,8 @@ export class BoardSelectMode {
         }
     }
 
+    // Moves selected objects to a new layer.
+    // Also of course checks if such a layer exists.
     layerSwitch(up: boolean) {
         const curr = this.selectedObjects[0].layerId;
         if (curr === 0 && !up) {
@@ -242,6 +250,8 @@ export class BoardSelectMode {
             }
         });
 
+        // document.addEventListener,
+        // specifically because it's for orb management and those are HTML elements rather than board objects.
         document.addEventListener('mouseup', (event) => {
             if (this.active && event.button === 0) {
                 if (this.orbs.length > 0) {
@@ -251,6 +261,8 @@ export class BoardSelectMode {
         });
     }
 
+    // Checks if the currently selected object has been modified, calls one of two child functions if so.
+    // Only actually updates the object if commit is true.
     updateObject(commit: boolean) {
         let modification = false;
         let movedOrb = this.orbs[0];
@@ -274,6 +286,8 @@ export class BoardSelectMode {
         }
     }
 
+    // Resizes the currently selected object.
+    // Only updates the object for the server if commit is true.
     resizeObject(movedOrb: SelectBall, commit: boolean) {
         const currObj = this.selectedObjects[0];
         const point = board.determineTile(
@@ -302,6 +316,8 @@ export class BoardSelectMode {
         return;
     }
 
+    // Restructures a single point on the currently selected object.
+    // Only updates the object for the server if commit is true.
     restructureObject(movedOrb: SelectBall, commit: boolean) {
         const point = board.determineTile(
             board.mouseCoords.x -
@@ -372,6 +388,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Updates orbs when an object is moved, allowing object movement to be clean when resize/restructure is selected.
     updateCornerPos(point: Vec2) {
         if (this.orbs.length === 0) {
             return;
@@ -381,6 +398,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Updates the location of the orbs on the document.
     updateCornerOffset() {
         if (this.orbs.length === 0) {
             return;
@@ -400,6 +418,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Sets up corners for resizing an object.
     setUpCorners() {
         const topLeft = this.selectedObjects[0].getTopLeft();
         const bottomRight = this.selectedObjects[0].getBottomRight();
@@ -409,6 +428,7 @@ export class BoardSelectMode {
         this.orbs.push(new SelectBall(topLeft.x, bottomRight.y, 3));
     }
 
+    // Sets up points for restructuring an object.
     setUpPoints() {
         let count = 0;
         const currObj = this.selectedObjects[0];
@@ -420,6 +440,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Updates the yellow outline used by restructure/resize.
     updatePath() {
         this.currPath = new Path2D();
         const currSpecs = this.selectedObjects[0].currPathSpecs;
@@ -443,6 +464,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Draws the outline surrounding a resized/restructured object.
     drawSkeleton() {
         if (this.selectedObjects.length === 1) {
             ctx.strokeStyle = GOLD.toString();
@@ -451,6 +473,7 @@ export class BoardSelectMode {
         }
     }
 
+    // Performs one step of updates, mainly for orb purposes.
     step() {
         if (this.orbs.length > 0) {
             this.updateObject(false);

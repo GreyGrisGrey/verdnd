@@ -10,7 +10,9 @@ import type {
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 import { tempStore } from '../serveInter.ts';
+import { BoardLayer } from './boardLayer.ts';
 const board = new Board();
+const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const serveInter = new tempStore();
@@ -34,6 +36,7 @@ export class BoardDrawMode {
     boxItems: HTMLButtonElement[];
     currParams: ObjectParams;
     currDraw: number;
+    currLayer: BoardLayer;
 
     constructor() {
         this.currDraw = 1;
@@ -50,7 +53,7 @@ export class BoardDrawMode {
             close: true,
             rect: true,
         };
-
+        this.currLayer = new BoardLayer(0, true, true);
         this.addEventListeners();
         this.setUpBoxes();
         this.flipBoxes();
