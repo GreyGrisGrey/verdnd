@@ -161,10 +161,11 @@ export function updateLayerToRow(payload: LayerUpdateEvent) {
 }
 
 export function rollPayloadToRow(payload: RollComplete) {
-    let convertString = '';
-    for (const roll of payload.result.rolls) {
-        convertString += `${roll.result},${roll.size},${roll.exclude}`;
-    }
+    let convertString = (payload.result as any).rolls
+        .map((item: SingleRoll) => {
+            return `${item.result},${item.size},${item.exclude}`;
+        })
+        .join(':');
     return `(${payload.id}, ${payload.result.result}, '${payload.userId}', '${convertString}')`;
 }
 

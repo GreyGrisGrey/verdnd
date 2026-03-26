@@ -60,9 +60,9 @@ export class RollMenu {
         chatBox.append(newBox);
         newBox.append(newText);
         newBox.style.position = 'absolute';
-        newBox.style.top = currIndex * 60 + 'px';
+        newBox.style.top = currIndex * 90 + 'px';
         newBox.style.width = '246px';
-        newBox.style.height = '60px';
+        newBox.style.height = '90px';
         newBox.style.border = 'solid #000000';
         newBox.style.visibility = 'inherit';
 
@@ -91,11 +91,13 @@ export class RollMenu {
             this.constructChat(this.currChats.length);
         }
         let newString = '';
+        console.log(dataLine);
         for (const roll of dataLine.rolls) {
-            newString += `(D${roll.size}, ${roll.result}) `;
+            newString += `${roll.result} + `;
         }
+        newString = newString.slice(0, newString.length - 3);
         this.currChats[currIndex].innerText =
-            `User ${userName} Rolled` +
+            `${userName} Rolled\n` +
             newString +
             `\nResult = ${dataLine.result}`;
         this.currChats[currIndex].style.visibility = 'inherit';
