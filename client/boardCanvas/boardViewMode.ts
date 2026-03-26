@@ -73,8 +73,8 @@ export class BoardViewMode {
         if (key === '6') {
             modeMan.sendLaser = !modeMan.sendLaser;
         } else if (key === '5') {
-            board.offset.x = 0;
-            board.offset.y = 0;
+            board.offset.x = window.innerWidth / 2;
+            board.offset.y = window.innerHeight / 2;
         } else if (key === '7') {
             board.laserCol = colourSquare.style.background;
         } else if (key === '8') {

@@ -37,8 +37,11 @@ export class Board {
             2, 3, 4, 6, 8, 10, 13, 16, 20, 24, 28, 32, 38, 44, 50,
         ];
         this.zoomVal = this.zoomLevels[this.zoomGlobal];
-        this.offset = { x: 0, y: 0 };
-        this.mouseCoords = { x: 0, y: 0 };
+        this.offset = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        this.mouseCoords = {
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+        };
         this.leftMouseDown = false;
         this.rightMouseDown = false;
         this.activeLayer = 0;

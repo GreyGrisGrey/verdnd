@@ -61,6 +61,7 @@ export class BoardSelectMode {
                 this.handleSwitchEvent(i.toString());
             });
         }
+        this.toggleBoxes();
     }
 
     attemptRename() {
@@ -276,8 +277,10 @@ export class BoardSelectMode {
     resizeObject(movedOrb: SelectBall, commit: boolean) {
         const currObj = this.selectedObjects[0];
         const point = board.determineTile(
-            board.mouseCoords.x,
-            board.mouseCoords.y,
+            board.mouseCoords.x -
+                this.currLayer.layerOffset.x * board.zoomVal * 5,
+            board.mouseCoords.y -
+                this.currLayer.layerOffset.y * board.zoomVal * 5,
             CoordModes.Vertex,
         );
         if (commit) {
@@ -301,8 +304,10 @@ export class BoardSelectMode {
 
     restructureObject(movedOrb: SelectBall, commit: boolean) {
         const point = board.determineTile(
-            board.mouseCoords.x,
-            board.mouseCoords.y,
+            board.mouseCoords.x -
+                this.currLayer.layerOffset.x * board.zoomVal * 5,
+            board.mouseCoords.y -
+                this.currLayer.layerOffset.y * board.zoomVal * 5,
             CoordModes.Vertex,
         );
         movedOrb.coord = point;
@@ -383,11 +388,11 @@ export class BoardSelectMode {
         const res = {
             x:
                 board.offset.x +
-                this.currLayer.layerOffset.x +
+                this.currLayer.layerOffset.x * board.zoomVal * 5 +
                 this.thirdOffset.x,
             y:
                 board.offset.y +
-                this.currLayer.layerOffset.y +
+                this.currLayer.layerOffset.y * board.zoomVal * 5 +
                 this.thirdOffset.y,
         };
         for (const orb of this.orbs) {
