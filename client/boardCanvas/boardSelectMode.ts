@@ -118,7 +118,7 @@ export class BoardSelectMode {
     handleSwitchEvent(key: string) {
         if (key === 'Escape' || key === '1') {
             this.exitOnNextStep = true;
-        } else if (key === 'Backspace' || key === '2') {
+        } else if (key === 'Backspace' || key === 'Delete' || key === '2') {
             const idList: number[] = [];
             for (const obj of this.selectedObjects) {
                 idList.push(obj.objectId);

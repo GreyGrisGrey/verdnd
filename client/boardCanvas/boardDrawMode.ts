@@ -85,11 +85,11 @@ export class BoardDrawMode {
 
     // Flips which control buttons are disabled.
     flipBoxes() {
-        this.boxItems[1].disabled = this.currDraw === 1;
+        this.boxItems[1].disabled = this.selectMode;
         this.boxItems[2].disabled = this.currDraw === 2;
         this.boxItems[3].disabled = this.currDraw === 3;
         this.boxItems[4].disabled = this.currDraw === 4;
-        this.boxItems[6].disabled = this.selectMode;
+        this.boxItems[5].disabled = this.currDraw === 5;
         this.boxItems[8].disabled = true;
         this.boxItems[9].disabled = true;
         this.boxItems[0].disabled = true;
@@ -106,31 +106,31 @@ export class BoardDrawMode {
 
     // Handles key press events when draw mode is active.
     handleSwitchEvent(key: string) {
-        if (key === '1') {
+        if (key === '2') {
             this.currParams = {
                 ellipse: false,
                 fill: true,
                 close: true,
                 rect: true,
             };
-            this.currDraw = 1;
-        } else if (key === '2') {
+            this.currDraw = 2;
+        } else if (key === '3') {
             this.currParams = {
                 ellipse: true,
                 fill: true,
                 close: true,
             };
-            this.currDraw = 2;
-        } else if (key === '3') {
-            this.currParams = { ellipse: false, fill: true, close: true };
             this.currDraw = 3;
         } else if (key === '4') {
-            this.currParams = { ellipse: false, fill: false, close: false };
+            this.currParams = { ellipse: false, fill: true, close: true };
             this.currDraw = 4;
-        } else if (key === '5' && !this.selectMode) {
+        } else if (key === '5') {
+            this.currParams = { ellipse: false, fill: false, close: false };
+            this.currDraw = 5;
+        } else if (key === '6' && !this.selectMode) {
             this.setNewObject();
         }
-        if (key === '6') {
+        if (key === '1') {
             this.selectMode = !this.selectMode;
         } else {
             this.selectMode = false;
@@ -144,9 +144,9 @@ export class BoardDrawMode {
             this.handleSwitchEvent(key);
         } else if (
             this.active &&
-            key === '5' &&
+            key === '6' &&
             this.params.length > 2 &&
-            this.currDraw >= 3
+            this.currDraw >= 4
         ) {
             this.handleSwitchEvent(key);
         } else if (this.active && key === '7') {
@@ -165,7 +165,7 @@ export class BoardDrawMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                if (this.currDraw < 3 || this.selectMode) {
+                if (this.currDraw < 4 || this.selectMode) {
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x,
@@ -209,7 +209,7 @@ export class BoardDrawMode {
                         ];
                         this.selectState = 2;
                     }
-                } else if (this.active && this.currDraw < 3) {
+                } else if (this.active && this.currDraw < 4) {
                     const res = board.determineTile(
                         board.mouseCoords.x,
                         board.mouseCoords.y,
@@ -225,7 +225,7 @@ export class BoardDrawMode {
     // Finalizes the current object and sends it to the server.
     setNewObject() {
         let tempObj: ObjectCreatePayload;
-        if (this.currDraw < 3 && this.params.length === 2) {
+        if (this.currDraw < 4 && this.params.length === 2) {
             const res = rectangleFromPoints(this.params[0], this.params[1]);
             tempObj = {
                 params: this.currParams,
@@ -245,7 +245,7 @@ export class BoardDrawMode {
                     movable: false,
                 },
             };
-        } else if (this.currDraw >= 3 && this.params.length > 2) {
+        } else if (this.currDraw >= 4 && this.params.length > 2) {
             tempObj = {
                 params: this.currParams,
                 points: this.params,
@@ -318,7 +318,7 @@ export class BoardDrawMode {
                     ],
                 );
             }
-        } else if (this.currDraw < 3 && this.params.length >= 1) {
+        } else if (this.currDraw < 4 && this.params.length >= 1) {
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,
@@ -332,7 +332,7 @@ export class BoardDrawMode {
                 { x: res2[0] + res2[2], y: res2[1] + res2[3] },
                 { x: res2[0], y: res2[1] + res2[3] },
             ]);
-        } else if (this.params.length >= 2 && this.currDraw >= 3) {
+        } else if (this.params.length >= 2 && this.currDraw >= 4) {
             const newObj = new BoardObject(
                 -1,
                 colourSquare.style.background,

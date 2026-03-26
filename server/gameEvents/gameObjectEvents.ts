@@ -50,7 +50,6 @@ export async function createObj(
         currGame.objectLock = false;
         currGame.broadcast(sendObj);
     }
-    console.log('object creation complete', Date.now());
 }
 
 export async function updateObjLayer(

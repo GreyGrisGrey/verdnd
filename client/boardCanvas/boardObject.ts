@@ -251,7 +251,9 @@ export class BoardObject {
     updateFromPayload(newSetting: ObjectCreatePayload) {
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
+        this.points = newSetting.points;
         this.setCenter();
+        this.currPathSpecs[0] = 0;
         this.updateToken(newSetting.token);
     }
 
@@ -273,7 +275,7 @@ export class BoardObject {
     updatePoint(newX: number, newY: number, specificPoint: number) {
         this.points[specificPoint].x = newX;
         this.points[specificPoint].y = newY;
-        this.currPathSpecs = [0, 0, 0];
+        this.currPathSpecs[0] = 0;
         this.setCenter();
         this.updateObject();
     }
@@ -329,7 +331,7 @@ export class BoardObject {
                 pt.y = transform.y * percentY + pt.y;
             }
         }
-        this.currPathSpecs = [0, 0, 0];
+        this.currPathSpecs[0] = 0;
         this.setCenter();
         this.updateObject();
     }
