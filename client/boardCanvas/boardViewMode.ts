@@ -176,10 +176,29 @@ export class BoardViewMode {
             ctx.fillStyle = '#222222';
             ctx.fillText(newText, res3.x, res3.y);
         } else {
+            const rad2 = Math.sqrt(
+                Math.pow(Math.abs(res.x - this.start.x - 0.5), 2) +
+                    Math.pow(Math.abs(res.y - this.start.y - 0.5), 2),
+            );
+
             ctx.beginPath();
             ctx.moveTo(res2.x, res2.y);
             ctx.lineTo(res3.x, res3.y);
             ctx.stroke();
+
+            ctx.font = '20px serif';
+            ctx.fillStyle = '#eeeeee';
+            ctx.textAlign = 'center';
+            const newText = `${Math.round(rad2 * 500) / 100} feet`;
+            const textSize = ctx.measureText(newText).width;
+            ctx.fillRect(
+                res3.x - textSize / 2 - 5,
+                res3.y - 15,
+                textSize + 10,
+                25,
+            );
+            ctx.fillStyle = '#222222';
+            ctx.fillText(newText, res3.x, res3.y);
         }
     }
 

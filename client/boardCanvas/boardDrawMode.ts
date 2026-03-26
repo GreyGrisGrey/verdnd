@@ -90,6 +90,7 @@ export class BoardDrawMode {
         this.boxItems[3].disabled = this.currDraw === 3;
         this.boxItems[4].disabled = this.currDraw === 4;
         this.boxItems[5].disabled = this.currDraw === 5;
+        this.boxItems[6].disabled = this.params.length < 2;
         this.boxItems[8].disabled = true;
         this.boxItems[9].disabled = true;
         this.boxItems[0].disabled = true;
@@ -181,6 +182,9 @@ export class BoardDrawMode {
                             CoordModes.Vertex,
                         ),
                     );
+                    this.boxItems[6].disabled =
+                        this.params.length < 3 &&
+                        (this.params.length < 2 || this.currDraw !== 5);
                 }
             }
         });

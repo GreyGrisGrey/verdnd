@@ -30,7 +30,7 @@ export class LeftBarManager {
 
     toggleVisible() {
         leftBar.style.visibility = this.visible ? 'visible' : 'hidden';
-        hideLeft.style.left = this.visible ? '260px' : '0px';
+        hideLeft.style.right = this.visible ? '-50px' : '200px';
         hideLeft.style.visibility = 'visible';
         hideLeft.innerText = this.visible ? 'Hide' : 'Show';
     }

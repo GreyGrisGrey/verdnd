@@ -31,12 +31,12 @@
             "view": "Press 5 : Recenter camera."
         },
         {
-            "draw": "Complete in progress polyline or wall object.",
+            "draw": "Press 6 : Complete in progress polyline or wall object.",
             "select": "Press 6 : Turn currently selected object into a token allowing players to move it\nColours based on currently selected colour in colour picker.",
             "view": "Press 6 : Toggle laser visibility."
         },
         {
-            "draw": "Cancel creation of in progress object.",
+            "draw": "Press Escape/7 : Cancel creation of in progress object.",
             "select": "Press 7 : Rename currently selected token",
             "view": "Press 7 : Recolour laser.\nColours based on currently selected colour in colour picker."
         },

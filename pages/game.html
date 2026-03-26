@@ -19,7 +19,7 @@
         top: 0px;
         background-color: #222222;
         visibility: visible;
-        z-index: 9;
+        z-index: 4;
     }
 
     #playerDataBox {
@@ -46,54 +46,54 @@
         <input type="text" id="measureDegrees" />
     </div>
     <div class="bottomBox" id="bottomBox1">
-        <button class="bottomDrawBox" id="bottomDrawBox1">Select [1]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox1">Exit [1] [Esc]</button>
-        <button class="bottomViewBox" id="bottomViewBox1">WIP1</button>
+        <button class="bottomButton" id="bottomDrawBox1">Select [1]</button>
+        <button class="bottomButton" id="bottomSelectBox1">Exit [1] [Esc]</button>
+        <button class="bottomButton" id="bottomViewBox1">WIP1</button>
     </div>
     <div class="bottomBox" id="bottomBox2">
-        <button class="bottomDrawBox" id="bottomDrawBox2">Rect [2]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox2">Delete [2] [Back]</button>
-        <button class="bottomViewBox" id="bottomViewBox2">Zoom [Scroll]</button>
+        <button class="bottomButton" id="bottomDrawBox2">Rect [2]</button>
+        <button class="bottomButton" id="bottomSelectBox2">Delete [2] [Back]</button>
+        <button class="bottomButton" id="bottomViewBox2">Zoom [Scroll]</button>
     </div>
     <div class="bottomBox" id="bottomBox3">
-        <button class="bottomDrawBox" id="bottomDrawBox3">Ellipse [3]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox3">Recolour [3]</button>
-        <button class="bottomViewBox" id="bottomViewBox3">Pan</button>
+        <button class="bottomButton" id="bottomDrawBox3">Ellipse [3]</button>
+        <button class="bottomButton" id="bottomSelectBox3">Recolour [3]</button>
+        <button class="bottomButton" id="bottomViewBox3">Pan</button>
     </div>
     <div class="bottomBox" id="bottomBox4">
-        <button class="bottomDrawBox" id="bottomDrawBox4">Poly [4]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox4">Layer U. [4]</button>
-        <button class="bottomViewBox" id="bottomViewBox4">Move</button>
+        <button class="bottomButton" id="bottomDrawBox4">Poly [4]</button>
+        <button class="bottomButton" id="bottomSelectBox4">Layer U. [4]</button>
+        <button class="bottomButton" id="bottomViewBox4">Move</button>
     </div>
     <div class="bottomBox" id="bottomBox5">
-        <button class="bottomDrawBox" id="bottomDrawBox5">Wall [5]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox5">Layer D. [5]</button>
-        <button class="bottomViewBox" id="bottomViewBox5">Recenter [5]</button>
+        <button class="bottomButton" id="bottomDrawBox5">Wall [5]</button>
+        <button class="bottomButton" id="bottomSelectBox5">Layer D. [5]</button>
+        <button class="bottomButton" id="bottomViewBox5">Recenter [5]</button>
     </div>
     <div class="bottomBox" id="bottomBox6">
-        <button class="bottomDrawBox" id="bottomDrawBox6">Close [6]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox6">Tokenize [6]</button>
-        <button class="bottomViewBox" id="bottomViewBox6">Toggle Laser [6]</button>
+        <button class="bottomButton" id="bottomDrawBox6">Close [6]</button>
+        <button class="bottomButton" id="bottomSelectBox6">Tokenize [6]</button>
+        <button class="bottomButton" id="bottomViewBox6">Toggle Laser [6]</button>
     </div>
     <div class="bottomBox" id="bottomBox7">
-        <button class="bottomDrawBox" id="bottomDrawBox7">Cancel [7]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox7">Rename (T) [7]</button>
-        <button class="bottomViewBox" id="bottomViewBox7">Recolour Laser [7]</button>
+        <button class="bottomButton" id="bottomDrawBox7">Cancel [7]</button>
+        <button class="bottomButton" id="bottomSelectBox7">Rename (T) [7]</button>
+        <button class="bottomButton" id="bottomViewBox7">Recolour Laser [7]</button>
     </div>
     <div class="bottomBox" id="bottomBox8">
-        <button class="bottomDrawBox" id="bottomDrawBox8">WIP1 [8]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox8">Recolour (T) [8]</button>
-        <button class="bottomViewBox" id="bottomViewBox8">Start Measure [8]</button>
+        <button class="bottomButton" id="bottomDrawBox8">WIP1 [8]</button>
+        <button class="bottomButton" id="bottomSelectBox8">Recolour (T) [8]</button>
+        <button class="bottomButton" id="bottomViewBox8">Start Measure [8]</button>
     </div>
     <div class="bottomBox" id="bottomBox9">
-        <button class="bottomDrawBox" id="bottomDrawBox9">WIP2 [9]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox9">Resize [9]</button>
-        <button class="bottomViewBox" id="bottomViewBox9">Stop Measure [9]</button>
+        <button class="bottomButton" id="bottomDrawBox9">WIP2 [9]</button>
+        <button class="bottomButton" id="bottomSelectBox9">Resize [9]</button>
+        <button class="bottomButton" id="bottomViewBox9">Stop Measure [9]</button>
     </div>
     <div class="bottomBox" id="bottomBox0">
-        <button class="bottomDrawBox" id="bottomDrawBox0">WIP3 [0]</button>
-        <button class="bottomSelectBox" id="bottomSelectBox0">Rebuild [0]</button>
-        <button class="bottomViewBox" id="bottomViewBox0">WIP2</button>
+        <button class="bottomButton" id="bottomDrawBox0">WIP3 [0]</button>
+        <button class="bottomButton" id="bottomSelectBox0">Rebuild [0]</button>
+        <button class="bottomButton" id="bottomViewBox0">WIP2</button>
     </div>
 </div>
 
@@ -113,7 +113,7 @@
         bottom: 0px;
         pointer-events: auto;
         background: rgba(200, 200, 200, 1);
-        z-index: 11;
+        z-index: 3;
     }
 
     #bottomTooltip {
@@ -128,15 +128,7 @@
         font-size: 12px;
     }
 
-    .bottomDrawBox:disabled {
-        background-color: #aaaaaa;
-    }
-
-    .bottomSelectBox:disabled {
-        background-color: #aaaaaa;
-    }
-
-    .bottomViewBox:disabled {
+    .bottomButton:disabled {
         background-color: #aaaaaa;
     }
 
@@ -147,7 +139,7 @@
         bottom: 30px;
         background-color: rgba(200, 200, 200, 1);
         border: solid black;
-        z-index: 9;
+        z-index: 2;
         left: 400px;
         font-size: 8px;
     }
@@ -162,33 +154,14 @@
         border: solid black;
     }
 
-    .bottomDrawBox {
+    .bottomButton {
         position: absolute;
         height: 56px;
         width: 56px;
         bottom: 0px;
         left: 0px;
         font-size: 12px;
-    }
-
-    .bottomSelectBox {
-        position: absolute;
-        height: 56px;
-        width: 56px;
-        bottom: 0px;
-        left: 0px;
-        visibility: hidden;
-        font-size: 12px;
-    }
-
-    .bottomViewBox {
-        position: absolute;
-        height: 56px;
-        width: 56px;
-        bottom: 0px;
-        left: 0px;
-        visibility: hidden;
-        font-size: 12px;
+        border-radius: 0px;
     }
 </style>
 <title>Gameboard</title>
@@ -245,7 +218,7 @@
 <style>
     .modeButton {
         background: rgba(200, 200, 200, 1);
-        z-index: 3;
+        z-index: 2;
         width: 100px;
         height: 50px;
         pointer-events: auto;
@@ -326,7 +299,6 @@
 
     #hideLeftBar {
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
         top: 8px;
         border: solid black;
         height: 30px;
@@ -335,19 +307,16 @@
 
     #colourPicker {
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
         top: 168px;
     }
 
     #colourBackground {
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
         top: 208px;
     }
 
     #showUser {
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
         top: 48px;
         border: solid black;
         height: 30px;
@@ -356,7 +325,6 @@
 
     #showColour {
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
         top: 88px;
         border: solid black;
         height: 30px;
@@ -365,7 +333,6 @@
 
     #showRoll {
         position: absolute;
-        background-color: rgba(255, 255, 255, 0.25);
         top: 128px;
         border: solid black;
         height: 30px;
@@ -376,7 +343,7 @@
         position: absolute;
         visibility: hidden;
         background-color: rgba(200, 200, 200, 1);
-        z-index: 9;
+        z-index: 2;
         height: 280px;
         width: 250px;
         overflow-y: scroll;
