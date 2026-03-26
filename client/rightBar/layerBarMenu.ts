@@ -2,6 +2,7 @@ import { GREY, RED } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
+import { ModeManager } from '../boardCanvas/modeManager.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const currLayerText = getRequiredElement('currLayerText', HTMLElement);
 const layerBottom = getRequiredElement('layerBottom', HTMLElement);
@@ -13,6 +14,7 @@ const upButton = getRequiredElement('layerUpButton', HTMLElement);
 const downButton = getRequiredElement('layerDownButton', HTMLElement);
 const storedLayerStates: Map<number, LayerState> = new Map();
 const serveInter = new tempStore();
+const modeMan = new ModeManager();
 
 // Class managing the right-bar's layer menu.
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
@@ -214,6 +216,7 @@ export class LayerMenu {
                 if (this.currSelect !== num) {
                     this.exitCurrSelect();
                     this.currSelect = num;
+                    modeMan.drawMan.updateLayer(num);
                     this.enterCurrSelect();
                 }
             }

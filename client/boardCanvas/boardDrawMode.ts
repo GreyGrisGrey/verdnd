@@ -39,7 +39,7 @@ export class BoardDrawMode {
     currLayer: BoardLayer;
 
     constructor() {
-        this.currDraw = 1;
+        this.currDraw = 2;
         this.active = false;
         this.params = [];
         this.selectMode = false;
@@ -58,6 +58,17 @@ export class BoardDrawMode {
         this.setUpBoxes();
         this.flipBoxes();
         this.toggleBoxes();
+    }
+
+    // Updates the currently active layer.
+    updateLayer(newLayer: number) {
+        if (storedLayers.has(newLayer)) {
+            this.currLayer = storedLayers.get(newLayer)!;
+        } else {
+            console.log(
+                'Draw mode: requested layer does not exist on storedLayers',
+            );
+        }
     }
 
     // Sets up control buttons.
@@ -172,8 +183,14 @@ export class BoardDrawMode {
                 if (this.currDraw < 4 || this.selectMode) {
                     this.params.push(
                         board.determineTile(
-                            board.mouseCoords.x,
-                            board.mouseCoords.y,
+                            board.mouseCoords.x -
+                                this.currLayer.layerOffset.x *
+                                    board.zoomVal *
+                                    5,
+                            board.mouseCoords.y -
+                                this.currLayer.layerOffset.y *
+                                    board.zoomVal *
+                                    5,
                             CoordModes.Center,
                         ),
                     );
@@ -199,8 +216,12 @@ export class BoardDrawMode {
                     return;
                 } else if (this.active && this.selectMode) {
                     const newPos = board.determineTile(
-                        board.mouseCoords.x + 1,
-                        board.mouseCoords.y + 1,
+                        board.mouseCoords.x +
+                            1 -
+                            this.currLayer.layerOffset.x * board.zoomVal * 5,
+                        board.mouseCoords.y +
+                            1 -
+                            this.currLayer.layerOffset.y * board.zoomVal * 5,
                         CoordModes.Center,
                     );
                     if (
@@ -218,8 +239,10 @@ export class BoardDrawMode {
                     }
                 } else if (this.active && this.currDraw < 4) {
                     const res = board.determineTile(
-                        board.mouseCoords.x,
-                        board.mouseCoords.y,
+                        board.mouseCoords.x -
+                            this.currLayer.layerOffset.x * board.zoomVal * 5,
+                        board.mouseCoords.y -
+                            this.currLayer.layerOffset.y * board.zoomVal * 5,
                         CoordModes.Center,
                     );
                     this.params.push({ x: res.x, y: res.y });
@@ -253,6 +276,10 @@ export class BoardDrawMode {
                 },
             };
         } else if (this.currDraw >= 4 && this.params.length > 2) {
+            for (const pt of this.params) {
+                pt.x -= this.currLayer.layerOffset.x;
+                pt.y -= this.currLayer.layerOffset.y;
+            }
             tempObj = {
                 params: this.currParams,
                 points: this.params,
@@ -281,6 +308,10 @@ export class BoardDrawMode {
                 movable: false,
             },
         });
+        for (const pt of tempObj.points) {
+            pt.x += this.currLayer.layerOffset.x;
+            pt.y += this.currLayer.layerOffset.y;
+        }
         this.params = [];
         this.tempObject = tempObj;
         this.stickTemp = true;
@@ -306,7 +337,11 @@ export class BoardDrawMode {
                     board.mouseCoords.y,
                     CoordModes.Center,
                 );
-                const res2 = rectangleFromPoints(this.params[0], res);
+                const extParams = {
+                    x: this.params[0].x + this.currLayer.layerOffset.x,
+                    y: this.params[0].y + this.currLayer.layerOffset.y,
+                };
+                const res2 = rectangleFromPoints(extParams, res);
                 const col = WHITE_50;
                 return new BoardObject(
                     -1,
@@ -331,7 +366,11 @@ export class BoardDrawMode {
                 board.mouseCoords.y,
                 CoordModes.Center,
             );
-            const res2 = rectangleFromPoints(this.params[0], res);
+            const extParams = {
+                x: this.params[0].x + this.currLayer.layerOffset.x,
+                y: this.params[0].y + this.currLayer.layerOffset.y,
+            };
+            const res2 = rectangleFromPoints(extParams, res);
             const col = colourSquare.style.background;
             return new BoardObject(-1, col, this.currParams, [
                 { x: res2[0], y: res2[1] },

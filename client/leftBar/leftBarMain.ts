@@ -22,12 +22,14 @@ export class LeftBarManager {
         this.addEventListeners();
     }
 
+    // Disables certain buttons if the client is not recognized as a GM.
     toggleModeSwitcher(isGm: boolean) {
         if (!isGm) {
             colourBackground.style.visibility = 'hidden';
         }
     }
 
+    // Toggles the visibility of the entire left box menu.
     toggleVisible() {
         leftBar.style.visibility = this.visible ? 'visible' : 'hidden';
         hideLeft.style.right = this.visible ? '-50px' : '200px';
@@ -54,6 +56,8 @@ export class LeftBarManager {
         });
     }
 
+    // Toggles the currently active left box submenu.
+    // TODO use an enum here
     toggleActive(newAct: string) {
         if (newAct === 'COLOUR') {
             userBox.toggleActive(false);

@@ -190,6 +190,7 @@ export class tempStore {
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
+                    modeMan.drawMan.updateLayer(0);
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
