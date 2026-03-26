@@ -71,9 +71,11 @@ export function layerTableToPayloads(rows: any[]) {
 export function rollTableToPayloads(rows: any[]) {
     const mapping: Map<number, RollComplete> = new Map();
     for (const row of rows) {
-        const structData: SingleRoll[] = row[3]
-            .split(':')
-            .map((item: string) => {
+        let structData: SingleRoll[];
+        if (row[3] === '') {
+            structData = [];
+        } else {
+            structData = row[3].split(':').map((item: string) => {
                 let newItem = item.split(',');
                 return {
                     result: Number(newItem[0]),
@@ -81,6 +83,7 @@ export function rollTableToPayloads(rows: any[]) {
                     exclude: newItem[2] === 'true',
                 };
             });
+        }
         mapping.set(row[0], {
             entity: Entity.Roll,
             action: Action.Update,
@@ -161,7 +164,7 @@ export function updateLayerToRow(payload: LayerUpdateEvent) {
 }
 
 export function rollPayloadToRow(payload: RollComplete) {
-    let convertString = (payload.result as any).rolls
+    let convertString = payload.result.rolls
         .map((item: SingleRoll) => {
             return `${item.result},${item.size},${item.exclude}`;
         })

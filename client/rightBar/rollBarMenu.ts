@@ -1,6 +1,7 @@
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
-import { RollComplete, RollResult } from '../../shared/objectEvents.ts';
+import { RollComplete } from '../../shared/objectEvents.ts';
+import { ChatBox } from './chatBox.ts';
 const serveInter = new tempStore();
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
@@ -14,6 +15,7 @@ export class RollMenu {
     modBox: HTMLElement;
     currChats: HTMLElement[];
     currBoxes: HTMLElement[];
+    currElements: Map<number, ChatBox>;
 
     constructor() {
         this.textBox = getRequiredElement('chatBoxTextBox', HTMLElement);
@@ -22,6 +24,7 @@ export class RollMenu {
         this.modBox = this.textBox;
         this.currChats = [];
         this.currBoxes = [];
+        this.currElements = new Map();
     }
 
     // Toggles if the roll menu is active or not.
@@ -31,12 +34,6 @@ export class RollMenu {
         this.step();
         chatBox.style.visibility = this.active ? 'inherit' : 'hidden';
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
-        for (const text of this.currChats) {
-            text.style.visibility = this.active ? 'inherit' : 'hidden';
-        }
-        for (const box of this.currBoxes) {
-            box.style.visibility = this.active ? 'inherit' : 'hidden';
-        }
     }
 
     // Performs a single step updating the roll menu.
@@ -48,59 +45,16 @@ export class RollMenu {
             chatBox.style.height = rH;
         }
         const data = serveInter.getDice();
-        if (data) {
-            this.updateChats(data);
-        }
     }
 
     // Constructs a single chat box for the roll menu.
-    constructChat(currIndex: number) {
-        const newBox = document.createElement('div');
-        const newText = document.createElement('p');
-        chatBox.append(newBox);
-        newBox.append(newText);
-        newBox.style.position = 'absolute';
-        newBox.style.top = currIndex * 90 + 'px';
-        newBox.style.width = '246px';
-        newBox.style.height = '90px';
-        newBox.style.border = 'solid #000000';
-        newBox.style.visibility = 'inherit';
-
-        newText.style.position = 'absolute';
-        newText.style.width = '246px';
-        newText.style.left = '0px';
-        newText.style.height = '60px';
-        newText.style.overflow = 'hidden';
-        newText.style.visibility = 'inherit';
-        newText.style.whiteSpace = 'nowrap';
-        this.currChats.push(newText);
-        this.currBoxes.push(newBox);
-    }
-
-    // Updates the text of the chat boxes.
-    updateChats(data: Map<number, RollComplete>) {
-        for (const [key, val] of data) {
-            const targetNum = key;
-            this.updateChat(val.result, targetNum, val.userName);
+    constructChat(id: number, data: RollComplete) {
+        const targetNum = id;
+        if (!this.currElements.has(targetNum)) {
+            this.currElements.set(targetNum, new ChatBox(true, targetNum));
         }
-    }
-
-    // Updates a chat box.
-    updateChat(dataLine: RollResult, currIndex: number, userName: string) {
-        while (this.currChats.length <= currIndex) {
-            this.constructChat(this.currChats.length);
-        }
-        let newString = '';
-        console.log(dataLine);
-        for (const roll of dataLine.rolls) {
-            newString += `${roll.result} + `;
-        }
-        newString = newString.slice(0, newString.length - 3);
-        this.currChats[currIndex].innerText =
-            `${userName} Rolled\n` +
-            newString +
-            `\nResult = ${dataLine.result}`;
-        this.currChats[currIndex].style.visibility = 'inherit';
-        this.currBoxes[currIndex].style.visibility = 'inherit';
+        this.currElements
+            .get(targetNum)!
+            .updateRoll(data.result, data.userName);
     }
 }
