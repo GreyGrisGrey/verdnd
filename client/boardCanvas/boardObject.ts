@@ -7,6 +7,7 @@ import type {
 } from '../../shared/objectEvents.ts';
 import { Token } from '../../shared/objectEvents.ts';
 import { tempStore } from '../serveInter.ts';
+import { ImageObject } from './imageObject.ts';
 const serveInter = new tempStore();
 
 // General purpose superclass for any shape that appears on the board.
@@ -17,7 +18,6 @@ export class BoardObject {
     zOrder: number;
     colour: ColInst | string;
     hasImage: boolean;
-    imagePath: string;
     centerPoint: Vec2;
     selected: boolean;
     layerId: number;
@@ -28,6 +28,7 @@ export class BoardObject {
     owner: string;
     points: Vec2[];
     drawParams: ObjectParams;
+    imageObj: ImageObject;
 
     constructor(
         objectId: number,
@@ -40,7 +41,6 @@ export class BoardObject {
         this.zOrder = 0;
         this.colour = colour;
         this.hasImage = false;
-        this.imagePath = '';
         this.selected = false;
         this.centerPoint = { x: 0, y: 0 };
         this.layerId = 0;
@@ -55,11 +55,42 @@ export class BoardObject {
         };
         this.owner = 'None';
         this.points = structure;
+        this.imageObj = new ImageObject();
         this.setCenter();
+    }
+
+    async updateImage(newSource: string) {
+        const br = this.getBottomRight();
+        const tl = this.getTopLeft();
+        if (this.drawParams.fill) {
+            await this.imageObj.updateImage(
+                br.x - tl.x,
+                br.y - tl.y,
+                newSource,
+            );
+            this.currPathSpecs[0] = 0;
+        } else {
+            console.log(
+                'how are you planning on adding an image to a wall object',
+            );
+        }
     }
 
     updateObject() {
         serveInter.updateObject(this.payloadFromObject());
+    }
+
+    updateTopLeft() {
+        let minX = this.points[0].x;
+        let minY = this.points[0].y;
+        for (const pt of this.points) {
+            if (pt.x < minX) {
+                minX = pt.x;
+            }
+            if (pt.y < minY) {
+                minY = pt.y;
+            }
+        }
     }
 
     getTopLeft() {
@@ -77,6 +108,19 @@ export class BoardObject {
             x: minX,
             y: minY,
         };
+    }
+
+    updateBottomRight() {
+        let maxX = this.points[0].x;
+        let maxY = this.points[0].y;
+        for (const pt of this.points) {
+            if (pt.x > maxX) {
+                maxX = pt.x;
+            }
+            if (pt.y > maxY) {
+                maxY = pt.y;
+            }
+        }
     }
 
     getBottomRight() {
@@ -118,6 +162,7 @@ export class BoardObject {
         ) {
             this.buildPath(squareSize, offset);
             this.ctx = ctx;
+            this.updateImage('./client/assets/gay.jpg');
         }
         if (this.token.active) {
             this.drawToken(this.ctx as any, squareSize, offset);
@@ -127,13 +172,21 @@ export class BoardObject {
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }
-        if (!this.drawParams.fill) {
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = this.colour.toString();
-            ctx.stroke(this.currPath);
-        } else {
-            ctx.fillStyle = this.colour.toString();
-            ctx.fill(this.currPath);
+        const tl = this.getTopLeft();
+        if (
+            !this.imageObj.draw(squareSize, {
+                x: offset.x + tl.x * squareSize,
+                y: offset.y + tl.y * squareSize,
+            })
+        ) {
+            if (!this.drawParams.fill) {
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = this.colour.toString();
+                ctx.stroke(this.currPath);
+            } else {
+                ctx.fillStyle = this.colour.toString();
+                ctx.fill(this.currPath);
+            }
         }
         if (this.token.active) {
             this.drawToken(this.ctx as any, squareSize, offset);

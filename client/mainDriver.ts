@@ -22,7 +22,6 @@ let prevLaser = 0;
 
 async function setup() {
     serveInter.setup();
-    await board.updateImage('./client/assets/gay.jpg');
     requestAnimationFrame(mainLoop);
 }
 

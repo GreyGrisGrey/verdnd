@@ -223,8 +223,8 @@ export class Board {
         }
     }
 
-    async updateImage(newSource: string) {
-        this.bgImage.updateImageSource(newSource);
+    updateImage(newSource: string) {
+        this.bgImage.updateImage(can.width, can.height, newSource, true);
     }
 
     // Draws the board.

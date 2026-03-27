@@ -7,7 +7,8 @@ export class ImageObject {
     imagePath: string;
     image: any;
     imageOffset: Vec2;
-    constructor() {
+    drawFlag: boolean;
+    constructor(source: string = '') {
         this.imagePath = '';
         this.image = new Image(300, 300);
         if (can.width !== window.innerWidth) {
@@ -15,63 +16,83 @@ export class ImageObject {
             can.height = window.innerHeight;
         }
         this.imageOffset = { x: 0, y: 0 };
+        this.drawFlag = false;
+        if (source !== '') {
+            this.updateImageSource(source);
+        }
+    }
+
+    async updateImage(
+        width: number,
+        height: number,
+        newSource: string,
+        bg: boolean = false,
+    ) {
+        this.drawFlag = false;
+        if (newSource !== this.imagePath) {
+            await this.updateImageSource(newSource);
+        }
+        this.updateImageSize(width, height, bg);
+        this.drawFlag = true;
     }
 
     async updateImageSource(newSource: string) {
         try {
-            // Fetch the image from the URL
-            const response = await fetch(newSource); //
-
-            // Check for successful response
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            // Read the response body as a Blob
-            const imageBlob = await response.blob(); //
-
-            // Create a local object URL for the Blob
-            const objectUrl = URL.createObjectURL(imageBlob); //
-
-            // Set the src attribute of the image element
-            this.image.src = objectUrl;
             this.imagePath = newSource;
+            const response = await fetch(newSource);
+            if (!response.ok) {
+                throw new Error(`Could not fetch image`);
+            }
+            const imageBlob = await response.blob();
+            const objectUrl = URL.createObjectURL(imageBlob);
+            this.image.src = objectUrl;
             await new Promise<void>((resolve, reject) => {
                 this.image.onload = () => resolve();
                 this.image.onerror = () =>
                     reject(new Error('Image failed to load'));
             });
             this.image.overflow = 'hidden';
-            this.updateImageSize();
         } catch (error) {
-            console.error('Error fetching image:', error);
+            console.error('Could not fetch image');
         }
     }
 
-    updateImageSize() {
-        if (
-            this.image.naturalHeight !== can.height ||
-            this.image.naturalWidth !== can.width
-        ) {
-            const rescaleX = can.width / this.image.naturalWidth;
-            const rescaleY = can.height / this.image.naturalHeight;
-            const minRescale = Math.min(rescaleX, rescaleY);
-            this.image.width = this.image.naturalWidth * minRescale;
-            this.image.height = this.image.naturalHeight * minRescale;
-            this.imageOffset.x = (can.width - this.image.width) / 2;
-            this.imageOffset.y = (can.height - this.image.height) / 2;
+    updateImageSize(width: number, height: number, bg: boolean) {
+        if (!bg) {
+            if (
+                this.image.naturalHeight !== width ||
+                this.image.naturalWidth !== height
+            ) {
+                this.image.width = width;
+                this.image.height = height;
+            }
+        } else {
+            if (
+                this.image.naturalHeight !== width ||
+                this.image.naturalWidth !== height
+            ) {
+                const rescaleX = can.width / this.image.naturalWidth;
+                const rescaleY = can.height / this.image.naturalHeight;
+                const minRescale = Math.min(rescaleX, rescaleY);
+                this.image.width = this.image.naturalWidth * minRescale;
+                this.image.height = this.image.naturalHeight * minRescale;
+                this.imageOffset.x = (can.width - this.image.width) / 2;
+                this.imageOffset.y = (can.height - this.image.height) / 2;
+            }
         }
     }
 
-    draw() {
-        if (this.imagePath !== '') {
+    draw(squareSize: number = 1, offset: Vec2 = { x: 0, y: 0 }) {
+        if (this.drawFlag) {
             ctx.drawImage(
                 this.image,
-                this.imageOffset.x,
-                this.imageOffset.y,
-                this.image.width,
-                this.image.height,
+                this.imageOffset.x + offset.x,
+                this.imageOffset.y + offset.y,
+                this.image.width * squareSize,
+                this.image.height * squareSize,
             );
+            return true;
         }
+        return false;
     }
 }
