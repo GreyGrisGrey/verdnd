@@ -5,6 +5,7 @@ import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, RED, WHITE } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
+import { ImageObject } from './imageObject.ts';
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const storedObjects: Map<number, BoardObject> = new Map();
@@ -30,6 +31,7 @@ export class Board {
     activeLayer: number;
     laserCol: string;
     zLayers: Map<number, BoardLayer>;
+    bgImage: ImageObject;
 
     constructor() {
         this.zoomGlobal = 5;
@@ -47,6 +49,7 @@ export class Board {
         this.activeLayer = 0;
         this.laserCol = BLUE;
         this.zLayers = new Map();
+        this.bgImage = new ImageObject();
     }
 
     recolourLaser(newCol: string) {
@@ -220,9 +223,14 @@ export class Board {
         }
     }
 
+    async updateImage(newSource: string) {
+        this.bgImage.updateImageSource(newSource);
+    }
+
     // Draws the board.
     draw() {
         const squareSize = 5 * this.zoomVal;
+        this.bgImage.draw();
         for (let i = 0; i < this.zLayers.size; i++) {
             const layer = this.zLayers.get(i)!;
             layer.drawLayer(

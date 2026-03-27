@@ -20,8 +20,9 @@ let prevLaser = 0;
 // The order of events up there is unfortunately quite important.
 // Try not to poke it too much.
 
-function setup() {
+async function setup() {
     serveInter.setup();
+    await board.updateImage('./client/assets/gay.jpg');
     requestAnimationFrame(mainLoop);
 }
 
