@@ -51,9 +51,7 @@ const server = createServer(async (req: any, res: any) => {
             path.join(__dirname, 'client/assets/games', location[3]),
             function (e: any) {
                 if (!e || (e && e.code === 'EEXIST')) {
-                    //do something with contents
                 } else {
-                    //debug
                     console.log(e);
                 }
             },
@@ -64,16 +62,13 @@ const server = createServer(async (req: any, res: any) => {
             location[3],
             'obj' + location[4] + '.png',
         );
-        console.log(filePath);
         const fileStream = fs.createWriteStream(filePath);
         req.pipe(fileStream);
         req.on('end', () => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ win: 'win' }));
         });
-
         req.on('error', (err: any) => {
-            console.log(err);
             res.writeHead(500);
             res.end('Error uploading file');
         });

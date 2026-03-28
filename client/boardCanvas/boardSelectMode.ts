@@ -144,7 +144,7 @@ export class BoardSelectMode {
             this.attemptRename();
         } else if (key === '8') {
             this.attemptTokenRecolour();
-        } else if (key === '9') {
+        } else if (key === '9' && this.selectedObjects.length === 1) {
             for (const obj of this.orbs) {
                 obj.deconstruct();
             }
@@ -152,7 +152,7 @@ export class BoardSelectMode {
             this.setUpCorners();
             this.updateCornerOffset();
             this.boxDraw = true;
-        } else if (key === '0') {
+        } else if (key === '0' && this.selectedObjects.length === 1) {
             for (const obj of this.orbs) {
                 obj.deconstruct();
             }
@@ -160,6 +160,11 @@ export class BoardSelectMode {
             this.setUpPoints();
             this.updateCornerOffset();
             this.boxDraw = false;
+        } else if (key === 'b' && this.selectedObjects.length === 1) {
+            serveInter.uploadFile(this.selectedObjects[0].objectId);
+            this.selectedObjects[0].updateImage(true);
+        } else if (key === 'n' && this.selectedObjects.length === 1) {
+            this.selectedObjects[0].updateImage(false);
         }
     }
 

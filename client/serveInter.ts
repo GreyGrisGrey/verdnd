@@ -291,15 +291,13 @@ export class tempStore {
     }
 
     async uploadFile(objId: number = -1) {
-        const file = fileInput.files ? fileInput.files[0] : null; // Get the first selected file
+        const file = fileInput.files ? fileInput.files[0] : null;
         if (!file) {
             statusMessage.textContent = 'Please select a file first.';
             return;
         }
-
         const formData = new FormData();
-        formData.append('file', file); // Append the file to the FormData object with a key, e.g., 'file'
-
+        formData.append('file', file);
         try {
             const response = await fetch(
                 'http://47.55.46.138:4321/upload/game/' +
@@ -307,9 +305,8 @@ export class tempStore {
                     '/' +
                     objId.toString(),
                 {
-                    // Replace with your server's endpoint URL
                     method: 'POST',
-                    body: file, // FormData automatically sets the correct 'Content-Type': 'multipart/form-data'
+                    body: file,
                 },
             );
 
