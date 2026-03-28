@@ -223,8 +223,18 @@ export class Board {
         }
     }
 
-    updateImage(newSource: string) {
-        this.bgImage.updateImage(can.width, can.height, newSource, true);
+    updateImage(addImage: boolean) {
+        if (addImage) {
+            this.bgImage.updateImage(
+                can.width,
+                can.height,
+                -1,
+                Number(window.location.pathname.split('/')[2]) | 0,
+                true,
+            );
+        } else {
+            this.bgImage.disableImage()
+        }
     }
 
     // Draws the board.

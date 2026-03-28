@@ -8,7 +8,7 @@ export class ImageObject {
     image: any;
     imageOffset: Vec2;
     drawFlag: boolean;
-    constructor(source: string = '') {
+    constructor() {
         this.imagePath = '';
         this.image = new Image(300, 300);
         if (can.width !== window.innerWidth) {
@@ -17,29 +17,33 @@ export class ImageObject {
         }
         this.imageOffset = { x: 0, y: 0 };
         this.drawFlag = false;
-        if (source !== '') {
-            this.updateImageSource(source);
-        }
+    }
+    
+    disableImage() {
+        this.drawFlag = false;
     }
 
     async updateImage(
         width: number,
         height: number,
-        newSource: string,
+        objId: number,
+        gameId: number,
         bg: boolean = false,
     ) {
         this.drawFlag = false;
-        if (newSource !== this.imagePath) {
-            await this.updateImageSource(newSource);
-        }
+        await this.updateImageSource(objId, gameId);
         this.updateImageSize(width, height, bg);
         this.drawFlag = true;
     }
 
-    async updateImageSource(newSource: string) {
+    async updateImageSource(objId: number, gameId: number) {
         try {
-            this.imagePath = newSource;
-            const response = await fetch(newSource);
+            const fileString =
+                './client/assets/games/' +
+                gameId.toString() +
+                '/' +
+                objId.toString();
+            const response = await fetch(fileString);
             if (!response.ok) {
                 throw new Error(`Could not fetch image`);
             }

@@ -33,6 +33,7 @@ export class PostGresData {
         });
         this.queue = [];
         this.client.connect();
+        this.resetData();
     }
 
     async resetData() {
@@ -55,7 +56,7 @@ export class PostGresData {
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text, BgColour text)`,
+                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text, BgColour text, BgImage boolean)`,
                 rowMode: 'array',
             });
             await this.client.query({
@@ -247,7 +248,7 @@ export class PostGresData {
                     rowMode: 'array',
                 });
                 const fifth = await this.client.query({
-                    text: `SELECT BgColour, GmId FROM mainschema.games WHERE GameId = ${gameId}`,
+                    text: `SELECT BgColour, GmId, BgImage FROM mainschema.games WHERE GameId = ${gameId}`,
                     rowMode: 'array',
                 });
                 const firstRes = objectTableToPayloads(first.rows);
@@ -258,6 +259,7 @@ export class PostGresData {
                     rollTableToPayloads(third.rows),
                     fifth.rows[0][0],
                     fifth.rows[0][1],
+                    fifth.rows[0][2],
                 ];
             }
             return false;
@@ -270,10 +272,22 @@ export class PostGresData {
         }
     }
 
-    async updateGame(gameId: number, newCol: string) {
+    async updateGameCol(gameId: number, newCol: string) {
         try {
             await this.client.query({
                 text: `UPDATE mainschema.games SET BgColour = '${newCol}' WHERE GameId = ${gameId}`,
+            });
+            return true;
+        } catch (err) {
+            console.log(`Database error: Could not update game ${gameId}`, err);
+            return false;
+        }
+    }
+
+    async updateGameImage(gameId: number, image: boolean) {
+        try {
+            await this.client.query({
+                text: `UPDATE mainschema.games SET BgImage = '${image}' WHERE GameId = ${gameId}`,
             });
             return true;
         } catch (err) {

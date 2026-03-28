@@ -59,16 +59,20 @@ export class BoardObject {
         this.setCenter();
     }
 
-    async updateImage(newSource: string) {
-        const br = this.getBottomRight();
-        const tl = this.getTopLeft();
+    async updateImage(addImage: boolean) {
         if (this.drawParams.fill) {
-            await this.imageObj.updateImage(
-                br.x - tl.x,
-                br.y - tl.y,
-                newSource,
-            );
-            this.currPathSpecs[0] = 0;
+            if (addImage) {
+                const br = this.getBottomRight();
+                const tl = this.getTopLeft();
+                await this.imageObj.updateImage(
+                    br.x - tl.x,
+                    br.y - tl.y,
+                    this.objectId,
+                    Number(window.location.pathname.split('/')[2]) | 0,
+                );
+            } else {
+                this.imageObj.disableImage();
+            }
         } else {
             console.log(
                 'how are you planning on adding an image to a wall object',
@@ -162,7 +166,6 @@ export class BoardObject {
         ) {
             this.buildPath(squareSize, offset);
             this.ctx = ctx;
-            this.updateImage('./client/assets/gay.jpg');
         }
         if (this.token.active) {
             this.drawToken(this.ctx as any, squareSize, offset);
@@ -311,6 +314,7 @@ export class BoardObject {
             layerId: this.layerId,
             objectId: this.objectId,
             token: this.token,
+            image: this.hasImage,
         };
     }
 

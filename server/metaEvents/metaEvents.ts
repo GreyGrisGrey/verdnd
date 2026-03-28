@@ -3,7 +3,7 @@ import { GameObject } from '../gameObject.ts';
 import { createLayer } from '../gameEvents/layerEvents.ts';
 import { PostGresData } from '../dataMain.ts';
 import { NameEvent } from '../../shared/objectEvents.ts';
-import { Entity } from '../../shared/objectEvents.ts';
+import { Entity, Action } from '../../shared/objectEvents.ts';
 import { WebSocketData } from '../wsData.ts';
 
 // Function for constructing a new game object in the server's cache of game objects.

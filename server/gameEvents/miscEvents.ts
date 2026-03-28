@@ -13,7 +13,7 @@ export async function updateBackground(
 ) {
     await currGame.waitLock('db');
     currGame.dbLock = true;
-    cli.updateGame(currGame.gameId, newCol);
+    cli.updateGameCol(currGame.gameId, newCol);
     currGame.currCol = newCol;
     currGame.dbLock = false;
     currGame.broadcast(
@@ -29,6 +29,27 @@ export async function updateBackground(
 export async function updateLaser(payload: LaserEvent, currGame: GameObject) {
     currGame.laserMap.set(payload.id, payload);
     currGame.sendAllLasers();
+}
+
+export async function updateGameImage(
+    isImage: boolean,
+    currGame: GameObject,
+    cli: PostGresData,
+) {
+    await currGame.waitLock('db');
+    currGame.dbLock = true;
+    if (currGame.image || isImage) {
+        currGame.image = isImage;
+        currGame.broadcast(
+            JSON.stringify({
+                entity: Entity.Meta,
+                action: Action.Image,
+                image: isImage,
+            }),
+        );
+        cli.updateGameImage(currGame.gameId, isImage);
+    }
+    currGame.dbLock = false;
 }
 
 // Function signing a new user into a preexisting game.

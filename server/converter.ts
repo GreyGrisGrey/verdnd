@@ -15,16 +15,18 @@ export function objectTableToPayloads(rows: any[]) {
             let newItem = item.split(',');
             return { x: Number(newItem[0]), y: Number(newItem[1]) };
         });
+        const hasImage = row[0] < 8;
         const newParams = {
             ellipse: row[0] % 2 === 0,
             fill: row[0] % 4 < 2,
-            close: row[0] < 4,
+            close: row[0] % 8 < 4,
         };
         mapping.set(row[3], {
             entity: Entity.Object,
             action: Action.Create,
             userId: '0',
             object: {
+                image: hasImage,
                 points: structData,
                 colour: row[1],
                 layerId: row[2],
@@ -124,6 +126,7 @@ export function objectPayloadToRow(payload: ObjectCreateEvent) {
     newVal += payload.object.params.ellipse ? 0 : 1;
     newVal += payload.object.params.fill ? 0 : 2;
     newVal += payload.object.params.close ? 0 : 4;
+    newVal += payload.object.image ? 0 : 8;
     let returnString = `(${newVal}, '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
     returnString += `${(payload.object as any).points
         .map((item: Vec2) => {

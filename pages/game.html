@@ -247,6 +247,48 @@
         overflow: hidden
     }
 </style>
+
+<input type="file" id="fileInput">
+<button id="fileButton">Upload File</button>
+<p id="statusMessage">'asf</p>
+
+<style>
+    #fileInput {
+        z-index: 9;
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        bottom: 400px;
+        left: 400px;
+        background-color: rgba(200, 200, 200, 1);
+        border: solid black;
+        visibility: visible;
+    }
+
+    #statusMessage {
+        z-index: 9;
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        bottom: 400px;
+        left: 800px;
+        background-color: rgba(200, 200, 200, 1);
+        border: solid black;
+        visibility: visible;
+    }
+
+    #fileButton {
+        z-index: 9;
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        bottom: 400px;
+        left: 0px;
+        background-color: rgba(200, 200, 200, 1);
+        border: solid black;
+        visibility: visible;
+    }
+</style>
 <div id="leftBar">
     <button class="leftTab" id="hideLeftBar">Hide</button>
     <button class="leftTab" id="showUser">Users</button>

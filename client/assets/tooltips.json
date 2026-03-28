@@ -2,7 +2,7 @@
     "bottomContent": [
         {
             "draw": "Incomplete",
-            "select": "Restructure object. Click and drag a vertex to change its position.",
+            "select": "Press 0 : Restructure object. Click and drag a vertex to change its position.",
             "view": "Incomplete"
         },
         {

@@ -9,12 +9,14 @@ import {
     colourObj,
     updateToken,
     updateObjLayer,
+    updateImage,
 } from './gameObjectEvents.ts';
 import { createLayer, destroyLayer, updateLayer } from './layerEvents.ts';
 import {
     updateLaser,
     updateBackground,
     establishLocalUser,
+    updateGameImage,
 } from './miscEvents.ts';
 import WebSocket from 'ws';
 import { WebSocketData } from '../wsData.ts';
@@ -47,6 +49,8 @@ export async function handleGameEvent(
             colourObj(payload.objectId, payload.colour, currGame, cli);
         } else if (payload.action === Action.Relayer && userGm) {
             updateObjLayer(payload, currGame, cli);
+        } else if (payload.action === Action.Image && userGm) {
+            updateImage(payload.id, payload.image, currGame, cli);
         }
     } else if (payload.entity === Entity.Layer) {
         if (payload.action === Action.Create && userGm) {
@@ -67,6 +71,10 @@ export async function handleGameEvent(
             establishLocalUser(payload, ws, currGame, cli, wsMap);
         }
     } else if (payload.entity === Entity.Meta && userGm) {
-        updateBackground(payload.newColour, currGame, cli);
+        if (payload.action === Action.Image) {
+            updateGameImage(payload.image, currGame, cli);
+        } else {
+            updateBackground(payload.newColour, currGame, cli);
+        }
     }
 }

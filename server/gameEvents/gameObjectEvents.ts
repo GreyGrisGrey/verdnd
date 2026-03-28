@@ -102,6 +102,39 @@ async function updateObj(
     currGame.broadcast(JSON.stringify(newObject));
 }
 
+export async function updateImage(
+    objId: number,
+    isImage: boolean,
+    currGame: GameObject,
+    cli: PostGresData,
+) {
+    await currGame.waitLock('obj');
+    currGame.objectLock = true;
+    await currGame.waitLock('db');
+    currGame.dbLock = true;
+    const currObj = currGame.objectMap.get(objId);
+    if (currObj) {
+        if (currObj.object.image || isImage) {
+            currObj.object.image = isImage;
+            currGame.broadcast(
+                JSON.stringify({
+                    entity: Entity.Object,
+                    action: Action.Image,
+                    id: objId,
+                    image: isImage,
+                }),
+            );
+            cli.updateObject(
+                currGame.gameId,
+                objId,
+                updateObjectToRow(currObj),
+            );
+        }
+    }
+    currGame.dbLock = false;
+    currGame.objectLock = false;
+}
+
 // Function for destroying a specified object from a specified game.
 export async function destroyObj(
     objId: number,

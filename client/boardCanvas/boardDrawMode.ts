@@ -269,6 +269,7 @@ export class BoardDrawMode {
                 colour: colourSquare.style.background,
                 layerId: board.activeLayer,
                 objectId: -1,
+                image: false,
                 token: {
                     name: 'none',
                     colour: '#cccccc',
@@ -287,6 +288,7 @@ export class BoardDrawMode {
                 colour: colourSquare.style.background,
                 layerId: board.activeLayer,
                 objectId: -1,
+                image: false,
                 token: {
                     name: 'none',
                     colour: '#cccccc',

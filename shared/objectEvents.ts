@@ -55,6 +55,20 @@ export enum Action {
     Finish = 'FINISH',
     Enumerate = 'ENUMERATE',
     Relayer = 'RELAYER',
+    Image = 'IMAGE',
+}
+
+export interface ObjectImageEvent {
+    entity: Entity.Object;
+    action: Action.Image;
+    image: boolean;
+    id: number;
+}
+
+export interface BoardImageEvent {
+    entity: Entity.Meta;
+    action: Action.Image;
+    image: boolean;
 }
 
 export interface LayerState {
@@ -75,6 +89,7 @@ export interface ObjectCreatePayload {
     layerId: number;
     objectId: number;
     token: Token;
+    image: boolean;
 }
 
 export interface LayerCreateEvent {

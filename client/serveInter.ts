@@ -28,6 +28,9 @@ const storedLayerStates: Map<number, LayerState> = new Map();
 const layerMan = new LayerMenu();
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
+const fileInput = getRequiredElement('fileInput', HTMLInputElement);
+const statusMessage = getRequiredElement('statusMessage', HTMLElement);
+const fileButton = getRequiredElement('fileButton', HTMLButtonElement);
 const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
@@ -84,13 +87,17 @@ export class tempStore {
             time: 0,
         };
 
+        fileButton.addEventListener('click', () => {
+            this.uploadFile();
+        });
+
         this.currGame = Number(window.location.pathname.split('/')[2]) | 0;
         this.id =
             localStorage['id'] ||
             (Math.round(Math.random() * 1000000) + 500).toString();
         this.pass = localStorage['pass'] || '1';
         this.name = localStorage['name'] || 'wuog';
-        // Switch to say if we're using local network or not
+        // Switch to false if we're using local network or not
         // No doubt a better way of doing this exists, but also it's so minor I don't care.
         const online = true;
 
@@ -158,6 +165,11 @@ export class tempStore {
                             message.objectId,
                         )!.layerId = message.layerId;
                         curr.layerId = message.layerId;
+                    }
+                } else if (message.action === Action.Image) {
+                    const curr = storedObjects.get(message.id);
+                    if (curr) {
+                        curr.updateImage(message.image);
                     }
                 } else if (message.action !== Action.Destroy) {
                     if (
@@ -271,6 +283,49 @@ export class tempStore {
         );
     }
 
+    async getFile(objId: number = -1) {
+        const fileString =
+            './client/assets/games/' + this.currGame + '/' + objId.toString();
+        const response = await fetch(fileString);
+        return response.blob();
+    }
+
+    async uploadFile(objId: number = -1) {
+        const file = fileInput.files ? fileInput.files[0] : null; // Get the first selected file
+        if (!file) {
+            statusMessage.textContent = 'Please select a file first.';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file); // Append the file to the FormData object with a key, e.g., 'file'
+
+        try {
+            const response = await fetch(
+                'http://47.55.46.138:4321/upload/game/' +
+                    this.currGame +
+                    '/' +
+                    objId.toString(),
+                {
+                    // Replace with your server's endpoint URL
+                    method: 'POST',
+                    body: file, // FormData automatically sets the correct 'Content-Type': 'multipart/form-data'
+                },
+            );
+
+            if (response.ok) {
+                statusMessage.textContent = 'Upload successful';
+            } else {
+                statusMessage.textContent = 'Upload failed.';
+                console.error('Upload failed with status:', response.status);
+            }
+        } catch (error) {
+            console.log(error);
+            statusMessage.textContent = 'An error occurred during the upload.';
+            console.error('Error:', error);
+        }
+    }
+
     async connectLocal() {
         this.socket.send(
             this.parcelServeEvent({
@@ -366,6 +421,7 @@ export class tempStore {
         const finalObj = payloadToBoardObject(newObj.object);
         finalObj.updateToken(newObj.token);
         finalObj.layerId = newObj.object.layerId;
+        finalObj.updateImage(newObj.object.image);
         storedObjects.set(newObj.object.objectId, finalObj);
         const layer = storedLayers.get(newObj.object.layerId);
         if (layer) {

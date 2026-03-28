@@ -30,6 +30,7 @@ export class GameObject {
     userLock: boolean;
     dbLock: boolean;
     count: number;
+    image: boolean;
 
     constructor(gameId: number) {
         this.owner = '';
@@ -55,6 +56,8 @@ export class GameObject {
         this.userLock = false;
         this.dbLock = false;
         this.count = 0;
+
+        this.image = false;
     }
 
     moveObject(id: number, xChange: number, yChange: number) {
@@ -152,6 +155,7 @@ export class GameObject {
             }
             this.currCol = res[3];
             this.owner = res[4];
+            this.image = res[5];
             this.finishedSetup = true;
             if (this.currLayer === 0) {
                 return false;

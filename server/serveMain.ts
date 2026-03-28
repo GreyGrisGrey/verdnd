@@ -8,8 +8,7 @@ const path = require('path');
 const hostname = '192.168.2.142';
 const port = 8080;
 
-const server = createServer((req: any, res: any) => {
-    // this is already off to a rough start.
+const server = createServer(async (req: any, res: any) => {
     if (req.method === 'GET') {
         if (req.url === '/') {
             req.url = 'pages/index.html';
@@ -29,14 +28,54 @@ const server = createServer((req: any, res: any) => {
         const filePath = path.join(__dirname, req.url);
         fs.readFile(filePath, (err: any, data: any) => {
             if (err) {
-                // Handle potential file reading errors
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
                 res.end('404 Not Found');
             } else {
-                // Set the content type and send the file content
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(data); // Send the file data as the response
+                res.end(data);
             }
+        });
+    } else if (req.method === 'POST') {
+        const location = req.url.split('/');
+        if (
+            location.length !== 5 ||
+            location[1] !== 'upload' ||
+            location[2] !== 'game'
+        ) {
+            res.writeHead(500);
+            res.end('Error during file upload.');
+            console.log(location);
+            return;
+        }
+        await fs.mkdir(
+            path.join(__dirname, 'client/assets/games', location[3]),
+            function (e: any) {
+                if (!e || (e && e.code === 'EEXIST')) {
+                    //do something with contents
+                } else {
+                    //debug
+                    console.log(e);
+                }
+            },
+        );
+        const filePath = path.join(
+            __dirname,
+            'client/assets/games',
+            location[3],
+            'obj' + location[4] + '.png',
+        );
+        console.log(filePath);
+        const fileStream = fs.createWriteStream(filePath);
+        req.pipe(fileStream);
+        req.on('end', () => {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ win: 'win' }));
+        });
+
+        req.on('error', (err: any) => {
+            console.log(err);
+            res.writeHead(500);
+            res.end('Error uploading file');
         });
     }
 });
