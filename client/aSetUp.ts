@@ -39,4 +39,5 @@ const showColourButton = getRequiredElement('showColour', HTMLButtonElement);
 const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
 const rollContainer = getRequiredElement('rollContainer', HTMLElement);
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
+const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const modeMan = new ModeManager();

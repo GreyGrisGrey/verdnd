@@ -233,7 +233,7 @@ export class Board {
                 true,
             );
         } else {
-            this.bgImage.disableImage()
+            this.bgImage.disableImage();
         }
     }
 

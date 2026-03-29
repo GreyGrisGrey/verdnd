@@ -18,7 +18,7 @@ export class ImageObject {
         this.imageOffset = { x: 0, y: 0 };
         this.drawFlag = false;
     }
-    
+
     disableImage() {
         this.drawFlag = false;
     }
@@ -33,7 +33,6 @@ export class ImageObject {
         this.drawFlag = false;
         await this.updateImageSource(objId, gameId);
         this.updateImageSize(width, height, bg);
-        this.drawFlag = true;
     }
 
     async updateImageSource(objId: number, gameId: number) {
@@ -41,8 +40,10 @@ export class ImageObject {
             const fileString =
                 './client/assets/games/' +
                 gameId.toString() +
-                '/' +
-                objId.toString();
+                '/obj' +
+                objId.toString() +
+                '.png';
+            console.log(fileString);
             const response = await fetch(fileString);
             if (!response.ok) {
                 throw new Error(`Could not fetch image`);
@@ -56,6 +57,7 @@ export class ImageObject {
                     reject(new Error('Image failed to load'));
             });
             this.image.overflow = 'hidden';
+            this.drawFlag = true;
         } catch (error) {
             console.error('Could not fetch image');
         }

@@ -16,6 +16,7 @@ const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
+const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const serveInter = new tempStore();
 
 // Activates following a completed selection from draw mode or token mode.
@@ -161,10 +162,9 @@ export class BoardSelectMode {
             this.updateCornerOffset();
             this.boxDraw = false;
         } else if (key === 'b' && this.selectedObjects.length === 1) {
-            serveInter.uploadFile(this.selectedObjects[0].objectId);
-            this.selectedObjects[0].updateImage(true);
+            fileInput.click();
         } else if (key === 'n' && this.selectedObjects.length === 1) {
-            this.selectedObjects[0].updateImage(false);
+            serveInter.removeFile();
         }
     }
 
@@ -205,6 +205,10 @@ export class BoardSelectMode {
 
     // Adds all relevant event listeners.
     addEventListeners() {
+        fileInput.addEventListener('change', () => {
+            serveInter.uploadFile(this.selectedObjects[0].objectId);
+        });
+
         can.addEventListener('keydown', (event) => {
             if (this.active) {
                 this.handleSwitchEvent(event.key);

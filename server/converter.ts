@@ -137,7 +137,13 @@ export function objectPayloadToRow(payload: ObjectCreateEvent) {
 }
 
 export function updateObjectToRow(payload: ObjectCreateEvent) {
+    let newVal = 0;
+    newVal += payload.object.params.ellipse ? 0 : 1;
+    newVal += payload.object.params.fill ? 0 : 2;
+    newVal += payload.object.params.close ? 0 : 4;
+    newVal += payload.object.image ? 0 : 8;
     return [
+        newVal,
         payload.object.colour.toString(),
         (payload.object as any).points
             .map((item: Vec2) => {

@@ -30,7 +30,6 @@ const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const statusMessage = getRequiredElement('statusMessage', HTMLElement);
-const fileButton = getRequiredElement('fileButton', HTMLButtonElement);
 const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
@@ -86,10 +85,6 @@ export class tempStore {
             y: 0,
             time: 0,
         };
-
-        fileButton.addEventListener('click', () => {
-            this.uploadFile();
-        });
 
         this.currGame = Number(window.location.pathname.split('/')[2]) | 0;
         this.id =
@@ -290,6 +285,26 @@ export class tempStore {
         return response.blob();
     }
 
+    async removeFile(objId: number = -1) {
+        this.socket.send(
+            this.parcelServeEvent({
+                entity: Entity.Object,
+                action: Action.Image,
+                image: false,
+                id: objId,
+            }),
+        );
+        const response = await fetch(
+            'http://47.55.46.138:4321/upload/game/' +
+                this.currGame +
+                '/remove/' +
+                objId.toString(),
+            {
+                method: 'POST',
+            },
+        );
+    }
+
     async uploadFile(objId: number = -1) {
         const file = fileInput.files ? fileInput.files[0] : null;
         if (!file) {
@@ -311,9 +326,16 @@ export class tempStore {
             );
 
             if (response.ok) {
-                statusMessage.textContent = 'Upload successful';
+                console.log('successfully uploaded');
+                this.socket.send(
+                    this.parcelServeEvent({
+                        entity: Entity.Object,
+                        action: Action.Image,
+                        image: true,
+                        id: objId,
+                    }),
+                );
             } else {
-                statusMessage.textContent = 'Upload failed.';
                 console.error('Upload failed with status:', response.status);
             }
         } catch (error) {

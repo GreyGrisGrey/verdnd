@@ -277,4 +277,6 @@ export type ServerEvent =
     | NameEvent
     | UpdateTokenEvent
     | ObjectRelayerEvent
-    | BackgroundColourEvent;
+    | BackgroundColourEvent
+    | BoardImageEvent
+    | ObjectImageEvent;
