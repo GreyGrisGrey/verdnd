@@ -3,6 +3,7 @@
     <button class="leftTab" id="showUser">Users</button>
     <button class="leftTab" id="showColour">Colour</button>
     <button class="leftTab" id="showRoll">Roll</button>
+    <button class="leftTab" id="changeImage">Image</button>
     <div id="colourContainer">
         <input type="range" id="redColSlide" min="0" max="255" />
         <label class="colLabel" id="redLabel">R</label>
@@ -58,12 +59,20 @@
 
     #colourPicker {
         position: absolute;
-        top: 168px;
+        top: 208px;
     }
 
     #colourBackground {
         position: absolute;
-        top: 208px;
+        top: 248px;
+    }
+
+    #changeImage {
+        position: absolute;
+        top: 168px;
+        border: solid black;
+        height: 30px;
+        pointer-events: auto;
     }
 
     #showUser {

@@ -2,6 +2,7 @@ import { ColourBox } from './colourBox.ts';
 import { UserBox } from './userBox.ts';
 import { RollBox } from './rollBox.ts';
 import { getRequiredElement } from '../dom.ts';
+import { tempStore } from '../serveInter.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
@@ -9,9 +10,12 @@ const showColourButton = getRequiredElement('showColour', HTMLButtonElement);
 const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
+const changeImage = getRequiredElement('changeImage', HTMLElement);
+const fileInput2 = getRequiredElement('fileInput2', HTMLInputElement);
 const userBox = new UserBox();
 const colourBox = new ColourBox();
 const rollBox = new RollBox();
+const serveInter = new tempStore();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
@@ -26,6 +30,8 @@ export class LeftBarManager {
     toggleModeSwitcher(isGm: boolean) {
         if (!isGm) {
             colourBackground.style.visibility = 'hidden';
+            changeImage.style.visibility = 'hidden';
+            colourPicker.style.top = '168px';
         }
     }
 
@@ -38,6 +44,14 @@ export class LeftBarManager {
     }
 
     addEventListeners() {
+        changeImage.addEventListener('click', () => {
+            fileInput2.click();
+        });
+
+        fileInput2.addEventListener('change', () => {
+            serveInter.uploadBackground();
+        });
+
         hideLeft.addEventListener('click', () => {
             this.visible = !this.visible;
             this.toggleVisible();

@@ -262,6 +262,13 @@ export class GameObject {
                 newColour: this.currCol,
             }),
         );
+        ws.send(
+            JSON.stringify({
+                entity: Entity.Meta,
+                action: Action.Image,
+                image: this.image,
+            }),
+        );
         ws.send(JSON.stringify({ entity: Entity.Meta, action: Action.Finish }));
     }
 
