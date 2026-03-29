@@ -3,6 +3,7 @@ import { UserBox } from './userBox.ts';
 import { RollBox } from './rollBox.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
+import { Board } from '../boardCanvas/localBoard.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
@@ -16,6 +17,7 @@ const userBox = new UserBox();
 const colourBox = new ColourBox();
 const rollBox = new RollBox();
 const serveInter = new tempStore();
+const board = new Board();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
@@ -45,7 +47,11 @@ export class LeftBarManager {
 
     addEventListeners() {
         changeImage.addEventListener('click', () => {
-            fileInput2.click();
+            if (!board.bgImage.drawFlag) {
+                fileInput2.click();
+            } else {
+                serveInter.removeBackground();
+            }
         });
 
         fileInput2.addEventListener('change', () => {

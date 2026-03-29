@@ -347,29 +347,31 @@ export class tempStore {
         }
     }
 
+    async removeBackground(objId: number = -1) {
+        const response = await fetch(
+            'http://47.55.46.138:4321/upload/game/remove/' +
+                this.currGame +
+                '/-1',
+            {
+                method: 'POST',
+            },
+        );
+        if (response.ok) {
+            this.socket.send(
+                this.parcelServeEvent({
+                    entity: Entity.Meta,
+                    action: Action.Image,
+                    image: false,
+                }),
+            );
+        } else {
+            console.error('Removal failed with status:', response.status);
+        }
+    }
+
     async uploadBackground() {
         const file = fileInput2.files ? fileInput2.files[0] : null;
-        console.log(file);
         if (!file) {
-            const response = await fetch(
-                'http://47.55.46.138:4321/upload/game/remove/' +
-                    this.currGame +
-                    '/-1',
-                {
-                    method: 'POST',
-                },
-            );
-            if (response.ok) {
-                this.socket.send(
-                    this.parcelServeEvent({
-                        entity: Entity.Meta,
-                        action: Action.Image,
-                        image: false,
-                    }),
-                );
-            } else {
-                console.error('Removal failed with status:', response.status);
-            }
             return;
         }
         const formData = new FormData();

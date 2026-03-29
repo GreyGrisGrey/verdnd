@@ -17,7 +17,6 @@ export class BoardObject {
     objectId: number;
     zOrder: number;
     colour: ColInst | string;
-    hasImage: boolean;
     centerPoint: Vec2;
     selected: boolean;
     layerId: number;
@@ -40,7 +39,6 @@ export class BoardObject {
         this.objectId = objectId;
         this.zOrder = 0;
         this.colour = colour;
-        this.hasImage = false;
         this.selected = false;
         this.centerPoint = { x: 0, y: 0 };
         this.layerId = 0;
@@ -304,6 +302,9 @@ export class BoardObject {
         this.setCenter();
         this.currPathSpecs[0] = 0;
         this.updateToken(newSetting.token);
+        const br = this.getBottomRight();
+        const tl = this.getTopLeft();
+        this.imageObj.updateImageSize(br.x - tl.x, br.y - tl.y, false);
     }
 
     payloadFromObject() {
@@ -314,7 +315,7 @@ export class BoardObject {
             layerId: this.layerId,
             objectId: this.objectId,
             token: this.token,
-            image: this.hasImage,
+            image: this.imageObj.drawFlag,
         };
     }
 
