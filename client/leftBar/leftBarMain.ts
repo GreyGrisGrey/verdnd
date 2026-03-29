@@ -12,7 +12,7 @@ const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const changeImage = getRequiredElement('changeImage', HTMLElement);
-const fileInput2 = getRequiredElement('fileInput2', HTMLInputElement);
+const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const userBox = new UserBox();
 const colourBox = new ColourBox();
 const rollBox = new RollBox();
@@ -48,14 +48,14 @@ export class LeftBarManager {
     addEventListeners() {
         changeImage.addEventListener('click', () => {
             if (!board.bgImage.drawFlag) {
-                fileInput2.click();
+                fileInput.click();
             } else {
-                serveInter.removeBackground();
+                serveInter.removeFile();
             }
         });
 
-        fileInput2.addEventListener('change', () => {
-            serveInter.uploadBackground();
+        fileInput.addEventListener('change', () => {
+            serveInter.uploadFile();
         });
 
         hideLeft.addEventListener('click', () => {

@@ -41,5 +41,4 @@ const rollContainer = getRequiredElement('rollContainer', HTMLElement);
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const changeImage = getRequiredElement('changeImage', HTMLElement);
-const fileInput2 = getRequiredElement('fileInput2', HTMLInputElement);
 const modeMan = new ModeManager();

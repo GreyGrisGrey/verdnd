@@ -29,7 +29,6 @@ const layerMan = new LayerMenu();
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
-const fileInput2 = getRequiredElement('fileInput2', HTMLInputElement);
 const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
@@ -287,6 +286,49 @@ export class tempStore {
         return response.blob();
     }
 
+    async uploadFile(objId: number = -1) {
+        const file = fileInput.files ? fileInput.files[0] : null;
+        if (!file) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch(
+            'http://47.55.46.138:4321/upload/game/' +
+                this.currGame +
+                '/' +
+                objId.toString(),
+            {
+                method: 'POST',
+                body: file,
+            },
+        );
+
+        if (response.ok) {
+            if (objId === -1) {
+                this.socket.send(
+                    this.parcelServeEvent({
+                        entity: Entity.Meta,
+                        action: Action.Image,
+                        image: true,
+                    }),
+                );
+            } else {
+                this.socket.send(
+                    this.parcelServeEvent({
+                        entity: Entity.Object,
+                        action: Action.Image,
+                        image: true,
+                        id: objId,
+                    }),
+                );
+            }
+        } else {
+            console.error('Upload failed with status:', response.status);
+        }
+        return;
+    }
+
     async removeFile(objId: number = -1) {
         const response = await fetch(
             'http://47.55.46.138:4321/upload/game/remove/' +
@@ -298,106 +340,26 @@ export class tempStore {
             },
         );
         if (response.ok) {
-            this.socket.send(
-                this.parcelServeEvent({
-                    entity: Entity.Object,
-                    action: Action.Image,
-                    image: false,
-                    id: objId,
-                }),
-            );
-        } else {
-            console.error('Removal failed with status:', response.status);
-        }
-    }
-
-    async uploadFile(objId: number = -1) {
-        const file = fileInput.files ? fileInput.files[0] : null;
-        if (!file) {
-            return;
-        }
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const response = await fetch(
-                'http://47.55.46.138:4321/upload/game/' +
-                    this.currGame +
-                    '/' +
-                    objId.toString(),
-                {
-                    method: 'POST',
-                    body: file,
-                },
-            );
-
-            if (response.ok) {
-                this.socket.send(
-                    this.parcelServeEvent({
-                        entity: Entity.Object,
-                        action: Action.Image,
-                        image: true,
-                        id: objId,
-                    }),
-                );
-            } else {
-                console.error('Upload failed with status:', response.status);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
-    async removeBackground(objId: number = -1) {
-        const response = await fetch(
-            'http://47.55.46.138:4321/upload/game/remove/' +
-                this.currGame +
-                '/-1',
-            {
-                method: 'POST',
-            },
-        );
-        if (response.ok) {
-            this.socket.send(
-                this.parcelServeEvent({
-                    entity: Entity.Meta,
-                    action: Action.Image,
-                    image: false,
-                }),
-            );
-        } else {
-            console.error('Removal failed with status:', response.status);
-        }
-    }
-
-    async uploadBackground() {
-        const file = fileInput2.files ? fileInput2.files[0] : null;
-        if (!file) {
-            return;
-        }
-        const formData = new FormData();
-        formData.append('file', file);
-        try {
-            const response = await fetch(
-                'http://47.55.46.138:4321/upload/game/' + this.currGame + '/-1',
-                {
-                    method: 'POST',
-                    body: file,
-                },
-            );
-
-            if (response.ok) {
+            if (objId === -1) {
                 this.socket.send(
                     this.parcelServeEvent({
                         entity: Entity.Meta,
                         action: Action.Image,
-                        image: true,
+                        image: false,
                     }),
                 );
             } else {
-                console.error('Upload failed with status:', response.status);
+                this.socket.send(
+                    this.parcelServeEvent({
+                        entity: Entity.Object,
+                        action: Action.Image,
+                        image: false,
+                        id: objId,
+                    }),
+                );
             }
-        } catch (error) {
-            console.error('Error:', error);
+        } else {
+            console.error('Removal failed with status:', response.status);
         }
     }
 
