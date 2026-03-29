@@ -43,7 +43,6 @@ export class ImageObject {
                 '/obj' +
                 objId.toString() +
                 '.png';
-            console.log(fileString);
             const response = await fetch(fileString);
             if (!response.ok) {
                 throw new Error(`Could not fetch image`);
@@ -56,7 +55,6 @@ export class ImageObject {
                 this.image.onerror = () =>
                     reject(new Error('Image failed to load'));
             });
-            this.image.overflow = 'hidden';
             this.drawFlag = true;
         } catch (error) {
             console.error('Could not fetch image');

@@ -164,7 +164,7 @@ export class BoardSelectMode {
         } else if (key === 'b' && this.selectedObjects.length === 1) {
             fileInput.click();
         } else if (key === 'n' && this.selectedObjects.length === 1) {
-            serveInter.removeFile();
+            serveInter.removeFile(this.selectedObjects[0].objectId);
         }
     }
 

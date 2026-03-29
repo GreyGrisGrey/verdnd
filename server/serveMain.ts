@@ -38,13 +38,34 @@ const server = createServer(async (req: any, res: any) => {
     } else if (req.method === 'POST') {
         const location = req.url.split('/');
         if (
+            location.length === 6 &&
+            location[1] === 'upload' &&
+            location[2] === 'game' &&
+            location[3] === 'remove'
+        ) {
+            const filePath = path.join(
+                __dirname,
+                'client/assets/games',
+                location[4],
+                'obj' + location[5] + '.png',
+            );
+            fs.rm(filePath, function (e: any) {
+                if (!e || (e && e.code === 'EEXIST')) {
+                } else {
+                    console.log(e);
+                }
+            });
+            res.writeHead(200);
+            res.end();
+            return;
+        }
+        if (
             location.length !== 5 ||
             location[1] !== 'upload' ||
             location[2] !== 'game'
         ) {
             res.writeHead(500);
             res.end('Error during file upload.');
-            console.log(location);
             return;
         }
         await fs.mkdir(
@@ -65,8 +86,8 @@ const server = createServer(async (req: any, res: any) => {
         const fileStream = fs.createWriteStream(filePath);
         req.pipe(fileStream);
         req.on('end', () => {
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ win: 'win' }));
+            res.writeHead(200);
+            res.end();
         });
         req.on('error', (err: any) => {
             res.writeHead(500);

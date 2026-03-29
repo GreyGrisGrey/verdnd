@@ -29,7 +29,6 @@ const layerMan = new LayerMenu();
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
-const statusMessage = getRequiredElement('statusMessage', HTMLElement);
 const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
@@ -295,20 +294,31 @@ export class tempStore {
             }),
         );
         const response = await fetch(
-            'http://47.55.46.138:4321/upload/game/' +
+            'http://47.55.46.138:4321/upload/game/remove/' +
                 this.currGame +
-                '/remove/' +
+                '/' +
                 objId.toString(),
             {
                 method: 'POST',
             },
         );
+        if (response.ok) {
+            this.socket.send(
+                this.parcelServeEvent({
+                    entity: Entity.Object,
+                    action: Action.Image,
+                    image: false,
+                    id: objId,
+                }),
+            );
+        } else {
+            console.error('Removal failed with status:', response.status);
+        }
     }
 
     async uploadFile(objId: number = -1) {
         const file = fileInput.files ? fileInput.files[0] : null;
         if (!file) {
-            statusMessage.textContent = 'Please select a file first.';
             return;
         }
         const formData = new FormData();
@@ -326,7 +336,6 @@ export class tempStore {
             );
 
             if (response.ok) {
-                console.log('successfully uploaded');
                 this.socket.send(
                     this.parcelServeEvent({
                         entity: Entity.Object,
@@ -339,8 +348,6 @@ export class tempStore {
                 console.error('Upload failed with status:', response.status);
             }
         } catch (error) {
-            console.log(error);
-            statusMessage.textContent = 'An error occurred during the upload.';
             console.error('Error:', error);
         }
     }
