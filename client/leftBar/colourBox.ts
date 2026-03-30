@@ -8,6 +8,7 @@ const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const colourContainer = getRequiredElement('colourContainer', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
+const testCol = document.getElementById('testCol')!;
 const board = new Board();
 const serveInter = new tempStore();
 
@@ -66,6 +67,7 @@ export class ColourBox {
     toggleActive(newActive: boolean) {
         colourContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         colourContainer.style.pointerEvents = newActive ? 'auto' : 'none';
+        (testCol as any).opened = newActive;
     }
 
     // Adds relevant event listeners.

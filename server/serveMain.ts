@@ -22,7 +22,10 @@ const server = createServer(async (req: any, res: any) => {
                     req.url = 'pages/game.html';
                 }
             } else {
-                req.url = req.url.split('/').slice(2).join('/');
+                const slashSplit = req.url.split('/');
+                if (slashSplit.length !== 2) {
+                    req.url = req.url.split('/').slice(2).join('/');
+                }
             }
         }
         const filePath = path.join(__dirname, req.url);

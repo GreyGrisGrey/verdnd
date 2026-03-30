@@ -5,6 +5,7 @@
     <button class="leftTab" id="showRoll">Roll</button>
     <button class="leftTab" id="changeImage">Image</button>
     <div id="colourContainer">
+        <toolcool-color-picker color="#e76ff1" id="testCol"></toolcool-color-picker>
         <input type="range" id="redColSlide" min="0" max="255" />
         <label class="colLabel" id="redLabel">R</label>
         <input type="text" id="redColText" />
@@ -35,9 +36,16 @@
 
     <div id="userContainer">
     </div>
+
+    <script type="text/javascript" src="toolcool-color-picker.min.js"></script>
 </div>
 
 <style>
+    #testCol {
+        position: absolute;
+        z-index: 2;
+    }
+
     .leftTab {
         background-color: rgba(200, 200, 200, 1);
         border: solid black;
