@@ -4,10 +4,11 @@ import type { BoardObject } from './boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
 import { ModeManager } from './modeManager.ts';
+import { ColourBox } from '../leftBar/colourBox.ts';
+const colourBox = new ColourBox();
 const modeMan = new ModeManager();
 const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
-const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 
@@ -83,7 +84,7 @@ export class BoardViewMode {
             board.offset.x = window.innerWidth / 2;
             board.offset.y = window.innerHeight / 2;
         } else if (key === '7') {
-            board.laserCol = colourSquare.style.background;
+            board.laserCol = colourBox.getCurrColour();
         } else if (key === '8') {
             const res = board.determineTile(
                 board.mouseCoords.x,

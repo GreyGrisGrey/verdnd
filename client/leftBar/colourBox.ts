@@ -3,7 +3,6 @@ import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';
 import { tempStore } from '../serveInter.ts';
-const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const colourContainer = getRequiredElement('colourContainer', HTMLElement);
@@ -12,30 +11,11 @@ const testCol = document.getElementById('testCol')!;
 const board = new Board();
 const serveInter = new tempStore();
 
-type ColourComponent = 'red' | 'green' | 'blue' | 'alpha';
-const colourComponents: ColourComponent[] = ['red', 'green', 'blue', 'alpha'];
-
-const RGBSliders: Record<ColourComponent, HTMLInputElement> = {
-    red: getRequiredElement('redColSlide', HTMLInputElement),
-    green: getRequiredElement('greenColSlide', HTMLInputElement),
-    blue: getRequiredElement('blueColSlide', HTMLInputElement),
-    alpha: getRequiredElement('opacColSlide', HTMLInputElement),
-};
-const RGBTexts: Record<ColourComponent, HTMLInputElement> = {
-    red: getRequiredElement('redColText', HTMLInputElement),
-    green: getRequiredElement('greenColText', HTMLInputElement),
-    blue: getRequiredElement('blueColText', HTMLInputElement),
-    alpha: getRequiredElement('opacColText', HTMLInputElement),
-};
-
 // Class handling the colour selection box.
 export class ColourBox {
-    savedColours: (string | ColInst)[];
-    currColour: ColInst;
+    savedColours: string[];
     currRGBString: string;
-    mainBox: HTMLElement;
     adjBoxes: HTMLElement[];
-    can: HTMLElement;
     shiftIsPressed: boolean;
     pickColour: boolean;
 
@@ -48,11 +28,8 @@ export class ColourBox {
             '#969696',
             '#ffffff',
         ];
-        this.currColour = new ColInst(120, 120, 120, 100);
         this.currRGBString = `rgba(${120}, ${120}, ${120}, ${1})`;
-        this.mainBox = colourSquare;
         this.adjBoxes = [];
-        this.can = colourSquare;
         this.shiftIsPressed = false;
         this.pickColour = false;
         for (const i of [0, 1, 2, 3, 4, 5]) {
@@ -61,7 +38,10 @@ export class ColourBox {
             this.adjBoxes[i].style.background = this.savedColours[i].toString();
         }
         this.addEventListeners();
-        this.changeCurrColour();
+    }
+
+    getCurrColour() {
+        return (testCol as any).rgba;
     }
 
     toggleActive(newActive: boolean) {
@@ -73,6 +53,10 @@ export class ColourBox {
     // Adds relevant event listeners.
     // Mostly to do with registering changes to the currently selected colour.
     addEventListeners() {
+        testCol.addEventListener('change', (evt) => {
+            console.log((evt as any).detail.rgba);
+        });
+
         can.addEventListener('mousedown', (event) => {
             if (this.pickColour) {
                 const coords = board.determineTile(
@@ -83,13 +67,8 @@ export class ColourBox {
                 const resObj = board.selectObjects('any', [coords]);
                 if (resObj.length > 0) {
                     if (typeof resObj[0].colour === typeof 'asd') {
-                        this.currColour = stringToColInst(
-                            resObj[0].colour as any,
-                        );
-                    } else {
-                        this.currColour = resObj[0].colour as any;
+                        (testCol as any).color = resObj[0].colour;
                     }
-                    this.changeCurrColour();
                 }
                 this.pickColour = false;
             }
@@ -100,47 +79,7 @@ export class ColourBox {
         });
 
         colourBackground.addEventListener('click', () => {
-            serveInter.sendChangeBackground(
-                this.currColour.toAlphalessString(),
-            );
-        });
-
-        colourComponents.forEach((component) => {
-            RGBSliders[component].addEventListener('input', () => {
-                const value = parseInt(RGBSliders[component].value, 10);
-                if (component === 'red') {
-                    this.currColour.setR(value);
-                } else if (component === 'green') {
-                    this.currColour.setG(value);
-                } else if (component === 'blue') {
-                    this.currColour.setB(value);
-                } else if (component === 'alpha') {
-                    this.currColour.setA(value);
-                }
-                this.changeCurrColour();
-            });
-
-            RGBTexts[component].addEventListener('input', () => {
-                let value = Number(RGBTexts[component].value);
-                if (
-                    Number.isNaN(Number(RGBTexts[component].value)) ||
-                    Number(RGBTexts[component].value) > 255 ||
-                    Number(RGBTexts[component].value) < 0
-                ) {
-                    RGBTexts[component].value = '120';
-                    value = 120;
-                }
-                if (component === 'red') {
-                    this.currColour.setR(value);
-                } else if (component === 'green') {
-                    this.currColour.setG(value);
-                } else if (component === 'blue') {
-                    this.currColour.setB(value);
-                } else if (component === 'alpha') {
-                    this.currColour.setA(value);
-                }
-                this.changeCurrColour();
-            });
+            serveInter.sendChangeBackground((testCol as any).hex);
         });
 
         document.addEventListener('keydown', (event) => {
@@ -160,47 +99,15 @@ export class ColourBox {
                 if (this.shiftIsPressed) {
                     this.changeSubColour(i);
                 } else {
-                    this.changeCurrColour(true, i);
+                    (testCol as any).color = this.savedColours[i];
                 }
             });
         });
     }
 
-    // Changes the currently selected colour for the main box.
-    changeCurrColour(swap: boolean = false, swapId: number = -1) {
-        if (swap) {
-            if (this.savedColours[swapId] instanceof ColInst) {
-                this.currColour = this.savedColours[swapId];
-            } else {
-                this.currColour = stringToColInst(this.savedColours[swapId]);
-            }
-        }
-        this.mainBox.style.background = this.currColour.toString();
-        colourComponents.forEach((component) => {
-            this.matchInput(component);
-        });
-    }
-
-    // Matches the value displayed by a colour's corresponding slider input to its corresponding text input.
-    matchInput(component: ColourComponent) {
-        if (component === 'red') {
-            RGBSliders[component].value = this.currColour.red.toString();
-            RGBTexts[component].value = this.currColour.red.toString();
-        } else if (component === 'green') {
-            RGBSliders[component].value = this.currColour.green.toString();
-            RGBTexts[component].value = this.currColour.green.toString();
-        } else if (component === 'blue') {
-            RGBSliders[component].value = this.currColour.blue.toString();
-            RGBTexts[component].value = this.currColour.blue.toString();
-        } else if (component === 'alpha') {
-            RGBSliders[component].value = this.currColour.alpha.toString();
-            RGBTexts[component].value = this.currColour.alpha.toString();
-        }
-    }
-
     // Changes the saved colour of the indicated adjoining colour box.
     changeSubColour(swapId: number = -1) {
-        this.savedColours[swapId] = this.currColour.toString();
+        this.savedColours[swapId] = (testCol as any).rgba;
         this.adjBoxes[swapId].style.background =
             this.savedColours[swapId].toString();
     }

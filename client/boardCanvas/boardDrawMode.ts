@@ -11,10 +11,11 @@ import { Action, Entity } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 import { tempStore } from '../serveInter.ts';
 import { BoardLayer } from './boardLayer.ts';
+import { ColourBox } from '../leftBar/colourBox.ts';
+const colourBox = new ColourBox();
 const board = new Board();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
-const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const serveInter = new tempStore();
 
 function rectangleFromPoints(point1: Vec2, point2: Vec2) {
@@ -266,7 +267,7 @@ export class BoardDrawMode {
                     { x: res[0] + res[2], y: res[1] + res[3] },
                     { x: res[0], y: res[1] + res[3] },
                 ],
-                colour: colourSquare.style.background,
+                colour: colourBox.getCurrColour(),
                 layerId: board.activeLayer,
                 objectId: -1,
                 image: false,
@@ -285,7 +286,7 @@ export class BoardDrawMode {
             tempObj = {
                 params: this.currParams,
                 points: this.params,
-                colour: colourSquare.style.background,
+                colour: colourBox.getCurrColour(),
                 layerId: board.activeLayer,
                 objectId: -1,
                 image: false,
@@ -374,7 +375,7 @@ export class BoardDrawMode {
                 y: this.params[0].y + this.currLayer.layerOffset.y,
             };
             const res2 = rectangleFromPoints(extParams, res);
-            const col = colourSquare.style.background;
+            const col = colourBox.getCurrColour();
             return new BoardObject(-1, col, this.currParams, [
                 { x: res2[0], y: res2[1] },
                 { x: res2[0] + res2[2], y: res2[1] },
@@ -384,7 +385,7 @@ export class BoardDrawMode {
         } else if (this.params.length >= 2 && this.currDraw >= 4) {
             const newObj = new BoardObject(
                 -1,
-                colourSquare.style.background,
+                colourBox.getCurrColour(),
                 this.currParams,
                 this.params,
             );

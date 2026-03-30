@@ -10,11 +10,12 @@ import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { GOLD } from '../../shared/colours.ts';
 import { tempStore } from '../serveInter.ts';
+import { ColourBox } from '../leftBar/colourBox.ts';
+const colourBox = new ColourBox();
 const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
-const colourSquare = getRequiredElement('colourSquare', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const serveInter = new tempStore();
@@ -88,7 +89,7 @@ export class BoardSelectMode {
             if (obj.token.active) {
                 const newToken = {
                     name: obj.token.name,
-                    colour: colourSquare.style.background,
+                    colour: colourBox.getCurrColour(),
                     active: true,
                     movable: obj.token.movable,
                 };
@@ -104,7 +105,7 @@ export class BoardSelectMode {
             if (!obj.token.active) {
                 const newToken = {
                     name: nameInput.value,
-                    colour: colourSquare.style.background,
+                    colour: colourBox.getCurrColour(),
                     active: true,
                     movable: true,
                 };
@@ -195,7 +196,7 @@ export class BoardSelectMode {
         this.orbs = [];
         this.currPath = new Path2D();
         this.exitOnNextStep = false;
-        this.currColour = colourSquare.style.background;
+        this.currColour = colourBox.getCurrColour();
         this.selectClick = board.leftMouseDown;
         this.thirdOffset = { x: 0, y: 0 };
         if (serveInter.isGm) {
@@ -375,15 +376,15 @@ export class BoardSelectMode {
                 entity: Entity.Object,
                 action: Action.Recolour,
                 objectId: obj.objectId,
-                colour: stringToColInst(colourSquare.style.background),
+                colour: stringToColInst(colourBox.getCurrColour()),
             });
-            obj.setColour(colourSquare.style.background);
+            obj.setColour(colourBox.getCurrColour());
         }
         serveInter.recolourObjects(
             recolourList,
             stringToColInst(this.currColour),
         );
-        this.currColour = colourSquare.style.background;
+        this.currColour = colourBox.getCurrColour();
     }
 
     // Sets the list of currently selected objects.
