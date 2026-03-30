@@ -10,6 +10,7 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const testCol = document.getElementById('testCol')!;
 const board = new Board();
 const serveInter = new tempStore();
+const locButton = testCol.shadowRoot!.children[1]!.children[0]!;
 
 // Class handling the colour selection box.
 export class ColourBox {
@@ -53,10 +54,6 @@ export class ColourBox {
     // Adds relevant event listeners.
     // Mostly to do with registering changes to the currently selected colour.
     addEventListeners() {
-        testCol.addEventListener('change', (evt) => {
-            console.log((evt as any).detail.rgba);
-        });
-
         can.addEventListener('mousedown', (event) => {
             if (this.pickColour) {
                 const coords = board.determineTile(

@@ -42,6 +42,7 @@ const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const changeImage = getRequiredElement('changeImage', HTMLElement);
 const testCol = document.getElementById('testCol')!;
+const popUp = testCol.shadowRoot!.children[1]!.children[1]!;
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
