@@ -4,7 +4,6 @@ import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { ObjectRecolourEvent } from '../../shared/objectEvents.ts';
-import { stringToColInst } from '../../shared/colours.ts';
 import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
@@ -376,14 +375,11 @@ export class BoardSelectMode {
                 entity: Entity.Object,
                 action: Action.Recolour,
                 objectId: obj.objectId,
-                colour: stringToColInst(colourBox.getCurrColour()),
+                colour: colourBox.getCurrColour(),
             });
             obj.setColour(colourBox.getCurrColour());
         }
-        serveInter.recolourObjects(
-            recolourList,
-            stringToColInst(this.currColour),
-        );
+        serveInter.recolourObjects(recolourList, this.currColour);
         this.currColour = colourBox.getCurrColour();
     }
 

@@ -1,4 +1,3 @@
-import type { ColInst } from './colours.ts';
 import type { Vec2 } from './coords.ts';
 
 // Just a bunch of enums and interfaces used by other files.
@@ -85,7 +84,7 @@ export interface LayerState {
 export interface ObjectCreatePayload {
     params: ObjectParams;
     points: Vec2[];
-    colour: ColInst | string;
+    colour: string;
     layerId: number;
     objectId: number;
     token: Token;
@@ -136,7 +135,7 @@ export interface ObjectRecolourEvent {
     entity: Entity.Object;
     action: Action.Recolour;
     objectId: number;
-    colour: ColInst | string;
+    colour: string;
 }
 
 export interface ObjectRelayerEvent {
@@ -185,7 +184,7 @@ export interface ServerPacket {
 export interface LaserEvent {
     entity: Entity.Laser;
     id: string;
-    colour: ColInst | string;
+    colour: string;
     time: number;
     coords: Vec2;
 }

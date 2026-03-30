@@ -1,4 +1,3 @@
-import type { ColInst } from '../../shared/colours.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { GOLD } from '../../shared/colours.ts';
 import type {
@@ -16,7 +15,7 @@ const serveInter = new tempStore();
 export class BoardObject {
     objectId: number;
     zOrder: number;
-    colour: ColInst | string;
+    colour: string;
     centerPoint: Vec2;
     selected: boolean;
     layerId: number;
@@ -31,7 +30,7 @@ export class BoardObject {
 
     constructor(
         objectId: number,
-        colour: ColInst | string,
+        colour: string,
         drawParams: ObjectParams,
         structure: Vec2[],
     ) {
@@ -244,7 +243,7 @@ export class BoardObject {
         }
     }
 
-    setColour(newColour: ColInst | string) {
+    setColour(newColour: string) {
         this.colour = newColour;
     }
 

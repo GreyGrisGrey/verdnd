@@ -1,4 +1,3 @@
-import { ColInst, stringToColInst } from '../../shared/colours.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';

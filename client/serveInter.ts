@@ -11,7 +11,6 @@ import type {
     Token,
 } from '../shared/objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
-import { ColInst } from '../shared/colours.ts';
 import { Action, Entity, Handler } from '../shared/objectEvents.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
@@ -252,7 +251,7 @@ export class tempStore {
                 this.createObject(obj);
             }
         } else if (last[0].action === Action.Recolour) {
-            this.recolourObjects(last, new ColInst(0, 0, 0, 0), true);
+            this.recolourObjects(last, '#000000', true);
         } else if (last[0].action === Action.Move) {
             this.moveObjects(last, true);
         }
@@ -566,7 +565,7 @@ export class tempStore {
     // Questionable that it sends a packet for each object.
     recolourObjects(
         events: ObjectRecolourEvent[],
-        oldCol: ColInst,
+        oldCol: string,
         undo: boolean = false,
     ) {
         if (!this.isGm) {
@@ -579,20 +578,18 @@ export class tempStore {
                     entity: event.entity,
                     action: event.action,
                     objectId: event.objectId,
-                    colour: oldCol.toString(),
+                    colour: oldCol,
                 });
             }
             const targetObj = this.storedObjectPayloads.get(event.objectId);
             if (targetObj) {
-                storedObjects
-                    .get(event.objectId)!
-                    .setColour(event.colour.toString());
+                storedObjects.get(event.objectId)!.setColour(event.colour);
                 this.socket.send(
                     this.parcelServeEvent({
                         entity: event.entity,
                         action: event.action,
                         objectId: event.objectId,
-                        colour: event.colour.toString(),
+                        colour: event.colour,
                     }),
                 );
             }
