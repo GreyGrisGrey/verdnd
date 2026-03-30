@@ -7,10 +7,9 @@ const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const colourContainer = getRequiredElement('colourContainer', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
-const testCol = document.getElementById('testCol')!;
+const showColourButton = document.getElementById('showColour')!;
 const board = new Board();
 const serveInter = new tempStore();
-const locButton = testCol.shadowRoot!.children[1]!.children[0]!;
 
 // Class handling the colour selection box.
 export class ColourBox {
@@ -42,13 +41,12 @@ export class ColourBox {
     }
 
     getCurrColour() {
-        return (testCol as any).rgba;
+        return (showColourButton as any).rgba;
     }
 
     toggleActive(newActive: boolean) {
         colourContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         colourContainer.style.pointerEvents = newActive ? 'auto' : 'none';
-        (testCol as any).opened = newActive;
     }
 
     // Adds relevant event listeners.
@@ -64,7 +62,7 @@ export class ColourBox {
                 const resObj = board.selectObjects('any', [coords]);
                 if (resObj.length > 0) {
                     if (typeof resObj[0].colour === typeof 'asd') {
-                        (testCol as any).color = resObj[0].colour;
+                        (showColourButton as any).color = resObj[0].colour;
                     }
                 }
                 this.pickColour = false;
@@ -76,7 +74,7 @@ export class ColourBox {
         });
 
         colourBackground.addEventListener('click', () => {
-            serveInter.sendChangeBackground((testCol as any).hex);
+            serveInter.sendChangeBackground((showColourButton as any).hex);
         });
 
         document.addEventListener('keydown', (event) => {
@@ -96,7 +94,7 @@ export class ColourBox {
                 if (this.shiftIsPressed) {
                     this.changeSubColour(i);
                 } else {
-                    (testCol as any).color = this.savedColours[i];
+                    (showColourButton as any).color = this.savedColours[i];
                 }
             });
         });
@@ -104,7 +102,7 @@ export class ColourBox {
 
     // Changes the saved colour of the indicated adjoining colour box.
     changeSubColour(swapId: number = -1) {
-        this.savedColours[swapId] = (testCol as any).rgba;
+        this.savedColours[swapId] = (showColourButton as any).rgba;
         this.adjBoxes[swapId].style.background =
             this.savedColours[swapId].toString();
     }

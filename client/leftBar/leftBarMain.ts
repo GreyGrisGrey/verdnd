@@ -7,7 +7,7 @@ import { Board } from '../boardCanvas/localBoard.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
-const showColourButton = getRequiredElement('showColour', HTMLButtonElement);
+const showColourButton = document.getElementById('showColour')!;
 const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
