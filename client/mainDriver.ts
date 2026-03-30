@@ -47,7 +47,6 @@ async function mainLoop() {
     if (counter % 25 === 0) {
         rightMan.step();
         tooltips.step();
-        modeMan.clearTemp();
     }
     if (serveInter.isDone) {
         board.activeLayer = layerMan.currSelect;

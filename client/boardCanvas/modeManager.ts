@@ -179,9 +179,7 @@ export class ModeManager {
 
     // Clears the temporarily held complete object in the draw manager.
     clearTemp() {
-        if (this.currMode === Mode.Draw) {
-            this.drawMan.clearObject();
-        }
+        this.drawMan.clearObject();
     }
 
     // Returns all board objects that are currently selected.

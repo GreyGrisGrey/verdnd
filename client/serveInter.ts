@@ -175,6 +175,7 @@ export class tempStore {
                             [message.object.objectId],
                         );
                         this.undoCreateTracker.delete(this.secondIndex);
+                        modeMan.clearTemp();
                     }
                     this.storedObjectPayloads.set(
                         message.object.objectId,
