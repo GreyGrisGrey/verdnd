@@ -87,7 +87,7 @@
         }))
     }
 
-    const ws = new WebSocket('ws://47.55.46.138:4322/');
+    const ws = new WebSocket('wss://verDnD.ca/');
 
     ws.addEventListener('message', (event) => {
         const message = JSON.parse(event.data);
@@ -101,11 +101,10 @@
                 const newBox = document.createElement('div');
                 const newText = document.createElement('a');
                 newText.href = '/game/' + val.toString();
-                newBox.append(newText)
-                gameContainer.append(newBox)
+                newBox.append(newText);
+                gameContainer.append(newBox);
                 newBox.style.position = 'relative';
                 newBox.style.left = "20px";
-
                 newText.innerText = 'Game #' + val.toString();
             }
         }

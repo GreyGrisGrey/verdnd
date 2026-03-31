@@ -47,7 +47,7 @@ export class GameObject {
         this.laserTimer = 0;
         this.finishedSetup = false;
 
-        this.allGm = false;
+        this.allGm = true;
         this.gameId = gameId;
 
         this.objectLock = false;

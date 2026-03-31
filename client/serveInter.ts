@@ -95,7 +95,7 @@ export class tempStore {
         const online = true;
 
         if (online) {
-            this.socket = new WebSocket('ws://47.55.46.138:4322/');
+            this.socket = new WebSocket('wss://verDnD.ca/');
         } else {
             this.socket = new WebSocket('ws://192.168.2.142:8765/');
         }
@@ -294,7 +294,7 @@ export class tempStore {
         const formData = new FormData();
         formData.append('file', file);
         const response = await fetch(
-            'http://47.55.46.138:4321/upload/game/' +
+            'https://47.55.46.138:4321/upload/game/' +
                 this.currGame +
                 '/' +
                 objId.toString(),
@@ -331,7 +331,7 @@ export class tempStore {
 
     async removeFile(objId: number = -1) {
         const response = await fetch(
-            'http://47.55.46.138:4321/upload/game/remove/' +
+            'https://47.55.46.138:4321/upload/game/remove/' +
                 this.currGame +
                 '/' +
                 objId.toString(),
