@@ -33,6 +33,9 @@ export async function establishGlobalUser(
     userMap: Map<string, Set<WebSocket>>,
     wsMap: Map<WebSocket, WebSocketData>,
 ) {
+    while (!wsMap.get(ws)) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+    }
     await waitLock(userLock);
     userLock = true;
     await waitLock(dbLock);

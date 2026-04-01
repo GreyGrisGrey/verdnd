@@ -93,7 +93,7 @@ export class ModeManager {
             board.mouseCoords.y = event.clientY;
         });
 
-        can.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown', (event) => {
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
             } else if (event.key === 'd' && serveInter.isGm) {

@@ -60,6 +60,9 @@ export async function establishLocalUser(
     cli: PostGresData,
     wsMap: Map<WebSocket, WebSocketData>,
 ) {
+    while (!wsMap.get(ws)) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+    }
     await currGame.waitLock('user');
     currGame.userLock = true;
     await currGame.waitLock('db');

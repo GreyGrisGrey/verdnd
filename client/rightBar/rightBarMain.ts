@@ -78,7 +78,7 @@ export class RightBarManager {
             this.toggleVisible();
         });
 
-        can.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown', (event) => {
             if (event.key === 'p') {
                 layerMan.toggleActive(false);
                 rollMan.toggleActive(true);

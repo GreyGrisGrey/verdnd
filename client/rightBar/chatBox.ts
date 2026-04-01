@@ -55,11 +55,15 @@ export class ChatBox {
         let locTotal = 0;
         for (const roll of dataLine.rolls) {
             newString += `${roll.result} + `;
-            locTotal += roll.result;
+            if (!roll.exclude) {
+                locTotal += roll.result;
+            }
         }
         newString = newString.slice(0, newString.length - 3) + ')';
-        if ((dataLine.result - locTotal).toString() !== '0') {
-            newString += ' + ' + (dataLine.result - locTotal).toString();
+        if (dataLine.result - locTotal > 0) {
+            newString += ' +' + (dataLine.result - locTotal).toString();
+        } else if (dataLine.result - locTotal < 0) {
+            newString += ' ' + (dataLine.result - locTotal).toString();
         }
         this.mainText.innerText =
             `${userName} rolled ${dataLine.rolls.length}d${dataLine.rolls[0].size}\nResult = ${dataLine.result}\n` +

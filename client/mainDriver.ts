@@ -54,6 +54,7 @@ async function mainLoop() {
     }
     counter++;
     requestAnimationFrame(mainLoop);
+    console.log('a');
 }
 
 let counter = 0;
