@@ -117,7 +117,7 @@ def serverCompile():
     finalBlock = ""
     finalBlock += codeBlock
     for i in constDict:
-        finalBlock += i + "\n"
+        finalBlock = i + "\n" + finalBlock
 
     open("serveOut.ts", "w").write(finalBlock)
 

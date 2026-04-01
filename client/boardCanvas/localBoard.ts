@@ -244,7 +244,7 @@ export class Board {
     // Draws the board.
     draw() {
         const squareSize = 5 * this.zoomVal;
-        this.bgImage.draw(new Path2D());
+        this.bgImage.draw();
         for (let i = 0; i < this.zLayers.size; i++) {
             const layer = this.zLayers.get(i);
             if (layer) {

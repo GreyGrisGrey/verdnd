@@ -86,10 +86,16 @@ export class ImageObject {
         }
     }
 
-    draw(path: Path2D, squareSize: number = 1, offset: Vec2 = { x: 0, y: 0 }) {
+    draw(
+        path: Path2D | null = null,
+        squareSize: number = 1,
+        offset: Vec2 = { x: 0, y: 0 },
+    ) {
         if (this.drawFlag) {
-            ctx.save();
-            ctx.clip(path);
+            if (path) {
+                ctx.save();
+                ctx.clip(path);
+            }
             ctx.drawImage(
                 this.image,
                 this.imageOffset.x + offset.x,
@@ -97,7 +103,9 @@ export class ImageObject {
                 this.image.width * squareSize,
                 this.image.height * squareSize,
             );
-            ctx.restore();
+            if (path) {
+                ctx.restore();
+            }
             return true;
         }
         return false;
