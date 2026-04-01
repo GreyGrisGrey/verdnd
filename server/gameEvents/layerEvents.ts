@@ -43,34 +43,44 @@ export async function updateLayer(
 ) {
     await currGame.waitLock('layer');
     currGame.layerLock = true;
-    const oldVis = currGame.layerMap.get(layerId)!.layer.playerVisible;
-    currGame.layerMap.set(layerId, {
-        entity: Entity.Layer,
-        action: Action.Update,
-        layer: newLayer,
-    });
-    const sendObj = JSON.stringify({
-        entity: Entity.Layer,
-        action: Action.Update,
-        layer: newLayer,
-    });
-    await currGame.waitLock('db');
-    currGame.dbLock = true;
-    cli.updateLayer(
-        currGame.gameId,
-        layerId,
-        updateLayerToRow({
-            entity: Entity.Layer,
-            action: Action.Update,
-            layer: newLayer,
-        }),
-    );
-    currGame.dbLock = false;
-    if (oldVis !== newLayer.playerVisible) {
-        currGame.sendMasses(newLayer.id);
+    const curr = currGame.layerMap.get(layerId);
+    if (curr) {
+        const oldVis = curr.layer.playerVisible;
+        const oldZ = curr.layer.zOrder;
+        if (oldZ !== newLayer.zOrder) {
+            currGame.swapLayers(layerId, newLayer.zOrder, cli);
+            currGame.dbLock = false;
+            currGame.layerLock = false;
+        } else {
+            currGame.layerMap.set(layerId, {
+                entity: Entity.Layer,
+                action: Action.Update,
+                layer: newLayer,
+            });
+            const sendObj = JSON.stringify({
+                entity: Entity.Layer,
+                action: Action.Update,
+                layer: newLayer,
+            });
+            await currGame.waitLock('db');
+            currGame.dbLock = true;
+            cli.updateLayer(
+                currGame.gameId,
+                layerId,
+                updateLayerToRow({
+                    entity: Entity.Layer,
+                    action: Action.Update,
+                    layer: newLayer,
+                }),
+            );
+            currGame.dbLock = false;
+            if (oldVis !== newLayer.playerVisible) {
+                currGame.sendMasses(newLayer.id);
+            }
+            currGame.layerLock = false;
+            currGame.broadcast(sendObj);
+        }
     }
-    currGame.layerLock = false;
-    currGame.broadcast(sendObj);
 }
 
 // Function for destroying a specified layer on a specified game.
@@ -82,10 +92,10 @@ export async function destroyLayer(
     await currGame.waitLock('layer');
     currGame.layerLock = true;
     if (currGame.layerMap.size > 1) {
-        currGame.layerMap.delete(layerId);
         await currGame.waitLock('db');
         currGame.dbLock = true;
         cli.destroyLayer(currGame.gameId, layerId);
+        currGame.updateLayerMapRemoved(layerId, cli);
         currGame.dbLock = false;
         currGame.layerLock = false;
         const sendObj = JSON.stringify({

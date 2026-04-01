@@ -125,7 +125,6 @@ let metaDbLock = false;
 let metaUserLock = false;
 
 const wss = new WebSocketServer({ server });
-console.log(wss);
 
 wss.on('connection', async function connection(ws) {
     const newConnect = ws;

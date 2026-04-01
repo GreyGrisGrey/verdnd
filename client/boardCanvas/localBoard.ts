@@ -73,6 +73,10 @@ export class Board {
         for (const [key, val] of storedLayers) {
             this.zLayers.set(val.zOrder, val);
         }
+        if (!storedLayers.has(this.activeLayer) && storedLayers.size > 0) {
+            this.activeLayer = storedLayers.keys().next().value!;
+        }
+        console.log(this.activeLayer);
     }
 
     // Test function for pointer drawing.
@@ -240,22 +244,24 @@ export class Board {
     // Draws the board.
     draw() {
         const squareSize = 5 * this.zoomVal;
-        this.bgImage.draw();
+        this.bgImage.draw(new Path2D());
         for (let i = 0; i < this.zLayers.size; i++) {
-            const layer = this.zLayers.get(i)!;
-            layer.drawLayer(
-                ctx,
-                squareSize,
-                this.offset,
-                modeMan.selectMan.thirdOffset,
-                serveInter.isGm,
-            );
-            if (i === this.activeLayer) {
-                const tempObj = modeMan.getObject(GetObjectReason.Draw) as
-                    | BoardObject
-                    | undefined;
-                if (tempObj) {
-                    tempObj.draw(ctx, squareSize, this.offset);
+            const layer = this.zLayers.get(i);
+            if (layer) {
+                layer.drawLayer(
+                    ctx,
+                    squareSize,
+                    this.offset,
+                    modeMan.selectMan.thirdOffset,
+                    serveInter.isGm,
+                );
+                if (i === this.activeLayer) {
+                    const tempObj = modeMan.getObject(GetObjectReason.Draw) as
+                        | BoardObject
+                        | undefined;
+                    if (tempObj) {
+                        tempObj.draw(ctx, squareSize, this.offset);
+                    }
                 }
             }
         }

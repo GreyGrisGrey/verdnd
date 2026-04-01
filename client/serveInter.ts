@@ -65,6 +65,7 @@ export class tempStore {
     connected: boolean;
     lastLaser: selfLaser;
     isDone: boolean;
+    bgUpload: boolean;
 
     constructor() {
         this.undoMap = new Map();
@@ -90,6 +91,7 @@ export class tempStore {
             (Math.round(Math.random() * 1000000) + 500).toString();
         this.pass = localStorage['pass'] || '1';
         this.name = localStorage['name'] || 'wuog';
+        this.bgUpload = false;
         // Switch to false if we're using local network or not
         // No doubt a better way of doing this exists, but also it's so minor I don't care.
         const online = true;
@@ -127,7 +129,7 @@ export class tempStore {
                         layerMan.destroyLayerElement(message.layerId);
                         storedLayers.delete(message.layerId);
                     }
-                } else if (storedLayerStates.has(message.layer.id)) {
+                } else if (storedLayerStates.has(Number(message.layer.id))) {
                     layerMan.updateLayer(message.layer.id, message.layer);
                     storedLayers
                         .get(message.layer.id)!
@@ -136,6 +138,7 @@ export class tempStore {
                     this.createLayerLocal(message.layer);
                 }
                 board.updateZLayers();
+                layerMan.moveLayers();
             } else if (message.entity === Entity.Object) {
                 if (
                     message.action === Action.Destroy &&
@@ -199,14 +202,15 @@ export class tempStore {
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
-                    modeMan.drawMan.updateLayer(0);
-                    const curr = storedLayers.get(0);
+                    modeMan.drawMan.updateLayer();
+                    const curr = storedLayers.get(board.activeLayer);
                     if (curr) {
                         modeMan.viewMan.updateLayerOffset({
                             x: curr.layerOffset.x,
                             y: curr.layerOffset.y,
                         });
                     }
+                    layerMan.enterCurrSelect();
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
@@ -288,13 +292,14 @@ export class tempStore {
 
     async uploadFile(objId: number = -1) {
         const file = fileInput.files ? fileInput.files[0] : null;
-        if (!file) {
+        if (!file || (!this.bgUpload && objId === -1)) {
             return;
         }
+        this.bgUpload = false;
         const formData = new FormData();
         formData.append('file', file);
         const response = await fetch(
-            'https://47.55.46.138:4321/upload/game/' +
+            'https://verdnd.ca/upload/game/' +
                 this.currGame +
                 '/' +
                 objId.toString(),
@@ -331,7 +336,7 @@ export class tempStore {
 
     async removeFile(objId: number = -1) {
         const response = await fetch(
-            'https://47.55.46.138:4321/upload/game/remove/' +
+            'https://verdnd.ca/upload/game/remove/' +
                 this.currGame +
                 '/' +
                 objId.toString(),

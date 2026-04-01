@@ -3,6 +3,7 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 import { ModeManager } from '../boardCanvas/modeManager.ts';
+import { Board } from '../boardCanvas/localBoard.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const currLayerText = getRequiredElement('currLayerText', HTMLElement);
 const layerBottom = getRequiredElement('layerBottom', HTMLElement);
@@ -15,6 +16,7 @@ const downButton = getRequiredElement('layerDownButton', HTMLElement);
 const storedLayerStates: Map<number, LayerState> = new Map();
 const serveInter = new tempStore();
 const modeMan = new ModeManager();
+const board = new Board();
 
 // Class managing the right-bar's layer menu.
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
@@ -48,12 +50,6 @@ export class LayerMenu {
                 return;
             }
             layer.zOrder += 1;
-            for (const [key, val] of storedLayerStates) {
-                if (val.zOrder === layer.zOrder && val.id !== layer.id) {
-                    val.zOrder -= 1;
-                    serveInter.updateLayer(val);
-                }
-            }
             serveInter.updateLayer(layer);
             this.moveLayers();
         });
@@ -64,12 +60,6 @@ export class LayerMenu {
                 return;
             }
             layer.zOrder -= 1;
-            for (const [key, val] of storedLayerStates) {
-                if (val.zOrder === layer.zOrder && val.id !== layer.id) {
-                    val.zOrder += 1;
-                    serveInter.updateLayer(val);
-                }
-            }
             serveInter.updateLayer(layer);
             this.moveLayers();
         });
@@ -216,7 +206,7 @@ export class LayerMenu {
                 if (this.currSelect !== num) {
                     this.exitCurrSelect();
                     this.currSelect = num;
-                    modeMan.drawMan.updateLayer(num);
+                    modeMan.drawMan.updateLayer();
                     modeMan.viewMan.updateLayerOffset({
                         x: buildData.x,
                         y: buildData.y,
@@ -299,6 +289,13 @@ export class LayerMenu {
             layerRenameInput.value = layer.name;
             currLayerText.innerText =
                 layer.name === 'none' ? `Layer ${this.currSelect}` : layer.name;
+        } else {
+            this.currSelect = board.activeLayer;
+            if (storedLayerStates.has(this.currSelect)) {
+                this.enterCurrSelect();
+            } else {
+                console.log('Error, board has invalid layer.');
+            }
         }
     }
 
@@ -315,7 +312,6 @@ export class LayerMenu {
             this.descObj.style.width = `${parseInt(this.layerObj.style.width.slice(0, this.layerObj.style.width.length - 2), 10) - 4}px`;
             this.resizeLayerBoxes();
         }
-        this.moveLayers();
         this.resizeLayerBoxes();
     }
 }

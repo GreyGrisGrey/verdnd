@@ -8,6 +8,7 @@ import { PostGresData } from './dataMain.ts';
 import { PlayerPacket } from './gamePlayerPacket.ts';
 import { Action, Entity } from '../shared/objectEvents.ts';
 import WebSocket from 'ws';
+import { updateLayerToRow } from './converter.ts';
 
 export class GameObject {
     owner: string;
@@ -58,6 +59,77 @@ export class GameObject {
         this.count = 0;
 
         this.image = false;
+    }
+
+    swapLayers(id: number, newZ: number, cli: PostGresData) {
+        const curr = this.layerMap.get(id);
+        if (curr) {
+            const oldZ = curr.layer.zOrder;
+            for (const [key, layer] of this.layerMap) {
+                if (layer.layer.zOrder === newZ) {
+                    layer.layer.zOrder = oldZ;
+                    curr.layer.zOrder = newZ;
+                    cli.updateLayer(
+                        this.gameId,
+                        id,
+                        updateLayerToRow({
+                            entity: Entity.Layer,
+                            action: Action.Update,
+                            layer: curr.layer,
+                        }),
+                    );
+                    const sendObj = JSON.stringify(curr);
+                    this.broadcast(sendObj);
+                    cli.updateLayer(
+                        this.gameId,
+                        layer.layer.id,
+                        updateLayerToRow({
+                            entity: Entity.Layer,
+                            action: Action.Update,
+                            layer: layer.layer,
+                        }),
+                    );
+                    const sendObj2 = JSON.stringify(layer);
+                    this.broadcast(sendObj2);
+                }
+            }
+        }
+    }
+
+    updateLayerMapRemoved(removedId: number, cli: PostGresData) {
+        const removedLayer = this.layerMap.get(removedId);
+        if (!removedLayer) {
+            return;
+        }
+        const removedZ = removedLayer.layer.zOrder;
+        for (const [key, layer] of this.layerMap) {
+            if (key !== removedId) {
+                const curr = layer.layer;
+                let updateReq = false;
+                if (curr.zOrder > removedZ) {
+                    curr.zOrder -= 1;
+                    updateReq = true;
+                }
+                if (updateReq) {
+                    cli.updateLayer(
+                        this.gameId,
+                        curr.id,
+                        updateLayerToRow({
+                            entity: Entity.Layer,
+                            action: Action.Update,
+                            layer: curr,
+                        }),
+                    );
+                    const sendObj = JSON.stringify({
+                        entity: Entity.Layer,
+                        action: Action.Update,
+                        layer: curr,
+                    });
+                    this.broadcast(sendObj);
+                }
+            }
+        }
+        this.layerMap.delete(removedId);
     }
 
     moveObject(id: number, xChange: number, yChange: number) {

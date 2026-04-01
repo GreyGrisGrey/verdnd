@@ -48,6 +48,7 @@ export class LeftBarManager {
     addEventListeners() {
         changeImage.addEventListener('click', () => {
             if (!board.bgImage.drawFlag) {
+                serveInter.bgUpload = true;
                 fileInput.click();
             } else {
                 serveInter.removeFile();

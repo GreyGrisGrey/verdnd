@@ -174,7 +174,7 @@ export class BoardObject {
         }
         const tl = this.getTopLeft();
         if (
-            !this.imageObj.draw(squareSize, {
+            !this.imageObj.draw(this.currPath, squareSize, {
                 x: offset.x + tl.x * squareSize,
                 y: offset.y + tl.y * squareSize,
             })

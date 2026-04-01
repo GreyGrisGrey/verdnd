@@ -62,9 +62,9 @@ export class BoardDrawMode {
     }
 
     // Updates the currently active layer.
-    updateLayer(newLayer: number) {
-        if (storedLayers.has(newLayer)) {
-            this.currLayer = storedLayers.get(newLayer)!;
+    updateLayer() {
+        if (storedLayers.has(board.activeLayer)) {
+            this.currLayer = storedLayers.get(board.activeLayer)!;
         } else {
             console.log(
                 'Draw mode: requested layer does not exist on storedLayers',
