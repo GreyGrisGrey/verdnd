@@ -116,6 +116,8 @@ export class ModeManager {
             (event) => {
                 if (event.button === 0) {
                     board.leftMouseDown = true;
+                } else if (event.button === 1) {
+                    board.midMouseDown = true;
                 } else if (event.button === 2) {
                     board.rightMouseDown = true;
                 }
@@ -128,6 +130,8 @@ export class ModeManager {
             (event) => {
                 if (event.button === 0) {
                     board.leftMouseDown = false;
+                } else if (event.button === 1) {
+                    board.midMouseDown = false;
                 } else if (event.button === 2) {
                     board.rightMouseDown = false;
                 }

@@ -2,7 +2,7 @@ import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
-import { BLUE, RED, WHITE } from '../../shared/colours.ts';
+import { BLUE, GREY } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { ImageObject } from './imageObject.ts';
@@ -29,6 +29,7 @@ export class Board {
     offset: Vec2;
     mouseCoords: Vec2;
     leftMouseDown: boolean;
+    midMouseDown: boolean;
     rightMouseDown: boolean;
     laserCol: string;
     zLayers: Map<number, BoardLayer>;
@@ -46,6 +47,7 @@ export class Board {
             y: window.innerHeight / 2,
         };
         this.leftMouseDown = false;
+        this.midMouseDown = false;
         this.rightMouseDown = false;
         this.laserCol = BLUE;
         this.zLayers = new Map();
@@ -88,7 +90,7 @@ export class Board {
             2 * Math.PI,
             false,
         );
-        ctx.fillStyle = this.leftMouseDown ? RED.toString() : this.laserCol;
+        ctx.fillStyle = this.laserCol;
         ctx.fill();
         ctx.closePath();
     }
@@ -191,9 +193,9 @@ export class Board {
                     currX <= this.offset.x &&
                     currX + squareSize >= this.offset.x
                 ) {
-                    ctx.fillStyle = WHITE.toString();
+                    ctx.fillStyle = GREY.toString();
                 } else {
-                    ctx.fillStyle = WHITE.toString();
+                    ctx.fillStyle = GREY.toString();
                 }
                 ctx.fillRect(currX - 1, currY - 1, 2, 2);
                 currY += squareSize;

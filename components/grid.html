@@ -16,17 +16,10 @@
     const ctx = can.getContext('2d');
     const squareSize = 50;
     let currX = 20;
+    ctx.fillStyle = '#cccccc'
     while (currX < can.width + 100) {
         let currY = 0;
         while (currY < can.height + 100) {
-            if (
-                currX <= 0 &&
-                currX + squareSize >= 0
-            ) {
-                ctx.fillStyle = '#cccccc';
-            } else {
-                ctx.fillStyle = '#cccccc';
-            }
             ctx.fillRect(currX - 1, currY - 1, 2, 2);
             currY += squareSize;
         }

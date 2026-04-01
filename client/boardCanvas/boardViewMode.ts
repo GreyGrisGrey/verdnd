@@ -226,7 +226,8 @@ export class BoardViewMode {
                 board.rightMouseDown ||
                 (board.leftMouseDown &&
                     !this.completeSelectCheck &&
-                    this.active)
+                    this.active) ||
+                board.midMouseDown
             ) {
                 const change: Vec2 = {
                     x: Math.round(board.mouseCoords.x - event.clientX),
