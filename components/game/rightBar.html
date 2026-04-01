@@ -1,10 +1,10 @@
 <div id="rightBar">
     <button class="rightTab" id="hideRightBar">Hide</button>
 
-    <button class="rightTab" id="rollTab">Roll [P]</button>
-    <button class="rightTab" id="tokenTab">T</button>
-    <button class="rightTab" id="layerTab">Layers [L]</button>
-    <button class="rightTab" id="characterTab">C</button>
+    <button class="rightTab" id="layerTab">Layers</button>
+    <button class="rightTab" id="rollTab">Roll</button>
+    <button class="rightTab" id="tokenTab">Token</button>
+    <button class="rightTab" id="characterTab">Char</button>
 
     <div id="chatBox">
         <textarea id="chatBoxTextBox"></textarea>
@@ -40,38 +40,37 @@
 
 <style>
     .rightTab {
+        background-color: rgba(200, 200, 200, 1);
         position: absolute;
         z-index: 2;
-        top: 10px;
+        top: 0px;
         left: -50px;
         width: 50px;
-        height: 50px;
+        height: 30px;
         pointer-events: auto;
         border-radius: 10px 0px 0px 10px;
         border: none;
     }
 
-    #tokenTab {
-        top: 190px;
-        visibility: hidden;
+    #hideRightBar {
+        top: 0px;
     }
 
     #layerTab {
-        top: 70px;
-    }
-
-    #characterTab {
-        top: 250px;
-        visibility: hidden;
+        top: 40px;
     }
 
     #rollTab {
-        top: 130px;
+        top: 80px;
     }
 
-    #hideRightBar {
-        position: absolute;
-        top: 10px;
+    #tokenTab {
+        top: 120px;
+    }
+
+    #characterTab {
+        top: 160px;
+        visibility: hidden;
     }
 
     #rightBar {
@@ -83,11 +82,12 @@
         width: 250px;
         height: 270px;
         pointer-events: none;
+        border-radius: 0px 10px 10px 10px;
     }
 
     #layerUpButton {
         position: absolute;
-        right: 0px;
+        right: 20px;
         top: 0px;
         width: 40px;
         height: 40px;
@@ -97,7 +97,7 @@
 
     #layerDownButton {
         position: absolute;
-        right: 0px;
+        right: 20px;
         top: 40px;
         width: 40px;
         height: 40px;
@@ -155,9 +155,10 @@
 
     #layerLayerObj {
         position: absolute;
-        background-color: #cccccc;
+        background-color: rgba(200, 200, 200, 1);
         font-size: 14px;
         visibility: hidden;
+        border-radius: 0px 10px 10px 10px;
     }
 
     #layerTop {
@@ -208,7 +209,7 @@
     #tempButtonObj {
         position: absolute;
         left: 0px;
-        width: 246px;
+        width: 250px;
         top: 50px;
         height: 50px;
         border-radius: 0px;
@@ -218,7 +219,7 @@
     #deleteLayerButton {
         position: absolute;
         left: 0px;
-        width: 246px;
+        width: 250px;
         bottom: 0px;
         height: 50px;
         border-radius: 0px;

@@ -1,4 +1,4 @@
-import { GREY, RED } from '../../shared/colours.ts';
+import { GREY, GREY_DARK } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
@@ -244,11 +244,10 @@ export class LayerMenu {
 
     // Resizes the HTMLElements of each layer.
     resizeLayerBoxes() {
-        const w = `${parseInt(this.layerObj.style.width, 10) - 4}px`;
+        const w = `${parseInt(this.layerObj.style.width, 10)}px`;
         for (const [key, val] of storedLayerStates) {
             val.element!.style.width = w;
         }
-        this.tempButtonObj.style.width = `${parseInt(this.layerObj.style.width, 10)}px`;
     }
 
     // Unselects the currently selected layer, in preparation for it not being the currently selected layer.
@@ -279,7 +278,7 @@ export class LayerMenu {
             layer = storedLayerStates.get(this.currSelect);
         }
         if (layer) {
-            layer.element!.style.background = RED.toString();
+            layer.element!.style.background = GREY_DARK.toString();
             layerXInput.value = layer.x.toString();
             layerYInput.value = layer.y.toString();
             layerRenameInput.value = layer.name;
@@ -296,12 +295,12 @@ export class LayerMenu {
         layerBottom.style.height = `${window.innerHeight - 400}px`;
         const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
-            layer.element!.style.background = RED.toString();
+            layer.element!.style.background = GREY_DARK.toString();
         }
         if (this.layerObj.style.width !== rightBar.style.width) {
             this.layerObj.style.width = rightBar.style.width;
             this.layerObj.style.height = rightBar.style.height;
-            this.descObj.style.width = `${parseInt(this.layerObj.style.width.slice(0, this.layerObj.style.width.length - 2), 10) - 4}px`;
+            this.descObj.style.width = `${parseInt(this.layerObj.style.width.slice(0, this.layerObj.style.width.length - 2), 10)}px`;
         }
         this.resizeLayerBoxes();
     }

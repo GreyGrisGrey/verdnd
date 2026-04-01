@@ -85,10 +85,7 @@
         visibility: hidden;
         background-color: #eeeeee;
         font-size: 12px;
-    }
-
-    .bottomButton:disabled {
-        background-color: #aaaaaa;
+        border-radius: 10px;
     }
 
     #bottomBar {
@@ -105,9 +102,7 @@
         position: absolute;
         height: 56px;
         width: 56px;
-        bottom: 0px;
-        left: 0px;
-        background-color: #c8c8c8;
+        visibility: hidden;
     }
 
     .bottomButton {
@@ -117,6 +112,12 @@
         bottom: 0px;
         left: 0px;
         font-size: 12px;
-        border-radius: 0px;
+        border-radius: 10px;
+        border: none;
+    }
+
+    .bottomButton:disabled {
+        background-color: #aaaaaa;
+        border: none;
     }
 </style>
