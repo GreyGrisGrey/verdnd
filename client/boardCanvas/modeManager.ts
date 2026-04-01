@@ -8,7 +8,7 @@ import { tempStore } from '../serveInter.ts';
 const serveInter = new tempStore();
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
-const modeMenu = getRequiredElement('modeMenuId', HTMLElement);
+const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const board = new Board();

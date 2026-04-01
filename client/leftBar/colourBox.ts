@@ -26,14 +26,15 @@ export class ColourBox {
             '#323232',
             '#969696',
             '#ffffff',
+            '#cc00cc',
         ];
         this.currRGBString = `rgba(${120}, ${120}, ${120}, ${1})`;
         this.adjBoxes = [];
         this.shiftIsPressed = false;
         this.pickColour = false;
-        for (const i of [0, 1, 2, 3, 4, 5]) {
+        for (const i of [0, 1, 2, 3, 4, 5, 6]) {
             this.adjBoxes.push(getRequiredElement(`col${i + 1}`, HTMLElement));
-            this.adjBoxes[i].style.left = `${i * 40 + 10}px`;
+            this.adjBoxes[i].style.left = `${i * 32.5 + 5}px`;
             this.adjBoxes[i].style.background = this.savedColours[i].toString();
         }
         this.addEventListeners();

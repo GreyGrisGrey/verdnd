@@ -40,7 +40,7 @@ export class LeftBarManager {
     // Toggles the visibility of the entire left box menu.
     toggleVisible() {
         leftBar.style.visibility = this.visible ? 'visible' : 'hidden';
-        hideLeft.style.right = this.visible ? '-50px' : '200px';
+        hideLeft.style.right = this.visible ? '-50px' : '180px';
         hideLeft.style.visibility = 'visible';
         hideLeft.innerText = this.visible ? 'Hide' : 'Show';
     }

@@ -40,8 +40,6 @@
 
 <style>
     .rightTab {
-        background-color: rgba(200, 200, 200, 1);
-        border: solid black;
         position: absolute;
         z-index: 2;
         top: 10px;
@@ -49,6 +47,8 @@
         width: 50px;
         height: 50px;
         pointer-events: auto;
+        border-radius: 10px 0px 0px 10px;
+        border: none;
     }
 
     #tokenTab {
@@ -76,7 +76,6 @@
 
     #rightBar {
         background-color: rgba(200, 200, 200, 1);
-        border: solid black;
         position: absolute;
         z-index: 2;
         top: 40px;
@@ -93,7 +92,6 @@
         width: 40px;
         height: 40px;
         border-radius: 0px;
-        border: 2px solid #000000;
         z-index: 3;
     }
 
@@ -104,7 +102,6 @@
         width: 40px;
         height: 40px;
         border-radius: 0px;
-        border: 2px solid #000000;
         z-index: 3;
     }
 
@@ -169,7 +166,6 @@
         top: 0px;
         height: 250px;
         width: 246px;
-        border: solid black;
     }
 
     #layerMid {
@@ -177,7 +173,6 @@
         width: 250px;
         top: 255px;
         height: 100px;
-        border: black;
     }
 
     #layerBottom {
@@ -185,13 +180,11 @@
         width: 250px;
         top: 350px;
         height: 250px;
-        border: black;
         overflow-y: scroll;
         overflow-x: hidden;
     }
 
     #descLayerObj {
-        border: solid black;
         width: 250px;
         height: 50px;
         position: absolute;
@@ -219,7 +212,6 @@
         top: 50px;
         height: 50px;
         border-radius: 0px;
-        border: 2px solid #000000;
         z-index: 3;
     }
 
@@ -230,7 +222,6 @@
         bottom: 0px;
         height: 50px;
         border-radius: 0px;
-        border: 2px solid #000000;
         z-index: 3;
     }
 
@@ -241,7 +232,6 @@
 
     #chatBox {
         position: absolute;
-        background-color: #cccccc;
         visibility: hidden;
         pointer-events: none;
         overflow-y: scroll;
@@ -249,7 +239,6 @@
     }
 
     #chatBoxTextBox {
-        background-color: #cccccc;
         visibility: hidden;
         pointer-events: none;
     }

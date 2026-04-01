@@ -79,21 +79,21 @@ export class RollBox {
                 const rollDis = document.createElement('input');
                 rollAdv.type = 'button';
                 rollDis.type = 'button';
-                rollAdv.value = 'Roll 2d20 (Adv)';
-                rollDis.value = 'Roll 2d20 (Disadv)';
+                rollAdv.value = 'Roll Adv';
+                rollDis.value = 'Roll Disadv';
                 newBox.append(rollAdv);
                 newBox.append(rollDis);
 
                 rollAdv.style.position = 'absolute';
-                rollAdv.style.width = '100px';
+                rollAdv.style.width = '80px';
                 rollAdv.style.height = '20px';
                 rollAdv.style.left = '0px';
                 rollAdv.style.top = '3px';
 
                 rollDis.style.position = 'absolute';
-                rollDis.style.width = '120px';
+                rollDis.style.width = '100px';
                 rollDis.style.height = '20px';
-                rollDis.style.left = '110px';
+                rollDis.style.left = '90px';
                 rollDis.style.top = '3px';
 
                 rollAdv.addEventListener('click', () => {

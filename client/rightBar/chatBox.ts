@@ -15,7 +15,6 @@ export class ChatBox {
         this.mainBox.style.top = this.index * 90 + 'px';
         this.mainBox.style.width = '246px';
         this.mainBox.style.height = '90px';
-        this.mainBox.style.border = 'solid #000000';
         this.mainBox.style.visibility = 'inherit';
 
         this.roll = isRoll;

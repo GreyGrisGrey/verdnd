@@ -161,7 +161,6 @@ export class LayerMenu {
         });
         const num = buildData.id;
         newBox.style.position = 'absolute';
-        newBox.style.border = 'solid black';
         newBox.style.height = `${this.boxHeight}px`;
         newBox.style.width = '100px';
         newBox.style.left = '0px';

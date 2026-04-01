@@ -15,6 +15,7 @@
         <button class="colourTab" id="col4"> </button>
         <button class="colourTab" id="col5"> </button>
         <button class="colourTab" id="col6"> </button>
+        <button class="colourTab" id="col7"> </button>
     </div>
 
     <div id="rollContainer">
@@ -29,82 +30,76 @@
 <style>
     .leftTab {
         background-color: rgba(200, 200, 200, 1);
-        border: solid black;
         position: absolute;
         z-index: 2;
         right: -50px;
         width: 50px;
         height: 30px;
         pointer-events: auto;
+        border: none;
+        border-radius: 0px 10px 10px 0px;
     }
 
     #hideLeftBar {
-        top: 8px;
+        top: 0px;
     }
 
     #showUser {
-        top: 48px;
+        top: 40px;
     }
 
     #showColour {
-        top: 88px;
-        border: solid black;
+        top: 80px;
         z-index: 3;
-        height: 25.2px;
-        width: 45.2px;
         pointer-events: auto;
     }
 
     #showRoll {
-        top: 128px;
+        top: 120px;
     }
 
     #changeImage {
-        top: 168px;
+        top: 160px;
     }
 
     #colourPicker {
-        top: 208px;
+        top: 200px;
     }
 
     #colourBackground {
-        top: 248px;
+        top: 240px;
     }
 
     #userContainer {
         position: absolute;
         visibility: hidden;
-        background-color: rgba(200, 200, 200, 1);
         z-index: 4;
         height: 280px;
-        width: 250px;
+        width: 230px;
         overflow-y: scroll;
         overflow-x: hidden;
     }
 
     #colourContainer {
         position: absolute;
-        background-color: rgba(200, 200, 200, 1);
         z-index: 2;
         height: 280px;
-        width: 250px;
+        width: 230px;
     }
 
     #rollContainer {
         position: absolute;
-        background-color: rgba(200, 200, 200, 1);
         z-index: 4;
         height: 280px;
-        width: 250px;
+        width: 230px;
     }
 
     .colourTab {
-        background-color: rgba(200, 200, 200, 1);
+        border: none;
         position: absolute;
-        width: 30px;
-        height: 30px;
+        width: 25px;
+        height: 25px;
         top: 8px;
-        border: solid black;
     }
 
     #leftBar {
@@ -112,11 +107,11 @@
         position: absolute;
         top: 40px;
         left: 10px;
-        width: 250px;
+        width: 230px;
         height: 280px;
-        border: solid black;
         z-index: 4;
         pointer-events: auto;
+        border-radius: 10px 0px 10px 10px;
     }
 
     #rollContainer {
