@@ -12,6 +12,8 @@ import { CoordModes } from './localBoard.ts';
 import { tempStore } from '../serveInter.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
+import { LayerMenu } from '../rightBar/layerBarMenu.ts';
+const layerMan = new LayerMenu();
 const colourBox = new ColourBox();
 const board = new Board();
 const storedLayers: Map<number, BoardLayer> = new Map();
@@ -63,8 +65,8 @@ export class BoardDrawMode {
 
     // Updates the currently active layer.
     updateLayer() {
-        if (storedLayers.has(board.activeLayer)) {
-            this.currLayer = storedLayers.get(board.activeLayer)!;
+        if (storedLayers.has(layerMan.currSelect)) {
+            this.currLayer = storedLayers.get(layerMan.currSelect)!;
         } else {
             console.log(
                 'Draw mode: requested layer does not exist on storedLayers',
@@ -268,7 +270,7 @@ export class BoardDrawMode {
                     { x: res[0], y: res[1] + res[3] },
                 ],
                 colour: colourBox.getCurrColour(),
-                layerId: board.activeLayer,
+                layerId: layerMan.currSelect,
                 objectId: -1,
                 image: false,
                 token: {
@@ -287,7 +289,7 @@ export class BoardDrawMode {
                 params: this.currParams,
                 points: this.params,
                 colour: colourBox.getCurrColour(),
-                layerId: board.activeLayer,
+                layerId: layerMan.currSelect,
                 objectId: -1,
                 image: false,
                 token: {

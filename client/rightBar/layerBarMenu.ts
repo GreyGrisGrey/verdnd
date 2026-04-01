@@ -3,7 +3,6 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 import { ModeManager } from '../boardCanvas/modeManager.ts';
-import { Board } from '../boardCanvas/localBoard.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const currLayerText = getRequiredElement('currLayerText', HTMLElement);
 const layerBottom = getRequiredElement('layerBottom', HTMLElement);
@@ -16,7 +15,6 @@ const downButton = getRequiredElement('layerDownButton', HTMLElement);
 const storedLayerStates: Map<number, LayerState> = new Map();
 const serveInter = new tempStore();
 const modeMan = new ModeManager();
-const board = new Board();
 
 // Class managing the right-bar's layer menu.
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
@@ -102,12 +100,6 @@ export class LayerMenu {
 
         deleteButton.addEventListener('click', () => {
             const targLayer = storedLayerStates.get(this.currSelect)!;
-            for (const [key, val] of storedLayerStates) {
-                if (val.zOrder > targLayer.zOrder) {
-                    val.zOrder -= 1;
-                    serveInter.updateLayer(val);
-                }
-            }
             serveInter.destroyLayer(targLayer);
         });
     }
@@ -281,7 +273,11 @@ export class LayerMenu {
 
     // Selects the currently selected layer.
     enterCurrSelect() {
-        const layer = storedLayerStates.get(this.currSelect);
+        let layer = storedLayerStates.get(this.currSelect);
+        if (!layer) {
+            this.currSelect = storedLayerStates.keys().next().value!;
+            layer = storedLayerStates.get(this.currSelect);
+        }
         if (layer) {
             layer.element!.style.background = RED.toString();
             layerXInput.value = layer.x.toString();
@@ -290,12 +286,8 @@ export class LayerMenu {
             currLayerText.innerText =
                 layer.name === 'none' ? `Layer ${this.currSelect}` : layer.name;
         } else {
-            this.currSelect = board.activeLayer;
-            if (storedLayerStates.has(this.currSelect)) {
-                this.enterCurrSelect();
-            } else {
-                console.log('Error, board has invalid layer.');
-            }
+            console.log(this.currSelect);
+            console.log('Error, layerMan has invalid layer.');
         }
     }
 

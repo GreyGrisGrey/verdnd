@@ -6,6 +6,8 @@ import { BLUE, RED, WHITE } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { ImageObject } from './imageObject.ts';
+import { LayerMenu } from '../rightBar/layerBarMenu.ts';
+const layerMan = new LayerMenu();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const storedObjects: Map<number, BoardObject> = new Map();
@@ -28,7 +30,6 @@ export class Board {
     mouseCoords: Vec2;
     leftMouseDown: boolean;
     rightMouseDown: boolean;
-    activeLayer: number;
     laserCol: string;
     zLayers: Map<number, BoardLayer>;
     bgImage: ImageObject;
@@ -46,7 +47,6 @@ export class Board {
         };
         this.leftMouseDown = false;
         this.rightMouseDown = false;
-        this.activeLayer = 0;
         this.laserCol = BLUE;
         this.zLayers = new Map();
         this.bgImage = new ImageObject();
@@ -73,10 +73,6 @@ export class Board {
         for (const [key, val] of storedLayers) {
             this.zLayers.set(val.zOrder, val);
         }
-        if (!storedLayers.has(this.activeLayer) && storedLayers.size > 0) {
-            this.activeLayer = storedLayers.keys().next().value!;
-        }
-        console.log(this.activeLayer);
     }
 
     // Test function for pointer drawing.
@@ -151,7 +147,7 @@ export class Board {
         targetType: string = 'any',
         coords: Vec2[] = modeMan.getSelectCoords(),
     ) {
-        const layer = storedLayers.get(this.activeLayer);
+        const layer = storedLayers.get(layerMan.currSelect);
         if (layer) {
             return layer.selectObjects(coords, targetType);
         }
@@ -161,7 +157,7 @@ export class Board {
     // Selects a single token.
     selectToken(fixedPoint: Vec2[], matchType: string = 'any') {
         if (serveInter.isGm) {
-            const layer = storedLayers.get(this.activeLayer);
+            const layer = storedLayers.get(layerMan.currSelect);
             let newSelected = undefined;
             if (layer) {
                 const selected = layer.selectObjects(fixedPoint, matchType)[0];
@@ -255,7 +251,7 @@ export class Board {
                     modeMan.selectMan.thirdOffset,
                     serveInter.isGm,
                 );
-                if (i === this.activeLayer) {
+                if (i === layerMan.currSelect) {
                     const tempObj = modeMan.getObject(GetObjectReason.Draw) as
                         | BoardObject
                         | undefined;

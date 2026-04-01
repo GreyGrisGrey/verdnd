@@ -37,7 +37,6 @@ export class RightBarManager {
         this.visible = true;
         rightBar.style.width = '250px';
         this.addEventListeners();
-        layerMan.toggleActive(true);
     }
 
     toggleVisible() {

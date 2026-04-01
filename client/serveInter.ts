@@ -111,7 +111,7 @@ export class tempStore {
                     this.id = message.id;
                     localStorage['id'] = message.id;
                     this.isGm = message.gm;
-                    console.log('yay');
+                    console.log('logged in successfully.');
                     modeMan.toggleModeSwitcher(this.isGm);
                     rightMan.toggleModeSwitcher(this.isGm);
                     leftMan.toggleModeSwitcher(this.isGm);
@@ -120,14 +120,17 @@ export class tempStore {
                 localStorage['id'] = (
                     Math.round(Math.random() * 1000000) + 500
                 ).toString();
-                console.log('boo');
-                alert('failed to log in');
+                alert('Failed to log into server.');
             }
             if (message.entity === Entity.Layer) {
                 if (message.action === Action.Destroy) {
                     if (storedLayers.has(message.layerId)) {
                         layerMan.destroyLayerElement(message.layerId);
                         storedLayers.delete(message.layerId);
+                    }
+                    if (layerMan.currSelect === message.layerId) {
+                        board.updateZLayers();
+                        layerMan.enterCurrSelect();
                     }
                 } else if (storedLayerStates.has(Number(message.layer.id))) {
                     layerMan.updateLayer(message.layer.id, message.layer);
@@ -203,14 +206,14 @@ export class tempStore {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
                     modeMan.drawMan.updateLayer();
-                    const curr = storedLayers.get(board.activeLayer);
+                    const curr = storedLayers.get(layerMan.currSelect);
                     if (curr) {
                         modeMan.viewMan.updateLayerOffset({
                             x: curr.layerOffset.x,
                             y: curr.layerOffset.y,
                         });
                     }
-                    layerMan.enterCurrSelect();
+                    layerMan.toggleActive(true);
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
