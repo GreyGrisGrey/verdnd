@@ -166,6 +166,7 @@ export class LayerMenu {
         newBox.style.width = '100px';
         newBox.style.left = '0px';
         newBox.style.top = '50px';
+        newBox.style.visibility = 'inherit';
 
         newText.style.position = 'absolute';
         newText.style.width = '100px';
@@ -238,7 +239,7 @@ export class LayerMenu {
     // Something of a misnomer.
     moveLayers() {
         storedLayerStates.forEach((val, key) => {
-            val.element!.style.top = `${(this.boxHeight + 4) * val.zOrder}px`;
+            val.element!.style.top = `${(this.boxHeight + 4) * (storedLayerStates.size - (val.zOrder + 1))}px`;
         });
     }
 
@@ -293,7 +294,7 @@ export class LayerMenu {
 
     // Performs a single step updating the layer menu.
     step() {
-        layerBottom.style.height = `${window.innerHeight - 370}px`;
+        layerBottom.style.height = `${window.innerHeight - 400}px`;
         const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = RED.toString();
@@ -302,7 +303,6 @@ export class LayerMenu {
             this.layerObj.style.width = rightBar.style.width;
             this.layerObj.style.height = rightBar.style.height;
             this.descObj.style.width = `${parseInt(this.layerObj.style.width.slice(0, this.layerObj.style.width.length - 2), 10) - 4}px`;
-            this.resizeLayerBoxes();
         }
         this.resizeLayerBoxes();
     }

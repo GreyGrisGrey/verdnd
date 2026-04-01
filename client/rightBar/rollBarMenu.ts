@@ -44,7 +44,6 @@ export class RollMenu {
             chatBox.style.width = rW;
             chatBox.style.height = rH;
         }
-        const data = serveInter.getDice();
     }
 
     // Constructs a single chat box for the roll menu.
