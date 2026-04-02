@@ -20,7 +20,6 @@ const modeMan = new ModeManager();
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
 export class LayerMenu {
     active: boolean;
-    layers: LayerState[];
     descObj: HTMLElement;
     layerObj: HTMLElement;
     boxHeight: number;
@@ -29,18 +28,21 @@ export class LayerMenu {
 
     constructor() {
         this.active = false;
-        this.layers = [];
         this.descObj = getRequiredElement('descLayerObj', HTMLElement);
         this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);
         this.boxHeight = 50;
         this.currSelect = 0;
         this.tempButtonObj = getRequiredElement('tempButtonObj', HTMLElement);
+        this.addEventListeners();
+        this.moveLayers();
+    }
+
+    addEventListeners() {
         this.tempButtonObj.addEventListener('click', () => {
             if (this.active) {
                 this.createLayer();
             }
         });
-        this.moveLayers();
 
         upButton.addEventListener('click', () => {
             const layer = storedLayerStates.get(this.currSelect)!;
@@ -254,7 +256,7 @@ export class LayerMenu {
     exitCurrSelect() {
         const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
-            layer.element!.style.background = GREY.toString();
+            layer.element!.style.background = 'none';
         }
     }
 

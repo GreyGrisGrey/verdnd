@@ -1,13 +1,13 @@
 import { CharacterMenu } from './characterBarMenu.ts';
 import { LayerMenu } from './layerBarMenu.ts';
 import { RollMenu } from './rollBarMenu.ts';
-import { TokenMenu } from './tokenBarMenu.ts';
+import { ObjectMenu } from './objectBarMenu.ts';
 import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const layerBox = getRequiredElement('layerLayerObj', HTMLElement);
 const layerTab = getRequiredElement('layerTab', HTMLElement);
-const tokenTab = getRequiredElement('tokenTab', HTMLElement);
+const objectTab = getRequiredElement('objectTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
@@ -15,14 +15,14 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const serveInter = new tempStore();
 const layerMan = new LayerMenu();
-const tokenMan = new TokenMenu();
+const objectMan = new ObjectMenu();
 const characterMan = new CharacterMenu();
 const rollMan = new RollMenu();
 
 export enum RightBarTab {
     None = 'NONE',
     Layer = 'LAYER',
-    Token = 'TOKEN',
+    Object = 'OBJECT',
     Roll = 'ROLL',
     Character = 'CHARACTER',
 }
@@ -51,24 +51,28 @@ export class RightBarManager {
         layerTab.addEventListener('click', () => {
             layerMan.toggleActive(true);
             rollMan.toggleActive(false);
+            objectMan.toggleActive(false);
             this.currActive = RightBarTab.Layer;
         });
 
-        tokenTab.addEventListener('click', () => {
+        objectTab.addEventListener('click', () => {
             layerMan.toggleActive(false);
             rollMan.toggleActive(false);
-            this.currActive = RightBarTab.Token;
+            objectMan.toggleActive(true);
+            this.currActive = RightBarTab.Object;
         });
 
         rollTab.addEventListener('click', () => {
             layerMan.toggleActive(false);
             rollMan.toggleActive(true);
+            objectMan.toggleActive(false);
             this.currActive = RightBarTab.Roll;
         });
 
         characterTab.addEventListener('click', () => {
             layerMan.toggleActive(false);
             rollMan.toggleActive(false);
+            objectMan.toggleActive(false);
             this.currActive = RightBarTab.Character;
         });
 
@@ -96,7 +100,7 @@ export class RightBarManager {
             rollMan.toggleActive(true);
             this.currActive = RightBarTab.Roll;
             rollTab.style.visibility = 'hidden';
-            tokenTab.style.visibility = 'hidden';
+            objectTab.style.visibility = 'hidden';
             layerTab.style.visibility = 'hidden';
             characterTab.style.visibility = 'hidden';
         } else {

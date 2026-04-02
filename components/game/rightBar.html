@@ -3,9 +3,31 @@
 
     <button class="rightTab" id="layerTab">Layers</button>
     <button class="rightTab" id="rollTab">Roll</button>
-    <button class="rightTab" id="tokenTab">Token</button>
+    <button class="rightTab" id="objectTab">Token</button>
     <button class="rightTab" id="characterTab">Char</button>
 
+    <div id="objBox">
+        <div id="topObjBox">
+            <div id="topObjContainer"></div>
+            <input type="text" id="renameTopObj"></input>
+            <button id="recolTopObj"></button>
+            <button id="recolTopEdge"></button>
+            <input type="checkbox" id="setActiveTop"></input>
+            <button id="copyTopFromBottom"></button>
+            <button id="updateTopImage"></button>
+            <button id="removeTopImage"></button>
+        </div>
+        <div id="bottomObjBox">
+            <div id="bottomObjContainer"></div>
+            <input type="text" id="renameBottomObj"></input>
+            <button id="recolBottomObj"></button>
+            <button id="recolBottomEdge"></button>
+            <input type="checkbox" id="setActiveBottom"></input>
+            <button id="copyBottomFromTop"></button>
+            <button id="updateBottomImage"></button>
+            <button id="removeBottomImage"></button>
+        </div>
+    </div>
     <div id="chatBox">
         <textarea id="chatBoxTextBox"></textarea>
     </div>
@@ -16,11 +38,11 @@
             <p id="renameLayerText">Name:</p>
             <p id="xLayerText">X offset:</p>
             <p id="yLayerText">Y offset:</p>
-            <input id="rename">
+            <input type="text" id="rename">
             </input>
-            <input id="xChange">
+            <input type="text" id="xChange">
             </input>
-            <input id="yChange">
+            <input type="text" id="yChange">
             </input>
             <button id="layerUpButton">Move Up</button>
             <button id="layerDownButton">Move Down</button>
@@ -52,6 +74,11 @@
         border: none;
     }
 
+    #objBox {
+        position: absolute;
+        visibility: hidden;
+    }
+
     #hideRightBar {
         top: 0px;
     }
@@ -64,7 +91,7 @@
         top: 80px;
     }
 
-    #tokenTab {
+    #objectTab {
         top: 120px;
     }
 

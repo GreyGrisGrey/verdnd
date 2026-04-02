@@ -3,7 +3,7 @@ import type { Vec2 } from '../../shared/coords.ts';
 import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
-import type { ObjectRecolourEvent } from '../../shared/objectEvents.ts';
+import type { ObjectRecolourEvent, ObjectMoveEvent } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
@@ -351,7 +351,7 @@ export class BoardSelectMode {
             board.offset.y + this.thirdOffset.y,
             CoordModes.Vertex,
         );
-        const moveList = [];
+        const moveList: ObjectMoveEvent[] = [];
         for (const obj of this.selectedObjects) {
             moveList.push({
                 entity: Entity.Object,
@@ -361,7 +361,7 @@ export class BoardSelectMode {
                 y: point.y,
             });
         }
-        serveInter.moveObjects(moveList as any);
+        serveInter.moveObjects(moveList);
         this.updateCornerPos(point);
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;

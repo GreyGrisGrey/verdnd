@@ -433,7 +433,7 @@ export class tempStore {
         if (!this.isGm) {
             return;
         }
-        const newObj = {
+        const newObj: ObjectCreateEvent = {
             entity: Entity.Object,
             action: Action.Create,
             object: payload,
@@ -453,7 +453,7 @@ export class tempStore {
             ]);
             this.currIndex += 1;
         }
-        this.socket.send(this.parcelServeEvent(newObj as any));
+        this.socket.send(this.parcelServeEvent(newObj));
     }
 
     createObjectLocal(newObj: ObjectCreateEvent) {

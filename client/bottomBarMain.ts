@@ -1,6 +1,6 @@
 import { getRequiredElement } from './dom.ts';
 const layerTab = getRequiredElement('layerTab', HTMLElement);
-const tokenTab = getRequiredElement('tokenTab', HTMLElement);
+const objectTab = getRequiredElement('objectTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 const nameInput = getRequiredElement('tokenName', HTMLInputElement);
