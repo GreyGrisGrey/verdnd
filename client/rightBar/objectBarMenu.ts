@@ -1,9 +1,14 @@
 import { BoardObject } from '../boardCanvas/boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
+import { tempStore } from '../serveInter.ts';
+import { ColourBox } from '../leftBar/colourBox.ts';
+import { Action, Entity } from '../../shared/objectEvents.ts';
 const topHalf = getRequiredElement('topObjBox', HTMLElement);
 const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
+const serveInter = new tempStore();
+const colourBox = new ColourBox();
 
 interface ObjTemplate {
     container: HTMLCanvasElement;
@@ -36,6 +41,95 @@ export class ObjectMenu {
         this.loadedTemplate = this.buildTemplateSecondary();
         this.currTemplate.swap.style.visibility = 'hidden';
         this.currTemplate.swap.style.pointerEvents = 'none';
+        this.currTemplate.rename.value = this.currTemplate.currObj!.token.name;
+        this.addEventListeners(this.currTemplate, true);
+        this.addEventListeners(this.loadedTemplate, false);
+    }
+
+    addEventListeners(temp: ObjTemplate, top: boolean) {
+        temp.rename.addEventListener('change', () => {
+            if (temp.currObj) {
+                temp.currObj.token.name = temp.rename.value;
+                this.updateToken(temp.currObj);
+            }
+        });
+
+        temp.recol.addEventListener('click', () => {
+            if (temp.currObj) {
+                temp.currObj.colour = colourBox.getCurrColour();
+                if (temp.currObj.objectId >= 0) {
+                    serveInter.recolourObjects(
+                        [
+                            {
+                                entity: Entity.Object,
+                                action: Action.Recolour,
+                                objectId: temp.currObj.objectId,
+                                colour: colourBox.getCurrColour(),
+                            },
+                        ],
+                        colourBox.getCurrColour(),
+                    );
+                }
+            }
+        });
+
+        temp.recolEdge.addEventListener('click', () => {
+            if (temp.currObj) {
+                temp.currObj.token.colour = colourBox.getCurrColour();
+                this.updateToken(temp.currObj);
+            }
+        });
+
+        temp.activeCheck.addEventListener('change', () => {
+            if (temp.currObj) {
+                temp.currObj.token.active = temp.activeCheck.checked;
+                this.updateToken(temp.currObj);
+            }
+        });
+
+        temp.swap.addEventListener('click', () => {
+            if (temp.currObj) {
+                this.swapObject(top);
+            }
+        });
+
+        temp.updateImg.addEventListener('click', () => {
+            if (temp.currObj) {
+                this.updateToken(temp.currObj);
+            }
+        });
+
+        temp.removeImg.addEventListener('click', () => {
+            if (temp.currObj) {
+                this.updateObject();
+            }
+        });
+    }
+
+    swapObject(top: boolean) {
+        const toChange = top
+            ? this.currTemplate.currObj
+            : this.loadedTemplate.currObj;
+        const fromChange = top
+            ? this.loadedTemplate.currObj
+            : this.currTemplate.currObj;
+        if (toChange && fromChange) {
+            const setUp = fromChange.payloadFromObject();
+            const oldTl = toChange.getTopLeft();
+            toChange.updateFromPayload(setUp);
+            const newTl = toChange.getTopLeft();
+            toChange.move(oldTl.x - newTl.x, oldTl.y - newTl.y);
+            toChange.updateObject(true);
+            this.updateToken(toChange);
+        }
+    }
+
+    updateObject() {}
+
+    updateToken(obj: BoardObject) {
+        if (obj.objectId >= 0) {
+            serveInter.updateToken(obj.token, obj.objectId);
+        }
     }
 
     buildTemplatePrimary(): ObjTemplate {
@@ -103,6 +197,8 @@ export class ObjectMenu {
         this.currTemplate.swap.style.visibility = 'inherit';
         this.currTemplate.swap.style.pointerEvents = 'auto';
         this.loadedActive = true;
+        this.loadedTemplate.activeCheck.checked = newObject.token.active;
+        this.loadedTemplate.rename.value = newObject.token.name;
         this.draw();
     }
 

@@ -83,7 +83,7 @@ export class BoardObject {
         this.updateTopLeft();
         this.updateBottomRight();
         this.setCenter();
-        if (sendObj) {
+        if (sendObj && this.objectId >= 0) {
             serveInter.updateObject(this.payloadFromObject());
         }
     }
@@ -189,7 +189,7 @@ export class BoardObject {
 
     // Draws the outline of the object's token.
     drawOutline(ctx: CanvasRenderingContext2D) {
-        if (!this.selected) {
+        if (this.token.colour !== 'none') {
             ctx.strokeStyle = this.token.colour;
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
@@ -229,8 +229,7 @@ export class BoardObject {
             pt.x += xChange;
             pt.y += yChange;
         }
-        this.updateTopLeft();
-        this.updateBottomRight();
+        this.updateObject(false);
     }
 
     setColour(newColour: string) {
@@ -285,7 +284,11 @@ export class BoardObject {
     updateFromPayload(newSetting: ObjectCreatePayload) {
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
-        this.points = newSetting.points;
+        this.points = [];
+        for (const pt of newSetting.points) {
+            this.points.push({ x: pt.x, y: pt.y });
+        }
+        this.drawParams = newSetting.params;
         this.updateObject(false);
         this.currPathSpecs[0] = 0;
         this.updateToken(newSetting.token);
