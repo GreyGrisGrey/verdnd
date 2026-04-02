@@ -253,7 +253,7 @@ export class Board {
                     modeMan.selectMan.thirdOffset,
                     serveInter.isGm,
                 );
-                if (i === layerMan.currSelect) {
+                if (layer.id === layerMan.currSelect) {
                     const tempObj = modeMan.getObject(GetObjectReason.Draw) as
                         | BoardObject
                         | undefined;

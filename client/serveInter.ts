@@ -205,7 +205,6 @@ export class tempStore {
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
-                    modeMan.drawMan.updateLayer();
                     const curr = storedLayers.get(layerMan.currSelect);
                     if (curr) {
                         modeMan.viewMan.updateLayerOffset({
@@ -214,6 +213,7 @@ export class tempStore {
                         });
                     }
                     layerMan.toggleActive(true);
+                    modeMan.drawMan.updateLayer();
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
@@ -502,7 +502,12 @@ export class tempStore {
     }
 
     createLayerLocal(layerPacket: LayerState) {
-        const newLayer = new BoardLayer(layerPacket.id, true, true);
+        const newLayer = new BoardLayer(
+            layerPacket.zOrder,
+            true,
+            true,
+            layerPacket.id,
+        );
         newLayer.updateFromLayerState(layerPacket);
         storedLayers.set(layerPacket.id, newLayer);
         layerMan.constructLayer(layerPacket);

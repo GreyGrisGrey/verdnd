@@ -42,7 +42,7 @@ export class BoardSelectMode {
         this.currColour = 'none';
         this.boxItems = [];
         this.orbs = [];
-        this.currLayer = new BoardLayer(0, true, true);
+        this.currLayer = new BoardLayer(0, true, true, 0);
         this.currPath = new Path2D();
         this.boxDraw = true;
         this.setUpBoxes();

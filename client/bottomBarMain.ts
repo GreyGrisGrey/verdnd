@@ -11,7 +11,7 @@ const bottomTooltip = getRequiredElement('bottomTooltip', HTMLElement);
 const bottomTooltipText = getRequiredElement('bottomTooltipText', HTMLElement);
 //This probably shouldn't be its own thing.
 
-export class TooltipManager {
+export class BottomBarManager {
     boxDrawItems: HTMLButtonElement[];
     boxSelectItems: HTMLButtonElement[];
     boxViewItems: HTMLButtonElement[];

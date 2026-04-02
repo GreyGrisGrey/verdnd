@@ -62,7 +62,7 @@ export class RollBox {
                 roll.addEventListener('click', () => {
                     if (
                         Number.isNaN(Number(setCount.value)) ||
-                        Math.abs(Number(setCount.value)) > 101
+                        Math.abs(Number(setCount.value)) > 100
                     ) {
                         setCount.value = '0';
                         return;
@@ -142,7 +142,7 @@ export class RollBox {
     ) {
         if (
             Number.isNaN(Number(this.modifier)) ||
-            Math.abs(Number(this.modifier)) > 101
+            Math.abs(Number(this.modifier)) > 10000
         ) {
             this.modifier = '0';
             (this.modBox as any).value = '0';

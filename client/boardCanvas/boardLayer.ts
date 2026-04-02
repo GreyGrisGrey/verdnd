@@ -3,7 +3,6 @@ import type { Vec2 } from '../../shared/coords.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 
 // Manages a single layer of the board.
-// Currently has little functionality.
 export class BoardLayer {
     name: string;
     layerOffset: Vec2;
@@ -12,8 +11,14 @@ export class BoardLayer {
     zOrder: number;
     GMVisible: boolean;
     playerVisible: boolean;
+    id: number;
 
-    constructor(newOrder: number, newGM: boolean, newPlayer: boolean) {
+    constructor(
+        newOrder: number,
+        newGM: boolean,
+        newPlayer: boolean,
+        newId: number,
+    ) {
         this.name = '';
         this.layerOffset = { x: 0, y: 0 };
         this.heldObjects = [];
@@ -21,6 +26,7 @@ export class BoardLayer {
         this.zOrder = newOrder;
         this.GMVisible = newGM;
         this.playerVisible = newPlayer;
+        this.id = newId;
     }
 
     // Updates status of layer from layer state object.

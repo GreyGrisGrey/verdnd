@@ -56,7 +56,7 @@ export class BoardDrawMode {
             close: true,
             rect: true,
         };
-        this.currLayer = new BoardLayer(0, true, true);
+        this.currLayer = new BoardLayer(0, true, true, 0);
         this.addEventListeners();
         this.setUpBoxes();
         this.flipBoxes();
