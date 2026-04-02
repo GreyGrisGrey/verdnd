@@ -33,6 +33,8 @@ export class LayerMenu {
         this.boxHeight = 50;
         this.currSelect = 0;
         this.tempButtonObj = getRequiredElement('tempButtonObj', HTMLElement);
+        currLayerText.style.overflow = 'hidden';
+        currLayerText.style.width = '120px';
         this.addEventListeners();
         this.moveLayers();
     }
@@ -173,10 +175,12 @@ export class LayerMenu {
         newText.style.width = '100px';
         newText.style.left = '10px';
         newText.style.top = '5px';
+        newText.style.width = '120px';
         newText.innerText =
             buildData.name === 'none'
                 ? `Layer ${buildData.id}`
                 : buildData.name;
+        newText.style.overflow = 'hidden';
 
         checkVisibleAll.type = 'checkbox';
         checkVisibleAll.style.position = 'absolute';

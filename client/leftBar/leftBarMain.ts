@@ -40,7 +40,7 @@ export class LeftBarManager {
     // Toggles the visibility of the entire left box menu.
     toggleVisible() {
         leftBar.style.visibility = this.visible ? 'visible' : 'hidden';
-        hideLeft.style.right = this.visible ? '-50px' : '180px';
+        hideLeft.style.right = this.visible ? '-50px' : '190px';
         hideLeft.style.visibility = 'visible';
         hideLeft.innerText = this.visible ? 'Hide' : 'Show';
     }
@@ -68,12 +68,28 @@ export class LeftBarManager {
             this.toggleActive('USER');
         });
 
+        showColourButton.addEventListener('click', () => {
+            this.toggleActive('COLOUR');
+        });
+
         showRollButton.addEventListener('click', () => {
             this.toggleActive('ROLL');
         });
 
-        showColourButton.addEventListener('click', () => {
-            this.toggleActive('COLOUR');
+        document.addEventListener('keydown', (event) => {
+            if (
+                document.activeElement &&
+                document.activeElement.tagName === 'INPUT'
+            ) {
+                return;
+            }
+            if (event.key === 'z') {
+                this.toggleActive('USER');
+            } else if (event.key === 'x' && serveInter.isGm) {
+                this.toggleActive('COLOUR');
+            } else if (event.key === 'c') {
+                this.toggleActive('ROLL');
+            }
         });
     }
 
