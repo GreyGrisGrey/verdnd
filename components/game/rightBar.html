@@ -8,24 +8,26 @@
 
     <div id="objBox">
         <div id="topObjBox">
-            <div id="topObjContainer"></div>
-            <input type="text" id="renameTopObj"></input>
-            <button id="recolTopObj"></button>
-            <button id="recolTopEdge"></button>
-            <input type="checkbox" id="setActiveTop"></input>
-            <button id="copyTopFromBottom"></button>
-            <button id="updateTopImage"></button>
-            <button id="removeTopImage"></button>
+            <div id="topObjContainer" class="objContainer"></div>
+            <input type="text" id="renameTopObj" class="renameObj"></input>
+            <button id="recolTopObj" class="recolObj">Recolour</button>
+            <button id="recolTopEdge" class="recolEdge">Recolour Edges</button>
+            <input type="checkbox" id="setActiveTop" class="setActiveObj"></input>
+            <label for="setActiveTop" style="position: absolute; top: 225px; left: 20px;">Is token</label>
+            <button id="copyTopFromBottom" class="copyObj">Copy from bottom</button>
+            <button id="updateTopImage" class="updateImgObj">Update Image</button>
+            <button id="removeTopImage" class="removeImgObj">Remove Image</button>
         </div>
         <div id="bottomObjBox">
-            <div id="bottomObjContainer"></div>
-            <input type="text" id="renameBottomObj"></input>
-            <button id="recolBottomObj"></button>
-            <button id="recolBottomEdge"></button>
-            <input type="checkbox" id="setActiveBottom"></input>
-            <button id="copyBottomFromTop"></button>
-            <button id="updateBottomImage"></button>
-            <button id="removeBottomImage"></button>
+            <div id="bottomObjContainer" class="objContainer"></div>
+            <input type="text" id="renameBottomObj" class="renameObj"></input>
+            <button id="recolBottomObj" class="recolObj">Recolour</button>
+            <button id="recolBottomEdge" class="recolEdge">Recolour Edges</button>
+            <input type="checkbox" id="setActiveBottom" class="setActiveObj"></input>
+            <label for="setActiveBottom" style="position: absolute; top: 225px; left: 20px;">Is token</label>
+            <button id="copyBottomFromTop" class="copyObj">Copy from top</button>
+            <button id="updateBottomImage" class="updateImgObj">Update Image</button>
+            <button id="removeBottomImage" class="removeImgObj">Remove Image</button>
         </div>
     </div>
     <div id="chatBox">
@@ -77,6 +79,19 @@
     #objBox {
         position: absolute;
         visibility: hidden;
+        width: 250px;
+    }
+
+    #topObjBox {
+        position: absolute;
+        width: 250px;
+    }
+
+    #bottomObjBox {
+        position: absolute;
+        width: 250px;
+        visibility: hidden;
+        pointer-events: none;
     }
 
     #hideRightBar {
@@ -269,5 +284,56 @@
     #chatBoxTextBox {
         visibility: hidden;
         pointer-events: none;
+    }
+
+    .objContainer {
+        position: absolute;
+        background-color: rgba(30, 30, 30, 1);
+        left: 20px;
+        top: 20px;
+        height: 100px;
+        width: 100px;
+    }
+
+    .renameObj {
+        position: absolute;
+        top: 165px;
+        left: 20px;
+    }
+
+    .recolObj {
+        position: absolute;
+        top: 135px;
+        left: 20px;
+    }
+
+    .recolEdge {
+        position: absolute;
+        top: 195px;
+        left: 20px;
+    }
+
+    .setActiveObj {
+        position: absolute;
+        top: 225px;
+        left: 70px;
+    }
+
+    .copyObj {
+        position: absolute;
+        top: 315px;
+        left: 20px;
+    }
+
+    .updateImgObj {
+        position: absolute;
+        top: 255px;
+        left: 20px;
+    }
+
+    .removeImgObj {
+        position: absolute;
+        top: 285px;
+        left: 20px;
     }
 </style>

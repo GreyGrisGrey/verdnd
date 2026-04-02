@@ -3,13 +3,18 @@ import type { Vec2 } from '../../shared/coords.ts';
 import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
-import type { ObjectRecolourEvent, ObjectMoveEvent } from '../../shared/objectEvents.ts';
+import type {
+    ObjectRecolourEvent,
+    ObjectMoveEvent,
+} from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { GOLD } from '../../shared/colours.ts';
 import { tempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
+import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
+const objectMan = new ObjectMenu();
 const colourBox = new ColourBox();
 const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -69,48 +74,42 @@ export class BoardSelectMode {
     // Renames currently selected tokens.
     attemptRename() {
         for (const obj of this.selectedObjects) {
-            if (obj.token.active) {
-                const newToken = {
-                    name: nameInput.value,
-                    colour: obj.token.colour,
-                    active: true,
-                    movable: obj.token.movable,
-                };
-                obj.updateToken(newToken);
-                serveInter.updateToken(newToken, obj.objectId);
-            }
+            const newToken = {
+                name: nameInput.value,
+                colour: obj.token.colour,
+                active: true,
+                movable: obj.token.movable,
+            };
+            obj.updateToken(newToken);
+            serveInter.updateToken(newToken, obj.objectId);
         }
     }
 
     // Recolours the edge of currently selected tokens.
     attemptTokenRecolour() {
         for (const obj of this.selectedObjects) {
-            if (obj.token.active) {
-                const newToken = {
-                    name: obj.token.name,
-                    colour: colourBox.getCurrColour(),
-                    active: true,
-                    movable: obj.token.movable,
-                };
-                obj.updateToken(newToken);
-                serveInter.updateToken(newToken, obj.objectId);
-            }
+            const newToken = {
+                name: obj.token.name,
+                colour: colourBox.getCurrColour(),
+                active: true,
+                movable: obj.token.movable,
+            };
+            obj.updateToken(newToken);
+            serveInter.updateToken(newToken, obj.objectId);
         }
     }
 
     // Turns the currently selected object into a token.
     tokenize() {
         for (const obj of this.selectedObjects) {
-            if (!obj.token.active) {
-                const newToken = {
-                    name: nameInput.value,
-                    colour: colourBox.getCurrColour(),
-                    active: true,
-                    movable: true,
-                };
-                obj.updateToken(newToken);
-                serveInter.updateToken(newToken, obj.objectId);
-            }
+            const newToken = {
+                name: nameInput.value,
+                colour: colourBox.getCurrColour(),
+                active: true,
+                movable: true,
+            };
+            obj.updateToken(newToken);
+            serveInter.updateToken(newToken, obj.objectId);
         }
     }
 
@@ -200,6 +199,7 @@ export class BoardSelectMode {
         this.thirdOffset = { x: 0, y: 0 };
         if (serveInter.isGm) {
             this.toggleBoxes();
+            objectMan.disableSecondary();
         }
     }
 
@@ -393,6 +393,9 @@ export class BoardSelectMode {
         this.currLayer = storedLayers.get(newObjs[0].layerId)!;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
+        }
+        if (this.selectedObjects.length === 1) {
+            objectMan.updateSecondary(this.selectedObjects[0]);
         }
     }
 

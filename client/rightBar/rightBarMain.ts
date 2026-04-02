@@ -13,6 +13,7 @@ const characterTab = getRequiredElement('characterTab', HTMLElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
+const objBox = getRequiredElement('objBox', HTMLElement);
 const serveInter = new tempStore();
 const layerMan = new LayerMenu();
 const objectMan = new ObjectMenu();
@@ -60,6 +61,7 @@ export class RightBarManager {
             rollMan.toggleActive(false);
             objectMan.toggleActive(true);
             this.currActive = RightBarTab.Object;
+            objectMan.step(Math.min(800, window.innerHeight - 50));
         });
 
         rollTab.addEventListener('click', () => {
@@ -111,13 +113,17 @@ export class RightBarManager {
 
     // A single step updating the state of the currently active menu.
     step() {
-        rightBar.style.height = `${Math.min(800, window.innerHeight - 50)}px`;
-        layerBox.style.height = `${Math.min(800, window.innerHeight - 50)}px`;
-        chatBox.style.height = `${Math.min(800, window.innerHeight - 50)}px`;
+        const barHeight = `${Math.min(800, window.innerHeight - 50)}px`;
+        rightBar.style.height = barHeight;
+        layerBox.style.height = barHeight;
+        chatBox.style.height = barHeight;
+        objBox.style.height = barHeight;
         if (this.currActive === RightBarTab.Layer) {
             layerMan.step();
         } else if (this.currActive === RightBarTab.Roll) {
             rollMan.step();
+        } else if (this.currActive === RightBarTab.Object) {
+            objectMan.step(Math.min(800, window.innerHeight - 50));
         }
     }
 }

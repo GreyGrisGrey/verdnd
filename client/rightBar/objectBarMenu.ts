@@ -31,6 +31,8 @@ export class ObjectMenu {
             colour: 'none',
         });
         this.loadedTemplate = this.buildTemplatePrimary();
+        this.currTemplate.swap.style.visibility = 'hidden';
+        this.currTemplate.swap.style.pointerEvents = 'none';
     }
 
     buildTemplatePrimary(): ObjTemplate {
@@ -80,10 +82,31 @@ export class ObjectMenu {
         };
     }
 
+    disableSecondary() {
+        bottomHalf.style.visibility = 'hidden';
+        bottomHalf.style.pointerEvents = 'none';
+        this.currTemplate.swap.style.visibility = 'hidden';
+        this.currTemplate.swap.style.pointerEvents = 'none';
+    }
+
+    updateSecondary(newObject: BoardObject) {
+        this.loadedTemplate.currObj = newObject;
+        bottomHalf.style.visibility = 'inherit';
+        bottomHalf.style.pointerEvents = 'auto';
+        this.currTemplate.swap.style.visibility = 'inherit';
+        this.currTemplate.swap.style.pointerEvents = 'auto';
+    }
+
     toggleActive(newAct: boolean) {
         this.active = newAct;
         objBox.style.visibility = newAct ? 'inherit' : 'hidden';
+        objBox.style.pointerEvents = newAct ? 'auto' : 'none';
     }
 
-    step() {}
+    step(height: number) {
+        const newHeight = `${(height / 2).toString()}px`;
+        topHalf.style.height = newHeight;
+        bottomHalf.style.height = newHeight;
+        bottomHalf.style.top = newHeight;
+    }
 }
