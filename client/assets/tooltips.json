@@ -21,28 +21,28 @@
             "view": "Right click and drag : Move camera."
         },
         {
-            "draw": "Left click : Begin drawing polyline\nLeft Click again : Add vertext to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
+            "draw": "Left click : Begin drawing polyline\nLeft Click again : Add vertex to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
             "select": "Press 4 : Pushes the currently selected objects up a layer.",
             "view": "Left click and drag : Move token."
         },
         {
-            "draw": "Left click : Begin drawing wall\nLeft Click again : Add vertext to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
+            "draw": "Left click : Begin drawing wall\nLeft Click again : Add vertex to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
             "select": "Press 5 : Pushes the currently selected objects down a layer.",
             "view": "Press 5 : Recenter camera."
         },
         {
             "draw": "Press 6 : Complete in progress polyline or wall object.",
-            "select": "Press 6 : Turn currently selected object into a token allowing players to move it\nColours based on currently selected colour in colour picker.",
+            "select": "Press 6 : Turn selected objects into tokens allowing players to move them\nName taken from current object template\nColour based on currently selected colour in colour picker.",
             "view": "Press 6 : Toggle laser visibility."
         },
         {
             "draw": "Press Escape/7 : Cancel creation of in progress object.",
-            "select": "Press 7 : Rename currently selected token",
-            "view": "Press 7 : Recolour laser.\nColours based on currently selected colour in colour picker."
+            "select": "Press 7 : Rename currently selected objects\nName taken from current object template\nObjects must be tokens for this to be visible.",
+            "view": "Press 7 : Recolour laser.\nColour based on currently selected colour in colour picker."
         },
         {
             "draw": "Incomplete",
-            "select": "Press 8 : Recolour currently selected token outline.\nColours based on currently selected colour in colour picker.",
+            "select": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
             "view": "Press 8 : Measure distance from cursor location."
         },
         {

@@ -84,14 +84,27 @@ export class RightBarManager {
         });
 
         document.addEventListener('keydown', (event) => {
+            if (
+                document.activeElement &&
+                document.activeElement.tagName === 'INPUT'
+            ) {
+                return;
+            }
             if (event.key === 'p') {
                 layerMan.toggleActive(false);
                 rollMan.toggleActive(true);
+                objectMan.toggleActive(false);
                 this.currActive = RightBarTab.Roll;
             } else if (event.key === 'l' && serveInter.isGm) {
                 layerMan.toggleActive(true);
                 rollMan.toggleActive(false);
+                objectMan.toggleActive(false);
                 this.currActive = RightBarTab.Layer;
+            } else if (event.key === 'o' && serveInter.isGm) {
+                layerMan.toggleActive(false);
+                rollMan.toggleActive(false);
+                objectMan.toggleActive(true);
+                this.currActive = RightBarTab.Character;
             }
         });
     }

@@ -3,8 +3,6 @@ const layerTab = getRequiredElement('layerTab', HTMLElement);
 const objectTab = getRequiredElement('objectTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
-const nameInput = getRequiredElement('tokenName', HTMLInputElement);
-const nameLabel = getRequiredElement('tokenNameLabel', HTMLLabelElement);
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const bottomTooltip = getRequiredElement('bottomTooltip', HTMLElement);
@@ -40,8 +38,6 @@ export class BottomBarManager {
         await new Promise((resolve) => setTimeout(resolve, 200));
         if (!this.bottomActive) {
             bottomTooltip.style.visibility = 'hidden';
-            nameInput.style.visibility = 'hidden';
-            nameLabel.style.visibility = 'hidden';
             measureDegrees.style.visibility = 'hidden';
         }
     }
@@ -78,8 +74,6 @@ export class BottomBarManager {
             this.boxDrawItems[i].addEventListener('mouseover', () => {
                 this.bottomActive = true;
                 bottomTooltipText.innerText = this.bottomContent[i].draw;
-                nameInput.style.visibility = 'hidden';
-                nameLabel.style.visibility = 'hidden';
                 measureDegrees.style.visibility = 'hidden';
                 bottomTooltip.style.visibility = 'visible';
             });
@@ -97,8 +91,6 @@ export class BottomBarManager {
                 } else {
                     measureDegrees.style.visibility = 'hidden';
                 }
-                nameInput.style.visibility = 'hidden';
-                nameLabel.style.visibility = 'hidden';
                 bottomTooltip.style.visibility = 'visible';
             });
 
@@ -110,13 +102,6 @@ export class BottomBarManager {
             this.boxSelectItems[i].addEventListener('mouseover', () => {
                 this.bottomActive = true;
                 bottomTooltipText.innerText = this.bottomContent[i].select;
-                if (i === 6 || i === 7) {
-                    nameInput.style.visibility = 'visible';
-                    nameLabel.style.visibility = 'visible';
-                } else {
-                    nameInput.style.visibility = 'hidden';
-                    nameLabel.style.visibility = 'hidden';
-                }
                 measureDegrees.style.visibility = 'hidden';
                 bottomTooltip.style.visibility = 'visible';
             });

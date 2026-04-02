@@ -94,6 +94,12 @@ export class ModeManager {
         });
 
         document.addEventListener('keydown', (event) => {
+            if (
+                document.activeElement &&
+                document.activeElement.tagName === 'INPUT'
+            ) {
+                return;
+            }
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
             } else if (event.key === 'd' && serveInter.isGm) {

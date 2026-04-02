@@ -20,8 +20,7 @@ const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
-const nameInput = getRequiredElement('tokenName', HTMLInputElement);
-const fileInput = getRequiredElement('fileInput', HTMLInputElement);
+const nameInput = getRequiredElement('renameTopObj', HTMLInputElement);
 const serveInter = new tempStore();
 
 // Activates following a completed selection from draw mode or token mode.
@@ -378,6 +377,9 @@ export class BoardSelectMode {
     // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[]) {
         this.selectedObjects = newObjs;
+        this.boxItems[6].disabled = this.selectedObjects.length <= 1;
+        this.boxItems[7].disabled = this.selectedObjects.length <= 1;
+        this.boxItems[8].disabled = this.selectedObjects.length <= 1;
         this.boxItems[9].disabled = this.selectedObjects.length > 1;
         this.boxItems[0].disabled =
             this.selectedObjects.length > 1 ||

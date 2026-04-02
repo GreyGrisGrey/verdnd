@@ -3,28 +3,30 @@
 
     <button class="rightTab" id="layerTab">Layers</button>
     <button class="rightTab" id="rollTab">Roll</button>
-    <button class="rightTab" id="objectTab">Token</button>
+    <button class="rightTab" id="objectTab">Obj</button>
     <button class="rightTab" id="characterTab">Char</button>
 
     <div id="objBox">
         <div id="topObjBox">
+            <label id="topLabel" class="objBoxLabel">Template Object</label>
             <canvas id="topObjContainer" class="objContainer" width="100" height="100"></canvas>
             <input type="text" id="renameTopObj" class="renameObj"></input>
             <button id="recolTopObj" class="recolObj">Recolour</button>
             <button id="recolTopEdge" class="recolEdge">Recolour Edges</button>
             <input type="checkbox" id="setActiveTop" class="setActiveObj"></input>
-            <label for="setActiveTop" style="position: absolute; top: 225px; left: 20px;">Is token</label>
+            <label for="setActiveTop" style="position: absolute; top: 245px; left: 20px;">Is token</label>
             <button id="copyTopFromBottom" class="copyObj">Copy from bottom</button>
             <button id="updateTopImage" class="updateImgObj">Update Image</button>
             <button id="removeTopImage" class="removeImgObj">Remove Image</button>
         </div>
         <div id="bottomObjBox">
+            <label id="bottomLabel" class="objBoxLabel">Currently Selected</label>
             <canvas id="bottomObjContainer" class="objContainer" width="100" height="100"></canvas>
             <input type="text" id="renameBottomObj" class="renameObj"></input>
             <button id="recolBottomObj" class="recolObj">Recolour</button>
             <button id="recolBottomEdge" class="recolEdge">Recolour Edges</button>
             <input type="checkbox" id="setActiveBottom" class="setActiveObj"></input>
-            <label for="setActiveBottom" style="position: absolute; top: 225px; left: 20px;">Is token</label>
+            <label for="setActiveBottom" style="position: absolute; top: 245px; left: 20px;">Is token</label>
             <button id="copyBottomFromTop" class="copyObj">Copy from top</button>
             <button id="updateBottomImage" class="updateImgObj">Update Image</button>
             <button id="removeBottomImage" class="removeImgObj">Remove Image</button>
@@ -289,51 +291,57 @@
     .objContainer {
         position: absolute;
         background-color: #444444;
-        left: 20px;
-        top: 20px;
+        left: 75px;
+        top: 40px;
         height: 100px;
         width: 100px;
     }
 
     .renameObj {
         position: absolute;
-        top: 165px;
+        top: 185px;
         left: 20px;
     }
 
     .recolObj {
         position: absolute;
-        top: 135px;
+        top: 155px;
         left: 20px;
     }
 
     .recolEdge {
         position: absolute;
-        top: 195px;
+        top: 215px;
         left: 20px;
     }
 
     .setActiveObj {
         position: absolute;
-        top: 225px;
+        top: 245px;
         left: 70px;
     }
 
     .copyObj {
         position: absolute;
-        top: 315px;
+        top: 335px;
         left: 20px;
     }
 
     .updateImgObj {
         position: absolute;
-        top: 255px;
+        top: 275px;
         left: 20px;
     }
 
     .removeImgObj {
         position: absolute;
-        top: 285px;
+        top: 305px;
         left: 20px;
+    }
+
+    .objBoxLabel {
+        position: absolute;
+        top: 10px;
+        left: 70px;
     }
 </style>
