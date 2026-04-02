@@ -114,9 +114,29 @@ export class BoardSelectMode {
 
     // Updates the visibility of bottom toolbar boxes.
     toggleBoxes() {
-        for (const box of this.boxItems) {
-            box.style.visibility = this.active ? 'visible' : 'hidden';
-            box.style.pointerEvents = this.active ? 'auto' : 'none';
+        if (this.selectedObjects.length === 1) {
+            for (let i = 0; i < this.boxItems.length; i++) {
+                this.boxItems[i].style.visibility =
+                    i > 8 || i < 6 ? 'visible' : 'hidden';
+                this.boxItems[i].style.pointerEvents =
+                    i > 8 || i < 6 ? 'auto' : 'none';
+                this.boxItems[i].style.left =
+                    i !== 9 && i !== 0 ? '120px' : '-60px';
+            }
+        } else if (this.selectedObjects.length > 1) {
+            for (let i = 0; i < this.boxItems.length; i++) {
+                this.boxItems[i].style.visibility =
+                    i < 9 && i > 0 ? 'visible' : 'hidden';
+                this.boxItems[i].style.pointerEvents =
+                    i < 9 && i > 0 ? 'auto' : 'none';
+                this.boxItems[i].style.left = '60px';
+            }
+        } else {
+            for (let i = 0; i < this.boxItems.length; i++) {
+                this.boxItems[i].style.visibility = 'hidden';
+                this.boxItems[i].style.pointerEvents = 'none';
+                this.boxItems[i].style.left = '0px';
+            }
         }
     }
 
@@ -391,6 +411,7 @@ export class BoardSelectMode {
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
         }
+        this.toggleBoxes();
     }
 
     // Updates orbs when an object is moved, allowing object movement to be clean when resize/restructure is selected.

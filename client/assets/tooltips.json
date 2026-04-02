@@ -6,27 +6,27 @@
             "view": "Incomplete"
         },
         {
-            "draw": "Left click on object : Select topmost object on currently active layer\nLeft Click and drag : Select all objects within an area on the currently active layer.",
+            "draw": "Press 1 : Enter selection state.\nLeft click on object : Select topmost object on currently active layer\nLeft Click and drag : Select objects within area on the currently active layer.",
             "select": "Press Escape/1 : Exits current selection.",
             "view": "Incomplete"
         },
         {
-            "draw": "Left click and drag : Draw rectangle.",
+            "draw": "Press 2 : Set draw mode to rectangle.\nLeft click and drag : Draw rectangle.",
             "select": "Press Delete/Backspace/2 : Deletes currently selected objects.",
             "view": "Scroll wheel : Change zoom level."
         },
         {
-            "draw": "Left click and drag : Draw ellipse.",
+            "draw": "Press 3 : Set draw mode to ellipse.\nLeft click and drag : Draw ellipse.",
             "select": "Press 3 : Recolour currently selected objects.\nColours based on currently selected colour in colour picker.",
             "view": "Right click and drag : Move camera."
         },
         {
-            "draw": "Left click : Begin drawing polyline\nLeft Click again : Add vertex to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
+            "draw": "Press 4 : Set draw mode to polyline.\nLeft click : Begin drawing polyline, click again to add vertex to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
             "select": "Press 4 : Pushes the currently selected objects up a layer.",
             "view": "Left click and drag : Move token."
         },
         {
-            "draw": "Left click : Begin drawing wall\nLeft Click again : Add vertex to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
+            "draw": "Press 5 : Set draw mode to wall.\nLeft click : Begin drawing wall, click again to add vertex to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
             "select": "Press 5 : Pushes the currently selected objects down a layer.",
             "view": "Press 5 : Recenter camera."
         },

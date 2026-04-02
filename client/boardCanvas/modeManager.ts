@@ -222,6 +222,7 @@ export class ModeManager {
                 this.drawMan.active = false;
                 this.drawMan.selectState = 0;
                 this.drawMan.params = [];
+                this.drawMan.toggleBoxes();
             }
         } else {
             if (this.currMode === Mode.Draw) {
@@ -237,7 +238,7 @@ export class ModeManager {
         if (this.currMode === Mode.Draw) {
             this.drawMan.active = true;
             this.drawMan.selectMode = false;
-            this.drawMan.flipBoxes();
+            this.drawMan.toggleBoxes();
         } else if (this.currMode === Mode.View) {
             this.viewMan.flipListeners(true);
         }
