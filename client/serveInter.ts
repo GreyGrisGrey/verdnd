@@ -28,6 +28,8 @@ const layerMan = new LayerMenu();
 const loadWall = document.getElementById('loadBlock')!;
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
+const rightCan1 = getRequiredElement('topObjContainer', HTMLElement);
+const rightCan2 = getRequiredElement('bottomObjContainer', HTMLElement);
 const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
@@ -217,6 +219,8 @@ export class tempStore {
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
+                    rightCan1.style.background = message.newColour;
+                    rightCan2.style.background = message.newColour;
                 } else if (message.action === Action.Image) {
                     board.updateImage(message.image);
                 }

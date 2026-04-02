@@ -27,6 +27,8 @@ export class BoardObject {
     points: Vec2[];
     drawParams: ObjectParams;
     imageObj: ImageObject;
+    tl: Vec2;
+    br: Vec2;
 
     constructor(
         objectId: number,
@@ -53,17 +55,17 @@ export class BoardObject {
         this.owner = 'None';
         this.points = structure;
         this.imageObj = new ImageObject();
-        this.setCenter();
+        this.tl = { x: 0, y: 0 };
+        this.br = { x: 0, y: 0 };
+        this.updateObject(false);
     }
 
     async updateImage(addImage: boolean) {
         if (this.drawParams.fill) {
             if (addImage) {
-                const br = this.getBottomRight();
-                const tl = this.getTopLeft();
                 await this.imageObj.updateImage(
-                    br.x - tl.x,
-                    br.y - tl.y,
+                    this.br.x - this.tl.x,
+                    this.br.y - this.tl.y,
                     this.objectId,
                     Number(window.location.pathname.split('/')[2]) | 0,
                 );
@@ -77,8 +79,13 @@ export class BoardObject {
         }
     }
 
-    updateObject() {
-        serveInter.updateObject(this.payloadFromObject());
+    updateObject(sendObj: boolean) {
+        this.updateTopLeft();
+        this.updateBottomRight();
+        this.setCenter();
+        if (sendObj) {
+            serveInter.updateObject(this.payloadFromObject());
+        }
     }
 
     updateTopLeft() {
@@ -92,20 +99,7 @@ export class BoardObject {
                 minY = pt.y;
             }
         }
-    }
-
-    getTopLeft() {
-        let minX = this.points[0].x;
-        let minY = this.points[0].y;
-        for (const pt of this.points) {
-            if (pt.x < minX) {
-                minX = pt.x;
-            }
-            if (pt.y < minY) {
-                minY = pt.y;
-            }
-        }
-        return {
+        this.tl = {
             x: minX,
             y: minY,
         };
@@ -122,23 +116,18 @@ export class BoardObject {
                 maxY = pt.y;
             }
         }
-    }
-
-    getBottomRight() {
-        let maxX = this.points[0].x;
-        let maxY = this.points[0].y;
-        for (const pt of this.points) {
-            if (pt.x > maxX) {
-                maxX = pt.x;
-            }
-            if (pt.y > maxY) {
-                maxY = pt.y;
-            }
-        }
-        return {
+        this.br = {
             x: maxX,
             y: maxY,
         };
+    }
+
+    getTopLeft() {
+        return this.tl;
+    }
+
+    getBottomRight() {
+        return this.br;
     }
 
     // Checks if the object's token is active.
@@ -172,11 +161,10 @@ export class BoardObject {
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }
-        const tl = this.getTopLeft();
         if (
             !this.imageObj.draw(this.currPath, squareSize, {
-                x: offset.x + tl.x * squareSize,
-                y: offset.y + tl.y * squareSize,
+                x: offset.x + this.tl.x * squareSize,
+                y: offset.y + this.tl.y * squareSize,
             })
         ) {
             if (!this.drawParams.fill) {
@@ -241,6 +229,8 @@ export class BoardObject {
             pt.x += xChange;
             pt.y += yChange;
         }
+        this.updateTopLeft();
+        this.updateBottomRight();
     }
 
     setColour(newColour: string) {
@@ -281,11 +271,9 @@ export class BoardObject {
 
     // Function to set the center point of the object.
     setCenter() {
-        const topLeft = this.getTopLeft();
-        const bottomRight = this.getBottomRight();
         this.centerPoint = {
-            x: topLeft.x + (bottomRight.x - topLeft.x) / 2,
-            y: topLeft.y + (bottomRight.y - topLeft.y) / 2,
+            x: this.tl.x + (this.br.x - this.tl.x) / 2,
+            y: this.tl.y + (this.br.y - this.tl.y) / 2,
         };
     }
 
@@ -298,12 +286,14 @@ export class BoardObject {
         this.colour = newSetting.colour;
         this.layerId = newSetting.layerId;
         this.points = newSetting.points;
-        this.setCenter();
+        this.updateObject(false);
         this.currPathSpecs[0] = 0;
         this.updateToken(newSetting.token);
-        const br = this.getBottomRight();
-        const tl = this.getTopLeft();
-        this.imageObj.updateImageSize(br.x - tl.x, br.y - tl.y, false);
+        this.imageObj.updateImageSize(
+            this.br.x - this.tl.x,
+            this.br.y - this.tl.y,
+            false,
+        );
     }
 
     payloadFromObject() {
@@ -326,14 +316,13 @@ export class BoardObject {
         this.points[specificPoint].x = newX;
         this.points[specificPoint].y = newY;
         this.currPathSpecs[0] = 0;
-        this.setCenter();
-        this.updateObject();
+        this.updateObject(true);
     }
 
     // the devil wrote this
     updateSize(newPoint: Vec2, corner: number) {
-        const topLeft = this.getTopLeft();
-        const bottomRight = this.getBottomRight();
+        const topLeft = this.tl;
+        const bottomRight = this.br;
         for (const pt of this.points) {
             if (corner === 0) {
                 const transform = {
@@ -382,8 +371,7 @@ export class BoardObject {
             }
         }
         this.currPathSpecs[0] = 0;
-        this.setCenter();
-        this.updateObject();
+        this.updateObject(true);
     }
 
     pathEllipse(squareSize: number, outerOffset: Vec2) {

@@ -8,7 +8,7 @@
 
     <div id="objBox">
         <div id="topObjBox">
-            <div id="topObjContainer" class="objContainer"></div>
+            <canvas id="topObjContainer" class="objContainer" width="100" height="100"></canvas>
             <input type="text" id="renameTopObj" class="renameObj"></input>
             <button id="recolTopObj" class="recolObj">Recolour</button>
             <button id="recolTopEdge" class="recolEdge">Recolour Edges</button>
@@ -19,7 +19,7 @@
             <button id="removeTopImage" class="removeImgObj">Remove Image</button>
         </div>
         <div id="bottomObjBox">
-            <div id="bottomObjContainer" class="objContainer"></div>
+            <canvas id="bottomObjContainer" class="objContainer" width="100" height="100"></canvas>
             <input type="text" id="renameBottomObj" class="renameObj"></input>
             <button id="recolBottomObj" class="recolObj">Recolour</button>
             <button id="recolBottomEdge" class="recolEdge">Recolour Edges</button>
@@ -288,7 +288,7 @@
 
     .objContainer {
         position: absolute;
-        background-color: rgba(30, 30, 30, 1);
+        background-color: #444444;
         left: 20px;
         top: 20px;
         height: 100px;
