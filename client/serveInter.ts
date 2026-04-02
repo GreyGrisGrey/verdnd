@@ -297,6 +297,33 @@ export class tempStore {
         return response.blob();
     }
 
+    async uploadBlob(objId: number, blob: Blob) {
+        const response = await fetch(
+            'https://verdnd.ca/upload/game/' +
+                this.currGame +
+                '/' +
+                objId.toString(),
+            {
+                method: 'POST',
+                body: blob,
+            },
+        );
+
+        if (response.ok) {
+            this.socket.send(
+                this.parcelServeEvent({
+                    entity: Entity.Object,
+                    action: Action.Image,
+                    image: true,
+                    id: objId,
+                }),
+            );
+        } else {
+            console.error('Upload failed with status:', response.status);
+        }
+        return;
+    }
+
     async uploadFile(objId: number = -1) {
         const file = fileInput.files ? fileInput.files[0] : null;
         if (!file || (!this.bgUpload && objId === -1)) {

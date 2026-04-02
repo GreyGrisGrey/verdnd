@@ -8,6 +8,10 @@ export class ImageObject {
     image: any;
     imageOffset: Vec2;
     drawFlag: boolean;
+    stringUrl: string;
+    width: number;
+    height: number;
+    blob: Blob;
     constructor() {
         this.imagePath = '';
         this.image = new Image(300, 300);
@@ -17,6 +21,10 @@ export class ImageObject {
         }
         this.imageOffset = { x: 0, y: 0 };
         this.drawFlag = false;
+        this.stringUrl = '';
+        this.width = 0;
+        this.height = 0;
+        this.blob = new Blob();
     }
 
     disableImage() {
@@ -30,16 +38,17 @@ export class ImageObject {
         gameId: number,
         bg: boolean = false,
     ) {
+        this.width = width;
+        this.height = height;
         this.drawFlag = false;
         await this.updateImageSource(objId, gameId);
         this.updateImageSize(width, height, bg);
     }
 
-    async updateImageSourceMinor(
-        objectUrl: string,
-        width: number,
-        height: number,
-    ) {
+    async updateImageLocal(objectUrl: string, width: number, height: number) {
+        this.stringUrl = objectUrl;
+        this.width = width;
+        this.height = height;
         this.image.src = objectUrl;
         await new Promise<void>((resolve, reject) => {
             this.image.onload = () => resolve();
@@ -64,6 +73,8 @@ export class ImageObject {
             }
             const imageBlob = await response.blob();
             const objectUrl = URL.createObjectURL(imageBlob);
+            this.stringUrl = objectUrl;
+            this.blob = imageBlob;
             this.image.src = objectUrl;
             await new Promise<void>((resolve, reject) => {
                 this.image.onload = () => resolve();

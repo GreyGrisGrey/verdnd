@@ -129,6 +129,19 @@ export class ObjectMenu {
 
         fileInput.addEventListener('change', async () => {
             if (this.changeBottomImg && this.currSelected.objectId >= 0) {
+                const file = fileInput.files ? fileInput.files[0] : null;
+                const curr = this.loadedTemplate.currObj;
+                if (curr && file) {
+                    const br = curr.getBottomRight();
+                    const tl = curr.getTopLeft();
+                    await curr.imageObj.updateImageLocal(
+                        URL.createObjectURL(file),
+                        br.x - tl.x,
+                        br.y - tl.y,
+                    );
+                    curr.imageObj.blob = file;
+                }
+                this.changeTopImg = false;
                 serveInter.uploadFile(this.currSelected.objectId);
                 this.changeBottomImg = false;
             } else if (this.changeTopImg) {
@@ -137,12 +150,12 @@ export class ObjectMenu {
                 if (curr && file) {
                     const br = curr.getBottomRight();
                     const tl = curr.getTopLeft();
-                    await curr.imageObj.updateImageSourceMinor(
+                    await curr.imageObj.updateImageLocal(
                         URL.createObjectURL(file),
                         br.x - tl.x,
                         br.y - tl.y,
                     );
-                    this.draw();
+                    curr.imageObj.blob = file;
                 }
                 this.changeTopImg = false;
             }
@@ -156,6 +169,16 @@ export class ObjectMenu {
         toChange.currObj.updateFromPayload(setUp);
         toChange.rename.value = fromChange.rename.value;
         toChange.activeCheck.checked = fromChange.activeCheck.checked;
+        if (fromChange.currObj.imageObj.drawFlag) {
+            const currImg = fromChange.currObj.imageObj;
+            toChange.currObj.imageObj.updateImageLocal(
+                currImg.stringUrl,
+                currImg.width,
+                currImg.height,
+            );
+            toChange.currObj.imageObj.blob = fromChange.currObj.imageObj.blob;
+            toChange.currObj.imageObj.drawFlag = true;
+        }
         if (!top) {
             const oldTl = this.currSelected.getTopLeft();
             this.currSelected.updateFromPayload(setUp);
@@ -163,7 +186,20 @@ export class ObjectMenu {
             this.currSelected.move(oldTl.x - newTl.x, oldTl.y - newTl.y);
             this.currSelected.updateObject(true);
             this.updateToken(true);
+            if (this.currSelected.imageObj.drawFlag) {
+                serveInter.removeFile(this.currSelected.objectId);
+            }
+            if (fromChange.currObj.imageObj.drawFlag) {
+                this.updateImage();
+            }
         }
+    }
+
+    updateImage() {
+        serveInter.uploadBlob(
+            this.currSelected.objectId,
+            this.currTemplate.currObj.imageObj.blob,
+        );
     }
 
     updateToken(bottom: boolean) {
@@ -253,6 +289,17 @@ export class ObjectMenu {
         this.loadedTemplate.currObj.updateFromPayload(
             newObject.payloadFromObject(),
         );
+        if (newObject.imageObj.drawFlag) {
+            this.loadedTemplate.currObj.imageObj.updateImageLocal(
+                newObject.imageObj.stringUrl,
+                newObject.imageObj.width,
+                newObject.imageObj.height,
+            );
+            this.loadedTemplate.currObj.imageObj.blob = newObject.imageObj.blob;
+            this.loadedTemplate.currObj.imageObj.drawFlag = true;
+        } else {
+            this.loadedTemplate.currObj.imageObj.drawFlag = false;
+        }
         bottomHalf.style.visibility = 'inherit';
         bottomHalf.style.pointerEvents = 'auto';
         this.currTemplate.swap.style.visibility = 'inherit';
@@ -303,5 +350,6 @@ export class ObjectMenu {
         topHalf.style.height = newHeight;
         bottomHalf.style.height = newHeight;
         bottomHalf.style.top = newHeight;
+        this.draw();
     }
 }
