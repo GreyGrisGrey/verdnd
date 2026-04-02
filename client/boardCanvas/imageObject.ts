@@ -35,6 +35,21 @@ export class ImageObject {
         this.updateImageSize(width, height, bg);
     }
 
+    async updateImageSourceMinor(
+        objectUrl: string,
+        width: number,
+        height: number,
+    ) {
+        this.image.src = objectUrl;
+        await new Promise<void>((resolve, reject) => {
+            this.image.onload = () => resolve();
+            this.image.onerror = () =>
+                reject(new Error('Image failed to load'));
+        });
+        this.updateImageSize(width, height, false);
+        this.drawFlag = true;
+    }
+
     async updateImageSource(objId: number, gameId: number) {
         try {
             const fileString =
@@ -90,13 +105,14 @@ export class ImageObject {
         path: Path2D | null = null,
         squareSize: number = 1,
         offset: Vec2 = { x: 0, y: 0 },
+        drawCtx: CanvasRenderingContext2D = ctx,
     ) {
         if (this.drawFlag) {
             if (path) {
-                ctx.save();
-                ctx.clip(path);
+                drawCtx.save();
+                drawCtx.clip(path);
             }
-            ctx.drawImage(
+            drawCtx.drawImage(
                 this.image,
                 this.imageOffset.x + offset.x,
                 this.imageOffset.y + offset.y,
@@ -104,7 +120,7 @@ export class ImageObject {
                 this.image.height * squareSize,
             );
             if (path) {
-                ctx.restore();
+                drawCtx.restore();
             }
             return true;
         }

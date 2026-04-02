@@ -156,16 +156,21 @@ export class BoardObject {
         if (this.token.active) {
             this.drawToken(this.ctx as any, squareSize, offset);
         }
-        if (this.selected) {
+        if (this.selected && !this.token.active) {
             ctx.strokeStyle = GOLD.toString();
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }
         if (
-            !this.imageObj.draw(this.currPath, squareSize, {
-                x: offset.x + this.tl.x * squareSize,
-                y: offset.y + this.tl.y * squareSize,
-            })
+            !this.imageObj.draw(
+                this.currPath,
+                squareSize,
+                {
+                    x: offset.x + this.tl.x * squareSize,
+                    y: offset.y + this.tl.y * squareSize,
+                },
+                ctx,
+            )
         ) {
             if (!this.drawParams.fill) {
                 ctx.lineWidth = 3;
@@ -184,7 +189,9 @@ export class BoardObject {
     // Draws the object's token, if the token is active.
     drawToken(ctx: CanvasRenderingContext2D, squareSize: number, offset: Vec2) {
         this.drawOutline(ctx);
-        this.drawLabel(ctx, squareSize, offset);
+        if (this.token.name !== '') {
+            this.drawLabel(ctx, squareSize, offset);
+        }
     }
 
     // Draws the outline of the object's token.

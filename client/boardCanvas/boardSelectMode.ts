@@ -160,10 +160,6 @@ export class BoardSelectMode {
             this.setUpPoints();
             this.updateCornerOffset();
             this.boxDraw = false;
-        } else if (key === 'b' && this.selectedObjects.length === 1) {
-            fileInput.click();
-        } else if (key === 'n' && this.selectedObjects.length === 1) {
-            serveInter.removeFile(this.selectedObjects[0].objectId);
         }
     }
 
@@ -205,10 +201,6 @@ export class BoardSelectMode {
 
     // Adds all relevant event listeners.
     addEventListeners() {
-        fileInput.addEventListener('change', () => {
-            serveInter.uploadFile(this.selectedObjects[0].objectId);
-        });
-
         can.addEventListener('keydown', (event) => {
             if (this.active) {
                 this.handleSwitchEvent(event.key);

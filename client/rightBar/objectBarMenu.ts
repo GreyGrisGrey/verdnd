@@ -7,6 +7,7 @@ const topHalf = getRequiredElement('topObjBox', HTMLElement);
 const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
+const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const serveInter = new tempStore();
 const colourBox = new ColourBox();
 
@@ -17,7 +18,7 @@ interface ObjTemplate {
     recolEdge: HTMLButtonElement;
     activeCheck: HTMLInputElement;
     swap: HTMLButtonElement;
-    currObj: BoardObject | null;
+    currObj: BoardObject;
     updateImg: HTMLButtonElement;
     removeImg: HTMLButtonElement;
 }
@@ -27,12 +28,17 @@ export class ObjectMenu {
     loadedActive: boolean;
     currTemplate: ObjTemplate;
     loadedTemplate: ObjTemplate;
+    changeTopImg: boolean;
+    changeBottomImg: boolean;
+    currSelected: BoardObject;
+    ctx1: CanvasRenderingContext2D;
+    ctx2: CanvasRenderingContext2D;
 
     constructor() {
         this.active = false;
         this.loadedActive = false;
         this.currTemplate = this.buildTemplatePrimary();
-        this.currTemplate.currObj!.updateToken({
+        this.currTemplate.currObj.updateToken({
             name: 'Squonch',
             movable: true,
             active: true,
@@ -42,28 +48,34 @@ export class ObjectMenu {
         this.currTemplate.swap.style.visibility = 'hidden';
         this.currTemplate.swap.style.pointerEvents = 'none';
         this.currTemplate.rename.value = this.currTemplate.currObj!.token.name;
+        this.currTemplate.activeCheck.checked = true;
         this.addEventListeners(this.currTemplate, true);
         this.addEventListeners(this.loadedTemplate, false);
+        this.changeTopImg = false;
+        this.changeBottomImg = false;
+        this.currSelected = this.loadedTemplate.currObj;
+        this.ctx1 = this.currTemplate.container.getContext('2d')!;
+        this.ctx2 = this.loadedTemplate.container.getContext('2d')!;
     }
 
     addEventListeners(temp: ObjTemplate, top: boolean) {
         temp.rename.addEventListener('change', () => {
             if (temp.currObj) {
                 temp.currObj.token.name = temp.rename.value;
-                this.updateToken(temp.currObj);
+                this.updateToken(!top);
             }
         });
 
         temp.recol.addEventListener('click', () => {
             if (temp.currObj) {
                 temp.currObj.colour = colourBox.getCurrColour();
-                if (temp.currObj.objectId >= 0) {
+                if (!top && this.currSelected.objectId >= 0) {
                     serveInter.recolourObjects(
                         [
                             {
                                 entity: Entity.Object,
                                 action: Action.Recolour,
-                                objectId: temp.currObj.objectId,
+                                objectId: this.currSelected.objectId,
                                 colour: colourBox.getCurrColour(),
                             },
                         ],
@@ -76,14 +88,14 @@ export class ObjectMenu {
         temp.recolEdge.addEventListener('click', () => {
             if (temp.currObj) {
                 temp.currObj.token.colour = colourBox.getCurrColour();
-                this.updateToken(temp.currObj);
+                this.updateToken(!top);
             }
         });
 
         temp.activeCheck.addEventListener('change', () => {
             if (temp.currObj) {
                 temp.currObj.token.active = temp.activeCheck.checked;
-                this.updateToken(temp.currObj);
+                this.updateToken(!top);
             }
         });
 
@@ -95,40 +107,76 @@ export class ObjectMenu {
 
         temp.updateImg.addEventListener('click', () => {
             if (temp.currObj) {
-                this.updateToken(temp.currObj);
+                fileInput.click();
+                if (top) {
+                    this.changeTopImg = true;
+                } else {
+                    this.changeBottomImg = true;
+                }
             }
         });
 
         temp.removeImg.addEventListener('click', () => {
             if (temp.currObj) {
-                this.updateObject();
+                if (top) {
+                    this.currTemplate.currObj.updateImage(false);
+                    this.currTemplate.currObj.imageObj.drawFlag = false;
+                } else if (this.loadedTemplate.currObj) {
+                    serveInter.removeFile(this.currSelected.objectId);
+                }
+            }
+        });
+
+        fileInput.addEventListener('change', async () => {
+            if (this.changeBottomImg && this.currSelected.objectId >= 0) {
+                serveInter.uploadFile(this.currSelected.objectId);
+                this.changeBottomImg = false;
+            } else if (this.changeTopImg) {
+                const file = fileInput.files ? fileInput.files[0] : null;
+                const curr = this.currTemplate.currObj;
+                if (curr && file) {
+                    const br = curr.getBottomRight();
+                    const tl = curr.getTopLeft();
+                    await curr.imageObj.updateImageSourceMinor(
+                        URL.createObjectURL(file),
+                        br.x - tl.x,
+                        br.y - tl.y,
+                    );
+                    this.draw();
+                }
+                this.changeTopImg = false;
             }
         });
     }
 
     swapObject(top: boolean) {
-        const toChange = top
-            ? this.currTemplate.currObj
-            : this.loadedTemplate.currObj;
-        const fromChange = top
-            ? this.loadedTemplate.currObj
-            : this.currTemplate.currObj;
-        if (toChange && fromChange) {
-            const setUp = fromChange.payloadFromObject();
-            const oldTl = toChange.getTopLeft();
-            toChange.updateFromPayload(setUp);
-            const newTl = toChange.getTopLeft();
-            toChange.move(oldTl.x - newTl.x, oldTl.y - newTl.y);
-            toChange.updateObject(true);
-            this.updateToken(toChange);
+        const toChange = top ? this.currTemplate : this.loadedTemplate;
+        const fromChange = top ? this.loadedTemplate : this.currTemplate;
+        const setUp = fromChange.currObj.payloadFromObject();
+        toChange.currObj.updateFromPayload(setUp);
+        toChange.rename.value = fromChange.rename.value;
+        toChange.activeCheck.checked = fromChange.activeCheck.checked;
+        if (!top) {
+            const oldTl = this.currSelected.getTopLeft();
+            this.currSelected.updateFromPayload(setUp);
+            const newTl = this.currSelected.getTopLeft();
+            this.currSelected.move(oldTl.x - newTl.x, oldTl.y - newTl.y);
+            this.currSelected.updateObject(true);
+            this.updateToken(true);
         }
     }
 
-    updateObject() {}
-
-    updateToken(obj: BoardObject) {
-        if (obj.objectId >= 0) {
-            serveInter.updateToken(obj.token, obj.objectId);
+    updateToken(bottom: boolean) {
+        if (bottom && this.currSelected.objectId >= 0) {
+            this.currSelected.token.name = this.loadedTemplate.rename.value;
+            this.currSelected.token.active =
+                this.loadedTemplate.activeCheck.checked;
+            this.currSelected.token.colour =
+                this.loadedTemplate.currObj.token.colour;
+            serveInter.updateToken(
+                this.currSelected.token,
+                this.currSelected.objectId,
+            );
         }
     }
 
@@ -158,7 +206,17 @@ export class ObjectMenu {
 
     buildTemplateSecondary(): ObjTemplate {
         return {
-            currObj: null,
+            currObj: new BoardObject(
+                -6,
+                '#cccccc',
+                { ellipse: true, fill: true, close: true },
+                [
+                    { x: 0, y: 0 },
+                    { x: 1, y: 0 },
+                    { x: 1, y: 1 },
+                    { x: 0, y: 1 },
+                ],
+            ),
             rename: getRequiredElement('renameBottomObj', HTMLInputElement),
             recol: getRequiredElement('recolBottomObj', HTMLButtonElement),
             recolEdge: getRequiredElement('recolBottomEdge', HTMLButtonElement),
@@ -191,7 +249,10 @@ export class ObjectMenu {
     }
 
     updateSecondary(newObject: BoardObject) {
-        this.loadedTemplate.currObj = newObject;
+        this.currSelected = newObject;
+        this.loadedTemplate.currObj.updateFromPayload(
+            newObject.payloadFromObject(),
+        );
         bottomHalf.style.visibility = 'inherit';
         bottomHalf.style.pointerEvents = 'auto';
         this.currTemplate.swap.style.visibility = 'inherit';
@@ -213,12 +274,11 @@ export class ObjectMenu {
             const curr = this.currTemplate.currObj;
             const tl = curr.getTopLeft();
             const br = curr.getBottomRight();
-            const ctx = this.currTemplate.container.getContext('2d')!;
-            ctx.clearRect(0, 0, 100, 100);
+            this.ctx1.clearRect(0, 0, 100, 100);
             const size = { x: br.x - tl.x, y: br.y - tl.y };
             const scale = Math.min(100 / size.x, 100 / size.y);
             const offset = { x: scale * size.x, y: scale * size.y };
-            curr.draw(ctx, scale, {
+            curr.draw(this.ctx1, scale, {
                 x: -tl.x * scale + (100 - offset.x) / 2,
                 y: -tl.y * scale + (100 - offset.y) / 2,
             });
@@ -227,12 +287,11 @@ export class ObjectMenu {
             const curr = this.loadedTemplate.currObj;
             const tl = curr.getTopLeft();
             const br = curr.getBottomRight();
-            const ctx = this.loadedTemplate.container.getContext('2d')!;
-            ctx.clearRect(0, 0, 100, 100);
+            this.ctx2.clearRect(0, 0, 100, 100);
             const size = { x: br.x - tl.x, y: br.y - tl.y };
             const scale = Math.min(100 / size.x, 100 / size.y);
             const offset = { x: scale * size.x, y: scale * size.y };
-            curr.draw(ctx, scale, {
+            curr.draw(this.ctx2, scale, {
                 x: -tl.x * scale + (100 - offset.x) / 2,
                 y: -tl.y * scale + (100 - offset.y) / 2,
             });
@@ -244,6 +303,5 @@ export class ObjectMenu {
         topHalf.style.height = newHeight;
         bottomHalf.style.height = newHeight;
         bottomHalf.style.top = newHeight;
-        this.draw();
     }
 }
