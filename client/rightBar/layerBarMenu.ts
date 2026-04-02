@@ -292,7 +292,7 @@ export class LayerMenu {
 
     // Performs a single step updating the layer menu.
     step() {
-        layerBottom.style.height = `${window.innerHeight - 400}px`;
+        layerBottom.style.height = `${Number(rightBar.style.height.slice(0, rightBar.style.height.length - 2)) - 350}px`;
         const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
             layer.element!.style.background = GREY_DARK.toString();

@@ -220,11 +220,9 @@ export class BoardDrawMode {
                     return;
                 } else if (this.active && this.selectMode) {
                     const newPos = board.determineTile(
-                        board.mouseCoords.x +
-                            1 -
+                        board.mouseCoords.x -
                             this.currLayer.layerOffset.x * board.zoomVal * 5,
-                        board.mouseCoords.y +
-                            1 -
+                        board.mouseCoords.y -
                             this.currLayer.layerOffset.y * board.zoomVal * 5,
                         CoordModes.Center,
                     );
