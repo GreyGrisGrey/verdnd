@@ -98,7 +98,7 @@ export class TooltipManager {
             tooltip.style.height = '270px';
             tooltip.style.fontSize = '14px';
         } else {
-            tooltip.style.left = '120px';
+            tooltip.style.left = '80px';
             tooltip.style.bottom = '20px';
             tooltip.style.top = '';
             tooltip.style.width = '160px';

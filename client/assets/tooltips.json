@@ -424,6 +424,12 @@
                 "boldText": "Scroll wheel : ",
                 "text": "Zoom camera"
             }
+        ],
+        "undo": [
+            {
+                "boldText": "Hotkey Ctrl+Z : ",
+                "text": "Undo previous action"
+            }
         ]
     }
 }

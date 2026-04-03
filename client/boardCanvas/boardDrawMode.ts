@@ -78,7 +78,7 @@ export class BoardDrawMode {
 
     // Sets up control buttons.
     setUpBoxes() {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 1; i < 9; i++) {
             this.boxItems.push(
                 getRequiredElement(
                     'bottomDrawBox' + i.toString(),
@@ -86,7 +86,7 @@ export class BoardDrawMode {
                 ),
             );
 
-            this.boxItems[i].addEventListener('click', () => {
+            this.boxItems[i - 1].addEventListener('click', () => {
                 this.handleSwitchEvent(i.toString());
                 this.flipBoxes();
             });
@@ -98,21 +98,20 @@ export class BoardDrawMode {
         for (const box of this.boxItems) {
             box.style.visibility = this.active ? 'visible' : 'hidden';
             box.style.pointerEvents = this.active ? 'auto' : 'none';
+            box.style.left = '60px';
         }
         this.flipBoxes();
     }
 
     // Flips which control buttons are disabled.
     flipBoxes() {
-        this.boxItems[1].disabled = this.selectMode;
-        this.boxItems[2].disabled = this.currDraw === 2;
-        this.boxItems[3].disabled = this.currDraw === 3;
-        this.boxItems[4].disabled = this.currDraw === 4;
-        this.boxItems[5].disabled = this.currDraw === 5;
-        this.boxItems[6].disabled = this.params.length < 2;
-        this.boxItems[8].disabled = this.currDraw === 8;
-        this.boxItems[9].disabled = true;
-        this.boxItems[0].disabled = true;
+        this.boxItems[0].disabled = this.selectMode;
+        this.boxItems[1].disabled = this.currDraw === 2;
+        this.boxItems[2].disabled = this.currDraw === 3;
+        this.boxItems[3].disabled = this.currDraw === 4;
+        this.boxItems[4].disabled = this.currDraw === 5;
+        this.boxItems[5].disabled = this.params.length < 2;
+        this.boxItems[7].disabled = this.currDraw === 8;
     }
 
     // Flips the active state of the mode and resets key variables.

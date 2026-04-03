@@ -52,14 +52,14 @@ export class BoardViewMode {
 
     // Sets up control buttons for viewing/clicking.
     setUpBoxes() {
-        for (let i = 2; i < 10; i++) {
+        for (let i = 5; i < 10; i++) {
             this.boxItems.push(
                 getRequiredElement(
                     'bottomViewBox' + i.toString(),
                     HTMLButtonElement,
                 ),
             );
-            this.boxItems[i - 2].addEventListener('click', () => {
+            this.boxItems[i - 5].addEventListener('click', () => {
                 this.handleSwitchEvent(i.toString());
             });
         }
@@ -70,6 +70,7 @@ export class BoardViewMode {
         for (const box of this.boxItems) {
             box.style.visibility = this.active ? 'visible' : 'hidden';
             box.style.pointerEvents = this.active ? 'auto' : 'none';
+            box.style.left = '-90px';
         }
     }
 

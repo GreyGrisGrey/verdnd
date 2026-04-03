@@ -23,8 +23,9 @@
 </style>
 
 <div id="modeMenu">
-    <button class="modeButton" id="viewMenuButton" disabled>View [A]</button>
-    <button class="modeButton" id="drawMenuButton">Draw [D]</button>
+    <button class="modeButton" id="viewMenuButton" disabled>View</button>
+    <button class="modeButton" id="drawMenuButton">Draw</button>
+    <button class="modeButton" id="undoMenuButton">Undo</button>
 </div>
 
 <div class="canvasContainer">
@@ -63,7 +64,7 @@
 
     .modeButton {
         z-index: 2;
-        width: 80px;
+        width: 60px;
         height: 40px;
         pointer-events: all;
         border: none;
@@ -77,6 +78,12 @@
     #drawMenuButton {
         position: absolute;
         top: 50px;
+        left: 0px;
+    }
+
+    #undoMenuButton {
+        position: absolute;
+        top: -50px;
         left: 0px;
     }
 

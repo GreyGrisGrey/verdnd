@@ -21,6 +21,7 @@ import { UserBox } from './leftBar/userBox.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RollMenu } from './rightBar/rollBarMenu.ts';
+import { TooltipManager, TooltipMode } from './tooltip.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -30,12 +31,14 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const rightCan1 = getRequiredElement('topObjContainer', HTMLElement);
 const rightCan2 = getRequiredElement('bottomObjContainer', HTMLElement);
+const undoButton = getRequiredElement('undoMenuButton', HTMLButtonElement);
 const userBox = new UserBox();
 const rightMan = new RightBarManager();
 const board = new Board();
 const modeMan = new ModeManager();
 const leftMan = new LeftBarManager();
 const rollMan = new RollMenu();
+const tooltipManager = new TooltipManager();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     return new BoardObject(p.objectId, p.colour, p.params, p.points);
@@ -231,8 +234,28 @@ export class TempStore {
                     userBox.removeUser(message.id);
                 }
             }
+            if (this.currIndex > 0) {
+                // This does not feel like a good way to check if the undo button should be enabled or not.
+                // Equally, if you undid an action *eventually* the server is going to tell you about it, so.
+                undoButton.disabled = false;
+            }
         });
         this.connectGlobal();
+    }
+
+    setUpUndo() {
+        undoButton.addEventListener('click', () => {
+            this.undoLast();
+        });
+
+        undoButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Mode, 'undo');
+        });
+
+        undoButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+        undoButton.disabled = true;
     }
 
     changeObjLayer(obj: BoardObject, up: boolean) {
@@ -252,6 +275,7 @@ export class TempStore {
 
     undoLast() {
         if (this.currIndex === 0) {
+            undoButton.disabled = true;
             return;
         }
         this.currIndex--;
@@ -267,10 +291,17 @@ export class TempStore {
         } else if (last[0].action === Action.Move) {
             this.moveObjects(last, true);
         }
+        if (this.currIndex === 0) {
+            undoButton.disabled = true;
+        }
     }
 
+    // why does the server interface try and create a layer every time the game is loaded
+    // why does the server not care
+    // huh?
     setup() {
         this.createLayer();
+        this.setUpUndo();
     }
 
     async connectGlobal() {

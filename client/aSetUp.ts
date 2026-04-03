@@ -46,5 +46,6 @@ const changeImage = getRequiredElement('changeImage', HTMLElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
+const undoButton = getRequiredElement('undoMenuButton', HTMLButtonElement);
 const modeMan = new ModeManager();
 const board = new Board();
