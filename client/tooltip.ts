@@ -9,16 +9,24 @@ export enum TooltipMode {
     Mode = 3,
 }
 
+export interface TooltipData {
+    type: string | undefined;
+    boldText: string | undefined;
+    text: string;
+    colour: string | undefined;
+    size: string | undefined;
+}
+
 export class TooltipManager {
     active: boolean;
-    data: Map<string, string>[];
+    data: Map<string, TooltipData[]>[];
     currMode: TooltipMode;
-    currText: string;
+    activeDiv: HTMLElement;
     constructor() {
         this.active = false;
         this.data = [];
         this.currMode = TooltipMode.Left;
-        this.currText = 'lorem ipsum etcetera';
+        this.activeDiv = document.createElement('div');
         this.getData();
         tooltip.style.zIndex = '10';
         this.disable();
@@ -28,7 +36,8 @@ export class TooltipManager {
         const response = await fetch('./client/assets/tooltips.json');
         const data = await response.json();
         this.data = [data.left, data.right, data.bottom, data.mode].map(
-            (obj: Record<string, string>) => new Map(Object.entries(obj)),
+            (obj: Record<string, TooltipData[]>) =>
+                new Map(Object.entries(obj)),
         );
     }
 
@@ -36,12 +45,35 @@ export class TooltipManager {
         this.currMode = newMode;
         const curr = this.data[newMode];
         if (curr) {
-            this.currText = curr.get(index) || 'lorem ipsum etcetera';
-            console.log(this.currText);
-            tooltipText.innerText = this.currText;
+            this.updateTooltipText(curr.get(index) || [], index);
         }
         this.updateTooltipPosition();
         this.enable();
+    }
+
+    updateTooltipText(newText: TooltipData[], index: string) {
+        this.activeDiv.remove();
+        this.activeDiv = document.createElement('div');
+        tooltip.append(this.activeDiv);
+        for (const text of newText) {
+            const newDiv = document.createElement(
+                text.type === 'header' ? 'header' : 'p',
+            );
+            if (text.boldText) {
+                newDiv.innerHTML = `<b>${text.boldText}</b>${text.text}`;
+            } else if (text.type !== 'header') {
+                newDiv.innerText = text.text;
+            } else {
+                newDiv.innerHTML = `<b>${text.text}</b>`;
+            }
+            if (text.colour) {
+                newDiv.style.color = text.colour;
+            }
+            if (text.size) {
+                newDiv.style.fontSize = text.size;
+            }
+            this.activeDiv.append(newDiv);
+        }
     }
 
     updateTooltipPosition() {
@@ -57,21 +89,21 @@ export class TooltipManager {
             tooltip.style.top = '40px';
             tooltip.style.width = '100px';
             tooltip.style.height = '200px';
-            tooltip.style.fontSize = '';
+            tooltip.style.fontSize = '14px';
         } else if (this.currMode === TooltipMode.Right) {
             tooltip.style.right = '320px';
             tooltip.style.top = '40px';
             tooltip.style.left = '';
             tooltip.style.width = '150px';
             tooltip.style.height = '250px';
-            tooltip.style.fontSize = '';
+            tooltip.style.fontSize = '14px';
         } else {
             tooltip.style.left = '120px';
             tooltip.style.bottom = '20px';
             tooltip.style.top = '';
             tooltip.style.width = '100px';
             tooltip.style.height = '120px';
-            tooltip.style.fontSize = '';
+            tooltip.style.fontSize = '14px';
         }
     }
 

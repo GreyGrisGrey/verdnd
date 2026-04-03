@@ -1,0 +1,6 @@
+asdasdasd
+
+[{"text": "Toggle right bar visibility"}]
+[{"type": "header", "text": "Layer menu"}, {text: "Includes settings for creating, destroying, and reordering layers as well as changing layer visibility"},{text: "Layers are rendered from top to bottom, a layer's position can be changed in the editor"}]
+[{"type": "header", "Roll menu"}, {text: "Displays rolls"}]
+[{"type": "header", "Object menu"}, {text: "Allows editing preexisting board objects"}, {text: "The top object is a template that can be copied onto other objects or pasted directly to the board"}, {text: "Outline colour and object name are only visible when an object is marked as an active token"}]

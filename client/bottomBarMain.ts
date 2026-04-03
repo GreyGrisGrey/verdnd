@@ -20,6 +20,7 @@ export class BottomBarManager {
         this.bottomActive = false;
         this.setEventListeners();
         measureDegrees.value = '360';
+        measureDegrees.style.visibility = 'visible';
     }
 
     setUpBoxes() {
