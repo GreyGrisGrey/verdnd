@@ -121,7 +121,7 @@ export class BoardSelectMode {
                 this.boxItems[i].style.pointerEvents =
                     i > 8 || i < 6 ? 'auto' : 'none';
                 this.boxItems[i].style.left =
-                    i !== 9 && i !== 0 ? '120px' : '-60px';
+                    i !== 9 && i !== 0 ? '90px' : '-90px';
             }
         } else if (this.selectedObjects.length > 1) {
             for (let i = 0; i < this.boxItems.length; i++) {
@@ -362,6 +362,9 @@ export class BoardSelectMode {
             board.offset.y + this.thirdOffset.y,
             CoordModes.Vertex,
         );
+        if (point.x === point.y && point.x === 0) {
+            return;
+        }
         const moveList: ObjectMoveEvent[] = [];
         for (const obj of this.selectedObjects) {
             moveList.push({

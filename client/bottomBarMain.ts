@@ -3,6 +3,7 @@ import { TooltipManager, TooltipMode } from './tooltip.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 const tooltipManager = new TooltipManager();
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
+const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const modeMan = new ModeManager();
 
@@ -19,8 +20,6 @@ export class BottomBarManager {
         this.setUpBoxes();
         this.bottomActive = false;
         this.setEventListeners();
-        measureDegrees.value = '360';
-        measureDegrees.style.visibility = 'visible';
     }
 
     setUpBoxes() {

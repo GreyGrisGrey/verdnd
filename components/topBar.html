@@ -1,12 +1,22 @@
 <div id="topBar">
     <p id="playerDataBox">blah ba</p>
+    <p id="measureDegreesLabel">Measuring tool degrees : </p>
     <input type="text" id="measureDegrees" />
 </div>
 
 <style>
-    #measureDegrees {
+    #measureDegreesLabel {
         position: absolute;
         left: 10px;
+        top: -10px;
+        font-size: 15px;
+        visibility: hidden;
+        color: #eeeeee;
+    }
+
+    #measureDegrees {
+        position: absolute;
+        left: 165px;
         top: 5px;
         visibility: hidden;
     }

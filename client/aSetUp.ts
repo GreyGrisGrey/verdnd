@@ -29,6 +29,7 @@ const upButton = getRequiredElement('layerUpButton', HTMLElement);
 const downButton = getRequiredElement('layerDownButton', HTMLElement);
 const nameInput = getRequiredElement('renameTopObj', HTMLInputElement);
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
+const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenu', HTMLElement);

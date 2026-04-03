@@ -11,6 +11,7 @@ const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
+const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
@@ -32,6 +33,7 @@ export class BoardViewMode {
         this.setUpBoxes();
         this.completeSelectCheck = false;
         this.selectedToken = null;
+        measureDegrees.value = '360';
     }
 
     // Updates the layer offset for the purposes of token selection.
@@ -47,6 +49,8 @@ export class BoardViewMode {
         this.measuring = false;
         this.completeSelectCheck = false;
         this.selectedToken = null;
+        measureDegrees.style.visibility = setOn ? 'visible' : 'hidden';
+        measureLabel.style.visibility = setOn ? 'visible' : 'hidden';
         this.toggleBoxes();
     }
 
