@@ -13,12 +13,14 @@ import { tempStore } from '../serveInter.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
+import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
 const layerMan = new LayerMenu();
 const colourBox = new ColourBox();
 const board = new Board();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const serveInter = new tempStore();
+const objectMan = new ObjectMenu();
 
 function rectangleFromPoints(point1: Vec2, point2: Vec2) {
     const x = Math.min(point1.x, point2.x);
@@ -108,7 +110,7 @@ export class BoardDrawMode {
         this.boxItems[4].disabled = this.currDraw === 4;
         this.boxItems[5].disabled = this.currDraw === 5;
         this.boxItems[6].disabled = this.params.length < 2;
-        this.boxItems[8].disabled = true;
+        this.boxItems[8].disabled = this.currDraw === 8;
         this.boxItems[9].disabled = true;
         this.boxItems[0].disabled = true;
     }
@@ -147,6 +149,8 @@ export class BoardDrawMode {
             this.currDraw = 5;
         } else if (key === '6' && !this.selectMode) {
             this.setNewObject();
+        } else if (key === '8') {
+            this.currDraw = 8;
         }
         if (key === '1') {
             this.currDraw = 1;
@@ -168,7 +172,7 @@ export class BoardDrawMode {
             this.currDraw >= 4
         ) {
             this.handleSwitchEvent(key);
-        } else if (this.active && key === '7') {
+        } else if (this.active && (key === '7' || key === '8')) {
             this.handleSwitchEvent(key);
         }
     }
@@ -198,7 +202,7 @@ export class BoardDrawMode {
                             CoordModes.Center,
                         ),
                     );
-                } else {
+                } else if (this.currDraw < 8) {
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x,
@@ -209,6 +213,20 @@ export class BoardDrawMode {
                     this.boxItems[6].disabled =
                         this.params.length < 3 &&
                         (this.params.length < 2 || this.currDraw !== 5);
+                } else {
+                    objectMan.createObjectFromTemplate(
+                        board.determineTile(
+                            board.mouseCoords.x -
+                                this.currLayer.layerOffset.x *
+                                    board.zoomVal *
+                                    5,
+                            board.mouseCoords.y -
+                                this.currLayer.layerOffset.y *
+                                    board.zoomVal *
+                                    5,
+                            CoordModes.Center,
+                        ),
+                    );
                 }
             }
         });

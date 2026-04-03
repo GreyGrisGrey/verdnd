@@ -113,6 +113,7 @@ export class RightBarManager {
         if (!gm) {
             layerMan.toggleActive(false);
             rollMan.toggleActive(true);
+            objectMan.toggleActive(false);
             this.currActive = RightBarTab.Roll;
             rollTab.style.visibility = 'hidden';
             objectTab.style.visibility = 'hidden';

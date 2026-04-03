@@ -41,7 +41,7 @@
             "view": "Press 7 : Recolour laser.\nColour based on currently selected colour in colour picker."
         },
         {
-            "draw": "Incomplete",
+            "draw": "Press 8 : Set draw mode to paste.\nLeft click : Create a copy of the current object template at mouse position.",
             "select": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
             "view": "Press 8 : Measure distance from cursor location."
         },

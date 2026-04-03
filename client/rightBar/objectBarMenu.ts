@@ -3,6 +3,8 @@ import { getRequiredElement } from '../dom.ts';
 import { tempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
+import type { Vec2 } from '../../shared/coords.ts';
+import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
 const topHalf = getRequiredElement('topObjBox', HTMLElement);
 const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
@@ -351,5 +353,24 @@ export class ObjectMenu {
         bottomHalf.style.height = newHeight;
         bottomHalf.style.top = newHeight;
         this.draw();
+    }
+
+    createObjectFromTemplate(startLoc: Vec2) {
+        const currTemp = this.currTemplate.currObj;
+        const currCreate: ObjectCreatePayload = currTemp.payloadFromObject();
+        const newPoints = [];
+        const tl = currTemp.getTopLeft();
+        const dist = { x: startLoc.x - tl.x, y: startLoc.y - tl.y };
+        for (const pt of currCreate.points) {
+            newPoints.push({ x: pt.x + dist.x, y: pt.y + dist.y });
+        }
+        currCreate.points = newPoints;
+        serveInter.createObject({
+            entity: Entity.Object,
+            action: Action.Create,
+            object: currCreate,
+            token: currTemp.token,
+            userId: 'a',
+        });
     }
 }

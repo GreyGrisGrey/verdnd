@@ -158,23 +158,13 @@ export class Board {
 
     // Selects a single token.
     selectToken(fixedPoint: Vec2[], matchType: string = 'any') {
-        if (serveInter.isGm) {
-            const layer = storedLayers.get(layerMan.currSelect);
-            let newSelected = undefined;
-            if (layer) {
-                const selected = layer.selectObjects(fixedPoint, matchType)[0];
+        for (const [key, val] of storedLayers) {
+            const selected = val.selectObjects(fixedPoint, matchType)[0];
+            if (selected) {
                 return selected;
             }
-            return newSelected;
-        } else {
-            for (const [key, val] of storedLayers) {
-                const selected = val.selectObjects(fixedPoint, matchType)[0];
-                if (selected) {
-                    return selected;
-                }
-            }
-            return undefined;
         }
+        return undefined;
     }
 
     // Draws points at the vertices of the tiles for.
