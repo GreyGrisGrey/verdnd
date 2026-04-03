@@ -46,7 +46,5 @@ const changeImage = getRequiredElement('changeImage', HTMLElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
-const bottomTooltip = getRequiredElement('bottomTooltip', HTMLElement);
-const bottomTooltipText = getRequiredElement('bottomTooltipText', HTMLElement);
 const modeMan = new ModeManager();
 const board = new Board();

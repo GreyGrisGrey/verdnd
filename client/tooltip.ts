@@ -1,8 +1,4 @@
 import { getRequiredElement } from './dom.ts';
-const bottomBar = getRequiredElement('bottomBar', HTMLElement);
-const leftBar = getRequiredElement('leftBar', HTMLElement);
-const rightBar = getRequiredElement('rightBar', HTMLElement);
-const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const tooltip = getRequiredElement('tooltip', HTMLElement);
 const tooltipText = getRequiredElement('tooltipText', HTMLElement);
 
@@ -29,7 +25,7 @@ export class TooltipManager {
     }
 
     async getData() {
-        const response = await fetch('./client/assets/tooltipsTwo.json');
+        const response = await fetch('./client/assets/tooltips.json');
         const data = await response.json();
         this.data = [data.left, data.right, data.bottom, data.mode].map(
             (obj: Record<string, string>) => new Map(Object.entries(obj)),
@@ -51,19 +47,31 @@ export class TooltipManager {
     updateTooltipPosition() {
         if (this.currMode === TooltipMode.Bottom) {
             tooltip.style.bottom = '100px';
-            tooltip.style.left = '400px';
+            tooltip.style.left = `${window.innerWidth / 2 - 200}px`;
             tooltip.style.top = '';
+            tooltip.style.width = '400px';
+            tooltip.style.height = '60px';
+            tooltip.style.fontSize = '12px';
         } else if (this.currMode === TooltipMode.Left) {
             tooltip.style.left = '300px';
             tooltip.style.top = '40px';
+            tooltip.style.width = '100px';
+            tooltip.style.height = '200px';
+            tooltip.style.fontSize = '';
         } else if (this.currMode === TooltipMode.Right) {
             tooltip.style.right = '320px';
             tooltip.style.top = '40px';
             tooltip.style.left = '';
+            tooltip.style.width = '150px';
+            tooltip.style.height = '250px';
+            tooltip.style.fontSize = '';
         } else {
             tooltip.style.left = '120px';
             tooltip.style.bottom = '20px';
             tooltip.style.top = '';
+            tooltip.style.width = '100px';
+            tooltip.style.height = '120px';
+            tooltip.style.fontSize = '';
         }
     }
 

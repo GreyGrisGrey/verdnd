@@ -1,54 +1,63 @@
 {
-    "bottomContent": [
-        {
-            "draw": "Incomplete",
-            "select": "Press 0 : Restructure object. Click and drag a vertex to change its position.",
-            "view": "Incomplete"
-        },
-        {
-            "draw": "Press 1 : Enter selection state.\nLeft click on object : Select topmost object on currently active layer\nLeft Click and drag : Select objects within area on the currently active layer.",
-            "select": "Press Escape/1 : Exits current selection.",
-            "view": "Incomplete"
-        },
-        {
-            "draw": "Press 2 : Set draw mode to rectangle.\nLeft click and drag : Draw rectangle.",
-            "select": "Press Delete/Backspace/2 : Deletes currently selected objects.",
-            "view": "Scroll wheel : Change zoom level."
-        },
-        {
-            "draw": "Press 3 : Set draw mode to ellipse.\nLeft click and drag : Draw ellipse.",
-            "select": "Press 3 : Recolour currently selected objects.\nColours based on currently selected colour in colour picker.",
-            "view": "Right click and drag : Move camera."
-        },
-        {
-            "draw": "Press 4 : Set draw mode to polyline.\nLeft click : Begin drawing polyline, click again to add vertex to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
-            "select": "Press 4 : Pushes the currently selected objects up a layer.",
-            "view": "Left click and drag : Move token."
-        },
-        {
-            "draw": "Press 5 : Set draw mode to wall.\nLeft click : Begin drawing wall, click again to add vertex to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
-            "select": "Press 5 : Pushes the currently selected objects down a layer.",
-            "view": "Press 5 : Recenter camera."
-        },
-        {
-            "draw": "Press 6 : Complete in progress polyline or wall object.",
-            "select": "Press 6 : Turn selected objects into tokens allowing players to move them\nName taken from current object template\nColour based on currently selected colour in colour picker.",
-            "view": "Press 6 : Toggle laser visibility."
-        },
-        {
-            "draw": "Press Escape/7 : Cancel creation of in progress object.",
-            "select": "Press 7 : Rename currently selected objects\nName taken from current object template\nObjects must be tokens for this to be visible.",
-            "view": "Press 7 : Recolour laser.\nColour based on currently selected colour in colour picker."
-        },
-        {
-            "draw": "Press 8 : Set draw mode to paste.\nLeft click : Create a copy of the current object template at mouse position.",
-            "select": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
-            "view": "Press 8 : Measure distance from cursor location."
-        },
-        {
-            "draw": "Incomplete",
-            "select": "Press 9 : Resize object. Click and drag a corner to resize.",
-            "view": "Backspace/Escape/9 : Stop measuring distance."
-        }
-    ]
+    "left": {
+        "hide": "Toggle left bar visibility",
+        "changeImage": "Change the background image\nIf a background image already exists, remove it",
+        "changeBG": "Change background colour to currently selected colour",
+        "pickCol": "Colour picker\nClick board object to copy its colour",
+        "roll": "Display dice rolling options",
+        "col": "Display colour picker",
+        "users": "Display current users"
+    },
+    "right": {
+        "hide": "Toggle right bar visibility",
+        "layers": "Layer menu\nIncludes settings for creating, destroying, and reordering layers\nAs well as changing layer visibility",
+        "roll": "Roll menu\nDisplays rolls made",
+        "obj": "Object menu\nAllows editing preexisting board objects"
+    },
+    "bottom": {
+        "view0": "Incomplete",
+        "view1": "Incomplete",
+        "view2": "Scroll wheel : Change zoom level.",
+        "view3": "Right click and drag : Move camera.",
+        "view4": "Left click and drag : Move token.",
+        "view5": "Press 5 : Recenter camera.",
+        "view6": "Press 6 : Toggle laser visibility.",
+        "view7": "Press 7 : Recolour laser.\nColour based on currently selected colour in colour picker.",
+        "view8": "Press 8 : Measure distance from cursor location.",
+        "view9": "Backspace/Escape/9 : Stop measuring distance.",
+        "draw0": "Incomplete",
+        "draw1": "Press 1 : Enter selection state.\nLeft click on object : Select topmost object on currently active layer\nLeft Click and drag : Select objects within area on the currently active layer.",
+        "draw2": "Press 2 : Set draw mode to rectangle.\nLeft click and drag : Draw rectangle.",
+        "draw3": "Press 3 : Set draw mode to ellipse.\nLeft click and drag : Draw ellipse.",
+        "draw4": "Press 4 : Set draw mode to polyline.\nLeft click : Begin drawing polyline, click again to add vertex to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
+        "draw5": "Press 5 : Set draw mode to wall.\nLeft click : Begin drawing wall, click again to add vertex to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
+        "draw6": "Press 6 : Complete in progress polyline or wall object.",
+        "draw7": "Press Escape/7 : Cancel creation of in progress object.",
+        "draw8": "Press 8 : Set draw mode to paste.\nLeft click : Create a copy of the current object template at mouse position.",
+        "draw9": "Incomplete",
+        "selMany0": "Press 0 : Restructure object. Click and drag a vertex to change its position.",
+        "selMany1": "Press Escape/1 : Exits current selection.",
+        "selMany2": "Press Delete/Backspace/2 : Deletes currently selected objects.",
+        "selMany3": "Press 3 : Recolour currently selected objects.\nColours based on currently selected colour in colour picker.",
+        "selMany4": "Press 4 : Pushes the currently selected objects up a layer.",
+        "selMany5": "Press 5 : Pushes the currently selected objects down a layer.",
+        "selMany6": "Press 6 : Turn selected objects into tokens allowing players to move them\nName taken from current object template\nColour based on currently selected colour in colour picker.",
+        "selMany7": "Press 7 : Rename currently selected objects\nName taken from current object template\nObjects must be tokens for this to be visible.",
+        "selMany8": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
+        "selMany9": "Press 9 : Resize object. Click and drag a corner to resize.",
+        "selOne0": "Press 0 : Restructure object. Click and drag a vertex to change its position.",
+        "selOne1": "Press Escape/1 : Exits current selection.",
+        "selOne2": "Press Delete/Backspace/2 : Deletes currently selected objects.",
+        "selOne3": "Press 3 : Recolour currently selected objects.\nColours based on currently selected colour in colour picker.",
+        "selOne4": "Press 4 : Pushes the currently selected objects up a layer.",
+        "selOne5": "Press 5 : Pushes the currently selected objects down a layer.",
+        "selOne6": "Press 6 : Turn selected objects into tokens allowing players to move them\nName taken from current object template\nColour based on currently selected colour in colour picker.",
+        "selOne7": "Press 7 : Rename currently selected objects\nName taken from current object template\nObjects must be tokens for this to be visible.",
+        "selOne8": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
+        "selOne9": "Press 9 : Resize object. Click and drag a corner to resize."
+    },
+    "mode": {
+        "draw": "Enables draw mode, for drawing and modifying board objects",
+        "view": "Enables view mode, for general play mechanics"
+    }
 }
