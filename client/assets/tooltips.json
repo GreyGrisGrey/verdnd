@@ -29,16 +29,19 @@
         ],
         "roll": [
             {
+                "boldText": "Hotkey C : ",
                 "text": "Display dice rolling options"
             }
         ],
         "col": [
             {
+                "boldText": "Hotkey X : ",
                 "text": "Display colour select"
             }
         ],
         "users": [
             {
+                "boldText": "Hotkey Z : ",
                 "text": "Display current users"
             }
         ]
@@ -51,7 +54,7 @@
         ],
         "layers": [
             {
-                "type": "header",
+                "boldText": "Hotkey L : ",
                 "text": "Layer menu"
             },
             {
@@ -63,7 +66,7 @@
         ],
         "roll": [
             {
-                "type": "header",
+                "boldText": "Hotkey P : ",
                 "text": "Roll menu"
             },
             {
@@ -72,7 +75,7 @@
         ],
         "obj": [
             {
-                "type": "header",
+                "boldText": "Hotkey O : ",
                 "text": "Object menu"
             },
             {
@@ -87,49 +90,340 @@
         ]
     },
     "bottom": {
-        "view0": "Incomplete",
-        "view1": "Incomplete",
-        "view2": "Scroll wheel : Change zoom level.",
-        "view3": "Right click and drag : Move camera.",
-        "view4": "Left click and drag : Move token.",
-        "view5": "Press 5 : Recenter camera.",
-        "view6": "Press 6 : Toggle laser visibility.",
-        "view7": "Press 7 : Recolour laser.\nColour based on currently selected colour in colour picker.",
-        "view8": "Press 8 : Measure distance from cursor location.",
-        "view9": "Backspace/Escape/9 : Stop measuring distance.",
-        "draw0": "Incomplete",
-        "draw1": "Press 1 : Enter selection state.\nLeft click on object : Select topmost object on currently active layer\nLeft Click and drag : Select objects within area on the currently active layer.",
-        "draw2": "Press 2 : Set draw mode to rectangle.\nLeft click and drag : Draw rectangle.",
-        "draw3": "Press 3 : Set draw mode to ellipse.\nLeft click and drag : Draw ellipse.",
-        "draw4": "Press 4 : Set draw mode to polyline.\nLeft click : Begin drawing polyline, click again to add vertex to polyline\nPress 'Close' to complete the polyline or 'Cancel' to cancel it.",
-        "draw5": "Press 5 : Set draw mode to wall.\nLeft click : Begin drawing wall, click again to add vertex to wall\nPress 'Close' to complete the wall or 'Cancel' to cancel it.",
-        "draw6": "Press 6 : Complete in progress polyline or wall object.",
-        "draw7": "Press Escape/7 : Cancel creation of in progress object.",
-        "draw8": "Press 8 : Set draw mode to paste.\nLeft click : Create a copy of the current object template at mouse position.",
-        "draw9": "Incomplete",
-        "selMany0": "Press 0 : Restructure object. Click and drag a vertex to change its position.",
-        "selMany1": "Press Escape/1 : Exits current selection.",
-        "selMany2": "Press Delete/Backspace/2 : Deletes currently selected objects.",
-        "selMany3": "Press 3 : Recolour currently selected objects.\nColours based on currently selected colour in colour picker.",
-        "selMany4": "Press 4 : Pushes the currently selected objects up a layer.",
-        "selMany5": "Press 5 : Pushes the currently selected objects down a layer.",
-        "selMany6": "Press 6 : Turn selected objects into tokens allowing players to move them\nName taken from current object template\nColour based on currently selected colour in colour picker.",
-        "selMany7": "Press 7 : Rename currently selected objects\nName taken from current object template\nObjects must be tokens for this to be visible.",
-        "selMany8": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
-        "selMany9": "Press 9 : Resize object. Click and drag a corner to resize.",
-        "selOne0": "Press 0 : Restructure object. Click and drag a vertex to change its position.",
-        "selOne1": "Press Escape/1 : Exits current selection.",
-        "selOne2": "Press Delete/Backspace/2 : Deletes currently selected objects.",
-        "selOne3": "Press 3 : Recolour currently selected objects.\nColours based on currently selected colour in colour picker.",
-        "selOne4": "Press 4 : Pushes the currently selected objects up a layer.",
-        "selOne5": "Press 5 : Pushes the currently selected objects down a layer.",
-        "selOne6": "Press 6 : Turn selected objects into tokens allowing players to move them\nName taken from current object template\nColour based on currently selected colour in colour picker.",
-        "selOne7": "Press 7 : Rename currently selected objects\nName taken from current object template\nObjects must be tokens for this to be visible.",
-        "selOne8": "Press 8 : Recolour currently selected objects outlines.\nColour based on currently selected colour in colour picker.\nObjects must be tokens for this to be visible.",
-        "selOne9": "Press 9 : Resize object. Click and drag a corner to resize."
+        "view0": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "view1": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "view2": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "view3": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "view4": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "view5": [
+            {
+                "boldText": "Hotkey 5 : ",
+                "text": "Recenter camera"
+            }
+        ],
+        "view6": [
+            {
+                "boldText": "Hotkey 6 : ",
+                "text": "Toggle laser visibility"
+            }
+        ],
+        "view7": [
+            {
+                "boldText": "Hotkey 7 : ",
+                "text": "Recolour laser"
+            }
+        ],
+        "view8": [
+            {
+                "boldText": "Hotkey 8 : ",
+                "text": "Measure distance from cursor location"
+            }
+        ],
+        "view9": [
+            {
+                "boldText": "Hotkey Backspace/Escape/9 : ",
+                "text": "Stop measuring distance"
+            }
+        ],
+        "draw0": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "draw1": [
+            {
+                "boldText": "Hotkey 1 : ",
+                "text": "Enter selection mode"
+            },
+            {
+                "boldText": "Left click : ",
+                "text": "Select topmost object on currently active layer"
+            },
+            {
+                "boldText": "Left click + drag : ",
+                "text": "Select objects within area on the currently active layer"
+            }
+        ],
+        "draw2": [
+            {
+                "boldText": "Hotkey 2 : ",
+                "text": "Set draw mode to rectangle"
+            },
+            {
+                "boldText": "Left click + drag : ",
+                "text": "Draw rectangle"
+            }
+        ],
+        "draw3": [
+            {
+                "boldText": "Hotkey 3 : ",
+                "text": "Set draw mode to ellipse"
+            },
+            {
+                "boldText": "Left click + drag : ",
+                "text": "Draw ellipse"
+            }
+        ],
+        "draw4": [
+            {
+                "boldText": "Hotkey 4 : ",
+                "text": "Set draw mode to polygon"
+            },
+            {
+                "boldText": "Left click : ",
+                "text": "Add point to polygon"
+            },
+            {
+                "text": "Press 'Close' to complete the polygon or 'Cancel' to cancel it"
+            }
+        ],
+        "draw5": [
+            {
+                "boldText": "Hotkey 5 : ",
+                "text": "Set draw mode to wall"
+            },
+            {
+                "boldText": "Left click : ",
+                "text": "Add point to wall structure"
+            },
+            {
+                "text": "Press 'Close' to complete the wall or 'Cancel' to cancel it"
+            }
+        ],
+        "draw6": [
+            {
+                "boldText": "Hotkey 6 : ",
+                "text": "Complete in progress polygon or wall object"
+            }
+        ],
+        "draw7": [
+            {
+                "boldText": "Hotkey Escape/7 : ",
+                "text": "Cancel creation of in progress object"
+            }
+        ],
+        "draw8": [
+            {
+                "boldText": "Hotkey 8 : ",
+                "text": "Set draw mode to paste"
+            },
+            {
+                "boldText": "Left click : ",
+                "text": "Create a copy of the current object template at mouse position"
+            }
+        ],
+        "draw9": [
+            {
+                "text": "Remove this"
+            }
+        ],
+        "selMany0": [
+            {
+                "boldText": "Hotkey 0 : ",
+                "text": "Restructure object"
+            },
+            {
+                "text": "Click and drag a vertex to change its position"
+            }
+        ],
+        "selMany1": [
+            {
+                "boldText": "Hotkey Escape/1 : ",
+                "text": "Exit current selection"
+            }
+        ],
+        "selMany2": [
+            {
+                "boldText": "Hotkey Delete/Backspace/2 : ",
+                "text": "Deletes currently selected objects"
+            }
+        ],
+        "selMany3": [
+            {
+                "boldText": "Hotkey 3 : ",
+                "text": "Recolour currently selected objects"
+            }
+        ],
+        "selMany4": [
+            {
+                "boldText": "Hotkey 4 : ",
+                "text": "Pushes the currently selected objects up a layer"
+            }
+        ],
+        "selMany5": [
+            {
+                "boldText": "Hotkey 5 : ",
+                "text": "Pushes the currently selected objects down a layer"
+            }
+        ],
+        "selMany6": [
+            {
+                "boldText": "Hotkey 6 : ",
+                "text": "Turn selected objects into tokens"
+            },
+            {
+                "text": "Name taken from current object template"
+            }
+        ],
+        "selMany7": [
+            {
+                "boldText": "Hotkey 7 : ",
+                "text": "Rename currently selected objects"
+            },
+            {
+                "text": "Name taken from current object template"
+            }
+        ],
+        "selMany8": [
+            {
+                "boldText": "Hotkey 8 : ",
+                "text": "Recolour currently selected objects outlines"
+            }
+        ],
+        "selMany9": [
+            {
+                "boldText": "Hotkey 9 : ",
+                "text": "Resize object"
+            },
+            {
+                "text": "Click and drag a vertex to resize."
+            }
+        ],
+        "selOne0": [
+            {
+                "boldText": "Hotkey 0 : ",
+                "text": "Restructure object"
+            },
+            {
+                "text": "Click and drag a vertex to change its position"
+            }
+        ],
+        "selOne1": [
+            {
+                "boldText": "Hotkey Escape/1 : ",
+                "text": "Exit current selection"
+            }
+        ],
+        "selOne2": [
+            {
+                "boldText": "Hotkey Delete/Backspace/2 : ",
+                "text": "Deletes currently selected object"
+            }
+        ],
+        "selOne3": [
+            {
+                "boldText": "Hotkey 3 : ",
+                "text": "Recolour currently selected object"
+            }
+        ],
+        "selOne4": [
+            {
+                "boldText": "Hotkey 4 : ",
+                "text": "Pushes the currently selected object up a layer"
+            }
+        ],
+        "selOne5": [
+            {
+                "boldText": "Hotkey 5 : ",
+                "text": "Pushes the currently selected object down a layer"
+            }
+        ],
+        "selOne6": [
+            {
+                "boldText": "Hotkey 6 : ",
+                "text": "Turn selected object into a token"
+            },
+            {
+                "text": "Name taken from current object template"
+            }
+        ],
+        "selOne7": [
+            {
+                "boldText": "Hotkey 7 : ",
+                "text": "Rename currently selected object"
+            },
+            {
+                "text": "Name taken from current object template"
+            }
+        ],
+        "selOne8": [
+            {
+                "boldText": "Hotkey 8 : ",
+                "text": "Recolour currently selected object outline"
+            }
+        ],
+        "selOne9": [
+            {
+                "boldText": "Hotkey 9 : ",
+                "text": "Resize object"
+            },
+            {
+                "text": "Click and drag a vertex to resize."
+            }
+        ]
     },
     "mode": {
-        "draw": "Enables draw mode, for drawing and modifying board objects",
-        "view": "Enables view mode, for general play mechanics"
+        "draw": [
+            {
+                "boldText": "Hotkey D : ",
+                "text": "Draw mode"
+            },
+            {
+                "text": "Add objects to the board"
+            },
+            {
+                "boldText": "Left click/Left click + drag : ",
+                "text": "Draw current object type/select objects"
+            },
+            {
+                "boldText": "Middle/right click + drag : ",
+                "text": "Pan camera"
+            },
+            {
+                "boldText": "Scroll wheel : ",
+                "text": "Zoom camera"
+            }
+        ],
+        "view": [
+            {
+                "boldText": "Hotkey A : ",
+                "text": "View mode"
+            },
+            {
+                "text": "Move tokens and measure objects"
+            },
+            {
+                "boldText": "Left click + drag : ",
+                "text": "Move token/pan camera"
+            },
+            {
+                "boldText": "Middle/right click + drag : ",
+                "text": "Pan camera"
+            },
+            {
+                "boldText": "Scroll wheel : ",
+                "text": "Zoom camera"
+            }
+        ]
     }
 }

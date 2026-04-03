@@ -95,14 +95,14 @@ export class TooltipManager {
             tooltip.style.top = '40px';
             tooltip.style.left = '';
             tooltip.style.width = '150px';
-            tooltip.style.height = '250px';
+            tooltip.style.height = '270px';
             tooltip.style.fontSize = '14px';
         } else {
             tooltip.style.left = '120px';
             tooltip.style.bottom = '20px';
             tooltip.style.top = '';
-            tooltip.style.width = '100px';
-            tooltip.style.height = '120px';
+            tooltip.style.width = '160px';
+            tooltip.style.height = '250px';
             tooltip.style.fontSize = '14px';
         }
     }
