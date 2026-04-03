@@ -1,6 +1,6 @@
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
-const serveInter = new tempStore();
+import { TempStore } from '../serveInter.ts';
+const serveInter = new TempStore();
 const rollContainer = getRequiredElement('rollContainer', HTMLElement);
 
 export class RollBox {

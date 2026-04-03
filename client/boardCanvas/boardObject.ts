@@ -5,9 +5,9 @@ import type {
     ObjectParams,
 } from '../../shared/objectEvents.ts';
 import { Token } from '../../shared/objectEvents.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { ImageObject } from './imageObject.ts';
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.

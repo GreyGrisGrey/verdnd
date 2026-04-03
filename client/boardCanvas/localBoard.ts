@@ -4,7 +4,7 @@ import type { Vec2 } from '../../shared/coords.ts';
 import { GetObjectReason, ModeManager } from './modeManager.ts';
 import { BLUE, GREY } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { ImageObject } from './imageObject.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
 const layerMan = new LayerMenu();
@@ -12,7 +12,7 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const modeMan = new ModeManager();
 
 export enum CoordModes {

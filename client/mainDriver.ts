@@ -1,7 +1,7 @@
 import { Board } from './boardCanvas/localBoard.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RightBarManager } from './rightBar/rightBarMain.ts';
-import { tempStore } from './serveInter.ts';
+import { TempStore } from './serveInter.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { BottomBarManager } from './bottomBarMain.ts';
 import { TopBarManager } from './topBarMain.ts';
@@ -9,7 +9,7 @@ import { ModeManager } from './boardCanvas/modeManager.ts';
 const storedLayers: Map<number, BoardLayer> = new Map();
 const modeMan = new ModeManager();
 const rightMan = new RightBarManager();
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const board = new Board();
 const leftMan = new LeftBarManager();
 const topMan = new TopBarManager();

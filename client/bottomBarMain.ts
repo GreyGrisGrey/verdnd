@@ -1,12 +1,12 @@
 import { getRequiredElement } from './dom.ts';
-const layerTab = getRequiredElement('layerTab', HTMLElement);
-const objectTab = getRequiredElement('objectTab', HTMLElement);
-const rollTab = getRequiredElement('rollTab', HTMLElement);
-const characterTab = getRequiredElement('characterTab', HTMLElement);
+import { TooltipManager, TooltipMode } from './tooltip.ts';
+import { ModeManager } from './boardCanvas/modeManager.ts';
+const tooltipManager = new TooltipManager();
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const bottomTooltip = getRequiredElement('bottomTooltip', HTMLElement);
 const bottomTooltipText = getRequiredElement('bottomTooltipText', HTMLElement);
+const modeMan = new ModeManager();
 //This probably shouldn't be its own thing.
 
 export class BottomBarManager {
@@ -71,19 +71,24 @@ export class BottomBarManager {
 
     setEventListeners() {
         for (let i = 0; i < 10; i++) {
-            this.boxDrawItems[i].addEventListener('mouseover', () => {
+            this.boxDrawItems[i].addEventListener('mouseenter', () => {
                 this.bottomActive = true;
                 bottomTooltipText.innerText = this.bottomContent[i].draw;
                 measureDegrees.style.visibility = 'hidden';
                 bottomTooltip.style.visibility = 'visible';
+                tooltipManager.updateTooltipData(
+                    TooltipMode.Bottom,
+                    `draw${i}`,
+                );
             });
 
-            this.boxDrawItems[i].addEventListener('mouseout', () => {
+            this.boxDrawItems[i].addEventListener('mouseleave', () => {
                 this.bottomActive = false;
                 this.awaitDisable();
+                tooltipManager.disable();
             });
 
-            this.boxViewItems[i].addEventListener('mouseover', () => {
+            this.boxViewItems[i].addEventListener('mouseenter', () => {
                 this.bottomActive = true;
                 bottomTooltipText.innerText = this.bottomContent[i].view;
                 if (i === 8) {
@@ -92,23 +97,40 @@ export class BottomBarManager {
                     measureDegrees.style.visibility = 'hidden';
                 }
                 bottomTooltip.style.visibility = 'visible';
+                tooltipManager.updateTooltipData(
+                    TooltipMode.Bottom,
+                    `view${i - 1}`,
+                );
             });
 
-            this.boxViewItems[i].addEventListener('mouseout', () => {
+            this.boxViewItems[i].addEventListener('mouseleave', () => {
                 this.bottomActive = false;
                 this.awaitDisable();
+                tooltipManager.disable();
             });
 
-            this.boxSelectItems[i].addEventListener('mouseover', () => {
+            this.boxSelectItems[i].addEventListener('mouseenter', () => {
                 this.bottomActive = true;
                 bottomTooltipText.innerText = this.bottomContent[i].select;
                 measureDegrees.style.visibility = 'hidden';
                 bottomTooltip.style.visibility = 'visible';
+                if (modeMan.selectMan.selectedObjects.length === 1) {
+                    tooltipManager.updateTooltipData(
+                        TooltipMode.Bottom,
+                        `selOne${i}`,
+                    );
+                } else {
+                    tooltipManager.updateTooltipData(
+                        TooltipMode.Bottom,
+                        `selMany${i}`,
+                    );
+                }
             });
 
-            this.boxSelectItems[i].addEventListener('mouseout', () => {
+            this.boxSelectItems[i].addEventListener('mouseleave', () => {
                 this.bottomActive = false;
                 this.awaitDisable();
+                tooltipManager.disable();
             });
 
             bottomTooltip.addEventListener('mouseenter', () => {

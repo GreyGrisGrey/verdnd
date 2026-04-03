@@ -4,8 +4,10 @@ import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
 import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
-const serveInter = new tempStore();
+import { TempStore } from '../serveInter.ts';
+import { TooltipManager, TooltipMode } from '../tooltip.ts';
+const tooltipManager = new TooltipManager();
+const serveInter = new TempStore();
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenu', HTMLElement);
@@ -84,8 +86,24 @@ export class ModeManager {
             this.modeSwitch(Mode.View);
         });
 
+        viewButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Mode, 'view');
+        });
+
+        viewButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         drawButton.addEventListener('click', () => {
             this.modeSwitch(Mode.Draw);
+        });
+
+        drawButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Mode, 'draw');
+        });
+
+        drawButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         can.addEventListener('mousemove', (event) => {

@@ -9,7 +9,7 @@ import type {
 } from '../../shared/objectEvents.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { CoordModes } from './localBoard.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
@@ -19,7 +19,7 @@ const colourBox = new ColourBox();
 const board = new Board();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const objectMan = new ObjectMenu();
 
 function rectangleFromPoints(point1: Vec2, point2: Vec2) {

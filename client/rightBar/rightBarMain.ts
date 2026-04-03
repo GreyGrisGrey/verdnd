@@ -3,7 +3,8 @@ import { LayerMenu } from './layerBarMenu.ts';
 import { RollMenu } from './rollBarMenu.ts';
 import { ObjectMenu } from './objectBarMenu.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
+import { TooltipManager, TooltipMode } from '../tooltip.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const layerBox = getRequiredElement('layerLayerObj', HTMLElement);
 const layerTab = getRequiredElement('layerTab', HTMLElement);
@@ -14,11 +15,12 @@ const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const layerMan = new LayerMenu();
 const objectMan = new ObjectMenu();
 const characterMan = new CharacterMenu();
 const rollMan = new RollMenu();
+const tooltipManager = new TooltipManager();
 
 export enum RightBarTab {
     None = 'NONE',
@@ -56,6 +58,14 @@ export class RightBarManager {
             this.currActive = RightBarTab.Layer;
         });
 
+        layerTab.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Right, 'layers');
+        });
+
+        layerTab.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         objectTab.addEventListener('click', () => {
             layerMan.toggleActive(false);
             rollMan.toggleActive(false);
@@ -64,11 +74,27 @@ export class RightBarManager {
             objectMan.step(Math.min(800, window.innerHeight - 50));
         });
 
+        objectTab.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Right, 'obj');
+        });
+
+        objectTab.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         rollTab.addEventListener('click', () => {
             layerMan.toggleActive(false);
             rollMan.toggleActive(true);
             objectMan.toggleActive(false);
             this.currActive = RightBarTab.Roll;
+        });
+
+        rollTab.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Right, 'roll');
+        });
+
+        rollTab.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         characterTab.addEventListener('click', () => {
@@ -81,6 +107,14 @@ export class RightBarManager {
         hideRight.addEventListener('click', () => {
             this.visible = !this.visible;
             this.toggleVisible();
+        });
+
+        hideRight.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Right, 'hide');
+        });
+
+        hideRight.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         document.addEventListener('keydown', (event) => {

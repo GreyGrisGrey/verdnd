@@ -11,7 +11,7 @@ import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { GOLD } from '../../shared/colours.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
 const objectMan = new ObjectMenu();
@@ -21,7 +21,7 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const nameInput = getRequiredElement('renameTopObj', HTMLInputElement);
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {

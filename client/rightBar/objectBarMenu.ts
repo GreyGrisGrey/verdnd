@@ -1,6 +1,6 @@
 import { BoardObject } from '../boardCanvas/boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { Vec2 } from '../../shared/coords.ts';
@@ -10,7 +10,7 @@ const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const colourBox = new ColourBox();
 
 interface ObjTemplate {

@@ -2,8 +2,9 @@ import { ColourBox } from './colourBox.ts';
 import { UserBox } from './userBox.ts';
 import { RollBox } from './rollBox.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
+import { TooltipManager, TooltipMode } from '../tooltip.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
@@ -16,8 +17,9 @@ const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const userBox = new UserBox();
 const colourBox = new ColourBox();
 const rollBox = new RollBox();
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const board = new Board();
+const tooltipManager = new TooltipManager();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
@@ -55,8 +57,24 @@ export class LeftBarManager {
             }
         });
 
+        changeImage.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'changeImage');
+        });
+
+        changeImage.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         fileInput.addEventListener('change', () => {
             serveInter.uploadFile();
+        });
+
+        hideLeft.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'hide');
+        });
+
+        hideLeft.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         hideLeft.addEventListener('click', () => {
@@ -68,12 +86,36 @@ export class LeftBarManager {
             this.toggleActive('USER');
         });
 
+        showUserButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'users');
+        });
+
+        showUserButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         showColourButton.addEventListener('click', () => {
             this.toggleActive('COLOUR');
         });
 
+        showColourButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'col');
+        });
+
+        showColourButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         showRollButton.addEventListener('click', () => {
             this.toggleActive('ROLL');
+        });
+
+        showRollButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'roll');
+        });
+
+        showRollButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         document.addEventListener('keydown', (event) => {

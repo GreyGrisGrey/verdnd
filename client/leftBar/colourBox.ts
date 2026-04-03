@@ -1,14 +1,16 @@
 import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
+import { TooltipManager, TooltipMode } from '../tooltip.ts';
+const tooltipManager = new TooltipManager();
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const colourContainer = getRequiredElement('colourContainer', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const showColourButton = document.getElementById('showColour')!;
 const board = new Board();
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 
 // Class handling the colour selection box.
 export class ColourBox {
@@ -73,8 +75,24 @@ export class ColourBox {
             this.pickColour = true;
         });
 
+        colourPicker.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'pickCol');
+        });
+
+        colourPicker.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
         colourBackground.addEventListener('click', () => {
             serveInter.sendChangeBackground((showColourButton as any).hex);
+        });
+
+        colourBackground.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Left, 'changeBG');
+        });
+
+        colourBackground.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         document.addEventListener('keydown', (event) => {

@@ -49,7 +49,7 @@ interface selfLaser {
 
 // Main interface with the server.
 // Will it stick around in the long run? I do not know.
-export class tempStore {
+export class TempStore {
     undoMap: Map<number, any>;
     undoCreateTracker: Map<number, number>;
     storedObjectPayloads: Map<number, ObjectCreatePayload>;

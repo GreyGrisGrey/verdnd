@@ -38,9 +38,20 @@
         tabindex='1'></canvas>
 </div>
 
+<div id="tooltip">
+    <p id="tooltipText"></p>
+</div>
+
 <input type="file" id="fileInput">
 
 <style>
+    #tooltip {
+        position: absolute;
+        background: #ff0000;
+        width: 100px;
+        height: 100px;
+    }
+
     #board {
         background: #444444;
         position: absolute;

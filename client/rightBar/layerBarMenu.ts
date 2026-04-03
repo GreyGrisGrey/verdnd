@@ -1,6 +1,6 @@
 import { GREY, GREY_DARK } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { tempStore } from '../serveInter.ts';
+import { TempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 import { ModeManager } from '../boardCanvas/modeManager.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
@@ -13,7 +13,7 @@ const deleteButton = getRequiredElement('deleteLayerButton', HTMLElement);
 const upButton = getRequiredElement('layerUpButton', HTMLElement);
 const downButton = getRequiredElement('layerDownButton', HTMLElement);
 const storedLayerStates: Map<number, LayerState> = new Map();
-const serveInter = new tempStore();
+const serveInter = new TempStore();
 const modeMan = new ModeManager();
 
 // Class managing the right-bar's layer menu.
