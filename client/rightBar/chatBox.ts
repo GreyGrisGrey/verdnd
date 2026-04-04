@@ -26,7 +26,7 @@ export class ChatBox {
         newText.style.top = '-10px';
         newText.style.left = '10px';
         newText.style.height = '80px';
-        newText.style.overflow = 'scroll';
+        newText.style.overflow = 'auto';
         newText.style.visibility = 'inherit';
         newText.style.whiteSpace = 'wrap';
         this.mainBox.append(newText);

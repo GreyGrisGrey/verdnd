@@ -405,11 +405,15 @@
             },
             {
                 "boldText": "Left click/Left click + drag : ",
-                "text": "Draw current object type/select objects"
+                "text": "Draw current object type"
             },
             {
-                "boldText": "Middle/right click + drag : ",
+                "boldText": "Middle click + drag : ",
                 "text": "Pan camera"
+            },
+            {
+                "boldText": "Right click + drag : ",
+                "text": "Select objects"
             },
             {
                 "boldText": "Scroll wheel : ",
@@ -429,8 +433,12 @@
                 "text": "Move token/pan camera"
             },
             {
-                "boldText": "Middle/right click + drag : ",
+                "boldText": "Middle click + drag : ",
                 "text": "Pan camera"
+            },
+            {
+                "boldText": "Right click + drag : ",
+                "text": "Select objects"
             },
             {
                 "boldText": "Scroll wheel : ",
