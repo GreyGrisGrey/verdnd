@@ -12,7 +12,6 @@ const objectTab = getRequiredElement('objectTab', HTMLElement);
 const rollTab = getRequiredElement('rollTab', HTMLElement);
 const characterTab = getRequiredElement('characterTab', HTMLElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
-const can = getRequiredElement('board', HTMLCanvasElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
 const serveInter = new TempStore();
@@ -130,22 +129,31 @@ export class RightBarManager {
                 return;
             }
             if (event.key === 'p') {
-                layerMan.toggleActive(false);
-                rollMan.toggleActive(true);
-                objectMan.toggleActive(false);
-                this.currActive = RightBarTab.Roll;
+                this.updateActive(RightBarTab.Roll);
             } else if (event.key === 'l' && serveInter.isGm) {
-                layerMan.toggleActive(true);
-                rollMan.toggleActive(false);
-                objectMan.toggleActive(false);
-                this.currActive = RightBarTab.Layer;
+                this.updateActive(RightBarTab.Layer);
             } else if (event.key === 'o' && serveInter.isGm) {
-                layerMan.toggleActive(false);
-                rollMan.toggleActive(false);
-                objectMan.toggleActive(true);
-                this.currActive = RightBarTab.Character;
+                this.updateActive(RightBarTab.Object);
             }
         });
+    }
+
+    updateActive(newActive: RightBarTab) {
+        if (newActive === RightBarTab.Layer) {
+            layerMan.toggleActive(true);
+            rollMan.toggleActive(false);
+            objectMan.toggleActive(false);
+        } else if (newActive === RightBarTab.Roll) {
+            layerMan.toggleActive(false);
+            rollMan.toggleActive(true);
+            objectMan.toggleActive(false);
+        } else if ((newActive = RightBarTab.Object)) {
+            layerMan.toggleActive(false);
+            rollMan.toggleActive(false);
+            objectMan.toggleActive(true);
+            objectMan.step(Math.min(800, window.innerHeight - 50));
+        }
+        this.currActive = newActive;
     }
 
     // Toggles which menus should be visible given if the user is a gm or not.

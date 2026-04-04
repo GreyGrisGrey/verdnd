@@ -40,7 +40,7 @@ export class ObjectMenu {
         this.loadedActive = false;
         this.currTemplate = this.buildTemplatePrimary();
         this.currTemplate.currObj.updateToken({
-            name: 'Squonch',
+            name: 'Gremlin',
             movable: true,
             active: true,
             colour: 'none',

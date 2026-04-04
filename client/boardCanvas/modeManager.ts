@@ -246,7 +246,7 @@ export class ModeManager {
             let res = this.viewMan.selectedToken;
             if (res) {
                 this.selectMan.flipListeners(true);
-                this.selectMan.setSelected([res]);
+                this.selectMan.setSelected([res], true);
             }
             this.viewMan.flipListeners(false);
             return;
@@ -260,7 +260,7 @@ export class ModeManager {
                 return;
             }
             this.selectMan.flipListeners(true);
-            this.selectMan.setSelected(selected);
+            this.selectMan.setSelected(selected, false);
             if (this.currMode === Mode.Draw) {
                 this.drawMan.active = false;
                 this.drawMan.selectState = 0;

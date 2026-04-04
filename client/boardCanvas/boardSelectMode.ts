@@ -14,8 +14,7 @@ import { GOLD } from '../../shared/colours.ts';
 import { TempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
-import { Selector } from './selector.ts';
-const selector = new Selector();
+import { RightBarManager } from '../rightBar/rightBarMain.ts';
 const objectMan = new ObjectMenu();
 const colourBox = new ColourBox();
 const board = new Board();
@@ -24,6 +23,7 @@ const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const nameInput = getRequiredElement('renameTopObj', HTMLInputElement);
 const serveInter = new TempStore();
+const rightMan = new RightBarManager();
 
 // Activates following a completed selection from draw mode or token mode.
 export class BoardSelectMode {
@@ -38,6 +38,7 @@ export class BoardSelectMode {
     currLayer: BoardLayer;
     currPath: Path2D;
     boxDraw: boolean;
+    fastExit: boolean;
 
     constructor() {
         this.active = false;
@@ -51,6 +52,7 @@ export class BoardSelectMode {
         this.currLayer = new BoardLayer(0, true, true, 0);
         this.currPath = new Path2D();
         this.boxDraw = true;
+        this.fastExit = false;
         this.setUpBoxes();
 
         this.addEventListeners();
@@ -238,6 +240,16 @@ export class BoardSelectMode {
                     this.thirdOffset.x -= change.x;
                     this.thirdOffset.y -= change.y;
                 }
+            } else if (
+                this.active &&
+                !this.selectClick &&
+                board.leftMouseDown
+            ) {
+                const change: Vec2 = {
+                    x: Math.round(board.mouseCoords.x - event.clientX),
+                    y: Math.round(board.mouseCoords.y - event.clientY),
+                };
+                board.moveCamera(change.x, change.y);
             }
         });
 
@@ -265,10 +277,7 @@ export class BoardSelectMode {
             if (this.active && this.selectClick && event.button === 0) {
                 this.moveObjects();
                 this.selectClick = false;
-                if (
-                    this.selectedObjects.length === 1 &&
-                    this.selectedObjects[0].hasToken()
-                ) {
+                if (this.fastExit) {
                     this.exitOnNextStep = true;
                 }
             }
@@ -401,7 +410,7 @@ export class BoardSelectMode {
     }
 
     // Sets the list of currently selected objects.
-    setSelected(newObjs: BoardObject[]) {
+    setSelected(newObjs: BoardObject[], skipSwap: boolean) {
         this.selectedObjects = newObjs;
         this.boxItems[6].disabled = this.selectedObjects.length <= 1;
         this.boxItems[7].disabled = this.selectedObjects.length <= 1;
@@ -416,7 +425,11 @@ export class BoardSelectMode {
         }
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
+            if (!skipSwap) {
+                rightMan.updateActive('OBJECT' as any);
+            }
         }
+        this.fastExit = skipSwap;
         this.toggleBoxes();
     }
 
@@ -442,6 +455,11 @@ export class BoardSelectMode {
         this.boxItems[0].disabled =
             this.selectedObjects.length > 1 ||
             this.selectedObjects[0].drawParams.ellipse;
+        if (this.selectedObjects.length === 1) {
+            objectMan.updateSecondary(this.selectedObjects[0]);
+        } else {
+            objectMan.disableSecondary();
+        }
         this.toggleBoxes();
     }
 
