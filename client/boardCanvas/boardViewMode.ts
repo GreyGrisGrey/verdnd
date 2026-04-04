@@ -6,10 +6,14 @@ import { CoordModes } from './localBoard.ts';
 import { ModeManager } from './modeManager.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { Selector } from './selector.ts';
+import { BoardLayer } from './boardLayer.ts';
+import { LayerMenu } from '../rightBar/layerBarMenu.ts';
 const selector = new Selector();
 const colourBox = new ColourBox();
 const modeMan = new ModeManager();
 const board = new Board();
+const layerMan = new LayerMenu();
+const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
@@ -259,6 +263,16 @@ export class BoardViewMode {
                     this.completeSelectCheck = true;
                     this.selectedToken = res;
                 }
+            } else if (this.active && event.button === 2) {
+                if (storedLayers.has(layerMan.currSelect)) {
+                    selector.activate(storedLayers.get(layerMan.currSelect)!);
+                }
+            }
+        });
+
+        can.addEventListener('mouseup', (event) => {
+            if (this.active && event.button === 2) {
+                selector.complete();
             }
         });
 

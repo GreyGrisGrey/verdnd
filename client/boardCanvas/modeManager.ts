@@ -182,7 +182,7 @@ export class ModeManager {
 
     // Checks if the user has selected an area of the canvas.
     hasCompleteSelection(): boolean {
-        if (this.currMode === Mode.Draw && selector.selectState > 0) {
+        if (selector.selectState > 0) {
             return true;
         } else if (
             this.currMode === Mode.View &&
@@ -195,7 +195,7 @@ export class ModeManager {
 
     // Retrieves the coordinates corresponding to the currently selected area of the canvas.
     getSelectCoords(): Vec2[] {
-        if (this.currMode === Mode.Draw && selector.selectState !== 0) {
+        if (selector.selectState !== 0) {
             return selector.params;
         }
         return [{ x: 0, y: 0 }];
@@ -206,8 +206,7 @@ export class ModeManager {
         if (reason === GetObjectReason.Draw) {
             if (selector.active) {
                 return selector.getTempObject();
-            }
-            if (this.currMode === Mode.Draw) {
+            } else if (this.currMode === Mode.Draw) {
                 return this.drawMan.getTempObject();
             }
         }
@@ -231,7 +230,7 @@ export class ModeManager {
 
     // Enters the select mode, disabling the current mode but leaving it open to be reenabled.
     enterSelected() {
-        if (this.currMode === Mode.View) {
+        if (this.currMode === Mode.View && !selector.active) {
             let res = this.viewMan.selectedToken;
             if (res) {
                 this.selectMan.flipListeners(true);
@@ -245,17 +244,19 @@ export class ModeManager {
         if (selected.length !== 0) {
             this.selectMan.flipListeners(true);
             this.selectMan.setSelected(selected);
+            selector.deactivate();
             if (this.currMode === Mode.Draw) {
                 this.drawMan.active = false;
                 this.drawMan.selectState = 0;
-                selector.deactivate();
                 this.drawMan.params = [];
                 this.drawMan.toggleBoxes();
+            } else if (this.currMode === Mode.View) {
+                this.viewMan.flipListeners(false);
             }
         } else {
+            selector.deactivate();
             if (this.currMode === Mode.Draw) {
                 this.drawMan.selectState = 0;
-                selector.deactivate();
                 this.drawMan.params = [];
             }
         }
