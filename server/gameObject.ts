@@ -51,6 +51,8 @@ export class GameObject {
         this.allGm = true;
         this.gameId = gameId;
 
+        // Having a database mutex on a per game basis does indeed defeat the entire purpose.
+        // Should be moved into the database server itself instead.
         this.objectLock = false;
         this.layerLock = false;
         this.diceLock = false;
@@ -61,6 +63,7 @@ export class GameObject {
         this.image = false;
     }
 
+    // Swaps the Z orders of two layers, given the id of one layer and its new Z order.
     swapLayers(id: number, newZ: number, cli: PostGresData) {
         const curr = this.layerMap.get(id);
         if (curr) {
@@ -96,6 +99,7 @@ export class GameObject {
         }
     }
 
+    // Remove a layer by id and update the Z indices of layers ranked above it.
     updateLayerMapRemoved(removedId: number, cli: PostGresData) {
         const removedLayer = this.layerMap.get(removedId);
         if (!removedLayer) {
@@ -132,6 +136,7 @@ export class GameObject {
         this.layerMap.delete(removedId);
     }
 
+    // Moves stored object.
     moveObject(id: number, xChange: number, yChange: number) {
         const currObj = this.objectMap.get(id);
         if (currObj) {
@@ -142,6 +147,7 @@ export class GameObject {
         }
     }
 
+    // Checks if given user Id has gm privileges
     checkUserGm(id: string) {
         if (this.allGm) {
             return true;
@@ -153,6 +159,7 @@ export class GameObject {
         return false;
     }
 
+    // Removes user from list of active users.
     removeUser(id: string) {
         if (this.userMap.has(id)) {
             this.broadcast(
@@ -166,6 +173,7 @@ export class GameObject {
         }
     }
 
+    // Adds user to list of active users.
     addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {
         if (this.userMap.has(id)) {
             this.broadcast(
@@ -203,7 +211,8 @@ export class GameObject {
         return this.userMap.get(id)!.isGm;
     }
 
-    async setUp(cli: PostGresData, gmId: string | null = null) {
+    // Collects game from database if it exists, otherwise creates a new one.
+    async setUp(cli: PostGresData, gmId: string | null = null): Promise<boolean> {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const res = await cli.getGame(this.gameId);
         if (res) {
@@ -238,8 +247,10 @@ export class GameObject {
             this.finishedSetup = true;
             return false;
         }
+        return false;
     }
 
+    // Broadcasts updates made to the game to all connected users.
     async broadcast(newMessage: string, layerId: number = -1) {
         if (newMessage) {
             this.userMap.forEach((player) => {
@@ -256,6 +267,8 @@ export class GameObject {
         }
     }
 
+    // Waits for the mutex corresponding to the input string to become free.
+    // More complicated than the ./metaEvents/metaEvents.ts version because stupid.
     async waitLock(name: string) {
         if (name === 'db') {
             while (this.dbLock) {
@@ -290,6 +303,8 @@ export class GameObject {
         }
     }
 
+    // Sends all objects on a given layer.
+    // Intended to update players when a layer is made visible.
     async sendMasses(targetLayer: number) {
         for (const [key, val] of this.objectMap) {
             if (val.object.layerId === targetLayer) {
@@ -299,6 +314,8 @@ export class GameObject {
         }
     }
 
+    // Sends all details about the game to a given websocket.
+    // For new connections, primarily.
     async sendAll(ws: WebSocket) {
         while (!this.finishedSetup) {
             await new Promise((resolve) => setTimeout(resolve, 2));
@@ -344,6 +361,8 @@ export class GameObject {
         ws.send(JSON.stringify({ entity: Entity.Meta, action: Action.Finish }));
     }
 
+    // Sends all current lasers to all active players.
+    // This can be made more efficient I'm fairly certain, but not now.
     async sendAllLasers() {
         this.count += 1;
         const currTime = Date.now();

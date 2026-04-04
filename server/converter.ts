@@ -8,6 +8,7 @@ import {
 import { Vec2 } from '../shared/coords.ts';
 import { Action, Entity } from '../shared/objectEvents.ts';
 
+// Converts rows into map of object payloads.
 export function objectTableToPayloads(rows: any[]) {
     const mapping: Map<number, ObjectCreateEvent> = new Map();
     for (const row of rows) {
@@ -50,6 +51,7 @@ export function objectTableToPayloads(rows: any[]) {
     return mapping;
 }
 
+// Converts rows into map of layer payloads.
 export function layerTableToPayloads(rows: any[]) {
     const mapping: Map<number, LayerUpdateEvent> = new Map();
     for (const row of rows) {
@@ -70,6 +72,7 @@ export function layerTableToPayloads(rows: any[]) {
     return mapping;
 }
 
+// Converts rows into map of roll payloads.
 export function rollTableToPayloads(rows: any[]) {
     const mapping: Map<number, RollComplete> = new Map();
     for (const row of rows) {
@@ -98,6 +101,7 @@ export function rollTableToPayloads(rows: any[]) {
     return mapping;
 }
 
+// Converts rows into token payloads, assigns them to the provided map of ObjectCreateEvents.
 export function tokenTableToPayloads(
     rows: any[],
     objMapping: Map<number, ObjectCreateEvent>,
@@ -121,6 +125,7 @@ export function tokenTableToPayloads(
     }
 }
 
+// Converts object into a row for the database.
 export function objectPayloadToRow(payload: ObjectCreateEvent) {
     let newVal = 0;
     newVal += payload.object.params.ellipse ? 0 : 1;
@@ -136,6 +141,7 @@ export function objectPayloadToRow(payload: ObjectCreateEvent) {
     return returnString;
 }
 
+// Converts object into an update event for the database.
 export function updateObjectToRow(payload: ObjectCreateEvent) {
     let newVal = 0;
     newVal += payload.object.params.ellipse ? 0 : 1;
@@ -154,6 +160,7 @@ export function updateObjectToRow(payload: ObjectCreateEvent) {
     ];
 }
 
+// Converts layer object into a row for the database.
 export function layerPayloadToRow(payload: LayerUpdateEvent) {
     let returnVal = `(${payload.layer.gmVisible}, ${payload.layer.playerVisible}, ${payload.layer.zOrder}, `;
     returnVal += `${payload.layer.id}, ${payload.layer.x}, `;
@@ -161,6 +168,7 @@ export function layerPayloadToRow(payload: LayerUpdateEvent) {
     return returnVal;
 }
 
+// Converts layer into an update event for the database.
 export function updateLayerToRow(payload: LayerUpdateEvent) {
     return [
         payload.layer.gmVisible,
@@ -172,6 +180,7 @@ export function updateLayerToRow(payload: LayerUpdateEvent) {
     ];
 }
 
+// Takes roll object and turns it into a row for the database.
 export function rollPayloadToRow(payload: RollComplete) {
     let convertString = payload.result.rolls
         .map((item: SingleRoll) => {
@@ -181,10 +190,12 @@ export function rollPayloadToRow(payload: RollComplete) {
     return `(${payload.id}, ${payload.result.result}, '${payload.userId}', '${convertString}')`;
 }
 
+// Takes token object and turns it into a row for the database.
 export function tokenPayloadToRow(payload: Token, id: number) {
     return `(${id}, '${payload.name}', '${payload.colour}', '${payload.movable}', '${payload.active}')`;
 }
 
+// Takes token object and turns it into a row for the database. Specifically to update it.
 export function updateTokenToRow(payload: Token) {
     return [
         payload.name,

@@ -1,3 +1,4 @@
+// Support class, used exclusively to keep track of which players are in which games and remove them as needed.
 export class WebSocketData {
     id: string;
     name: string;

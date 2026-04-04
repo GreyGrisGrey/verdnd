@@ -12,7 +12,6 @@ import {
 } from '../converter.ts';
 import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
-import WebSocket from 'ws';
 
 // Function for creating a new object in a game.
 export async function createObj(
@@ -159,7 +158,6 @@ export async function destroyObj(
 }
 
 // Function for moving a specified object in a specified game.
-// TODO make it move things again.
 export async function moveObj(
     objId: number,
     xChange: number,
@@ -182,7 +180,6 @@ export async function moveObj(
         currGame.broadcast(sendObj);
     } else {
         currGame.objectLock = false;
-        return 'NONE';
     }
 }
 
@@ -207,7 +204,6 @@ export async function colourObj(
         currGame.broadcast(sendObj);
     } else {
         currGame.objectLock = false;
-        return 'NONE';
     }
 }
 

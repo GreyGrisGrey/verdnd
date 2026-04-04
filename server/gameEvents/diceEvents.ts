@@ -93,5 +93,4 @@ export async function addDice(
     currGame.currDice++;
     currGame.broadcast(sendObj);
     currGame.diceLock = false;
-    return sendObj;
 }

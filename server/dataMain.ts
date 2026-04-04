@@ -35,11 +35,14 @@ export class PostGresData {
         this.client.connect();
     }
 
+    // Resets all database data.
+    // Please don't let this continue existing when we launch.
     async resetData() {
         await this.blowUpEverything();
         await this.constructTables();
     }
 
+    // Constructs main database tables.
     async constructTables() {
         try {
             await this.client.query({
@@ -81,6 +84,7 @@ export class PostGresData {
         }
     }
 
+    // Prints all users
     async printUsers() {
         try {
             const res = await this.client.query({
@@ -96,6 +100,7 @@ export class PostGresData {
         }
     }
 
+    // Prints all tokens from game 0, why
     async printTokens() {
         try {
             const res = await this.client.query({
@@ -111,6 +116,7 @@ export class PostGresData {
         }
     }
 
+    // Prints all games
     async printGames() {
         try {
             const res = await this.client.query({
@@ -126,6 +132,7 @@ export class PostGresData {
         }
     }
 
+    // Prints just about everything from the main tables.
     async printAll() {
         try {
             const res = await this.client.query({
@@ -141,6 +148,7 @@ export class PostGresData {
         }
     }
 
+    // Constructs tables for a newly created game.
     async constructGameTables(newId: number) {
         try {
             await this.client.query({
@@ -167,6 +175,7 @@ export class PostGresData {
         }
     }
 
+    // Adds user to the user table.
     async addUser(newName: string, suppliedPass: string, newId: string) {
         try {
             const newPass = this.encrypt(suppliedPass);
@@ -188,6 +197,7 @@ export class PostGresData {
         }
     }
 
+    // Verifies a user exists and their password is correct.
     async verifyUser(id: string, suppliedPass: string) {
         try {
             const query = {
@@ -208,6 +218,7 @@ export class PostGresData {
         }
     }
 
+    // Checks the existence of a game.
     async checkGame(gameId: number) {
         try {
             const res = await this.client.query({
@@ -227,6 +238,7 @@ export class PostGresData {
         }
     }
 
+    // Gets all details of a game from a given game Id.
     async getGame(gameId: number) {
         try {
             if (await this.checkGame(gameId)) {
@@ -271,6 +283,7 @@ export class PostGresData {
         }
     }
 
+    // Updates the background colour of a game.
     async updateGameCol(gameId: number, newCol: string) {
         try {
             await this.client.query({
@@ -283,6 +296,7 @@ export class PostGresData {
         }
     }
 
+    // Updates whether a game has an image or not.
     async updateGameImage(gameId: number, image: boolean) {
         try {
             await this.client.query({
@@ -295,6 +309,7 @@ export class PostGresData {
         }
     }
 
+    // Given a player's id, gets all games where they are gm.
     async getUserGames(gmId: string) {
         try {
             const res = await this.client.query({
@@ -311,6 +326,7 @@ export class PostGresData {
         }
     }
 
+    // Adds a token to a game.
     async addToken(gameId: number, token: string) {
         try {
             await this.client.query({
@@ -326,6 +342,7 @@ export class PostGresData {
         }
     }
 
+    // Removes a token from a game.
     async destroyToken(gameId: number, objectId: number) {
         try {
             await this.client.query({
@@ -341,6 +358,7 @@ export class PostGresData {
         }
     }
 
+    // Updates a token on a game.
     async updateToken(gameId: number, objectId: number, token: string[]) {
         try {
             await this.client.query({
@@ -355,6 +373,7 @@ export class PostGresData {
         }
     }
 
+    // Guess
     async addObject(gameId: number, object: string) {
         try {
             await this.client.query({
@@ -370,6 +389,7 @@ export class PostGresData {
         }
     }
 
+    // Updates an object on a game.
     async updateObject(gameId: number, objectId: number, object: string[]) {
         try {
             await this.client.query({
@@ -385,6 +405,7 @@ export class PostGresData {
         }
     }
 
+    // Destroys an object on a game.
     async destroyObject(gameId: number, objectId: number) {
         try {
             await this.client.query({
@@ -400,6 +421,7 @@ export class PostGresData {
         }
     }
 
+    // Add layer game to.
     async addLayer(gameId: number, layer: string) {
         try {
             await this.client.query({
@@ -415,6 +437,7 @@ export class PostGresData {
         }
     }
 
+    // Update layer of game of gameId id
     async updateLayer(gameId: number, layerId: number, layer: any[]) {
         try {
             await this.client.query({
@@ -430,6 +453,7 @@ export class PostGresData {
         }
     }
 
+    // Destroy the layer
     async destroyLayer(gameId: number, layerId: number) {
         try {
             await this.client.query({
@@ -445,6 +469,7 @@ export class PostGresData {
         }
     }
 
+    // Add rolling stones music to game.
     async addRoll(gameId: number, roll: string) {
         try {
             await this.client.query({
@@ -460,6 +485,7 @@ export class PostGresData {
         }
     }
 
+    // Constructs a game, takes a id and sets it as gm for the game.
     async constructGame(gmId: string) {
         try {
             await this.delayGameLock();
@@ -487,8 +513,7 @@ export class PostGresData {
         }
     }
 
-    // checks if the supplied password matches the goal password.
-    // being as we're currently using http this is only so useful, but it's better than plaintext.
+    // Checks if the supplied password matches the goal password.
     testEncrypt(startVal: string, goalVal: string) {
         for (let i = 0; i < 201; i++) {
             const hash = crypto.createHash('sha256');
@@ -501,8 +526,7 @@ export class PostGresData {
         return false;
     }
 
-    // mediocre salting + sha256 encryption.
-    // at least the passwords aren't in plaintext anymore.
+    // Encrypts a password with sha256 encryption. Also salts it.
     encrypt(val: string) {
         val += Math.round(Math.random() * 200).toString();
         const hash = crypto.createHash('sha256');
@@ -510,6 +534,7 @@ export class PostGresData {
         return hash.digest('hex');
     }
 
+    // What?
     async delayGameLock() {
         while (this.gameLock) {
             await new Promise((resolve) => setTimeout(resolve, 200));

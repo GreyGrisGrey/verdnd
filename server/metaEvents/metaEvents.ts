@@ -118,6 +118,7 @@ export async function getUserGames(id: string, cli: PostGresData) {
     return await cli.getUserGames(id);
 }
 
+// Function for awaiting mutex lock.
 async function waitLock(lock: boolean) {
     while (lock) {
         await new Promise((resolve) => setTimeout(resolve, 50));

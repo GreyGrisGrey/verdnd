@@ -66,6 +66,7 @@ wss.on('connection', async function connection(ws) {
     console.log('connection established', Date.now());
 });
 
+// Main code for handling websocket events.
 async function handleEvent(event: any, ws: WebSocket) {
     const message = JSON.parse(event);
     if (message.event) {

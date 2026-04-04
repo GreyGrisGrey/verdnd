@@ -3,6 +3,8 @@ const { createServer } = require('node:https');
 const fs = require('fs');
 const path = require('path');
 
+// Constructs a server object.
+// Really should split some of this into other files.
 export function constructServer() {
     const options = {
         key: fs.readFileSync('./f2.key'),
