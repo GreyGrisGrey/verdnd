@@ -14,6 +14,8 @@ export interface TooltipData {
     text: string;
     colour?: string;
     size?: string;
+    width?: string;
+    height?: string;
 }
 
 export class TooltipManager {

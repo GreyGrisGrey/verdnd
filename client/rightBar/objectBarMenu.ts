@@ -180,6 +180,8 @@ export class ObjectMenu {
             );
             toChange.currObj.imageObj.blob = fromChange.currObj.imageObj.blob;
             toChange.currObj.imageObj.drawFlag = true;
+        } else {
+            toChange.currObj.imageObj.drawFlag = false;
         }
         if (!top) {
             const oldTl = this.currSelected.getTopLeft();
@@ -188,11 +190,10 @@ export class ObjectMenu {
             this.currSelected.move(oldTl.x - newTl.x, oldTl.y - newTl.y);
             this.currSelected.updateObject(true);
             this.updateToken(true);
-            if (this.currSelected.imageObj.drawFlag) {
-                serveInter.removeFile(this.currSelected.objectId);
-            }
             if (fromChange.currObj.imageObj.drawFlag) {
                 this.updateImage();
+            } else {
+                serveInter.removeFile(this.currSelected.objectId);
             }
         }
     }
