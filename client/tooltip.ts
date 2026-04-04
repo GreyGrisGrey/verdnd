@@ -16,6 +16,7 @@ export interface TooltipData {
     size?: string;
     width?: string;
     height?: string;
+    bottom?: string;
 }
 
 export class TooltipManager {
@@ -47,10 +48,11 @@ export class TooltipManager {
     updateTooltipData(newMode: TooltipMode, index: string) {
         this.currMode = newMode;
         const curr = this.data[newMode];
+        this.updateTooltipPosition();
         if (curr) {
             this.updateTooltipText(curr.get(index) || [], index);
         }
-        this.updateTooltipPosition();
+        tooltip.style.height = 'fit-content';
         this.enable();
     }
 
@@ -76,6 +78,15 @@ export class TooltipManager {
             if (text.size) {
                 newDiv.style.fontSize = text.size;
             }
+            if (text.width) {
+                tooltip.style.width = text.width;
+            }
+            if (text.height) {
+                tooltip.style.height = text.height;
+            }
+            if (text.bottom) {
+                tooltip.style.bottom = text.bottom;
+            }
             this.activeDiv.append(newDiv);
         }
     }
@@ -87,29 +98,26 @@ export class TooltipManager {
             tooltip.style.left = `${window.innerWidth / 2 - 200}px`;
             tooltip.style.top = '';
             tooltip.style.width = '400px';
-            tooltip.style.height = '60px';
             tooltip.style.fontSize = '12px';
         } else if (this.currMode === TooltipMode.Left) {
             tooltip.style.left = '300px';
             tooltip.style.top = '40px';
             tooltip.style.width = '100px';
-            tooltip.style.height = '200px';
             tooltip.style.fontSize = '14px';
         } else if (this.currMode === TooltipMode.Right) {
             tooltip.style.right = '320px';
             tooltip.style.top = '40px';
             tooltip.style.left = '';
             tooltip.style.width = '150px';
-            tooltip.style.height = '270px';
             tooltip.style.fontSize = '14px';
         } else {
             tooltip.style.left = '80px';
             tooltip.style.bottom = '20px';
             tooltip.style.top = '';
             tooltip.style.width = '160px';
-            tooltip.style.height = '250px';
             tooltip.style.fontSize = '14px';
         }
+        tooltip.style.height = 'fit-content';
     }
 
     // Disables

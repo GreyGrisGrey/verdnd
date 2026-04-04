@@ -428,7 +428,8 @@
         "undo": [
             {
                 "boldText": "Hotkey Ctrl+Z : ",
-                "text": "Undo previous action"
+                "text": "Undo previous action",
+                "bottom": "110px"
             }
         ]
     }
