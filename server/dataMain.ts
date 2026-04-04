@@ -176,7 +176,11 @@ export class PostGresData {
     }
 
     // Adds user to the user table.
-    async addUser(newName: string, suppliedPass: string, newId: string) {
+    async addUser(
+        newName: string,
+        suppliedPass: string,
+        newId: string,
+    ): Promise<boolean> {
         try {
             const newPass = this.encrypt(suppliedPass);
             const res = await this.client.query({
@@ -198,7 +202,7 @@ export class PostGresData {
     }
 
     // Verifies a user exists and their password is correct.
-    async verifyUser(id: string, suppliedPass: string) {
+    async verifyUser(id: string, suppliedPass: string): Promise<boolean> {
         try {
             const query = {
                 text: `SELECT Password FROM mainschema.users WHERE UserId = '${id}'`,
@@ -219,7 +223,7 @@ export class PostGresData {
     }
 
     // Checks the existence of a game.
-    async checkGame(gameId: number) {
+    async checkGame(gameId: number): Promise<boolean> {
         try {
             const res = await this.client.query({
                 text: `SELECT GameId FROM mainschema.games WHERE GameId = ${gameId}`,
@@ -239,7 +243,7 @@ export class PostGresData {
     }
 
     // Gets all details of a game from a given game Id.
-    async getGame(gameId: number) {
+    async getGame(gameId: number): Promise<false | any[]> {
         try {
             if (await this.checkGame(gameId)) {
                 const first = await this.client.query({
@@ -284,7 +288,7 @@ export class PostGresData {
     }
 
     // Updates the background colour of a game.
-    async updateGameCol(gameId: number, newCol: string) {
+    async updateGameCol(gameId: number, newCol: string): Promise<boolean> {
         try {
             await this.client.query({
                 text: `UPDATE mainschema.games SET BgColour = '${newCol}' WHERE GameId = ${gameId}`,
@@ -297,7 +301,7 @@ export class PostGresData {
     }
 
     // Updates whether a game has an image or not.
-    async updateGameImage(gameId: number, image: boolean) {
+    async updateGameImage(gameId: number, image: boolean): Promise<boolean> {
         try {
             await this.client.query({
                 text: `UPDATE mainschema.games SET BgImage = '${image}' WHERE GameId = ${gameId}`,
@@ -310,7 +314,7 @@ export class PostGresData {
     }
 
     // Given a player's id, gets all games where they are gm.
-    async getUserGames(gmId: string) {
+    async getUserGames(gmId: string): Promise<false | any[][]> {
         try {
             const res = await this.client.query({
                 text: `SELECT GameId FROM mainschema.games WHERE GmId = '${gmId}'`,
@@ -327,7 +331,7 @@ export class PostGresData {
     }
 
     // Adds a token to a game.
-    async addToken(gameId: number, token: string) {
+    async addToken(gameId: number, token: string): Promise<boolean> {
         try {
             await this.client.query({
                 text: `INSERT INTO mainschema.tokens${gameId} VALUES ${token}`,
@@ -343,7 +347,7 @@ export class PostGresData {
     }
 
     // Removes a token from a game.
-    async destroyToken(gameId: number, objectId: number) {
+    async destroyToken(gameId: number, objectId: number): Promise<boolean> {
         try {
             await this.client.query({
                 text: `DELETE FROM mainschema.tokens${gameId} WHERE Id = ${objectId}`,
@@ -359,11 +363,16 @@ export class PostGresData {
     }
 
     // Updates a token on a game.
-    async updateToken(gameId: number, objectId: number, token: string[]) {
+    async updateToken(
+        gameId: number,
+        objectId: number,
+        token: string[],
+    ): Promise<boolean> {
         try {
             await this.client.query({
                 text: `UPDATE mainschema.tokens${gameId} SET Name = '${token[0]}', Colour = '${token[1]}', Move = '${token[2]}', Active = '${token[3]}' WHERE Id = ${objectId}`,
             });
+            return true;
         } catch (err) {
             console.log(
                 `Database error: Could not update token ${objectId} on game ${gameId}`,
@@ -374,7 +383,7 @@ export class PostGresData {
     }
 
     // Guess
-    async addObject(gameId: number, object: string) {
+    async addObject(gameId: number, object: string): Promise<boolean> {
         try {
             await this.client.query({
                 text: `INSERT INTO mainschema.objects${gameId} VALUES ${object}`,
@@ -390,7 +399,11 @@ export class PostGresData {
     }
 
     // Updates an object on a game.
-    async updateObject(gameId: number, objectId: number, object: string[]) {
+    async updateObject(
+        gameId: number,
+        objectId: number,
+        object: (string | number)[],
+    ): Promise<boolean> {
         try {
             await this.client.query({
                 text: `UPDATE mainschema.objects${gameId} SET Params = ${object[0]}, Colour = '${object[1]}', StructureData = '${object[2]}', LayerId = ${object[3]} WHERE ObjectId = ${objectId}`,
@@ -406,7 +419,7 @@ export class PostGresData {
     }
 
     // Destroys an object on a game.
-    async destroyObject(gameId: number, objectId: number) {
+    async destroyObject(gameId: number, objectId: number): Promise<boolean> {
         try {
             await this.client.query({
                 text: `DELETE FROM mainschema.objects${gameId} WHERE ObjectId = ${objectId}`,
@@ -422,7 +435,7 @@ export class PostGresData {
     }
 
     // Add layer game to.
-    async addLayer(gameId: number, layer: string) {
+    async addLayer(gameId: number, layer: string): Promise<boolean> {
         try {
             await this.client.query({
                 text: `INSERT INTO mainschema.layers${gameId} VALUES ${layer}`,
@@ -438,7 +451,11 @@ export class PostGresData {
     }
 
     // Update layer of game of gameId id
-    async updateLayer(gameId: number, layerId: number, layer: any[]) {
+    async updateLayer(
+        gameId: number,
+        layerId: number,
+        layer: any[],
+    ): Promise<boolean> {
         try {
             await this.client.query({
                 text: `UPDATE mainschema.layers${gameId} SET GmVisible = '${layer[0]}', PlayerVisible = '${layer[1]}', zOrder = ${layer[2]}, Name = '${layer[3]}', X = ${layer[4]}, Y = ${layer[5]} WHERE Id = ${layerId}`,
@@ -454,7 +471,7 @@ export class PostGresData {
     }
 
     // Destroy the layer
-    async destroyLayer(gameId: number, layerId: number) {
+    async destroyLayer(gameId: number, layerId: number): Promise<boolean> {
         try {
             await this.client.query({
                 text: `DELETE FROM mainschema.layers${gameId} WHERE Id = ${layerId}`,
@@ -470,7 +487,7 @@ export class PostGresData {
     }
 
     // Add rolling stones music to game.
-    async addRoll(gameId: number, roll: string) {
+    async addRoll(gameId: number, roll: string): Promise<boolean> {
         try {
             await this.client.query({
                 text: `INSERT INTO mainschema.rolls${gameId} VALUES ${roll}`,
@@ -486,7 +503,7 @@ export class PostGresData {
     }
 
     // Constructs a game, takes a id and sets it as gm for the game.
-    async constructGame(gmId: string) {
+    async constructGame(gmId: string): Promise<false | any> {
         try {
             await this.delayGameLock();
             this.gameLock = true;
@@ -514,7 +531,7 @@ export class PostGresData {
     }
 
     // Checks if the supplied password matches the goal password.
-    testEncrypt(startVal: string, goalVal: string) {
+    testEncrypt(startVal: string, goalVal: string): boolean {
         for (let i = 0; i < 201; i++) {
             const hash = crypto.createHash('sha256');
             hash.update(startVal + i.toString());
@@ -527,7 +544,7 @@ export class PostGresData {
     }
 
     // Encrypts a password with sha256 encryption. Also salts it.
-    encrypt(val: string) {
+    encrypt(val: string): string {
         val += Math.round(Math.random() * 200).toString();
         const hash = crypto.createHash('sha256');
         hash.update(val);

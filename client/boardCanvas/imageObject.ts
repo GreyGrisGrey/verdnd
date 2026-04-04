@@ -123,7 +123,7 @@ export class ImageObject {
         squareSize: number = 1,
         offset: Vec2 = { x: 0, y: 0 },
         drawCtx: CanvasRenderingContext2D = ctx,
-    ) {
+    ): boolean {
         if (this.drawFlag) {
             if (path) {
                 drawCtx.save();

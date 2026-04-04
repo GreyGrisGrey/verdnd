@@ -104,7 +104,7 @@ export class BoardViewMode {
     }
 
     // Gets offset values for the cone part of the measuring tool
-    determineMeasureOffset(res: Vec2) {
+    determineMeasureOffset(res: Vec2): number {
         const res2 = {
             x: this.start.x + 0.5,
             y: this.start.y + 0.5,

@@ -148,7 +148,7 @@ export class GameObject {
     }
 
     // Checks if given user Id has gm privileges
-    checkUserGm(id: string) {
+    checkUserGm(id: string): boolean {
         if (this.allGm) {
             return true;
         }
@@ -174,7 +174,7 @@ export class GameObject {
     }
 
     // Adds user to list of active users.
-    addUser(newUser: string, id: string, gm: boolean, ws: WebSocket) {
+    addUser(newUser: string, id: string, gm: boolean, ws: WebSocket): boolean {
         if (this.userMap.has(id)) {
             this.broadcast(
                 JSON.stringify({
@@ -212,7 +212,10 @@ export class GameObject {
     }
 
     // Collects game from database if it exists, otherwise creates a new one.
-    async setUp(cli: PostGresData, gmId: string | null = null): Promise<boolean> {
+    async setUp(
+        cli: PostGresData,
+        gmId: string | null = null,
+    ): Promise<boolean> {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const res = await cli.getGame(this.gameId);
         if (res) {

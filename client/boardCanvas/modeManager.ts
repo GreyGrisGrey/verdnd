@@ -1,5 +1,6 @@
 import { BoardDrawMode } from './boardDrawMode.ts';
 import type { BoardObject } from './boardObject.ts';
+import type { Vec2 } from '../../shared/coords.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
 import { Board } from './localBoard.ts';
@@ -178,7 +179,7 @@ export class ModeManager {
     }
 
     // Checks if the user has selected an area of the canvas.
-    hasCompleteSelection() {
+    hasCompleteSelection(): boolean {
         if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
             return true;
         } else if (
@@ -191,7 +192,7 @@ export class ModeManager {
     }
 
     // Retrieves the coordinates corresponding to the currently selected area of the canvas.
-    getSelectCoords() {
+    getSelectCoords(): Vec2[] {
         if (this.currMode === Mode.Draw && this.drawMan.selectState !== 0) {
             return this.drawMan.params;
         }
@@ -199,7 +200,7 @@ export class ModeManager {
     }
 
     // Retrieves the object currently being drawn by the draw mode.
-    getObject(reason: GetObjectReason) {
+    getObject(reason: GetObjectReason): BoardObject | undefined {
         if (reason === GetObjectReason.Draw) {
             if (this.currMode === Mode.Draw) {
                 return this.drawMan.getTempObject();
@@ -214,7 +215,7 @@ export class ModeManager {
     }
 
     // Returns all board objects that are currently selected.
-    getSelected() {
+    getSelected(): BoardObject[] {
         return this.selectMan.selectedObjects;
     }
 

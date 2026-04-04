@@ -1,6 +1,5 @@
 import { getRequiredElement } from './dom.ts';
 const tooltip = getRequiredElement('tooltip', HTMLElement);
-const tooltipText = getRequiredElement('tooltipText', HTMLElement);
 
 export enum TooltipMode {
     Left = 0,

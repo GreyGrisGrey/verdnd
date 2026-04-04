@@ -75,7 +75,7 @@ export class BoardLayer {
     }
 
     // Removes a board object.
-    removeObject(removeId: number) {
+    removeObject(removeId: number): boolean {
         const toRemove = this.heldMap.get(removeId);
         if (!toRemove) {
             console.log('Error no object with such Id exists to remove');
@@ -127,7 +127,10 @@ export class BoardLayer {
     // Selects all objects on the layer that match the corresponding coordinates.
     // If one coordinate point is provided, checks if said point is contained within the object.
     // If two points are provided, checks if each object's center is contained within the produced rectangle.
-    selectObjects(selectCoords: Vec2[], matchType: string = 'any') {
+    selectObjects(
+        selectCoords: Vec2[],
+        matchType: string = 'any',
+    ): BoardObject[] {
         const acceptable: BoardObject[] = [];
         for (const candidate of this.heldObjects) {
             if (

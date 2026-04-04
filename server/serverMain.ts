@@ -3,9 +3,11 @@ const { createServer } = require('node:https');
 const fs = require('fs');
 const path = require('path');
 
+import type { Server } from 'https';
+
 // Constructs a server object.
 // Really should split some of this into other files.
-export function constructServer() {
+export function constructServer(): Server {
     const options = {
         key: fs.readFileSync('./f2.key'),
         cert: fs.readFileSync('./f1.crt'),

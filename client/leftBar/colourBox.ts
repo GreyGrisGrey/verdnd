@@ -43,7 +43,7 @@ export class ColourBox {
     }
 
     // Gets the current colour.
-    getCurrColour() {
+    getCurrColour(): string {
         return (showColourButton as any).rgba;
     }
 

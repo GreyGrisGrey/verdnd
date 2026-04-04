@@ -243,6 +243,7 @@ export class TempStore {
         this.connectGlobal();
     }
 
+    // Sets up the undo button.
     setUpUndo() {
         undoButton.addEventListener('click', () => {
             this.undoLast();
@@ -258,6 +259,7 @@ export class TempStore {
         undoButton.disabled = true;
     }
 
+    // Changes the layer that an object is on.
     changeObjLayer(obj: BoardObject, up: boolean) {
         this.socket.send(
             this.parcelServeEvent({
@@ -269,10 +271,12 @@ export class TempStore {
         );
     }
 
-    getLasers() {
+    // Gets a map containing the lasers.
+    getLasers(): Map<number, LaserEvent> {
         return this.lasers;
     }
 
+    // Undoes the last done event, if one happened.
     undoLast() {
         if (this.currIndex === 0) {
             undoButton.disabled = true;
@@ -304,6 +308,7 @@ export class TempStore {
         this.setUpUndo();
     }
 
+    // Attempts to sign in after waiting for the socket to finish connecting.
     async connectGlobal() {
         while (this.socket.readyState === 0) {
             await new Promise((resolve) => setTimeout(resolve, 10));
@@ -321,13 +326,15 @@ export class TempStore {
         );
     }
 
-    async getFile(objId: number = -1) {
+    // Gets the file blob connected to a given object id.
+    async getFile(objId: number = -1): Promise<Blob> {
         const fileString =
             './client/assets/games/' + this.currGame + '/' + objId.toString();
         const response = await fetch(fileString);
         return response.blob();
     }
 
+    // Uploads the blob of a given object. For pasting objects.
     async uploadBlob(objId: number, blob: Blob) {
         const response = await fetch(
             'https://verdnd.ca/upload/game/' +
@@ -355,6 +362,7 @@ export class TempStore {
         return;
     }
 
+    // Uploads a file and links it to a given object id.
     async uploadFile(objId: number = -1) {
         const file = fileInput.files ? fileInput.files[0] : null;
         if (!file || (!this.bgUpload && objId === -1)) {
@@ -399,6 +407,7 @@ export class TempStore {
         return;
     }
 
+    // Removes a file corresponding to a given object id.
     async removeFile(objId: number = -1) {
         const response = await fetch(
             'https://verdnd.ca/upload/game/remove/' +
@@ -433,6 +442,7 @@ export class TempStore {
         }
     }
 
+    // Connects to the game object itself.
     async connectLocal() {
         this.socket.send(
             this.parcelServeEvent({
@@ -444,6 +454,7 @@ export class TempStore {
         );
     }
 
+    // Signs in.
     async signIn(name: string, pass: string, id: string) {
         localStorage['pass'] = pass;
         localStorage['name'] = name;
@@ -457,6 +468,7 @@ export class TempStore {
         );
     }
 
+    // Sends a dice payload.
     rollDice(newDice: DicePayload) {
         this.socket.send(
             this.parcelServeEvent({
@@ -468,10 +480,6 @@ export class TempStore {
                 userName: this.name,
             }),
         );
-    }
-
-    getDice() {
-        return this.rollMapping;
     }
 
     // Sends a packet telling the backend to create an object with those parameters.
@@ -488,9 +496,9 @@ export class TempStore {
             this.secondIndex += 1;
         }
         this.socket.send(this.parcelServeEvent(newObj));
-        return -1;
     }
 
+    // Updates object.
     async updateObject(payload: ObjectCreatePayload, undo: boolean = false) {
         if (!this.isGm) {
             return;
@@ -518,6 +526,7 @@ export class TempStore {
         this.socket.send(this.parcelServeEvent(newObj));
     }
 
+    // Creates an object from an object create event.
     createObjectLocal(newObj: ObjectCreateEvent) {
         if (storedObjects.has(newObj.object.objectId)) {
             storedObjects
@@ -536,6 +545,7 @@ export class TempStore {
         }
     }
 
+    // Updates the token on an object.
     updateToken(newToken: Token, newId: number) {
         if (!this.isGm) {
             return;
@@ -708,7 +718,7 @@ export class TempStore {
     }
 
     // Parcels up an event in a wrapper for the server to handle.
-    parcelServeEvent(payload: ServerEvent, game: boolean = true) {
+    parcelServeEvent(payload: ServerEvent, game: boolean = true): string {
         if (game) {
             return JSON.stringify({
                 userId: this.id,
@@ -764,6 +774,7 @@ export class TempStore {
         }
     }
 
+    // Updates the background colour.
     sendChangeBackground(newCol: string) {
         this.socket.send(
             this.parcelServeEvent({

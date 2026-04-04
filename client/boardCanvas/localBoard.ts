@@ -119,7 +119,7 @@ export class Board {
     }
 
     // Deletes an object based on the Id of the object and the layer it belongs on.
-    removeObject(objectId: number, layerId: number = -1) {
+    removeObject(objectId: number, layerId: number = -1): boolean {
         storedObjects.delete(objectId);
         if (layerId === -1) {
             for (const [key, val] of storedLayers) {
@@ -149,7 +149,7 @@ export class Board {
     selectObjects(
         targetType: string = 'any',
         coords: Vec2[] = modeMan.getSelectCoords(),
-    ) {
+    ): BoardObject[] {
         const layer = storedLayers.get(layerMan.currSelect);
         if (layer) {
             return layer.selectObjects(coords, targetType);
@@ -158,7 +158,10 @@ export class Board {
     }
 
     // Selects a single token.
-    selectToken(fixedPoint: Vec2[], matchType: string = 'any') {
+    selectToken(
+        fixedPoint: Vec2[],
+        matchType: string = 'any',
+    ): BoardObject | undefined {
         for (const [key, val] of storedLayers) {
             const selected = val.selectObjects(fixedPoint, matchType)[0];
             if (selected) {
@@ -196,7 +199,7 @@ export class Board {
     }
 
     // Determines which tile/vertex a coordinate pair is located on.
-    determineTile(x: number, y: number, type: CoordModes) {
+    determineTile(x: number, y: number, type: CoordModes): Vec2 {
         const squareSize = 5 * this.zoomVal;
         if (type === CoordModes.Vertex) {
             return {

@@ -22,7 +22,7 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const serveInter = new TempStore();
 const objectMan = new ObjectMenu();
 
-function rectangleFromPoints(point1: Vec2, point2: Vec2) {
+function rectangleFromPoints(point1: Vec2, point2: Vec2): number[] {
     const x = Math.min(point1.x, point2.x);
     const y = Math.min(point1.y, point2.y);
     const width = Math.max(point1.x, point2.x) - x + 1;
@@ -339,7 +339,7 @@ export class BoardDrawMode {
     }
 
     // Returns a temporary board object to display the shape about to be drawn.
-    getTempObject() {
+    getTempObject(): BoardObject | undefined {
         if (!this.active) {
             return undefined;
         }

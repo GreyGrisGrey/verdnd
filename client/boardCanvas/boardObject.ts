@@ -59,21 +59,21 @@ export class BoardObject {
         this.br = { x: 0, y: 0 };
         this.updateObject(false);
     }
-    
+
     // Standard getters
-    getTopLeft() {
+    getTopLeft(): Vec2 {
         return this.tl;
     }
 
-    getBottomRight() {
+    getBottomRight(): Vec2 {
         return this.br;
     }
 
-    getColour() {
+    getColour(): string {
         return this.colour;
     }
-    
-    getPoints() {
+
+    getPoints(): Vec2[] {
         return this.points;
     }
 
@@ -144,7 +144,7 @@ export class BoardObject {
     }
 
     // Checks if the object's token is active.
-    hasToken() {
+    hasToken(): boolean {
         return this.token.active;
     }
 
@@ -264,7 +264,7 @@ export class BoardObject {
     // Checks if the center of the object is contained within a given rectangle.
     // Used for selection of board objects.
     // Probably should be replaced with something checking overlap properly.
-    isCenterInsideRect(point1: Vec2, point2: Vec2) {
+    isCenterInsideRect(point1: Vec2, point2: Vec2): boolean {
         if (
             this.centerPoint.x >= point1.x &&
             this.centerPoint.x <= point2.x &&
@@ -277,7 +277,7 @@ export class BoardObject {
     }
 
     // Checks if a point is contained within the path of the object.
-    isPointInside(point: Vec2) {
+    isPointInside(point: Vec2): boolean {
         if (
             this.ctx?.isPointInPath(
                 this.currPath,
@@ -322,7 +322,7 @@ export class BoardObject {
     }
 
     // Returns an object payload built like the object itself.
-    payloadFromObject() {
+    payloadFromObject(): ObjectCreatePayload {
         return {
             params: this.drawParams,
             points: this.points,

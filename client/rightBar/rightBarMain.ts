@@ -157,7 +157,7 @@ export class RightBarManager {
             characterTab.style.visibility = 'hidden';
         } else {
             layerTab.style.visibility = 'inherit';
-            objectTab.style.visibility = 'inherit'
+            objectTab.style.visibility = 'inherit';
             rollTab.style.visibility = 'inherit';
         }
     }

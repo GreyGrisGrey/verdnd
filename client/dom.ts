@@ -2,7 +2,7 @@
 export function getRequiredElement<T extends HTMLElement>(
     id: string,
     elementType: { new (): T },
-) {
+): T {
     const element = document.getElementById(id);
     if (!(element instanceof elementType)) {
         throw new Error(

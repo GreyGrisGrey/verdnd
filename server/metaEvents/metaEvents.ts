@@ -11,7 +11,7 @@ export async function constructGame(
     gameId: number,
     gameMap: Map<number, GameObject>,
     cli: PostGresData,
-) {
+): Promise<boolean> {
     if (gameMap.has(gameId)) {
         return true;
     }
@@ -21,6 +21,7 @@ export async function constructGame(
     if (!res) {
         createLayer(newGame, cli);
     }
+    return false;
 }
 
 // Function for connecting a new user to the websocket server.
@@ -114,7 +115,10 @@ export async function establishGlobalUser(
 }
 
 // Function for getting all games corresponding to a particular user.
-export async function getUserGames(id: string, cli: PostGresData) {
+export async function getUserGames(
+    id: string,
+    cli: PostGresData,
+): Promise<false | any[][]> {
     return await cli.getUserGames(id);
 }
 
