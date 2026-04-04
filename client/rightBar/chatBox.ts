@@ -46,6 +46,8 @@ export class ChatBox {
         this.mainText = newText;
     }
 
+    // Updates the chatbox to a new roll.
+    // Being as this is only called once it's dubious that it's not part of the constructor but whatever.
     updateRoll(dataLine: RollResult, userName: string) {
         if (dataLine.rolls.length === 0) {
             this.mainText.innerText = `${userName} said ${dataLine.result}`;

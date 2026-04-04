@@ -27,10 +27,12 @@ export class ImageObject {
         this.blob = new Blob();
     }
 
+    // Stops the image being drawn.
     disableImage() {
         this.drawFlag = false;
     }
 
+    // Updates the image to be drawn to a completely different one.
     async updateImage(
         width: number,
         height: number,
@@ -45,6 +47,7 @@ export class ImageObject {
         this.updateImageSize(width, height, bg);
     }
 
+    // Updates the image to be drawn, but it's for the object menu so the server doesn't need to get involved.
     async updateImageLocal(objectUrl: string, width: number, height: number) {
         this.stringUrl = objectUrl;
         this.width = width;
@@ -59,6 +62,7 @@ export class ImageObject {
         this.drawFlag = true;
     }
 
+    // Updates the image's source by contacting the server.
     async updateImageSource(objId: number, gameId: number) {
         try {
             const fileString =
@@ -87,6 +91,7 @@ export class ImageObject {
         }
     }
 
+    // Updates the image size so it matches the object's size.
     updateImageSize(width: number, height: number, bg: boolean) {
         if (!bg) {
             if (
@@ -112,6 +117,7 @@ export class ImageObject {
         }
     }
 
+    // Draws the image. Needs a ctx because of the object menu. Needs a path to clip to.
     draw(
         path: Path2D | null = null,
         squareSize: number = 1,

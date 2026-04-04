@@ -49,6 +49,7 @@ export class LeftBarManager {
         hideLeft.innerText = this.visible ? 'Hide' : 'Show';
     }
 
+    // Adds event listeners.
     addEventListeners() {
         changeImage.addEventListener('click', () => {
             if (!board.bgImage.drawFlag) {

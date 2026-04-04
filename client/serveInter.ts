@@ -563,6 +563,8 @@ export class TempStore {
         );
     }
 
+    // Creates a layer from a layer packet sent by the server.
+    // Not actually particularly local.
     createLayerLocal(layerPacket: LayerState) {
         const newLayer = new BoardLayer(
             layerPacket.zOrder,
@@ -672,6 +674,7 @@ export class TempStore {
         }
     }
 
+    // Sends an update layer command.
     async updateLayer(input: LayerState) {
         if (!this.isGm) {
             return;
@@ -689,6 +692,7 @@ export class TempStore {
         );
     }
 
+    // Sends a destroy layer command.
     async destroyLayer(input: LayerState) {
         if (!this.isGm) {
             return;
@@ -703,6 +707,7 @@ export class TempStore {
         );
     }
 
+    // Parcels up an event in a wrapper for the server to handle.
     parcelServeEvent(payload: ServerEvent, game: boolean = true) {
         if (game) {
             return JSON.stringify({
@@ -720,6 +725,8 @@ export class TempStore {
         });
     }
 
+    // Sends a laser event.
+    // I do not know why this works, it looks like it shouldn't, but it clearly does. So whatever.
     sendLaser(x: number, y: number, send: boolean) {
         if (
             this.lastLaser.x === x &&

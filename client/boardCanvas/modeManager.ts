@@ -66,6 +66,7 @@ export class ModeManager {
         bottomBar.style.pointerEvents = 'auto';
     }
 
+    // Sets up boxes for the bottom bar.
     setUpBoxes() {
         for (let i = 0; i < 10; i++) {
             this.boxItems.push(
@@ -75,6 +76,7 @@ export class ModeManager {
         }
     }
 
+    // Toggles whether the mode switcher is visible or not.
     toggleModeSwitcher(active: boolean) {
         modeMenu.style.visibility = active ? 'visible' : 'hidden';
         this.modeSwitch(Mode.View);
@@ -164,6 +166,7 @@ export class ModeManager {
         );
     }
 
+    // Switches between the active mode and a new one.
     modeSwitch(newMode: Mode) {
         if (!this.selectMan.active) {
             this.modes[this.currMode].flipListeners(false);

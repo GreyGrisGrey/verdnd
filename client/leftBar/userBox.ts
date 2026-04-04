@@ -17,11 +17,13 @@ export class UserBox {
         this.elements = new Map();
     }
 
+    // Toggle active.
     toggleActive(newActive: boolean) {
         userContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         userContainer.style.pointerEvents = newActive ? 'auto' : 'none';
     }
 
+    // Adds a user to the menu.
     addUser(id: string, name: string, gm: boolean) {
         if (this.userMap.has(id)) {
             this.removeUser(id);
@@ -39,6 +41,7 @@ export class UserBox {
         userContainer.append(newUser);
     }
 
+    // Removes a user from the menu.
     removeUser(id: string) {
         this.userMap.delete(id);
         this.elements.get(id)!.remove();

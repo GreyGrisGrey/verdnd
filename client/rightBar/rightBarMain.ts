@@ -42,6 +42,7 @@ export class RightBarManager {
         this.addEventListeners();
     }
 
+    // Toggles visibility of right bar.
     toggleVisible() {
         rightBar.style.visibility = this.visible ? 'visible' : 'hidden';
         hideRight.style.left = this.visible ? '-50px' : '210px';
@@ -143,6 +144,7 @@ export class RightBarManager {
         });
     }
 
+    // Toggles which menus should be visible given if the user is a gm or not.
     toggleModeSwitcher(gm: boolean) {
         if (!gm) {
             layerMan.toggleActive(false);
@@ -155,6 +157,7 @@ export class RightBarManager {
             characterTab.style.visibility = 'hidden';
         } else {
             layerTab.style.visibility = 'inherit';
+            objectTab.style.visibility = 'inherit'
             rollTab.style.visibility = 'inherit';
         }
     }

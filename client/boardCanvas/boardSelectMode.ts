@@ -157,11 +157,11 @@ export class BoardSelectMode {
             this.layerSwitch(true);
         } else if (key === '5') {
             this.layerSwitch(false);
-        } else if (key === '6') {
+        } else if (key === '6' && this.selectedObjects.length > 1) {
             this.tokenize();
-        } else if (key === '7') {
+        } else if (key === '7' && this.selectedObjects.length > 1) {
             this.attemptRename();
-        } else if (key === '8') {
+        } else if (key === '8' && this.selectedObjects.length > 1) {
             this.attemptTokenRecolour();
         } else if (key === '9' && this.selectedObjects.length === 1) {
             for (const obj of this.orbs) {

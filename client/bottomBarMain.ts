@@ -2,8 +2,6 @@ import { getRequiredElement } from './dom.ts';
 import { TooltipManager, TooltipMode } from './tooltip.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 const tooltipManager = new TooltipManager();
-const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
-const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const modeMan = new ModeManager();
 
@@ -19,9 +17,10 @@ export class BottomBarManager {
         this.boxViewItems = [];
         this.setUpBoxes();
         this.bottomActive = false;
-        this.setEventListeners();
+        this.addEventListeners();
     }
 
+    // Sets up boxes for each mode.
     setUpBoxes() {
         for (let i = 0; i < 10; i++) {
             this.boxDrawItems.push(
@@ -45,11 +44,13 @@ export class BottomBarManager {
         }
     }
 
+    // Updates the location of the bottom bar.
     step() {
         bottomBar.style.left = window.innerWidth / 2 - 300 + 'px';
     }
 
-    setEventListeners() {
+    // Adds event listeners
+    addEventListeners() {
         for (let i = 0; i < 10; i++) {
             this.boxDrawItems[i].addEventListener('mouseenter', () => {
                 tooltipManager.updateTooltipData(

@@ -103,7 +103,8 @@ export class BoardViewMode {
         }
     }
 
-    determineOffset(res: Vec2) {
+    // Gets offset values for the cone part of the measuring tool
+    determineMeasureOffset(res: Vec2) {
         const res2 = {
             x: this.start.x + 0.5,
             y: this.start.y + 0.5,
@@ -154,7 +155,7 @@ export class BoardViewMode {
             );
             ctx.beginPath();
             const radians = (Number(measureDegrees.value) * Math.PI) / 180;
-            const offset = this.determineOffset(res);
+            const offset = this.determineMeasureOffset(res);
             const angles = [-(offset + radians / 2), -(offset - radians / 2)];
             if (radians !== 2 * Math.PI) {
                 ctx.lineTo(res2.x, res2.y);

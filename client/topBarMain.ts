@@ -8,6 +8,7 @@ export class TopBarManager {
         this.updateUserBox();
     }
 
+    // Updates the user box to match the user's credentials.
     updateUserBox() {
         const newText = `Curr user : Id:${localStorage['id']}, Name:${localStorage['name']}`;
         nameBox.innerText = newText;

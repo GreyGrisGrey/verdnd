@@ -42,10 +42,12 @@ export class ColourBox {
         this.addEventListeners();
     }
 
+    // Gets the current colour.
     getCurrColour() {
         return (showColourButton as any).rgba;
     }
 
+    // Toggles if the colour selector is active.
     toggleActive(newActive: boolean) {
         colourContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         colourContainer.style.pointerEvents = newActive ? 'auto' : 'none';

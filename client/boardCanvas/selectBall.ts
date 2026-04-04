@@ -23,12 +23,11 @@ export class SelectBall {
         this.element.style.zIndex = '1';
         this.element.style.visibility = 'visible';
         this.element.style.backgroundColor = GOLD;
-        this.setEventListeners();
+        this.addEventListeners();
     }
 
-    setEventListeners() {
-        // If you don't add event.preventDefault here then all the text gets selected everywhere.
-        // This didn't use to be the case, but it is now, and I don't know why.
+    // Sets a couple event listeners to avoid weird drag behaviour.
+    addEventListeners() {
         this.element.addEventListener('mousedown', (event) => {
             this.moving = true;
             event.preventDefault();

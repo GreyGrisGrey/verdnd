@@ -59,7 +59,25 @@ export class BoardObject {
         this.br = { x: 0, y: 0 };
         this.updateObject(false);
     }
+    
+    // Standard getters
+    getTopLeft() {
+        return this.tl;
+    }
 
+    getBottomRight() {
+        return this.br;
+    }
+
+    getColour() {
+        return this.colour;
+    }
+    
+    getPoints() {
+        return this.points;
+    }
+
+    // Updates image on a board object.
     async updateImage(addImage: boolean) {
         if (this.drawParams.fill) {
             if (addImage) {
@@ -79,6 +97,7 @@ export class BoardObject {
         }
     }
 
+    // Updates secondary attributes of the object, also tells the server interface to update it if sendObj is set to true.
     updateObject(sendObj: boolean) {
         this.updateTopLeft();
         this.updateBottomRight();
@@ -88,6 +107,7 @@ export class BoardObject {
         }
     }
 
+    // Updates the top left point of the object.
     updateTopLeft() {
         let minX = this.points[0].x;
         let minY = this.points[0].y;
@@ -105,6 +125,7 @@ export class BoardObject {
         };
     }
 
+    // Updates the bottom right point of the object.
     updateBottomRight() {
         let maxX = this.points[0].x;
         let maxY = this.points[0].y;
@@ -120,18 +141,6 @@ export class BoardObject {
             x: maxX,
             y: maxY,
         };
-    }
-
-    getTopLeft() {
-        return this.tl;
-    }
-
-    getBottomRight() {
-        return this.br;
-    }
-
-    getColour() {
-        return this.colour;
     }
 
     // Checks if the object's token is active.
@@ -243,6 +252,7 @@ export class BoardObject {
         this.updateObject(false);
     }
 
+    // Standard setters
     setColour(newColour: string) {
         this.colour = newColour;
     }
@@ -253,6 +263,7 @@ export class BoardObject {
 
     // Checks if the center of the object is contained within a given rectangle.
     // Used for selection of board objects.
+    // Probably should be replaced with something checking overlap properly.
     isCenterInsideRect(point1: Vec2, point2: Vec2) {
         if (
             this.centerPoint.x >= point1.x &&
@@ -310,6 +321,7 @@ export class BoardObject {
         );
     }
 
+    // Returns an object payload built like the object itself.
     payloadFromObject() {
         return {
             params: this.drawParams,
@@ -322,10 +334,8 @@ export class BoardObject {
         };
     }
 
-    getPoints() {
-        return this.points;
-    }
-
+    // Updates a single vertex of the polygon.
+    // Does update the server about it.
     updatePoint(newX: number, newY: number, specificPoint: number) {
         this.points[specificPoint].x = newX;
         this.points[specificPoint].y = newY;
@@ -388,6 +398,7 @@ export class BoardObject {
         this.updateObject(true);
     }
 
+    // Constructs an ellipse path.
     pathEllipse(squareSize: number, outerOffset: Vec2) {
         this.currPath = new Path2D();
         this.currPath.ellipse(
@@ -405,6 +416,7 @@ export class BoardObject {
         this.currPath.closePath();
     }
 
+    // Constructs any other sort of path.
     pathOther(squareSize: number, outerOffset: Vec2) {
         this.currPath = new Path2D();
         this.currPath.moveTo(

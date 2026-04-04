@@ -10,11 +10,11 @@ export enum TooltipMode {
 }
 
 export interface TooltipData {
-    type: string | undefined;
-    boldText: string | undefined;
+    type?: string;
+    boldText?: string;
     text: string;
-    colour: string | undefined;
-    size: string | undefined;
+    colour?: string;
+    size?: string;
 }
 
 export class TooltipManager {
@@ -32,6 +32,7 @@ export class TooltipManager {
         this.disable();
     }
 
+    // Gets the tooltip text data.
     async getData() {
         const response = await fetch('./client/assets/tooltips.json');
         const data = await response.json();
@@ -41,6 +42,7 @@ export class TooltipManager {
         );
     }
 
+    // Updates the tooltip.
     updateTooltipData(newMode: TooltipMode, index: string) {
         this.currMode = newMode;
         const curr = this.data[newMode];
@@ -51,6 +53,7 @@ export class TooltipManager {
         this.enable();
     }
 
+    // Updates the text of the tooltip based on the wonderful bundle of tool tip data objects it gets given.
     updateTooltipText(newText: TooltipData[], index: string) {
         this.activeDiv.remove();
         this.activeDiv = document.createElement('div');
@@ -76,6 +79,7 @@ export class TooltipManager {
         }
     }
 
+    // Updates the position of the tooltip based on its current mode.
     updateTooltipPosition() {
         if (this.currMode === TooltipMode.Bottom) {
             tooltip.style.bottom = '100px';
@@ -107,11 +111,13 @@ export class TooltipManager {
         }
     }
 
+    // Disables
     disable() {
         this.active = false;
         tooltip.style.visibility = 'hidden';
     }
 
+    // Disdisables
     enable() {
         this.active = true;
         tooltip.style.visibility = 'visible';

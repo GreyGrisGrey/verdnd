@@ -12,11 +12,13 @@ export class RollBox {
         this.setRollElements();
     }
 
+    // Toggles active.
     toggleActive(newActive: boolean) {
         rollContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         rollContainer.style.pointerEvents = newActive ? 'auto' : 'none';
     }
 
+    // Sets the elements for rolling dice.
     setRollElements() {
         let count = 0;
         for (const i of [3, 4, 6, 8, 10, 12, 20, 100, 101]) {
@@ -134,6 +136,7 @@ export class RollBox {
         }
     }
 
+    // Constructs a new roll payload.
     constructPayload(
         diceSize: number,
         diceCount: number,

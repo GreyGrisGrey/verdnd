@@ -50,3 +50,4 @@ const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const undoButton = getRequiredElement('undoMenuButton', HTMLButtonElement);
 const modeMan = new ModeManager();
 const board = new Board();
+// Pandemonium

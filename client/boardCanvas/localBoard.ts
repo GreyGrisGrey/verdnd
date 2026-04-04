@@ -54,6 +54,7 @@ export class Board {
         this.bgImage = new ImageObject();
     }
 
+    // Changes the current laser colour.
     recolourLaser(newCol: string) {
         this.laserCol = newCol;
     }
@@ -70,6 +71,7 @@ export class Board {
         }
     }
 
+    // Creats a new z layer map.
     updateZLayers() {
         this.zLayers = new Map();
         for (const [key, val] of storedLayers) {
@@ -79,7 +81,6 @@ export class Board {
 
     // Test function for pointer drawing.
     // Will be removed when a proper laser tool is added.
-    // oh no its part of the proper laser tool's functionality it's stuck here forever
     drawMousePointer() {
         ctx.beginPath();
         ctx.arc(
@@ -215,6 +216,7 @@ export class Board {
         }
     }
 
+    // Updates the background image of the board.
     updateImage(addImage: boolean) {
         if (addImage) {
             this.bgImage.updateImage(

@@ -39,6 +39,7 @@ export class LayerMenu {
         this.moveLayers();
     }
 
+    // Add event listeners.
     addEventListeners() {
         this.tempButtonObj.addEventListener('click', () => {
             if (this.active) {
@@ -121,6 +122,7 @@ export class LayerMenu {
         serveInter.createLayer();
     }
 
+    // Updates the input elements to match the given layer state.
     updateInputs(val: LayerState) {
         layerXInput.value = val.x.toString();
         layerYInput.value = val.y.toString();
@@ -264,6 +266,7 @@ export class LayerMenu {
         }
     }
 
+    // Destroys a layer element.
     destroyLayerElement(id: number) {
         const currLayer = storedLayerStates.get(id);
         if (currLayer) {

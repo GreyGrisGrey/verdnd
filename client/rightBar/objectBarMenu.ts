@@ -60,6 +60,7 @@ export class ObjectMenu {
         this.ctx2 = this.loadedTemplate.container.getContext('2d')!;
     }
 
+    // Adds event listeners.
     addEventListeners(temp: ObjTemplate, top: boolean) {
         temp.rename.addEventListener('change', () => {
             if (temp.currObj) {
@@ -162,6 +163,8 @@ export class ObjectMenu {
         });
     }
 
+    // Copies either the top template to the bottom or the reverse.
+    // Also if it's copying to the bottom it copies to the currently selected object too.
     swapObject(top: boolean) {
         const toChange = top ? this.currTemplate : this.loadedTemplate;
         const fromChange = top ? this.loadedTemplate : this.currTemplate;
@@ -195,6 +198,7 @@ export class ObjectMenu {
         }
     }
 
+    // Updates the image on the selected object.
     updateImage() {
         serveInter.uploadBlob(
             this.currSelected.objectId,
@@ -202,6 +206,7 @@ export class ObjectMenu {
         );
     }
 
+    // Updates the selected object's token, if it can.
     updateToken(bottom: boolean) {
         if (bottom && this.currSelected.objectId >= 0) {
             this.currSelected.token.name = this.loadedTemplate.rename.value;
@@ -216,6 +221,7 @@ export class ObjectMenu {
         }
     }
 
+    // Builds the top template.
     buildTemplatePrimary(): ObjTemplate {
         return {
             currObj: new BoardObject(
@@ -240,6 +246,7 @@ export class ObjectMenu {
         };
     }
 
+    // Builds the bottom template.
     buildTemplateSecondary(): ObjTemplate {
         return {
             currObj: new BoardObject(
@@ -276,6 +283,8 @@ export class ObjectMenu {
         };
     }
 
+    // Disables the second template.
+    // Called when nothing is selected, or when too many things are selected.
     disableSecondary() {
         bottomHalf.style.visibility = 'hidden';
         bottomHalf.style.pointerEvents = 'none';
@@ -284,6 +293,7 @@ export class ObjectMenu {
         this.loadedActive = false;
     }
 
+    // Updates the secondary template to match a new object.
     updateSecondary(newObject: BoardObject) {
         this.currSelected = newObject;
         this.loadedTemplate.currObj.updateFromPayload(
@@ -310,12 +320,14 @@ export class ObjectMenu {
         this.draw();
     }
 
+    // Toggles if the menu is active.
     toggleActive(newAct: boolean) {
         this.active = newAct;
         objBox.style.visibility = newAct ? 'inherit' : 'hidden';
         objBox.style.pointerEvents = newAct ? 'auto' : 'none';
     }
 
+    // Draws the templates.
     draw() {
         if (this.currTemplate.currObj) {
             const curr = this.currTemplate.currObj;
@@ -345,6 +357,7 @@ export class ObjectMenu {
         }
     }
 
+    // Does a single step updating size parameters and drawing the objects.
     step(height: number) {
         const newHeight = `${(height / 2).toString()}px`;
         topHalf.style.height = newHeight;
@@ -353,6 +366,7 @@ export class ObjectMenu {
         this.draw();
     }
 
+    // Creates an object from the top template at a given location.
     createObjectFromTemplate(startLoc: Vec2) {
         const currTemp = this.currTemplate.currObj;
         const currCreate: ObjectCreatePayload = currTemp.payloadFromObject();
