@@ -36,14 +36,14 @@ export function objectTableToPayloads(
                 objectId: row[3],
                 params: newParams,
                 token: {
-                    name: 'na',
+                    name: '',
                     colour: '#cccccc',
                     active: false,
                     movable: false,
                 },
             },
             token: {
-                name: 'na',
+                name: '',
                 colour: '#cccccc',
                 active: false,
                 movable: false,

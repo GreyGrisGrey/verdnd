@@ -420,6 +420,21 @@ export class BoardSelectMode {
         this.toggleBoxes();
     }
 
+    addSelected(newObjs: BoardObject[]) {
+        for (const obj of newObjs) {
+            this.selectedObjects.push(obj);
+            obj.setSelected(true);
+        }
+        this.boxItems[6].disabled = this.selectedObjects.length <= 1;
+        this.boxItems[7].disabled = this.selectedObjects.length <= 1;
+        this.boxItems[8].disabled = this.selectedObjects.length <= 1;
+        this.boxItems[9].disabled = this.selectedObjects.length > 1;
+        this.boxItems[0].disabled =
+            this.selectedObjects.length > 1 ||
+            this.selectedObjects[0].drawParams.ellipse;
+        this.toggleBoxes();
+    }
+
     // Updates orbs when an object is moved, allowing object movement to be clean when resize/restructure is selected.
     updateCornerPos(point: Vec2) {
         if (this.orbs.length === 0) {

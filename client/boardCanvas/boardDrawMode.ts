@@ -223,8 +223,6 @@ export class BoardDrawMode {
                         ),
                     );
                 }
-            } else if (this.active && event.button === 2) {
-                selector.activate(this.currLayer);
             }
         });
 
@@ -244,8 +242,6 @@ export class BoardDrawMode {
                     this.params.push({ x: res.x, y: res.y });
                     this.setNewObject();
                 }
-            } else if (this.active && event.button === 2) {
-                selector.complete();
             }
         });
     }
@@ -302,7 +298,7 @@ export class BoardDrawMode {
             object: tempObj,
             userId: '-1',
             token: {
-                name: 'na',
+                name: '',
                 colour: '#cccccc',
                 active: false,
                 movable: false,

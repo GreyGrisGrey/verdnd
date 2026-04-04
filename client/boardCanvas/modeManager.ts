@@ -8,6 +8,8 @@ import { getRequiredElement } from '../dom.ts';
 import { TempStore } from '../serveInter.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
 import { Selector } from './selector.ts';
+import { BoardLayer } from './boardLayer.ts';
+import { LayerMenu } from '../rightBar/layerBarMenu.ts';
 const selector = new Selector();
 const tooltipManager = new TooltipManager();
 const serveInter = new TempStore();
@@ -17,6 +19,8 @@ const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const board = new Board();
+const layerMan = new LayerMenu();
+const storedLayers: Map<number, BoardLayer> = new Map();
 
 export enum Mode {
     View = 'VIEW',
@@ -131,6 +135,8 @@ export class ModeManager {
                 this.controlClick = true;
             } else if (event.key === 'z' && this.controlClick) {
                 serveInter.undoLast();
+            } else if (event.key === 'Escape') {
+                selector.deactivate();
             }
         });
 
@@ -149,6 +155,11 @@ export class ModeManager {
                     board.midMouseDown = true;
                 } else if (event.button === 2) {
                     board.rightMouseDown = true;
+                    if (storedLayers.has(layerMan.currSelect)) {
+                        selector.activate(
+                            storedLayers.get(layerMan.currSelect)!,
+                        );
+                    }
                 }
             },
             { capture: true },
@@ -163,6 +174,7 @@ export class ModeManager {
                     board.midMouseDown = false;
                 } else if (event.button === 2) {
                     board.rightMouseDown = false;
+                    selector.complete();
                 }
             },
             { capture: true },
@@ -242,9 +254,13 @@ export class ModeManager {
         let res: (BoardObject | undefined)[] = board.selectObjects();
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {
+            selector.deactivate();
+            if (this.selectMan.active) {
+                this.selectMan.addSelected(selected);
+                return;
+            }
             this.selectMan.flipListeners(true);
             this.selectMan.setSelected(selected);
-            selector.deactivate();
             if (this.currMode === Mode.Draw) {
                 this.drawMan.active = false;
                 this.drawMan.selectState = 0;

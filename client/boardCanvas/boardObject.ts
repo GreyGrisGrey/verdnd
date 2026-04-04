@@ -48,7 +48,7 @@ export class BoardObject {
         this.currPath = new Path2D();
         this.ctx = undefined;
         this.token = {
-            name: 'na',
+            name: '',
             movable: true,
             active: false,
             colour: '#cccccc',
