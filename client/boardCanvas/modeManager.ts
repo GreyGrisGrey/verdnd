@@ -293,7 +293,7 @@ export class ModeManager {
     // Checks if the manager should swap into / out of select mode.
     // Does the swap if it can.
     attemptSelectedSwap() {
-        if (!this.selectMan.active && this.hasCompleteSelection()) {
+        if (this.hasCompleteSelection()) {
             this.enterSelected();
         } else if (this.selectMan.active && this.selectMan.exitOnNextStep) {
             this.exitSelected();

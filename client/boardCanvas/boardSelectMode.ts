@@ -421,9 +421,19 @@ export class BoardSelectMode {
     }
 
     addSelected(newObjs: BoardObject[]) {
+        let hasAdded = false;
         for (const obj of newObjs) {
-            this.selectedObjects.push(obj);
-            obj.setSelected(true);
+            if (!obj.selected) {
+                this.selectedObjects.push(obj);
+                obj.setSelected(true);
+                hasAdded = true;
+            }
+        }
+        if (!hasAdded) {
+            this.removeSelected(newObjs);
+            if (this.exitOnNextStep) {
+                return;
+            }
         }
         this.boxItems[6].disabled = this.selectedObjects.length <= 1;
         this.boxItems[7].disabled = this.selectedObjects.length <= 1;
@@ -433,6 +443,16 @@ export class BoardSelectMode {
             this.selectedObjects.length > 1 ||
             this.selectedObjects[0].drawParams.ellipse;
         this.toggleBoxes();
+    }
+
+    removeSelected(newObjs: BoardObject[]) {
+        for (const obj of newObjs) {
+            this.selectedObjects.splice(this.selectedObjects.indexOf(obj), 1);
+            obj.setSelected(false);
+        }
+        if (this.selectedObjects.length === 0) {
+            this.exitOnNextStep = true;
+        }
     }
 
     // Updates orbs when an object is moved, allowing object movement to be clean when resize/restructure is selected.
