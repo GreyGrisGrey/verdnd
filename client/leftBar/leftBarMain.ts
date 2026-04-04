@@ -73,7 +73,10 @@ export class LeftBarManager {
         });
 
         hideLeft.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Left, 'hide');
+            tooltipManager.updateTooltipData(
+                TooltipMode.Left,
+                this.visible ? 'hide' : 'show',
+            );
         });
 
         hideLeft.addEventListener('mouseleave', () => {
@@ -83,6 +86,7 @@ export class LeftBarManager {
         hideLeft.addEventListener('click', () => {
             this.visible = !this.visible;
             this.toggleVisible();
+            tooltipManager.hardDisable();
         });
 
         showUserButton.addEventListener('click', () => {

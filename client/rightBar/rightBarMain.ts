@@ -108,10 +108,14 @@ export class RightBarManager {
         hideRight.addEventListener('click', () => {
             this.visible = !this.visible;
             this.toggleVisible();
+            tooltipManager.hardDisable();
         });
 
         hideRight.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Right, 'hide');
+            tooltipManager.updateTooltipData(
+                TooltipMode.Right,
+                this.visible ? 'hide' : 'show',
+            );
         });
 
         hideRight.addEventListener('mouseleave', () => {

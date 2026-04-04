@@ -2,7 +2,13 @@
     "left": {
         "hide": [
             {
-                "text": "Toggle left bar visibility"
+                "text": "Hide left bar"
+            }
+        ],
+        "show": [
+            {
+                "text": "Show left bar",
+                "left": "60px"
             }
         ],
         "changeImage": [
@@ -49,7 +55,13 @@
     "right": {
         "hide": [
             {
-                "text": "Toggle right bar visibility"
+                "text": "Hide right bar"
+            }
+        ],
+        "show": [
+            {
+                "text": "Show right bar",
+                "right": "60px"
             }
         ],
         "layers": [

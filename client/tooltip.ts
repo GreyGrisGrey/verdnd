@@ -17,6 +17,9 @@ export interface TooltipData {
     width?: string;
     height?: string;
     bottom?: string;
+    right?: string;
+    left?: string;
+    top?: string;
 }
 
 export class TooltipManager {
@@ -86,6 +89,19 @@ export class TooltipManager {
             }
             if (text.bottom) {
                 tooltip.style.bottom = text.bottom;
+                tooltip.style.top = '';
+            }
+            if (text.left) {
+                tooltip.style.left = text.left;
+                tooltip.style.right = '';
+            }
+            if (text.right) {
+                tooltip.style.right = text.right;
+                tooltip.style.left = '';
+            }
+            if (text.top) {
+                tooltip.style.top = text.top;
+                tooltip.style.bottom = '';
             }
             this.activeDiv.append(newDiv);
         }
@@ -120,10 +136,25 @@ export class TooltipManager {
         tooltip.style.height = 'fit-content';
     }
 
-    // Disables
-    disable() {
+    // Disables the tooltip immediately
+    hardDisable() {
         this.active = false;
         tooltip.style.visibility = 'hidden';
+    }
+
+    // Waits a moment and then disables the tooltip if it's not active.
+    // For the purposes of avoiding it flickering too much when a user is moving between a bunch of buttons really fast.
+    async shutOff() {
+        await new Promise((resolve) => setTimeout(resolve, 75));
+        if (!this.active) {
+            tooltip.style.visibility = 'hidden';
+        }
+    }
+
+    // Disables, but only after a delay.
+    disable() {
+        this.active = false;
+        this.shutOff();
     }
 
     // Disdisables
