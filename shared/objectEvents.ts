@@ -136,6 +136,7 @@ export interface ObjectRecolourEvent {
     action: Action.Recolour;
     objectId: number;
     colour: string;
+    oldCol?: string;
 }
 
 export interface ObjectRelayerEvent {

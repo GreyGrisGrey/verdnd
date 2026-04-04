@@ -287,7 +287,7 @@ export class TempStore {
                 this.createObject(obj);
             }
         } else if (last[0].action === Action.Recolour) {
-            this.recolourObjects(last, '#000000', true);
+            this.recolourObjects(last, true);
         } else if (last[0].action === Action.Move) {
             this.moveObjects(last, true);
         }
@@ -639,11 +639,7 @@ export class TempStore {
 
     // Receives a list of objects to recolour, checks each object's existence, if it exists recolours it and tells the backend to recolour it too.
     // Questionable that it sends a packet for each object.
-    recolourObjects(
-        events: ObjectRecolourEvent[],
-        oldCol: string,
-        undo: boolean = false,
-    ) {
+    recolourObjects(events: ObjectRecolourEvent[], undo: boolean = false) {
         if (!this.isGm) {
             return;
         }
@@ -654,7 +650,7 @@ export class TempStore {
                     entity: event.entity,
                     action: event.action,
                     objectId: event.objectId,
-                    colour: oldCol,
+                    colour: event.oldCol!,
                 });
             }
             const targetObj = this.storedObjectPayloads.get(event.objectId);

@@ -72,17 +72,15 @@ export class ObjectMenu {
             if (temp.currObj) {
                 temp.currObj.colour = colourBox.getCurrColour();
                 if (!top && this.currSelected.objectId >= 0) {
-                    serveInter.recolourObjects(
-                        [
-                            {
-                                entity: Entity.Object,
-                                action: Action.Recolour,
-                                objectId: this.currSelected.objectId,
-                                colour: colourBox.getCurrColour(),
-                            },
-                        ],
-                        colourBox.getCurrColour(),
-                    );
+                    serveInter.recolourObjects([
+                        {
+                            entity: Entity.Object,
+                            action: Action.Recolour,
+                            objectId: this.currSelected.objectId,
+                            colour: colourBox.getCurrColour(),
+                            oldCol: this.currSelected.getColour(),
+                        },
+                    ]);
                 }
             }
         });

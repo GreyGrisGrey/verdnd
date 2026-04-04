@@ -390,10 +390,11 @@ export class BoardSelectMode {
                 action: Action.Recolour,
                 objectId: obj.objectId,
                 colour: colourBox.getCurrColour(),
+                oldCol: obj.getColour(),
             });
             obj.setColour(colourBox.getCurrColour());
         }
-        serveInter.recolourObjects(recolourList, this.currColour);
+        serveInter.recolourObjects(recolourList);
         this.currColour = colourBox.getCurrColour();
     }
 

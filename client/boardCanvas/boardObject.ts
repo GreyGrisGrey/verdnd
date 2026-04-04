@@ -130,6 +130,10 @@ export class BoardObject {
         return this.br;
     }
 
+    getColour() {
+        return this.colour;
+    }
+
     // Checks if the object's token is active.
     hasToken() {
         return this.token.active;

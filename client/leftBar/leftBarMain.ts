@@ -5,6 +5,7 @@ import { getRequiredElement } from '../dom.ts';
 import { TempStore } from '../serveInter.ts';
 import { Board } from '../boardCanvas/localBoard.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
+import { ModeManager } from '../boardCanvas/modeManager.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
@@ -20,6 +21,7 @@ const rollBox = new RollBox();
 const serveInter = new TempStore();
 const board = new Board();
 const tooltipManager = new TooltipManager();
+const modeMan = new ModeManager();
 
 // Class managing the top-left box.
 // Somewhat poorly named.
@@ -125,7 +127,7 @@ export class LeftBarManager {
             ) {
                 return;
             }
-            if (event.key === 'z') {
+            if (event.key === 'z' && !modeMan.controlClick) {
                 this.toggleActive('USER');
             } else if (event.key === 'x' && serveInter.isGm) {
                 this.toggleActive('COLOUR');
