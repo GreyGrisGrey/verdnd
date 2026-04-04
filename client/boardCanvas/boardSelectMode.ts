@@ -14,6 +14,8 @@ import { GOLD } from '../../shared/colours.ts';
 import { TempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
+import { Selector } from './selector.ts';
+const selector = new Selector();
 const objectMan = new ObjectMenu();
 const colourBox = new ColourBox();
 const board = new Board();

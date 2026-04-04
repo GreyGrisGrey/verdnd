@@ -1,6 +1,6 @@
 import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import { Board } from './localBoard.ts';
+import { Board, CoordModes } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type {
@@ -8,12 +8,13 @@ import type {
     ObjectParams,
 } from '../../shared/objectEvents.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
-import { CoordModes } from './localBoard.ts';
 import { TempStore } from '../serveInter.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
+import { Selector } from './selector.ts';
+const selector = new Selector();
 const layerMan = new LayerMenu();
 const colourBox = new ColourBox();
 const board = new Board();
@@ -22,7 +23,7 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const serveInter = new TempStore();
 const objectMan = new ObjectMenu();
 
-function rectangleFromPoints(point1: Vec2, point2: Vec2): number[] {
+export function rectangleFromPoints(point1: Vec2, point2: Vec2): number[] {
     const x = Math.min(point1.x, point2.x);
     const y = Math.min(point1.y, point2.y);
     const width = Math.max(point1.x, point2.x) - x + 1;
@@ -34,7 +35,6 @@ function rectangleFromPoints(point1: Vec2, point2: Vec2): number[] {
 export class BoardDrawMode {
     active: boolean;
     params: Vec2[];
-    selectMode: boolean;
     selectState: number;
     tempObject: ObjectCreatePayload | null;
     stickTemp: boolean;
@@ -48,7 +48,6 @@ export class BoardDrawMode {
         this.currDraw = 2;
         this.active = false;
         this.params = [];
-        this.selectMode = false;
         this.selectState = 0;
         this.tempObject = null;
         this.stickTemp = false;
@@ -107,20 +106,19 @@ export class BoardDrawMode {
 
     // Flips which control buttons are disabled.
     flipBoxes() {
-        this.boxItems[0].disabled = this.selectMode;
-        this.boxItems[1].disabled = !this.selectMode && this.currDraw === 2;
-        this.boxItems[2].disabled = !this.selectMode && this.currDraw === 3;
-        this.boxItems[3].disabled = !this.selectMode && this.currDraw === 4;
-        this.boxItems[4].disabled = !this.selectMode && this.currDraw === 5;
+        this.boxItems[0].disabled = true;
+        this.boxItems[1].disabled = !selector.active && this.currDraw === 2;
+        this.boxItems[2].disabled = !selector.active && this.currDraw === 3;
+        this.boxItems[3].disabled = !selector.active && this.currDraw === 4;
+        this.boxItems[4].disabled = !selector.active && this.currDraw === 5;
         this.boxItems[5].disabled = this.params.length < 2;
-        this.boxItems[7].disabled = !this.selectMode && this.currDraw === 8;
+        this.boxItems[7].disabled = !selector.active && this.currDraw === 8;
     }
 
     // Flips the active state of the mode and resets key variables.
     flipListeners(setOn: boolean) {
         this.active = setOn;
         this.params = [];
-        this.selectMode = false;
         this.selectState = 0;
         this.toggleBoxes();
     }
@@ -149,16 +147,11 @@ export class BoardDrawMode {
         } else if (key === '5') {
             this.currParams = { ellipse: false, fill: false, close: false };
             this.currDraw = 5;
-        } else if (key === '6' && !this.selectMode) {
+        } else if (key === '6') {
             this.setNewObject();
         } else if (key === '8') {
             this.currDraw = 8;
             this.paste = true;
-        }
-        if (key === '1') {
-            this.selectMode = !this.selectMode;
-        } else {
-            this.selectMode = false;
         }
         this.params = [];
     }
@@ -190,7 +183,7 @@ export class BoardDrawMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                if (this.currDraw < 4 || this.selectMode) {
+                if (this.currDraw < 4) {
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x -
@@ -230,6 +223,8 @@ export class BoardDrawMode {
                         ),
                     );
                 }
+            } else if (this.active && event.button === 2) {
+                selector.activate(this.currLayer);
             }
         });
 
@@ -238,27 +233,6 @@ export class BoardDrawMode {
             if (event.button === 0) {
                 if (this.params.length === 0) {
                     return;
-                } else if (this.active && this.selectMode) {
-                    const newPos = board.determineTile(
-                        board.mouseCoords.x -
-                            this.currLayer.layerOffset.x * board.zoomVal * 5,
-                        board.mouseCoords.y -
-                            this.currLayer.layerOffset.y * board.zoomVal * 5,
-                        CoordModes.Center,
-                    );
-                    if (
-                        newPos.x === this.params[0].x &&
-                        newPos.y === this.params[0].y
-                    ) {
-                        this.selectState = 1;
-                    } else {
-                        const res = rectangleFromPoints(this.params[0], newPos);
-                        this.params = [
-                            { x: res[0], y: res[1] },
-                            { x: res[0] + res[2], y: res[1] + res[3] },
-                        ];
-                        this.selectState = 2;
-                    }
                 } else if (this.active && this.currDraw < 4) {
                     const res = board.determineTile(
                         board.mouseCoords.x -
@@ -270,6 +244,8 @@ export class BoardDrawMode {
                     this.params.push({ x: res.x, y: res.y });
                     this.setNewObject();
                 }
+            } else if (this.active && event.button === 2) {
+                selector.complete();
             }
         });
     }
@@ -354,37 +330,7 @@ export class BoardDrawMode {
                 this.tempObject.points,
             );
         }
-        if (this.selectMode) {
-            if (this.params.length >= 1) {
-                const res = board.determineTile(
-                    board.mouseCoords.x,
-                    board.mouseCoords.y,
-                    CoordModes.Center,
-                );
-                const extParams = {
-                    x: this.params[0].x + this.currLayer.layerOffset.x,
-                    y: this.params[0].y + this.currLayer.layerOffset.y,
-                };
-                const res2 = rectangleFromPoints(extParams, res);
-                const col = WHITE_50;
-                return new BoardObject(
-                    -1,
-                    col,
-                    {
-                        ellipse: false,
-                        fill: true,
-                        close: true,
-                        rect: true,
-                    },
-                    [
-                        { x: res2[0], y: res2[1] },
-                        { x: res2[0] + res2[2], y: res2[1] },
-                        { x: res2[0] + res2[2], y: res2[1] + res2[3] },
-                        { x: res2[0], y: res2[1] + res2[3] },
-                    ],
-                );
-            }
-        } else if (this.currDraw < 4 && this.params.length >= 1) {
+        if (this.currDraw < 4 && this.params.length >= 1) {
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,

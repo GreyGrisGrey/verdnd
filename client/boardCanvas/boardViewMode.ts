@@ -5,6 +5,8 @@ import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
 import { ModeManager } from './modeManager.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
+import { Selector } from './selector.ts';
+const selector = new Selector();
 const colourBox = new ColourBox();
 const modeMan = new ModeManager();
 const board = new Board();
@@ -226,7 +228,6 @@ export class BoardViewMode {
         can.addEventListener('mousemove', (event) => {
             can.focus();
             if (
-                board.rightMouseDown ||
                 (board.leftMouseDown &&
                     !this.completeSelectCheck &&
                     this.active) ||

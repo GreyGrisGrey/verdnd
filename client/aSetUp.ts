@@ -4,6 +4,7 @@ import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { getRequiredElement } from './dom.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 import { Board } from './boardCanvas/localBoard.ts';
+import { Selector } from './boardCanvas/selector.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -48,6 +49,7 @@ const leftBar = getRequiredElement('leftBar', HTMLElement);
 const colourPicker = getRequiredElement('colourPicker', HTMLElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const undoButton = getRequiredElement('undoMenuButton', HTMLButtonElement);
-const modeMan = new ModeManager();
 const board = new Board();
+const selector = new Selector();
+const modeMan = new ModeManager();
 // Pandemonium

@@ -7,6 +7,8 @@ import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { TempStore } from '../serveInter.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
+import { Selector } from './selector.ts';
+const selector = new Selector();
 const tooltipManager = new TooltipManager();
 const serveInter = new TempStore();
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
@@ -180,7 +182,7 @@ export class ModeManager {
 
     // Checks if the user has selected an area of the canvas.
     hasCompleteSelection(): boolean {
-        if (this.currMode === Mode.Draw && this.drawMan.selectState > 0) {
+        if (this.currMode === Mode.Draw && selector.selectState > 0) {
             return true;
         } else if (
             this.currMode === Mode.View &&
@@ -193,8 +195,8 @@ export class ModeManager {
 
     // Retrieves the coordinates corresponding to the currently selected area of the canvas.
     getSelectCoords(): Vec2[] {
-        if (this.currMode === Mode.Draw && this.drawMan.selectState !== 0) {
-            return this.drawMan.params;
+        if (this.currMode === Mode.Draw && selector.selectState !== 0) {
+            return selector.params;
         }
         return [{ x: 0, y: 0 }];
     }
@@ -202,6 +204,9 @@ export class ModeManager {
     // Retrieves the object currently being drawn by the draw mode.
     getObject(reason: GetObjectReason): BoardObject | undefined {
         if (reason === GetObjectReason.Draw) {
+            if (selector.active) {
+                return selector.getTempObject();
+            }
             if (this.currMode === Mode.Draw) {
                 return this.drawMan.getTempObject();
             }
@@ -243,12 +248,14 @@ export class ModeManager {
             if (this.currMode === Mode.Draw) {
                 this.drawMan.active = false;
                 this.drawMan.selectState = 0;
+                selector.deactivate();
                 this.drawMan.params = [];
                 this.drawMan.toggleBoxes();
             }
         } else {
             if (this.currMode === Mode.Draw) {
                 this.drawMan.selectState = 0;
+                selector.deactivate();
                 this.drawMan.params = [];
             }
         }
@@ -259,7 +266,7 @@ export class ModeManager {
         this.selectMan.flipListeners(false);
         if (this.currMode === Mode.Draw) {
             this.drawMan.active = true;
-            this.drawMan.selectMode = false;
+            selector.deactivate();
             this.drawMan.toggleBoxes();
         } else if (this.currMode === Mode.View) {
             this.viewMan.flipListeners(true);
