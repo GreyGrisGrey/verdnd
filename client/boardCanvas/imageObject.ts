@@ -123,12 +123,14 @@ export class ImageObject {
         squareSize: number = 1,
         offset: Vec2 = { x: 0, y: 0 },
         drawCtx: CanvasRenderingContext2D = ctx,
+        drawOpac: number = 1,
     ): boolean {
         if (this.drawFlag) {
             if (path) {
                 drawCtx.save();
                 drawCtx.clip(path);
             }
+            drawCtx.globalAlpha = drawOpac;
             drawCtx.drawImage(
                 this.image,
                 this.imageOffset.x + offset.x,
@@ -136,6 +138,7 @@ export class ImageObject {
                 this.image.width * squareSize,
                 this.image.height * squareSize,
             );
+            drawCtx.globalAlpha = 1;
             if (path) {
                 drawCtx.restore();
             }

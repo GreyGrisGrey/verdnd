@@ -375,7 +375,7 @@ export class GameObject {
             this.laserTimer = currTime;
         }
         for (const [key, val] of this.laserMap) {
-            if (this.laserTimer - val.time > 2000) {
+            if (this.laserTimer - val.time > 10000) {
                 this.laserMap.delete(key);
             } else {
                 this.broadcast(JSON.stringify(val));

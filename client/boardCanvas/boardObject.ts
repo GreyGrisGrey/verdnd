@@ -29,6 +29,7 @@ export class BoardObject {
     imageObj: ImageObject;
     tl: Vec2;
     br: Vec2;
+    opac: number;
 
     constructor(
         objectId: number,
@@ -58,6 +59,8 @@ export class BoardObject {
         this.tl = { x: 0, y: 0 };
         this.br = { x: 0, y: 0 };
         this.updateObject(false);
+        this.opac = 1;
+        this.setOpac();
     }
 
     // Standard getters
@@ -97,11 +100,19 @@ export class BoardObject {
         }
     }
 
+    setOpac() {
+        const check = this.colour.slice(0, this.colour.length - 1).split(' ');
+        if (check.length === 4) {
+            this.opac = Number(check[3]);
+        }
+    }
+
     // Updates secondary attributes of the object, also tells the server interface to update it if sendObj is set to true.
     updateObject(sendObj: boolean) {
         this.updateTopLeft();
         this.updateBottomRight();
         this.setCenter();
+        this.setOpac();
         if (sendObj && this.objectId >= 0) {
             serveInter.updateObject(this.payloadFromObject());
         }
@@ -183,6 +194,7 @@ export class BoardObject {
                     y: offset.y + this.tl.y * squareSize,
                 },
                 ctx,
+                this.opac,
             )
         ) {
             if (!this.drawParams.fill) {

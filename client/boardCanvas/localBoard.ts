@@ -275,7 +275,7 @@ export class Board {
         this.draw();
         const newLasers = serveInter.getLasers();
         for (const [key, val] of newLasers) {
-            if (Date.now() - val.time < 1500) {
+            if (Date.now() - val.time < 10000) {
                 this.drawLaser(
                     val.coords.x,
                     val.coords.y,

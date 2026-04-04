@@ -42,6 +42,7 @@ export class BoardDrawMode {
     currParams: ObjectParams;
     currDraw: number;
     currLayer: BoardLayer;
+    paste: boolean;
 
     constructor() {
         this.currDraw = 2;
@@ -59,6 +60,7 @@ export class BoardDrawMode {
             rect: true,
         };
         this.currLayer = new BoardLayer(0, true, true, 0);
+        this.paste = false;
         this.addEventListeners();
         this.setUpBoxes();
         this.flipBoxes();
@@ -106,12 +108,12 @@ export class BoardDrawMode {
     // Flips which control buttons are disabled.
     flipBoxes() {
         this.boxItems[0].disabled = this.selectMode;
-        this.boxItems[1].disabled = this.currDraw === 2;
-        this.boxItems[2].disabled = this.currDraw === 3;
-        this.boxItems[3].disabled = this.currDraw === 4;
-        this.boxItems[4].disabled = this.currDraw === 5;
+        this.boxItems[1].disabled = !this.selectMode && this.currDraw === 2;
+        this.boxItems[2].disabled = !this.selectMode && this.currDraw === 3;
+        this.boxItems[3].disabled = !this.selectMode && this.currDraw === 4;
+        this.boxItems[4].disabled = !this.selectMode && this.currDraw === 5;
         this.boxItems[5].disabled = this.params.length < 2;
-        this.boxItems[7].disabled = this.currDraw === 8;
+        this.boxItems[7].disabled = !this.selectMode && this.currDraw === 8;
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -125,6 +127,7 @@ export class BoardDrawMode {
 
     // Handles key press events when draw mode is active.
     handleSwitchEvent(key: string) {
+        this.paste = false;
         if (key === '2') {
             this.currParams = {
                 ellipse: false,
@@ -150,9 +153,9 @@ export class BoardDrawMode {
             this.setNewObject();
         } else if (key === '8') {
             this.currDraw = 8;
+            this.paste = true;
         }
         if (key === '1') {
-            this.currDraw = 1;
             this.selectMode = !this.selectMode;
         } else {
             this.selectMode = false;
@@ -209,7 +212,7 @@ export class BoardDrawMode {
                             CoordModes.Vertex,
                         ),
                     );
-                    this.boxItems[6].disabled =
+                    this.boxItems[5].disabled =
                         this.params.length < 3 &&
                         (this.params.length < 2 || this.currDraw !== 5);
                 } else {

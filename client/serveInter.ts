@@ -22,6 +22,7 @@ import { ModeManager } from './boardCanvas/modeManager.ts';
 import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RollMenu } from './rightBar/rollBarMenu.ts';
 import { TooltipManager, TooltipMode } from './tooltip.ts';
+import { ObjectMenu } from './rightBar/objectBarMenu.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -39,6 +40,7 @@ const modeMan = new ModeManager();
 const leftMan = new LeftBarManager();
 const rollMan = new RollMenu();
 const tooltipManager = new TooltipManager();
+const objectMan = new ObjectMenu();
 
 function payloadToBoardObject(p: ObjectCreatePayload): BoardObject {
     return new BoardObject(p.objectId, p.colour, p.params, p.points);
@@ -187,6 +189,15 @@ export class TempStore {
                         );
                         this.undoCreateTracker.delete(this.secondIndex);
                         modeMan.clearTemp();
+                        if (
+                            modeMan.drawMan.paste &&
+                            objectMan.currTemplate.currObj.imageObj.drawFlag
+                        ) {
+                            this.uploadBlob(
+                                message.object.objectId,
+                                objectMan.currTemplate.currObj.imageObj.blob,
+                            );
+                        }
                     }
                     this.storedObjectPayloads.set(
                         message.object.objectId,

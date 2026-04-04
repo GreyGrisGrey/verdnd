@@ -8,7 +8,6 @@ import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
 const topHalf = getRequiredElement('topObjBox', HTMLElement);
 const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
-const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const serveInter = new TempStore();
 const colourBox = new ColourBox();
