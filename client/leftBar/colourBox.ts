@@ -4,7 +4,7 @@ import { CoordModes } from '../boardCanvas/localBoard.ts';
 import { TempStore } from '../serveInter.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
 const tooltipManager = new TooltipManager();
-const colourPicker = getRequiredElement('colourPicker', HTMLElement);
+const colourPicker = getRequiredElement('colourPicker', HTMLButtonElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const colourContainer = getRequiredElement('colourContainer', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -34,6 +34,7 @@ export class ColourBox {
         this.adjBoxes = [];
         this.shiftIsPressed = false;
         this.pickColour = false;
+        colourPicker.disabled = false;
         for (const i of [0, 1, 2, 3, 4, 5, 6]) {
             this.adjBoxes.push(getRequiredElement(`col${i + 1}`, HTMLElement));
             this.adjBoxes[i].style.left = `${i * 32.5 + 5}px`;
@@ -70,11 +71,13 @@ export class ColourBox {
                     }
                 }
                 this.pickColour = false;
+                colourPicker.disabled = false;
             }
         });
 
         colourPicker.addEventListener('click', () => {
             this.pickColour = true;
+            colourPicker.disabled = true;
         });
 
         colourPicker.addEventListener('mouseenter', () => {
@@ -100,6 +103,9 @@ export class ColourBox {
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Shift') {
                 this.shiftIsPressed = true;
+            } else if (event.key === 'm') {
+                this.pickColour = true;
+                colourPicker.disabled = true;
             }
         });
 

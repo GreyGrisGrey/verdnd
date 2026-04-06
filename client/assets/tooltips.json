@@ -26,7 +26,7 @@
         ],
         "pickCol": [
             {
-                "type": "header",
+                "boldText": "Hotkey M : ",
                 "text": "Colour picker"
             },
             {
@@ -42,7 +42,7 @@
         "col": [
             {
                 "boldText": "Hotkey X : ",
-                "text": "Display colour select"
+                "text": "Display colour selection"
             }
         ],
         "users": [
