@@ -37,7 +37,6 @@
     </div>
     <div id="layerLayerObj">
         <div id="layerTop">
-            <p id="layerText">Edit Layer</p>
             <p id="currLayerText">Currently Selected : Layer 0</p>
             <p id="renameLayerText">Name:</p>
             <p id="xLayerText">X offset:</p>
@@ -52,15 +51,14 @@
             <button id="layerDownButton">Move Down</button>
             <button id="deleteLayerButton">Remove Current Layer</button>
         </div>
-        <div id="layerMid">
-            <div id="descLayerObj">
-                <p id="descLayerObjNumText">Layer #</p>
-                <p id="descLayerObjFirstCheck">GM<br>Vis</p>
-                <p id="descLayerObjSecondCheck">Player<br>Vis</p>
-            </div>
-            <button id="tempButtonObj">Make Layer</button>
+        <div id="descLayerObj">
+            <p id="descLayerObjNumText">Layer #</p>
+            <p id="descLayerObjFirstCheck">GM<br>Vis</p>
+            <p id="descLayerObjSecondCheck">Player<br>Vis</p>
         </div>
-        <div id="layerBottom"></div>
+        <div id="layerBottom">
+        </div>
+        <button id="addLayerButton">Make Layer</button>
     </div>
 </div>
 
@@ -133,69 +131,68 @@
 
     #layerUpButton {
         position: absolute;
-        right: 20px;
-        top: 0px;
-        width: 40px;
-        height: 40px;
-        border-radius: 0px;
+        right: 10px;
+        top: 106px;
+        width: 90px;
+        height: 30px;
+        border-radius: 10px;
         z-index: 3;
     }
 
     #layerDownButton {
         position: absolute;
-        right: 20px;
-        top: 40px;
-        width: 40px;
-        height: 40px;
-        border-radius: 0px;
+        right: 10px;
+        top: 156px;
+        width: 90px;
+        height: 30px;
+        border-radius: 10px;
         z-index: 3;
-    }
-
-    #layerText {
-        position: absolute;
-        top: 10px;
-        left: 10px;
     }
 
     #currLayerText {
         position: absolute;
-        top: 45px;
+        top: 10px;
         left: 10px;
+        width: 230px;
+        white-space: nowrap;
     }
 
     #rename {
         position: absolute;
-        top: 90px;
+        top: 65px;
         left: 70px;
+        width: 157px;
     }
 
     #renameLayerText {
         position: absolute;
-        top: 77px;
+        top: 52px;
         left: 10px;
     }
 
     #xChange {
         position: absolute;
-        top: 130px;
+        top: 110px;
         left: 70px;
+        width: 50px;
     }
 
     #xLayerText {
         position: absolute;
-        top: 117px;
+        top: 97px;
         left: 10px;
     }
 
     #yChange {
         position: absolute;
-        top: 170px;
+        top: 160px;
         left: 70px;
+        width: 50px;
     }
 
     #yLayerText {
         position: absolute;
-        top: 157px;
+        top: 147px;
         left: 10px;
     }
 
@@ -214,27 +211,24 @@
         width: 246px;
     }
 
-    #layerMid {
-        position: absolute;
-        width: 250px;
-        top: 255px;
-        height: 100px;
-    }
-
     #layerBottom {
         position: absolute;
         width: 250px;
-        top: 350px;
+        top: 300px;
         height: 250px;
         overflow-y: auto;
         overflow-x: hidden;
     }
 
     #descLayerObj {
-        width: 250px;
-        height: 50px;
         position: absolute;
-        top: 0px;
+        width: 250px;
+        top: 250px;
+        height: 50px;
+        border: 1px solid rgba(80, 80, 80, 1);
+        border-left: none;
+        border-right: none;
+        z-index: 4;
     }
 
     #descLayerObjFirstCheck {
@@ -251,16 +245,17 @@
         text-align: center;
     }
 
-    #tempButtonObj {
+    #addLayerButton {
         position: absolute;
         left: 0px;
         width: 250px;
-        top: 50px;
+        bottom: 0px;
         height: 50px;
-        border-radius: 0px;
+        border-radius: 0px 0px 10px 10px;
         z-index: 3;
         border-left: none;
         border-right: none;
+        border-bottom: none;
     }
 
     #deleteLayerButton {

@@ -10,8 +10,8 @@ const layerRenameInput = getRequiredElement('rename', HTMLInputElement);
 const layerXInput = getRequiredElement('xChange', HTMLInputElement);
 const layerYInput = getRequiredElement('yChange', HTMLInputElement);
 const deleteButton = getRequiredElement('deleteLayerButton', HTMLElement);
-const upButton = getRequiredElement('layerUpButton', HTMLElement);
-const downButton = getRequiredElement('layerDownButton', HTMLElement);
+const upButton = getRequiredElement('layerUpButton', HTMLButtonElement);
+const downButton = getRequiredElement('layerDownButton', HTMLButtonElement);
 const storedLayerStates: Map<number, LayerState> = new Map();
 const serveInter = new TempStore();
 const modeMan = new ModeManager();
@@ -24,7 +24,7 @@ export class LayerMenu {
     layerObj: HTMLElement;
     boxHeight: number;
     currSelect: number;
-    tempButtonObj: HTMLElement;
+    addLayerButton: HTMLElement;
 
     constructor() {
         this.active = false;
@@ -32,16 +32,15 @@ export class LayerMenu {
         this.layerObj = getRequiredElement('layerLayerObj', HTMLElement);
         this.boxHeight = 50;
         this.currSelect = 0;
-        this.tempButtonObj = getRequiredElement('tempButtonObj', HTMLElement);
+        this.addLayerButton = getRequiredElement('addLayerButton', HTMLElement);
         currLayerText.style.overflow = 'hidden';
-        currLayerText.style.width = '120px';
         this.addEventListeners();
         this.moveLayers();
     }
 
     // Add event listeners.
     addEventListeners() {
-        this.tempButtonObj.addEventListener('click', () => {
+        this.addLayerButton.addEventListener('click', () => {
             if (this.active) {
                 this.createLayer();
             }
@@ -128,7 +127,12 @@ export class LayerMenu {
         layerYInput.value = val.y.toString();
         layerRenameInput.value = val.name.toString();
         currLayerText.innerText =
-            val.name === 'none' ? `Layer ${this.currSelect}` : val.name;
+            val.name === 'none'
+                ? `Edit Layer : Layer ${this.currSelect}`
+                : `Edit Layer : ${val.name}`;
+        console.log(val);
+        downButton.disabled = val.zOrder === 0;
+        upButton.disabled = val.zOrder === storedLayerStates.size - 1;
     }
 
     // Updates the layer corresponding to a key value from a LayerState.
@@ -288,11 +292,7 @@ export class LayerMenu {
         }
         if (layer) {
             layer.element!.style.background = GREY_DARK.toString();
-            layerXInput.value = layer.x.toString();
-            layerYInput.value = layer.y.toString();
-            layerRenameInput.value = layer.name;
-            currLayerText.innerText =
-                layer.name === 'none' ? `Layer ${this.currSelect}` : layer.name;
+            this.updateInputs(layer);
         } else {
             console.log(this.currSelect);
             console.log('Error, layerMan has invalid layer.');
