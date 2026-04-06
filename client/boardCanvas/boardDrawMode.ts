@@ -325,7 +325,6 @@ export class BoardDrawMode {
             );
         }
         if (this.currDraw < 3 && this.params.length >= 1) {
-            console.log('bwa');
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,
