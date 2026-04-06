@@ -5,15 +5,12 @@ import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
 import { ModeManager } from './modeManager.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
-import { Selector } from './selector.ts';
-const selector = new Selector();
 const colourBox = new ColourBox();
 const modeMan = new ModeManager();
 const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
-const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
@@ -51,8 +48,6 @@ export class BoardViewMode {
         this.measuring = false;
         this.completeSelectCheck = false;
         this.selectedToken = null;
-        measureDegrees.style.visibility = setOn ? 'visible' : 'hidden';
-        measureLabel.style.visibility = setOn ? 'visible' : 'hidden';
         this.toggleBoxes();
     }
 

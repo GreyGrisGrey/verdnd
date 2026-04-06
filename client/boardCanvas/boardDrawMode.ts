@@ -1,7 +1,6 @@
 import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { Board, CoordModes } from './localBoard.ts';
-import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import type {
     ObjectCreatePayload,

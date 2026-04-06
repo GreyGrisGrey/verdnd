@@ -251,7 +251,7 @@
         ],
         "selMany0": [
             {
-                "boldText": "Hotkey 0 : ",
+                "boldText": "Hotkey 9 : ",
                 "text": "Restructure object"
             },
             {
@@ -260,37 +260,36 @@
         ],
         "selMany1": [
             {
-                "boldText": "Hotkey Escape/1 : ",
-                "text": "Exit current selection"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "selMany2": [
             {
-                "boldText": "Hotkey Delete/Backspace/2 : ",
+                "boldText": "Hotkey Delete/Backspace/1 : ",
                 "text": "Deletes currently selected objects"
             }
         ],
         "selMany3": [
             {
-                "boldText": "Hotkey 3 : ",
+                "boldText": "Hotkey 2 : ",
                 "text": "Recolour currently selected objects"
             }
         ],
         "selMany4": [
             {
-                "boldText": "Hotkey 4 : ",
+                "boldText": "Hotkey 3 : ",
                 "text": "Pushes the currently selected objects up a layer"
             }
         ],
         "selMany5": [
             {
-                "boldText": "Hotkey 5 : ",
+                "boldText": "Hotkey 4 : ",
                 "text": "Pushes the currently selected objects down a layer"
             }
         ],
         "selMany6": [
             {
-                "boldText": "Hotkey 6 : ",
+                "boldText": "Hotkey 5 : ",
                 "text": "Turn selected objects into tokens"
             },
             {
@@ -299,7 +298,7 @@
         ],
         "selMany7": [
             {
-                "boldText": "Hotkey 7 : ",
+                "boldText": "Hotkey 6 : ",
                 "text": "Rename currently selected objects"
             },
             {
@@ -308,13 +307,13 @@
         ],
         "selMany8": [
             {
-                "boldText": "Hotkey 8 : ",
+                "boldText": "Hotkey 7 : ",
                 "text": "Recolour currently selected objects outlines"
             }
         ],
         "selMany9": [
             {
-                "boldText": "Hotkey 9 : ",
+                "boldText": "Hotkey 8 : ",
                 "text": "Resize object"
             },
             {
@@ -323,7 +322,7 @@
         ],
         "selOne0": [
             {
-                "boldText": "Hotkey 0 : ",
+                "boldText": "Hotkey 9 : ",
                 "text": "Restructure object"
             },
             {
@@ -332,37 +331,36 @@
         ],
         "selOne1": [
             {
-                "boldText": "Hotkey Escape/1 : ",
-                "text": "Exit current selection"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "selOne2": [
             {
-                "boldText": "Hotkey Delete/Backspace/2 : ",
+                "boldText": "Hotkey Delete/Backspace/1 : ",
                 "text": "Deletes currently selected object"
             }
         ],
         "selOne3": [
             {
-                "boldText": "Hotkey 3 : ",
+                "boldText": "Hotkey 2 : ",
                 "text": "Recolour currently selected object"
             }
         ],
         "selOne4": [
             {
-                "boldText": "Hotkey 4 : ",
+                "boldText": "Hotkey 3 : ",
                 "text": "Pushes the currently selected object up a layer"
             }
         ],
         "selOne5": [
             {
-                "boldText": "Hotkey 5 : ",
+                "boldText": "Hotkey 4 : ",
                 "text": "Pushes the currently selected object down a layer"
             }
         ],
         "selOne6": [
             {
-                "boldText": "Hotkey 6 : ",
+                "boldText": "Hotkey 5 : ",
                 "text": "Turn selected object into a token"
             },
             {
@@ -371,7 +369,7 @@
         ],
         "selOne7": [
             {
-                "boldText": "Hotkey 7 : ",
+                "boldText": "Hotkey 6 : ",
                 "text": "Rename currently selected object"
             },
             {
@@ -380,13 +378,13 @@
         ],
         "selOne8": [
             {
-                "boldText": "Hotkey 8 : ",
+                "boldText": "Hotkey 7 : ",
                 "text": "Recolour currently selected object outline"
             }
         ],
         "selOne9": [
             {
-                "boldText": "Hotkey 9 : ",
+                "boldText": "Hotkey 8 : ",
                 "text": "Resize object"
             },
             {
@@ -454,7 +452,27 @@
         ],
         "select": [
             {
-                "text": "This mode is not enabled"
+                "boldText": "Hotkey S : ",
+                "text": "Select mode"
+            },
+            {
+                "text": "Select and modify objects"
+            },
+            {
+                "boldText": "Left click + drag : ",
+                "text": "Move selected/pan camera"
+            },
+            {
+                "boldText": "Middle click + drag : ",
+                "text": "Pan camera"
+            },
+            {
+                "boldText": "Right click/Right click + drag : ",
+                "text": "Select object/objects"
+            },
+            {
+                "boldText": "Escape : ",
+                "text": "Exit current selection"
             }
         ]
     }

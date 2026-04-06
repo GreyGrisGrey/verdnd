@@ -148,28 +148,37 @@ export class BoardSelectMode {
 
     // Handles any event switching between different select tools.
     handleSwitchEvent(key: string) {
-        if (key === 'Escape' || key === '1') {
+        if (key === 'Escape') {
             this.exitOnNextStep = true;
-        } else if (key === 'Backspace' || key === 'Delete' || key === '2') {
+            for (const obj of this.selectedObjects) {
+                obj.setSelected(false);
+            }
+            this.selectedObjects = [];
+            for (const obj of this.orbs) {
+                obj.deconstruct();
+            }
+            this.orbs = [];
+            objectMan.disableSecondary();
+        } else if (key === 'Backspace' || key === 'Delete' || key === '1') {
             const idList: number[] = [];
             for (const obj of this.selectedObjects) {
                 idList.push(obj.objectId);
             }
             serveInter.destroyObjects(idList);
             this.exitOnNextStep = true;
-        } else if (key === '3') {
+        } else if (key === '2') {
             this.recolour();
-        } else if (key === '4') {
+        } else if (key === '3') {
             this.layerSwitch(true);
-        } else if (key === '5') {
+        } else if (key === '4') {
             this.layerSwitch(false);
-        } else if (key === '6' && this.selectedObjects.length > 1) {
+        } else if (key === '5' && this.selectedObjects.length > 1) {
             this.tokenize();
-        } else if (key === '7' && this.selectedObjects.length > 1) {
+        } else if (key === '6' && this.selectedObjects.length > 1) {
             this.attemptRename();
-        } else if (key === '8' && this.selectedObjects.length > 1) {
+        } else if (key === '7' && this.selectedObjects.length > 1) {
             this.attemptTokenRecolour();
-        } else if (key === '9' && this.selectedObjects.length === 1) {
+        } else if (key === '8' && this.selectedObjects.length === 1) {
             for (const obj of this.orbs) {
                 obj.deconstruct();
             }
@@ -177,7 +186,7 @@ export class BoardSelectMode {
             this.setUpCorners();
             this.updateCornerOffset();
             this.boxDraw = true;
-        } else if (key === '0' && this.selectedObjects.length === 1) {
+        } else if (key === '9' && this.selectedObjects.length === 1) {
             for (const obj of this.orbs) {
                 obj.deconstruct();
             }
@@ -414,13 +423,6 @@ export class BoardSelectMode {
     // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[], skipSwap: boolean) {
         this.selectedObjects = newObjs;
-        this.boxItems[6].disabled = this.selectedObjects.length <= 1;
-        this.boxItems[7].disabled = this.selectedObjects.length <= 1;
-        this.boxItems[8].disabled = this.selectedObjects.length <= 1;
-        this.boxItems[9].disabled = this.selectedObjects.length > 1;
-        this.boxItems[0].disabled =
-            this.selectedObjects.length > 1 ||
-            this.selectedObjects[0].drawParams.ellipse;
         this.currLayer = storedLayers.get(newObjs[0].layerId)!;
         for (const obj of this.selectedObjects) {
             obj.setSelected(true);
