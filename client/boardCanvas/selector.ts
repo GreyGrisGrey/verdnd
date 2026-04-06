@@ -44,6 +44,7 @@ export class Selector {
             CoordModes.Center,
         );
         if (newPos.x === this.start.x && newPos.y === this.start.y) {
+            this.selectParams = [this.start];
             this.selectState = 1;
         } else {
             const res = rectangleFromPoints(this.start, newPos);

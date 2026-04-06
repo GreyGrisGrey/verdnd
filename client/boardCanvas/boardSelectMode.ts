@@ -15,6 +15,8 @@ import { TempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
 import { RightBarManager } from '../rightBar/rightBarMain.ts';
+import { Selector } from './selector.ts';
+const selector = new Selector();
 const objectMan = new ObjectMenu();
 const colourBox = new ColourBox();
 const board = new Board();
@@ -444,17 +446,7 @@ export class BoardSelectMode {
         }
         if (!hasAdded) {
             this.removeSelected(newObjs);
-            if (this.exitOnNextStep) {
-                return;
-            }
         }
-        this.boxItems[6].disabled = this.selectedObjects.length <= 1;
-        this.boxItems[7].disabled = this.selectedObjects.length <= 1;
-        this.boxItems[8].disabled = this.selectedObjects.length <= 1;
-        this.boxItems[9].disabled = this.selectedObjects.length > 1;
-        this.boxItems[0].disabled =
-            this.selectedObjects.length > 1 ||
-            this.selectedObjects[0].drawParams.ellipse;
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
         } else {

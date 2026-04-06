@@ -14,6 +14,7 @@ const selector = new Selector();
 const tooltipManager = new TooltipManager();
 const serveInter = new TempStore();
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
+const selectButton = getRequiredElement('selectMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
@@ -25,6 +26,7 @@ const storedLayers: Map<number, BoardLayer> = new Map();
 export enum Mode {
     View = 'VIEW',
     Draw = 'DRAW',
+    Select = 'SELECT',
 }
 
 export enum GetObjectReason {
@@ -32,7 +34,7 @@ export enum GetObjectReason {
     Create = 'CREATE',
 }
 
-type BoardMode = BoardViewMode | BoardDrawMode;
+type BoardMode = BoardViewMode | BoardDrawMode | BoardSelectMode;
 
 // Class handling the draw/token/view modes.
 // Also handles behaviour when a selection of board objects has been made. This may be split off later.
@@ -57,10 +59,12 @@ export class ModeManager {
         this.modes = {
             DRAW: this.drawMan,
             VIEW: this.viewMan,
+            SELECT: this.selectMan,
         };
         this.buttons = {
             DRAW: drawButton,
             VIEW: viewButton,
+            SELECT: selectButton,
         };
         this.selectClick = false;
         this.boxItems = [];
@@ -112,6 +116,18 @@ export class ModeManager {
         });
 
         drawButton.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
+        });
+
+        selectButton.addEventListener('click', () => {
+            this.modeSwitch(Mode.Select);
+        });
+
+        selectButton.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Mode, 'select');
+        });
+
+        selectButton.addEventListener('mouseleave', () => {
             tooltipManager.disable();
         });
 
@@ -183,13 +199,11 @@ export class ModeManager {
 
     // Switches between the active mode and a new one.
     modeSwitch(newMode: Mode) {
-        if (!this.selectMan.active) {
-            this.modes[this.currMode].flipListeners(false);
-            this.buttons[this.currMode].disabled = false;
-            this.currMode = newMode;
-            this.modes[this.currMode].flipListeners(true);
-            this.buttons[this.currMode].disabled = true;
-        }
+        this.modes[this.currMode].flipListeners(false);
+        this.buttons[this.currMode].disabled = false;
+        this.currMode = newMode;
+        this.modes[this.currMode].flipListeners(true);
+        this.buttons[this.currMode].disabled = true;
     }
 
     // Checks if the user has selected an area of the canvas.
@@ -302,7 +316,17 @@ export class ModeManager {
 
     // Performs a single mode management step.
     step() {
-        this.attemptSelectedSwap();
+        if (this.currMode !== Mode.Select) {
+            this.attemptSelectedSwap();
+        } else if (this.hasCompleteSelection()) {
+            let res: (BoardObject | undefined)[] = board.selectObjects();
+            const selected = res.filter((obj) => obj !== undefined);
+            if (selected.length !== 0) {
+                this.selectMan.addSelected(selected);
+            }
+            selector.deactivate();
+            return;
+        }
         if (this.viewMan.measuring) {
             this.viewMan.drawMeasure();
         }

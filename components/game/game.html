@@ -24,6 +24,7 @@
 
 <div id="modeMenu">
     <button class="modeButton" id="viewMenuButton" disabled>View</button>
+    <button class="modeButton" id="selectMenuButton">Select</button>
     <button class="modeButton" id="drawMenuButton">Draw</button>
     <button class="modeButton" id="undoMenuButton">Undo</button>
 </div>
@@ -75,9 +76,15 @@
         border-radius: 10px;
     }
 
-    #drawMenuButton {
+    #selectMenuButton {
         position: absolute;
         top: 50px;
+        left: 0px;
+    }
+
+    #drawMenuButton {
+        position: absolute;
+        top: 100px;
         left: 0px;
     }
 
@@ -93,7 +100,7 @@
         bottom: 10px;
         left: 10px;
         width: 100px;
-        height: 100px;
+        height: 150px;
         pointer-events: none;
     }
 

@@ -130,7 +130,6 @@ export class LayerMenu {
             val.name === 'none'
                 ? `Edit Layer : Layer ${this.currSelect}`
                 : `Edit Layer : ${val.name}`;
-        console.log(val);
         downButton.disabled = val.zOrder === 0;
         upButton.disabled = val.zOrder === storedLayerStates.size - 1;
     }

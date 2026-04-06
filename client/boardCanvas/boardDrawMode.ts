@@ -88,7 +88,7 @@ export class BoardDrawMode {
             );
 
             this.boxItems[i - 2].addEventListener('click', () => {
-                this.handleSwitchEvent(i.toString());
+                this.handleSwitchEvent((i - 1).toString());
                 this.flipBoxes();
             });
         }
@@ -111,7 +111,8 @@ export class BoardDrawMode {
         this.boxItems[2].disabled = !selector.active && this.currDraw === 3;
         this.boxItems[3].disabled = !selector.active && this.currDraw === 4;
         this.boxItems[4].disabled = this.params.length < 2;
-        this.boxItems[6].disabled = !selector.active && this.currDraw === 8;
+        this.boxItems[5].disabled = this.params.length < 1;
+        this.boxItems[6].disabled = !selector.active && this.currDraw === 7;
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -146,10 +147,10 @@ export class BoardDrawMode {
         } else if (key === '4') {
             this.currParams = { ellipse: false, fill: false, close: false };
             this.currDraw = 4;
-        } else if (key === '6') {
+        } else if (key === '5') {
             this.setNewObject();
-        } else if (key === '8') {
-            this.currDraw = 8;
+        } else if (key === '7') {
+            this.currDraw = 7;
             this.paste = true;
         }
         this.params = [];
@@ -166,7 +167,7 @@ export class BoardDrawMode {
             this.currDraw >= 3
         ) {
             this.handleSwitchEvent(key);
-        } else if (this.active && (key === '7' || key === '8')) {
+        } else if (this.active && key === '7') {
             this.handleSwitchEvent(key);
         }
     }
@@ -196,7 +197,7 @@ export class BoardDrawMode {
                             CoordModes.Center,
                         ),
                     );
-                } else if (this.currDraw < 8) {
+                } else if (this.currDraw < 7) {
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x,
@@ -204,9 +205,7 @@ export class BoardDrawMode {
                             CoordModes.Vertex,
                         ),
                     );
-                    this.boxItems[5].disabled =
-                        this.params.length < 3 &&
-                        (this.params.length < 2 || this.currDraw !== 4);
+                    this.flipBoxes();
                 } else {
                     objectMan.createObjectFromTemplate(
                         board.determineTile(

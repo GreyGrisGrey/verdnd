@@ -31,6 +31,7 @@ const nameInput = getRequiredElement('renameTopObj', HTMLInputElement);
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
 const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
+const selectButton = getRequiredElement('selectMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);

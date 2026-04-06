@@ -104,27 +104,27 @@
     "bottom": {
         "view0": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "view1": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "view2": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "view3": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "view4": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "view5": [
@@ -159,7 +159,7 @@
         ],
         "draw0": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "draw1": [
@@ -224,19 +224,19 @@
         ],
         "draw6": [
             {
-                "boldText": "Hotkey 6 : ",
+                "boldText": "Hotkey 5 : ",
                 "text": "Complete in progress polygon or wall object"
             }
         ],
         "draw7": [
             {
-                "boldText": "Hotkey Escape/7 : ",
+                "boldText": "Hotkey Escape/6 : ",
                 "text": "Cancel creation of in progress object"
             }
         ],
         "draw8": [
             {
-                "boldText": "Hotkey 8 : ",
+                "boldText": "Hotkey 7 : ",
                 "text": "Set draw mode to paste"
             },
             {
@@ -246,7 +246,7 @@
         ],
         "draw9": [
             {
-                "text": "Remove this"
+                "text": "Text should not appear, please inform Grey"
             }
         ],
         "selMany0": [
@@ -449,7 +449,12 @@
             {
                 "boldText": "Hotkey Ctrl+Z : ",
                 "text": "Undo previous action",
-                "bottom": "110px"
+                "bottom": "160px"
+            }
+        ],
+        "select": [
+            {
+                "text": "This mode is not enabled"
             }
         ]
     }
