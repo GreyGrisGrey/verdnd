@@ -60,15 +60,15 @@ export class BoardSelectMode {
 
     // Sets up bottom toolbar boxes.
     setUpBoxes() {
-        for (let i = 1; i < 10; i++) {
+        for (let i = 0; i < 10; i++) {
             this.boxItems.push(
                 getRequiredElement(
                     'bottomSelectBox' + i.toString(),
                     HTMLButtonElement,
                 ),
             );
-            this.boxItems[i - 1].addEventListener('click', () => {
-                this.handleSwitchEvent((i - 1).toString());
+            this.boxItems[i].addEventListener('click', () => {
+                this.handleSwitchEvent(i.toString());
             });
         }
         this.toggleBoxes();
@@ -121,19 +121,19 @@ export class BoardSelectMode {
         if (this.selectedObjects.length === 1) {
             for (let i = 0; i < this.boxItems.length; i++) {
                 this.boxItems[i].style.visibility =
-                    i > 8 || i < 6 ? 'visible' : 'hidden';
+                    i > 8 || (i < 6 && i !== 1) ? 'visible' : 'hidden';
                 this.boxItems[i].style.pointerEvents =
-                    i > 8 || i < 6 ? 'auto' : 'none';
+                    i > 8 || (i < 6 && i !== 1) ? 'auto' : 'none';
                 this.boxItems[i].style.left =
-                    i !== 9 && i !== 0 ? '90px' : '-90px';
+                    i === 0 || i === 9 ? '-120px' : '60px';
             }
         } else if (this.selectedObjects.length > 1) {
             for (let i = 0; i < this.boxItems.length; i++) {
                 this.boxItems[i].style.visibility =
-                    i < 9 && i > 0 ? 'visible' : 'hidden';
+                    i < 9 && i > 0 && i !== 1 ? 'visible' : 'hidden';
                 this.boxItems[i].style.pointerEvents =
-                    i < 9 && i > 0 ? 'auto' : 'none';
-                this.boxItems[i].style.left = '60px';
+                    i < 9 && i > 0 && i !== 1 ? 'auto' : 'none';
+                this.boxItems[i].style.left = '30px';
             }
         } else {
             for (let i = 0; i < this.boxItems.length; i++) {
@@ -447,12 +447,14 @@ export class BoardSelectMode {
         if (!hasAdded) {
             this.removeSelected(newObjs);
         }
+        if (this.selectedObjects.length !== 0) {
+            this.toggleBoxes();
+        }
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
         } else {
             objectMan.disableSecondary();
         }
-        this.toggleBoxes();
     }
 
     removeSelected(newObjs: BoardObject[]) {

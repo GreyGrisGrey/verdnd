@@ -93,7 +93,7 @@ export class BoardObject {
             } else {
                 this.imageObj.disableImage();
             }
-        } else {
+        } else if (addImage) {
             console.log(
                 'how are you planning on adding an image to a wall object',
             );
@@ -177,13 +177,13 @@ export class BoardObject {
             this.buildPath(squareSize, offset);
             this.ctx = ctx;
         }
+        if (this.selected) {
+            ctx.strokeStyle = GOLD.toString();
+            ctx.lineWidth = this.token.active ? 5 : 3;
+            ctx.stroke(this.currPath);
+        }
         if (this.token.active) {
             this.drawToken(this.ctx as any, squareSize, offset);
-        }
-        if (this.selected && !this.token.active) {
-            ctx.strokeStyle = GOLD.toString();
-            ctx.lineWidth = 3;
-            ctx.stroke(this.currPath);
         }
         if (
             !this.imageObj.draw(
