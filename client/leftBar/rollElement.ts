@@ -1,8 +1,5 @@
 import { getRequiredElement } from '../dom.ts';
-const rollContainer = getRequiredElement('rollContainer', HTMLElement);
 const diceContainer = getRequiredElement('diceContainer', HTMLElement);
-const presetContainer = getRequiredElement('presetContainer', HTMLElement);
-const finContainer = getRequiredElement('finalRollContainer', HTMLElement);
 
 export class RollElement {
     val: number;
@@ -26,12 +23,12 @@ export class RollElement {
 
 class RollTab {
     val: number;
-    constructor(newBox: HTMLElement, count: number, offset: number) {
-        this.setUpTest(newBox, count, offset);
+    constructor(newBox: HTMLElement, count: number, size: number) {
+        this.setUpTest(newBox, count, size);
         this.val = 0;
     }
 
-    setUpTest(newBox: HTMLElement, count: number, offset: number) {
+    setUpTest(newBox: HTMLElement, count: number, size: number) {
         const newText = document.createElement('p');
         const setCount = document.createElement('input');
         const plus = document.createElement('input');
@@ -50,13 +47,15 @@ class RollTab {
         newText.style.height = '20px';
         newText.style.top = `${count * 30 - 11}px`;
         newText.style.left = '5px';
-        newText.innerText = offset === 0 ? 'mod' : `d${offset}`;
+        newText.innerText = size === 0 ? 'mod' : `d${size}`;
+        newText.style.textAlign = 'center';
 
         setCount.style.position = 'absolute';
         setCount.style.width = '25px';
         setCount.style.height = '15px';
         setCount.style.top = `${count * 30 + 5}px`;
         setCount.style.left = `${59}px`;
+        setCount.style.textAlign = 'center';
         setCount.value = '0';
 
         plus.style.position = 'absolute';

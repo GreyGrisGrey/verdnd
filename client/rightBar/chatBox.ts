@@ -6,30 +6,54 @@ export class ChatBox {
     mainBox: HTMLElement;
     roll: boolean;
     index: number;
-    mainText: HTMLElement;
+    textA: HTMLElement;
+    textB: HTMLElement;
+    textC: HTMLElement;
 
     constructor(isRoll: boolean, index: number) {
         this.index = index;
         this.mainBox = document.createElement('div');
         this.mainBox.style.position = 'absolute';
-        this.mainBox.style.top = this.index * 90 + 'px';
-        this.mainBox.style.width = '246px';
+        this.mainBox.style.top = this.index * 95 + 'px';
+        this.mainBox.style.width = '250px';
         this.mainBox.style.height = '90px';
         this.mainBox.style.visibility = 'inherit';
-        this.mainBox.style.border = 'solid gray';
+        this.mainBox.style.backgroundColor = 'rgba(50, 50, 50, 1)';
+        this.mainBox.style.overflow = 'auto';
+        this.mainBox.style.margin = '0px';
+        this.mainBox.style.padding = '10px';
+        this.mainBox.style.borderRadius = '7px';
+        this.mainBox.style.boxSizing = 'border-box';
 
         this.roll = isRoll;
-        const newText = document.createElement('p');
-        newText.style.position = 'absolute';
-        newText.style.width = '226px';
-        newText.style.left = '0px';
-        newText.style.top = '-10px';
-        newText.style.left = '10px';
-        newText.style.height = '80px';
-        newText.style.overflow = 'auto';
-        newText.style.visibility = 'inherit';
-        newText.style.whiteSpace = 'wrap';
-        this.mainBox.append(newText);
+
+        this.textA = document.createElement('p');
+        this.textB = document.createElement('p');
+        this.textC = document.createElement('p');
+
+        this.textA.style.width = '230px';
+        this.textA.style.overflow = 'auto';
+        this.textA.style.visibility = 'inherit';
+        this.textA.style.whiteSpace = 'wrap';
+        this.textA.style.margin = '0px';
+        this.textA.style.padding = '0px';
+
+        this.textB.style.width = '230px';
+        this.textB.style.overflow = 'auto';
+        this.textB.style.visibility = 'inherit';
+        this.textB.style.whiteSpace = 'wrap';
+        this.textB.style.margin = '0px';
+        this.textB.style.padding = '0px';
+
+        this.textC.style.width = '230px';
+        this.textC.style.overflow = 'auto';
+        this.textC.style.visibility = 'inherit';
+        this.textC.style.whiteSpace = 'wrap';
+        this.textC.style.margin = '0px';
+        this.textC.style.padding = '0px';
+        this.mainBox.append(this.textA);
+        this.mainBox.append(this.textB);
+        this.mainBox.append(this.textC);
         chatBox.append(this.mainBox);
         if (
             chatBox.scrollTop +
@@ -43,14 +67,13 @@ export class ChatBox {
         ) {
             chatBox.scrollBy(0, 900);
         }
-        this.mainText = newText;
     }
 
     // Updates the chatbox to a new roll.
     // Being as this is only called once it's dubious that it's not part of the constructor but whatever.
     updateRoll(dataLine: RollResult, userName: string) {
         if (dataLine.rolls.length === 0) {
-            this.mainText.innerText = `${userName} said ${dataLine.result}`;
+            this.textA.innerText = `${userName} said ${dataLine.result}`;
             return;
         }
         let locTotal = 0;
@@ -82,15 +105,13 @@ export class ChatBox {
         topString += `${count}d${curr}`;
         newString += ')';
         if (dataLine.result - locTotal !== 0) {
-            this.mainText.innerText =
-                `${topString} + ${(dataLine.result - locTotal).toString()}` +
-                `\nResult = ${dataLine.result}\n` +
-                `${newString} + ${(dataLine.result - locTotal).toString()}`;
+            this.textA.innerText = `${topString} + ${(dataLine.result - locTotal).toString()}`;
+            this.textB.innerText = `Result = ${dataLine.result}`;
+            this.textC.innerText = `${newString} + ${(dataLine.result - locTotal).toString()}`;
         } else {
-            this.mainText.innerText =
-                `${topString}` +
-                `\nResult = ${dataLine.result}\n` +
-                `${newString}`;
+            this.textA.innerText = `${topString}`;
+            this.textB.innerText = `Result = ${dataLine.result}`;
+            this.textC.innerText = `${newString}`;
         }
     }
 }
