@@ -52,10 +52,7 @@ export class RightBarManager {
     // Adds relevant event listeners to each tab object.
     addEventListeners() {
         layerTab.addEventListener('click', () => {
-            layerMan.toggleActive(true);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(false);
-            this.currActive = RightBarTab.Layer;
+            this.updateActive(RightBarTab.Layer);
         });
 
         layerTab.addEventListener('mouseenter', () => {
@@ -67,11 +64,7 @@ export class RightBarManager {
         });
 
         objectTab.addEventListener('click', () => {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(true);
-            this.currActive = RightBarTab.Object;
-            objectMan.step(Math.min(800, window.innerHeight - 50));
+            this.updateActive(RightBarTab.Object);
         });
 
         objectTab.addEventListener('mouseenter', () => {
@@ -83,10 +76,7 @@ export class RightBarManager {
         });
 
         rollTab.addEventListener('click', () => {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(true);
-            objectMan.toggleActive(false);
-            this.currActive = RightBarTab.Roll;
+            this.updateActive(RightBarTab.Roll);
         });
 
         rollTab.addEventListener('mouseenter', () => {
@@ -151,7 +141,8 @@ export class RightBarManager {
             layerMan.toggleActive(false);
             rollMan.toggleActive(false);
             objectMan.toggleActive(true);
-            objectMan.step(Math.min(800, window.innerHeight - 50));
+            objectMan.updateSizes(Math.min(800, window.innerHeight - 50));
+            objectMan.draw();
         }
         this.currActive = newActive;
     }
@@ -176,6 +167,14 @@ export class RightBarManager {
 
     // A single step updating the state of the currently active menu.
     step() {
+        if (this.currActive === RightBarTab.Layer) {
+            layerMan.step();
+        } else if (this.currActive === RightBarTab.Object) {
+            objectMan.draw();
+        }
+    }
+
+    updateSizes() {
         const barHeight = `${Math.min(800, window.innerHeight - 50)}px`;
         rightBar.style.height = barHeight;
         layerBox.style.height = barHeight;
@@ -184,9 +183,9 @@ export class RightBarManager {
         if (this.currActive === RightBarTab.Layer) {
             layerMan.step();
         } else if (this.currActive === RightBarTab.Roll) {
-            rollMan.step();
+            chatBox.style.width = rightBar.style.width;
         } else if (this.currActive === RightBarTab.Object) {
-            objectMan.step(Math.min(800, window.innerHeight - 50));
+            objectMan.updateSizes(Math.min(800, window.innerHeight - 50));
         }
     }
 }

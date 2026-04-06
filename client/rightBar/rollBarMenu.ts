@@ -30,19 +30,8 @@ export class RollMenu {
     // Also toggles if the colour menu is active or not. Extremely dubious.
     toggleActive(newAct: boolean) {
         this.active = newAct;
-        this.step();
         chatBox.style.visibility = this.active ? 'inherit' : 'hidden';
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
-    }
-
-    // Performs a single step updating the roll menu.
-    async step() {
-        const rH = rightBar.style.height;
-        const rW = rightBar.style.width;
-        if (chatBox.style.height !== rH || chatBox.style.width !== rW) {
-            chatBox.style.width = rW;
-            chatBox.style.height = rH;
-        }
     }
 
     // Constructs a single chat box for the roll menu.

@@ -15,10 +15,6 @@ export class ImageObject {
     constructor() {
         this.imagePath = '';
         this.image = new Image(300, 300);
-        if (can.width !== window.innerWidth) {
-            can.width = window.innerWidth;
-            can.height = window.innerHeight;
-        }
         this.imageOffset = { x: 0, y: 0 };
         this.drawFlag = false;
         this.stringUrl = '';

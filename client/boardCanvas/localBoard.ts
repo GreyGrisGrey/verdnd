@@ -267,10 +267,6 @@ export class Board {
 
     // Performs a single drawing step.
     step() {
-        if (can.width !== window.innerWidth) {
-            can.width = window.innerWidth;
-            can.height = window.innerHeight;
-        }
         ctx.clearRect(0, 0, can.width, can.height);
         this.draw();
         const newLasers = serveInter.getLasers();

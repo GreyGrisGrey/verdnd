@@ -6,7 +6,9 @@ import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { BottomBarManager } from './bottomBarMain.ts';
 import { TopBarManager } from './topBarMain.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
+import { getRequiredElement } from './dom.ts';
 const storedLayers: Map<number, BoardLayer> = new Map();
+const can = getRequiredElement('board', HTMLCanvasElement);
 const modeMan = new ModeManager();
 const rightMan = new RightBarManager();
 const serveInter = new TempStore();
@@ -21,6 +23,18 @@ let prevLaser = 0;
 async function setup() {
     serveInter.setup();
     requestAnimationFrame(mainLoop);
+}
+
+function updateObjectSizes() {
+    if (can.height !== window.innerHeight) {
+        can.height = window.innerHeight;
+    }
+    if (can.width !== window.innerWidth) {
+        can.width = window.innerWidth;
+        topMan.updateSize();
+        tooltips.updateSizes();
+        rightMan.updateSizes();
+    }
 }
 
 async function mainLoop() {
@@ -43,8 +57,8 @@ async function mainLoop() {
         serveInter.sendLaser(0, 0, false);
     }
     if (counter % 25 === 0) {
+        updateObjectSizes();
         rightMan.step();
-        tooltips.step();
     }
     if (serveInter.isDone) {
         board.step();

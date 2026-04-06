@@ -45,7 +45,7 @@ export class BottomBarManager {
     }
 
     // Updates the location of the bottom bar.
-    step() {
+    updateSizes() {
         bottomBar.style.left = window.innerWidth / 2 - 300 + 'px';
     }
 

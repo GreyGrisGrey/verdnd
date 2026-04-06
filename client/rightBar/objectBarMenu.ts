@@ -357,13 +357,11 @@ export class ObjectMenu {
         }
     }
 
-    // Does a single step updating size parameters and drawing the objects.
-    step(height: number) {
+    updateSizes(height: number) {
         const newHeight = `${(height / 2).toString()}px`;
         topHalf.style.height = newHeight;
         bottomHalf.style.height = newHeight;
         bottomHalf.style.top = newHeight;
-        this.draw();
     }
 
     // Creates an object from the top template at a given location.

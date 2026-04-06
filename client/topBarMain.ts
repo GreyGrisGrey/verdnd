@@ -14,4 +14,11 @@ export class TopBarManager {
         nameBox.innerText = newText;
         nameBox.style.left = window.innerWidth / 2 - 100 + 'px';
     }
+
+    updateSize() {
+        if (topBar.style.width !== window.innerWidth + 'px') {
+            topBar.style.width = window.innerWidth + 'px';
+            nameBox.style.left = window.innerWidth / 2 - 100 + 'px';
+        }
+    }
 }
