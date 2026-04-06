@@ -27,7 +27,8 @@ const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
 const layerMan = new LayerMenu();
-const loadWall = document.getElementById('loadBlock')!;
+const loadWall = getRequiredElement('loadBlock', HTMLElement);
+const loadText = getRequiredElement('loadText', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const rightCan1 = getRequiredElement('topObjContainer', HTMLElement);
@@ -108,15 +109,22 @@ export class TempStore {
         } else {
             this.socket = new WebSocket('ws://192.168.2.142:8765/');
         }
+        this.setUpSocket();
+    }
+
+    // Code for setting up the websocket. Includes all handling of events and close behaviour.
+    setUpSocket() {
         this.socket.addEventListener('message', (event) => {
             const message = JSON.parse(event.data);
             if (message.entity === Entity.Name && message.accepted) {
                 if (!this.connected) {
                     this.connected = true;
+                    loadText.innerText = 'Connecting to game';
                     this.connectLocal();
                 } else {
                     this.id = message.id;
                     localStorage['id'] = message.id;
+                    loadText.innerText = 'Loading game';
                     this.isGm = message.gm;
                     console.log('logged in successfully.');
                     modeMan.toggleModeSwitcher(this.isGm);
@@ -221,6 +229,7 @@ export class TempStore {
             } else if (message.entity === Entity.Meta) {
                 if (message.action === Action.Finish) {
                     loadWall.style.visibility = 'hidden';
+                    loadWall.style.pointerEvents = 'none';
                     const curr = storedLayers.get(layerMan.currSelect);
                     if (curr) {
                         modeMan.viewMan.updateLayerOffset({
@@ -251,7 +260,28 @@ export class TempStore {
                 undoButton.disabled = false;
             }
         });
+
+        this.socket.onclose = (event) => {
+            console.log('websocket disconnect');
+            this.connected = false;
+            loadWall.style.visibility = 'visible';
+            loadWall.style.pointerEvents = 'auto';
+            loadText.innerText = 'Disconnected, attempting reconnect';
+            this.attemptReconnect();
+        };
+
         this.connectGlobal();
+    }
+
+    // Code for reconnecting with the server given it explodes for some reason.
+    async attemptReconnect() {
+        while (this.socket.readyState !== 1) {
+            if (this.socket.readyState === 3) {
+                this.socket = new WebSocket('wss://verDnD.ca/');
+            }
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        this.setUpSocket();
     }
 
     // Sets up the undo button.
@@ -750,9 +780,10 @@ export class TempStore {
     // I do not know why this works, it looks like it shouldn't, but it clearly does. So whatever.
     sendLaser(x: number, y: number, send: boolean) {
         if (
-            this.lastLaser.x === x &&
-            this.lastLaser.y === y &&
-            this.lastLaser.time > Date.now() - 1000
+            (this.lastLaser.x === x &&
+                this.lastLaser.y === y &&
+                this.lastLaser.time > Date.now() - 1000) ||
+            !this.connected
         ) {
             return;
         } else {
