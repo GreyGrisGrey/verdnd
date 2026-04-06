@@ -20,7 +20,10 @@
 
     <div id="rollContainer">
         <div id="diceContainer"></div>
-        <div id="presetContainer"></div>
+        <div id="presetContainer">
+            <button id="defaultAdv">Roll with advantage</button>
+            <button id="defaultDisadv">Roll with disadvantage</button>
+        </div>
         <div id="finalRollContainer">
             <button id="rollButton">Roll Dice</button>
         </div>
@@ -33,6 +36,22 @@
 </div>
 
 <style>
+    #defaultAdv {
+        position: absolute;
+        top: 5px;
+        width: 100px;
+        left: 5px;
+        border-radius: 2px;
+    }
+
+    #defaultDisadv {
+        position: absolute;
+        top: 50px;
+        width: 100px;
+        left: 5px;
+        border-radius: 2px;
+    }
+
     #diceContainer {
         position: absolute;
         top: 10px;
@@ -56,7 +75,6 @@
         left: 120px;
         width: 110px;
         height: 225px;
-        border: 1px solid Gray;
     }
 
     #rollButton {

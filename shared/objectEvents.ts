@@ -3,15 +3,6 @@ import type { Vec2 } from './coords.ts';
 // Just a bunch of enums and interfaces used by other files.
 
 export interface DicePayload {
-    diceSize: number;
-    diceCount: number;
-    advantage: boolean;
-    disadvantage: boolean;
-    modifier: number;
-    result: number;
-}
-
-export interface NewDicePayload {
     toRoll: DiceIndividual[];
     modifier: number;
     result: number;
@@ -163,16 +154,7 @@ export interface RollEvent {
     entity: Entity.Roll;
     action: Action.Create;
     id: number;
-    diceOld: DicePayload;
-    userId: string;
-    userName: string;
-}
-
-export interface RollEventNew {
-    entity: Entity.Roll;
-    action: Action.Create;
-    id: number;
-    dice: NewDicePayload;
+    dice: DicePayload;
     userId: string;
     userName: string;
 }
@@ -301,5 +283,4 @@ export type ServerEvent =
     | ObjectRelayerEvent
     | BackgroundColourEvent
     | BoardImageEvent
-    | ObjectImageEvent
-    | RollEventNew;
+    | ObjectImageEvent;

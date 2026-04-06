@@ -8,7 +8,6 @@ import type {
     DicePayload,
     LaserEvent,
     RollComplete,
-    NewDicePayload,
     Token,
 } from '../shared/objectEvents.ts';
 import { Board } from './boardCanvas/localBoard.ts';
@@ -480,7 +479,7 @@ export class TempStore {
         );
     }
 
-    rollNewDice(newDice: NewDicePayload) {
+    rollNewDice(newDice: DicePayload) {
         this.socket.send(
             this.parcelServeEvent({
                 dice: newDice,

@@ -53,22 +53,44 @@ export class ChatBox {
             this.mainText.innerText = `${userName} said ${dataLine.result}`;
             return;
         }
-        let newString = '(';
         let locTotal = 0;
+        const results = [];
         for (const roll of dataLine.rolls) {
-            newString += `${roll.result} + `;
             if (!roll.exclude) {
                 locTotal += roll.result;
             }
+            results.push([roll.size, roll.result]);
         }
-        newString = newString.slice(0, newString.length - 3) + ')';
-        if (dataLine.result - locTotal > 0) {
-            newString += ' +' + (dataLine.result - locTotal).toString();
-        } else if (dataLine.result - locTotal < 0) {
-            newString += ' ' + (dataLine.result - locTotal).toString();
+        results.sort((a, b) => a[0] - b[0]);
+
+        let newString = '(';
+        let topString = `${userName} rolled `;
+        let curr = results.length > 0 ? results[0][0] : 0;
+        let count = 0;
+        for (const val of results) {
+            if (val[0] !== curr) {
+                newString += ') + (';
+                topString += `${count}d${curr} + `;
+                curr = val[0];
+                count = 0;
+            } else if (newString.length > 1) {
+                newString += ' + ';
+            }
+            newString += `${val[1]}`;
+            count++;
         }
-        this.mainText.innerText =
-            `${userName} rolled ${dataLine.rolls.length}d${dataLine.rolls[0].size}\nResult = ${dataLine.result}\n` +
-            newString;
+        topString += `${count}d${curr}`;
+        newString += ')';
+        if (dataLine.result - locTotal !== 0) {
+            this.mainText.innerText =
+                `${topString} + ${(dataLine.result - locTotal).toString()}` +
+                `\nResult = ${dataLine.result}\n` +
+                `${newString} + ${(dataLine.result - locTotal).toString()}`;
+        } else {
+            this.mainText.innerText =
+                `${topString}` +
+                `\nResult = ${dataLine.result}\n` +
+                `${newString}`;
+        }
     }
 }
