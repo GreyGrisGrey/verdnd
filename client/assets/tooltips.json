@@ -225,23 +225,23 @@
         "draw6": [
             {
                 "boldText": "Hotkey 5 : ",
-                "text": "Complete in progress polygon or wall object"
-            }
-        ],
-        "draw7": [
-            {
-                "boldText": "Hotkey Escape/6 : ",
-                "text": "Cancel creation of in progress object"
-            }
-        ],
-        "draw8": [
-            {
-                "boldText": "Hotkey 7 : ",
                 "text": "Set draw mode to paste"
             },
             {
                 "boldText": "Left click : ",
                 "text": "Create a copy of the current object template at mouse position"
+            }
+        ],
+        "draw7": [
+            {
+                "boldText": "Hotkey 6 : ",
+                "text": "Complete in progress polygon or wall object"
+            }
+        ],
+        "draw8": [
+            {
+                "boldText": "Hotkey Escape/7 : ",
+                "text": "Cancel creation of in progress object"
             }
         ],
         "draw9": [

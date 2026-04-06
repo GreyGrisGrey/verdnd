@@ -109,9 +109,12 @@ export class BoardDrawMode {
         this.boxItems[1].disabled = !selector.active && this.currDraw === 2;
         this.boxItems[2].disabled = !selector.active && this.currDraw === 3;
         this.boxItems[3].disabled = !selector.active && this.currDraw === 4;
-        this.boxItems[4].disabled = this.params.length < 2;
-        this.boxItems[5].disabled = this.params.length < 1;
-        this.boxItems[6].disabled = !selector.active && this.currDraw === 7;
+        this.boxItems[4].disabled = !selector.active && this.currDraw === 5;
+        this.boxItems[5].disabled =
+            this.currDraw < 3 ||
+            (this.params.length <= 2 && this.currDraw === 3) ||
+            (this.params.length <= 1 && this.currDraw === 4);
+        this.boxItems[6].disabled = this.params.length < 1;
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -146,10 +149,16 @@ export class BoardDrawMode {
         } else if (key === '4') {
             this.currParams = { ellipse: false, fill: false, close: false };
             this.currDraw = 4;
+        } else if (key === '6') {
+            console.log('creation');
+            if (
+                (this.params.length > 2 && this.currDraw === 3) ||
+                (this.params.length >= 2 && this.currDraw === 4)
+            ) {
+                this.setNewObject();
+            }
         } else if (key === '5') {
-            this.setNewObject();
-        } else if (key === '7') {
-            this.currDraw = 7;
+            this.currDraw = 5;
             this.paste = true;
         }
         this.params = [];
@@ -159,14 +168,9 @@ export class BoardDrawMode {
     handleKeySwitchEvent(key: string) {
         if (this.active && this.params.length === 0) {
             this.handleSwitchEvent(key);
-        } else if (
-            this.active &&
-            key === '6' &&
-            this.params.length > 2 &&
-            this.currDraw >= 3
-        ) {
+        } else if (this.active && key === '6') {
             this.handleSwitchEvent(key);
-        } else if (this.active && key === '7') {
+        } else if (key === '7' || key === 'Escape') {
             this.handleSwitchEvent(key);
         }
     }
@@ -196,7 +200,7 @@ export class BoardDrawMode {
                             CoordModes.Center,
                         ),
                     );
-                } else if (this.currDraw < 7) {
+                } else if (this.currDraw < 5) {
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x,
@@ -266,7 +270,10 @@ export class BoardDrawMode {
                     movable: false,
                 },
             };
-        } else if (this.currDraw >= 3 && this.params.length > 2) {
+        } else if (
+            (this.currDraw === 3 && this.params.length > 2) ||
+            (this.currDraw === 4 && this.params.length > 1)
+        ) {
             for (const pt of this.params) {
                 pt.x -= this.currLayer.layerOffset.x;
                 pt.y -= this.currLayer.layerOffset.y;

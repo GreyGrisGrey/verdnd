@@ -15,8 +15,6 @@ import { TempStore } from '../serveInter.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
 import { RightBarManager } from '../rightBar/rightBarMain.ts';
-import { Selector } from './selector.ts';
-const selector = new Selector();
 const objectMan = new ObjectMenu();
 const colourBox = new ColourBox();
 const board = new Board();
@@ -62,15 +60,15 @@ export class BoardSelectMode {
 
     // Sets up bottom toolbar boxes.
     setUpBoxes() {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 1; i < 10; i++) {
             this.boxItems.push(
                 getRequiredElement(
                     'bottomSelectBox' + i.toString(),
                     HTMLButtonElement,
                 ),
             );
-            this.boxItems[i].addEventListener('click', () => {
-                this.handleSwitchEvent(i.toString());
+            this.boxItems[i - 1].addEventListener('click', () => {
+                this.handleSwitchEvent((i - 1).toString());
             });
         }
         this.toggleBoxes();
