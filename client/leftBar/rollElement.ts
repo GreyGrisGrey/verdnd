@@ -6,14 +6,10 @@ const finContainer = getRequiredElement('finalRollContainer', HTMLElement);
 
 export class RollElement {
     val: number;
-    offset: number;
+    size: number;
+    mainTab: RollTab;
     constructor(newOff: number) {
-        this.offset = newOff;
-        this.setUpTest();
-        this.val = 0;
-    }
-
-    setUpTest() {
+        this.size = newOff;
         const newBox = document.createElement('div');
         diceContainer.append(newBox);
         newBox.style.position = 'relative';
@@ -23,7 +19,8 @@ export class RollElement {
         newBox.style.background = 'rgba(50, 50, 50, 1)';
         newBox.style.borderRadius = '5px';
 
-        new RollTab(newBox, 0, this.offset);
+        this.mainTab = new RollTab(newBox, 0, this.size);
+        this.val = 0;
     }
 }
 

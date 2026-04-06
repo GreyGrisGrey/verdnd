@@ -11,6 +11,19 @@ export interface DicePayload {
     result: number;
 }
 
+export interface NewDicePayload {
+    toRoll: DiceIndividual[];
+    modifier: number;
+    result: number;
+}
+
+export interface DiceIndividual {
+    diceSize: number;
+    diceCount: number;
+    dropLow: number;
+    dropHigh: number;
+}
+
 export interface Token {
     name: string;
     colour: string;
@@ -150,7 +163,16 @@ export interface RollEvent {
     entity: Entity.Roll;
     action: Action.Create;
     id: number;
-    dice: DicePayload;
+    diceOld: DicePayload;
+    userId: string;
+    userName: string;
+}
+
+export interface RollEventNew {
+    entity: Entity.Roll;
+    action: Action.Create;
+    id: number;
+    dice: NewDicePayload;
     userId: string;
     userName: string;
 }
@@ -279,4 +301,5 @@ export type ServerEvent =
     | ObjectRelayerEvent
     | BackgroundColourEvent
     | BoardImageEvent
-    | ObjectImageEvent;
+    | ObjectImageEvent
+    | RollEventNew;

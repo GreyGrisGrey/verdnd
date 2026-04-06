@@ -52,6 +52,7 @@ const undoButton = getRequiredElement('undoMenuButton', HTMLButtonElement);
 const diceContainer = getRequiredElement('diceContainer', HTMLElement);
 const presetContainer = getRequiredElement('presetContainer', HTMLElement);
 const finContainer = getRequiredElement('finalRollContainer', HTMLElement);
+const rollButton = getRequiredElement('rollButton', HTMLButtonElement);
 const board = new Board();
 const selector = new Selector();
 const modeMan = new ModeManager();

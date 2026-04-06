@@ -1,7 +1,7 @@
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import { PostGresData } from '../dataMain.ts';
 import { GameObject } from '../gameObject.ts';
-import { addDice } from './diceEvents.ts';
+import { addDiceNew } from './diceEvents.ts';
 import {
     destroyObj,
     createObj,
@@ -61,7 +61,13 @@ export async function handleGameEvent(
             updateLayer(payload.layer.id, payload.layer, currGame, cli);
         }
     } else if (payload.entity === Entity.Roll) {
-        addDice(payload.dice, message.userId, payload.userName, currGame, cli);
+        addDiceNew(
+            payload.dice,
+            message.userId,
+            payload.userName,
+            currGame,
+            cli,
+        );
     } else if (payload.entity === Entity.Laser) {
         updateLaser(payload, currGame);
     } else if (payload.entity === Entity.Token && userGm) {
