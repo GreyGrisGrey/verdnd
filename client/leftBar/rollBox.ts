@@ -1,7 +1,11 @@
 import { getRequiredElement } from '../dom.ts';
 import { TempStore } from '../serveInter.ts';
+import { RollElement } from './rollElement.ts';
 const serveInter = new TempStore();
 const rollContainer = getRequiredElement('rollContainer', HTMLElement);
+const diceContainer = getRequiredElement('diceContainer', HTMLElement);
+const presetContainer = getRequiredElement('presetContainer', HTMLElement);
+const finContainer = getRequiredElement('finalRollContainer', HTMLElement);
 
 export class RollBox {
     modBox: HTMLElement;
@@ -9,13 +13,24 @@ export class RollBox {
     constructor() {
         this.modifier = '0';
         this.modBox = rollContainer;
-        this.setRollElements();
+        this.setTestElement();
     }
 
     // Toggles active.
     toggleActive(newActive: boolean) {
         rollContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         rollContainer.style.pointerEvents = newActive ? 'auto' : 'none';
+    }
+
+    setTestElement() {
+        new RollElement(4);
+        new RollElement(6);
+        new RollElement(8);
+        new RollElement(10);
+        new RollElement(12);
+        new RollElement(20);
+        new RollElement(100);
+        new RollElement(0);
     }
 
     // Sets the elements for rolling dice.

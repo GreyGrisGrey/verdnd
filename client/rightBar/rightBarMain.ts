@@ -180,10 +180,9 @@ export class RightBarManager {
         layerBox.style.height = barHeight;
         chatBox.style.height = barHeight;
         objBox.style.height = barHeight;
+        chatBox.style.width = rightBar.style.width;
         if (this.currActive === RightBarTab.Layer) {
             layerMan.step();
-        } else if (this.currActive === RightBarTab.Roll) {
-            chatBox.style.width = rightBar.style.width;
         } else if (this.currActive === RightBarTab.Object) {
             objectMan.updateSizes(Math.min(800, window.innerHeight - 50));
         }
