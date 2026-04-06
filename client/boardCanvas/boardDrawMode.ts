@@ -45,7 +45,7 @@ export class BoardDrawMode {
     paste: boolean;
 
     constructor() {
-        this.currDraw = 2;
+        this.currDraw = 1;
         this.active = false;
         this.params = [];
         this.selectState = 0;
@@ -79,7 +79,7 @@ export class BoardDrawMode {
 
     // Sets up control buttons.
     setUpBoxes() {
-        for (let i = 1; i < 9; i++) {
+        for (let i = 2; i < 9; i++) {
             this.boxItems.push(
                 getRequiredElement(
                     'bottomDrawBox' + i.toString(),
@@ -87,7 +87,7 @@ export class BoardDrawMode {
                 ),
             );
 
-            this.boxItems[i - 1].addEventListener('click', () => {
+            this.boxItems[i - 2].addEventListener('click', () => {
                 this.handleSwitchEvent(i.toString());
                 this.flipBoxes();
             });
@@ -99,20 +99,19 @@ export class BoardDrawMode {
         for (const box of this.boxItems) {
             box.style.visibility = this.active ? 'visible' : 'hidden';
             box.style.pointerEvents = this.active ? 'auto' : 'none';
-            box.style.left = '60px';
+            box.style.left = '30px';
         }
         this.flipBoxes();
     }
 
     // Flips which control buttons are disabled.
     flipBoxes() {
-        this.boxItems[0].disabled = true;
+        this.boxItems[0].disabled = !selector.active && this.currDraw === 1;
         this.boxItems[1].disabled = !selector.active && this.currDraw === 2;
         this.boxItems[2].disabled = !selector.active && this.currDraw === 3;
         this.boxItems[3].disabled = !selector.active && this.currDraw === 4;
-        this.boxItems[4].disabled = !selector.active && this.currDraw === 5;
-        this.boxItems[5].disabled = this.params.length < 2;
-        this.boxItems[7].disabled = !selector.active && this.currDraw === 8;
+        this.boxItems[4].disabled = this.params.length < 2;
+        this.boxItems[6].disabled = !selector.active && this.currDraw === 8;
     }
 
     // Flips the active state of the mode and resets key variables.
@@ -126,27 +125,27 @@ export class BoardDrawMode {
     // Handles key press events when draw mode is active.
     handleSwitchEvent(key: string) {
         this.paste = false;
-        if (key === '2') {
+        if (key === '1') {
             this.currParams = {
                 ellipse: false,
                 fill: true,
                 close: true,
                 rect: true,
             };
-            this.currDraw = 2;
-        } else if (key === '3') {
+            this.currDraw = 1;
+        } else if (key === '2') {
             this.currParams = {
                 ellipse: true,
                 fill: true,
                 close: true,
             };
+            this.currDraw = 2;
+        } else if (key === '3') {
+            this.currParams = { ellipse: false, fill: true, close: true };
             this.currDraw = 3;
         } else if (key === '4') {
-            this.currParams = { ellipse: false, fill: true, close: true };
-            this.currDraw = 4;
-        } else if (key === '5') {
             this.currParams = { ellipse: false, fill: false, close: false };
-            this.currDraw = 5;
+            this.currDraw = 4;
         } else if (key === '6') {
             this.setNewObject();
         } else if (key === '8') {
@@ -164,7 +163,7 @@ export class BoardDrawMode {
             this.active &&
             key === '6' &&
             this.params.length > 2 &&
-            this.currDraw >= 4
+            this.currDraw >= 3
         ) {
             this.handleSwitchEvent(key);
         } else if (this.active && (key === '7' || key === '8')) {
@@ -183,7 +182,7 @@ export class BoardDrawMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
-                if (this.currDraw < 4) {
+                if (this.currDraw < 3) {
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x -
@@ -207,7 +206,7 @@ export class BoardDrawMode {
                     );
                     this.boxItems[5].disabled =
                         this.params.length < 3 &&
-                        (this.params.length < 2 || this.currDraw !== 5);
+                        (this.params.length < 2 || this.currDraw !== 4);
                 } else {
                     objectMan.createObjectFromTemplate(
                         board.determineTile(
@@ -231,7 +230,7 @@ export class BoardDrawMode {
             if (event.button === 0) {
                 if (this.params.length === 0) {
                     return;
-                } else if (this.active && this.currDraw < 4) {
+                } else if (this.active && this.currDraw < 3) {
                     const res = board.determineTile(
                         board.mouseCoords.x -
                             this.currLayer.layerOffset.x * board.zoomVal * 5,
@@ -249,7 +248,7 @@ export class BoardDrawMode {
     // Finalizes the current object and sends it to the server.
     setNewObject() {
         let tempObj: ObjectCreatePayload;
-        if (this.currDraw < 4 && this.params.length === 2) {
+        if (this.currDraw < 3 && this.params.length === 2) {
             const res = rectangleFromPoints(this.params[0], this.params[1]);
             tempObj = {
                 params: this.currParams,
@@ -270,7 +269,7 @@ export class BoardDrawMode {
                     movable: false,
                 },
             };
-        } else if (this.currDraw >= 4 && this.params.length > 2) {
+        } else if (this.currDraw >= 3 && this.params.length > 2) {
             for (const pt of this.params) {
                 pt.x -= this.currLayer.layerOffset.x;
                 pt.y -= this.currLayer.layerOffset.y;
@@ -326,7 +325,7 @@ export class BoardDrawMode {
                 this.tempObject.points,
             );
         }
-        if (this.currDraw < 4 && this.params.length >= 1) {
+        if (this.currDraw < 3 && this.params.length >= 1) {
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,
@@ -344,7 +343,7 @@ export class BoardDrawMode {
                 { x: res2[0] + res2[2], y: res2[1] + res2[3] },
                 { x: res2[0], y: res2[1] + res2[3] },
             ]);
-        } else if (this.params.length >= 2 && this.currDraw >= 4) {
+        } else if (this.params.length >= 2 && this.currDraw >= 3) {
             const newObj = new BoardObject(
                 -1,
                 colourBox.getCurrColour(),

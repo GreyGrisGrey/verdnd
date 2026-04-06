@@ -164,8 +164,8 @@
         ],
         "draw1": [
             {
-                "boldText": "Hotkey 1 : ",
-                "text": "Enter selection mode"
+                "boldText": "Hotkey NONE : ",
+                "text": "Enter selection mode BUT NOT BECAUSE ITS GONE"
             },
             {
                 "boldText": "Left click : ",
@@ -178,7 +178,7 @@
         ],
         "draw2": [
             {
-                "boldText": "Hotkey 2 : ",
+                "boldText": "Hotkey 1 : ",
                 "text": "Set draw mode to rectangle"
             },
             {
@@ -188,7 +188,7 @@
         ],
         "draw3": [
             {
-                "boldText": "Hotkey 3 : ",
+                "boldText": "Hotkey 2 : ",
                 "text": "Set draw mode to ellipse"
             },
             {
@@ -198,7 +198,7 @@
         ],
         "draw4": [
             {
-                "boldText": "Hotkey 4 : ",
+                "boldText": "Hotkey 3 : ",
                 "text": "Set draw mode to polygon"
             },
             {
@@ -211,7 +211,7 @@
         ],
         "draw5": [
             {
-                "boldText": "Hotkey 5 : ",
+                "boldText": "Hotkey 4 : ",
                 "text": "Set draw mode to wall"
             },
             {

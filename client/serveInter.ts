@@ -532,6 +532,7 @@ export class TempStore {
                         .token,
                 },
             ]);
+            console.log(this.undoMap);
             this.currIndex += 1;
         }
         this.socket.send(this.parcelServeEvent(newObj));
