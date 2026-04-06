@@ -225,7 +225,6 @@ export class BoardDrawMode {
             }
         });
 
-        // Seriously suboptimal code for finishing construction of ellipses and rectangles.
         can.addEventListener('mouseup', (event) => {
             if (event.button === 0) {
                 if (this.params.length === 0) {
@@ -326,6 +325,7 @@ export class BoardDrawMode {
             );
         }
         if (this.currDraw < 3 && this.params.length >= 1) {
+            console.log('bwa');
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,

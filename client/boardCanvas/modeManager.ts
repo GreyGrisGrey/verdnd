@@ -208,7 +208,7 @@ export class ModeManager {
     // Retrieves the coordinates corresponding to the currently selected area of the canvas.
     getSelectCoords(): Vec2[] {
         if (selector.selectState !== 0) {
-            return selector.params;
+            return selector.selectParams;
         }
         return [{ x: 0, y: 0 }];
     }

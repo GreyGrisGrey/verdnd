@@ -9,14 +9,16 @@ const board = new Board();
 
 export class Selector {
     active: boolean;
-    params: Vec2[];
+    start: Vec2;
+    selectParams: Vec2[];
     selectState: number;
     currLayer: BoardLayer;
     constructor() {
         this.active = false;
-        this.params = [];
+        this.start = { x: 0, y: 0 };
         this.selectState = 0;
         this.currLayer = new BoardLayer(0, true, true, 0);
+        this.selectParams = [];
     }
 
     activate(newLayer: BoardLayer) {
@@ -24,14 +26,12 @@ export class Selector {
             this.currLayer = newLayer;
         }
         this.active = true;
-        this.params.push(
-            board.determineTile(
-                board.mouseCoords.x -
-                    this.currLayer.layerOffset.x * board.zoomVal * 5,
-                board.mouseCoords.y -
-                    this.currLayer.layerOffset.y * board.zoomVal * 5,
-                CoordModes.Center,
-            ),
+        this.start = board.determineTile(
+            board.mouseCoords.x -
+                this.currLayer.layerOffset.x * board.zoomVal * 5,
+            board.mouseCoords.y -
+                this.currLayer.layerOffset.y * board.zoomVal * 5,
+            CoordModes.Center,
         );
     }
 
@@ -43,11 +43,11 @@ export class Selector {
                 this.currLayer.layerOffset.y * board.zoomVal * 5,
             CoordModes.Center,
         );
-        if (newPos.x === this.params[0].x && newPos.y === this.params[0].y) {
+        if (newPos.x === this.start.x && newPos.y === this.start.y) {
             this.selectState = 1;
         } else {
-            const res = rectangleFromPoints(this.params[0], newPos);
-            this.params = [
+            const res = rectangleFromPoints(this.start, newPos);
+            this.selectParams = [
                 { x: res[0], y: res[1] },
                 { x: res[0] + res[2], y: res[1] + res[3] },
             ];
@@ -58,43 +58,39 @@ export class Selector {
         }
     }
 
-    getTempObject(): BoardObject | undefined {
-        if (this.params.length >= 1) {
-            const res = board.determineTile(
-                board.mouseCoords.x,
-                board.mouseCoords.y,
-                CoordModes.Center,
-            );
-            const extParams = {
-                x: this.params[0].x + this.currLayer.layerOffset.x,
-                y: this.params[0].y + this.currLayer.layerOffset.y,
-            };
-            const res2 = rectangleFromPoints(extParams, res);
-            const col = WHITE_50;
-            return new BoardObject(
-                -1,
-                col,
-                {
-                    ellipse: false,
-                    fill: true,
-                    close: true,
-                    rect: true,
-                },
-                [
-                    { x: res2[0], y: res2[1] },
-                    { x: res2[0] + res2[2], y: res2[1] },
-                    { x: res2[0] + res2[2], y: res2[1] + res2[3] },
-                    { x: res2[0], y: res2[1] + res2[3] },
-                ],
-            );
-        } else {
-            return undefined;
-        }
+    getTempObject(): BoardObject {
+        const res = board.determineTile(
+            board.mouseCoords.x,
+            board.mouseCoords.y,
+            CoordModes.Center,
+        );
+        const extParams = {
+            x: this.start.x + this.currLayer.layerOffset.x,
+            y: this.start.y + this.currLayer.layerOffset.y,
+        };
+        const res2 = rectangleFromPoints(extParams, res);
+        const col = WHITE_50;
+        return new BoardObject(
+            -1,
+            col,
+            {
+                ellipse: false,
+                fill: true,
+                close: true,
+                rect: true,
+            },
+            [
+                { x: res2[0], y: res2[1] },
+                { x: res2[0] + res2[2], y: res2[1] },
+                { x: res2[0] + res2[2], y: res2[1] + res2[3] },
+                { x: res2[0], y: res2[1] + res2[3] },
+            ],
+        );
     }
 
     deactivate() {
         this.active = false;
-        this.params = [];
+        this.start = { x: 0, y: 0 };
         this.selectState = 0;
     }
 }
