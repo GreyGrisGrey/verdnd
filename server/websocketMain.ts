@@ -105,9 +105,18 @@ async function handleEvent(event: any, ws: WebSocket) {
         } else if (message.handler === Handler.Game && user && user.has(ws)) {
             let currGame = gameMap.get(Number(message.gameId));
             if (!currGame) {
-                const res = await cli.checkGame(Number(message.gameId));
+                const id = await cli.getIdFromObf(Number(message.gameId));
+                if (id === -1) {
+                    return;
+                }
+                const res = await cli.checkGame(id);
                 if (res) {
-                    await constructGame(Number(message.gameId), gameMap, cli);
+                    await constructGame(
+                        id,
+                        Number(message.gameId),
+                        gameMap,
+                        cli,
+                    );
                     currGame = gameMap.get(Number(message.gameId));
                     if (!currGame) {
                         return;

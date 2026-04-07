@@ -58,7 +58,7 @@ export class PostGresData {
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text, BgColour text, BgImage boolean)`,
+                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text, BgColour text, BgImage boolean, GameName text, GameNum int)`,
                 rowMode: 'array',
             });
             await this.client.query({
@@ -222,6 +222,44 @@ export class PostGresData {
         }
     }
 
+    async checkGameObf(gameNum: number): Promise<boolean> {
+        try {
+            const res = await this.client.query({
+                text: `SELECT GameId FROM mainschema.games WHERE GameNum = ${gameNum}`,
+                rowMode: 'array',
+            });
+            if (res.rows.length > 0) {
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.log(
+                `Database error: Could not get game with num ${gameNum}`,
+                err,
+            );
+            return false;
+        }
+    }
+
+    async getIdFromObf(gameNum: number): Promise<number> {
+        try {
+            const res = await this.client.query({
+                text: `SELECT GameId FROM mainschema.games WHERE GameNum = ${gameNum}`,
+                rowMode: 'array',
+            });
+            if (res.rows.length > 0) {
+                return res.rows[0][0];
+            }
+            return -1;
+        } catch (err) {
+            console.log(
+                `Database error: Could not get game with Num ${gameNum}`,
+                err,
+            );
+            return -1;
+        }
+    }
+
     // Checks the existence of a game.
     async checkGame(gameId: number): Promise<boolean> {
         try {
@@ -317,7 +355,7 @@ export class PostGresData {
     async getUserGames(gmId: string): Promise<false | any[][]> {
         try {
             const res = await this.client.query({
-                text: `SELECT GameId FROM mainschema.games WHERE GmId = '${gmId}'`,
+                text: `SELECT GameNum FROM mainschema.games WHERE GmId = '${gmId}'`,
                 rowMode: 'array',
             });
             return res.rows;
@@ -512,9 +550,10 @@ export class PostGresData {
                 rowMode: 'array',
             };
             const result = await this.client.query(query);
+            const newNum = await this.obfuscateId(result.rows[0]);
 
             await this.client.query({
-                text: `INSERT INTO mainschema.games VALUES ('${result.rows[0]}', '${gmId}', '#444444')`,
+                text: `INSERT INTO mainschema.games VALUES ('${result.rows[0]}', '${gmId}', '#444444', null, null, ${newNum})`,
                 rowMode: 'array',
             });
             await this.client.query({
@@ -528,6 +567,19 @@ export class PostGresData {
             console.log('Database error: Could not construct new game', err);
             return false;
         }
+    }
+
+    // Function to somewhat obfuscate game Id so it's more difficult to find random games by checking random urls.
+    // Not in any way meant to be cryptographically secure.
+    async obfuscateId(gameId: number): Promise<number> {
+        for (let i = 0; i < 5; i++) {
+            const newVal = Math.round(Math.random() * 1000000000) + 1000000000;
+            const res = await this.checkGameObf(newVal);
+            if (!res) {
+                return newVal;
+            }
+        }
+        return -1;
     }
 
     // Checks if the supplied password matches the goal password.

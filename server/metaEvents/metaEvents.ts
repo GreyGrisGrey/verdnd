@@ -9,14 +9,15 @@ import { WebSocketData } from '../wsData.ts';
 // Function for constructing a new game object in the server's cache of game objects.
 export async function constructGame(
     gameId: number,
+    gameNum: number,
     gameMap: Map<number, GameObject>,
     cli: PostGresData,
 ): Promise<boolean> {
     if (gameMap.has(gameId)) {
         return true;
     }
-    const newGame = new GameObject(gameId);
-    gameMap.set(gameId, newGame);
+    const newGame = new GameObject(gameId, gameNum);
+    gameMap.set(gameNum, newGame);
     const res = await newGame.setUp(cli);
     if (!res) {
         createLayer(newGame, cli);

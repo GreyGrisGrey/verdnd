@@ -25,6 +25,7 @@ export class GameObject {
     finishedSetup: boolean;
     allGm: boolean;
     gameId: number;
+    gameNum: number;
     objectLock: boolean;
     layerLock: boolean;
     diceLock: boolean;
@@ -33,7 +34,7 @@ export class GameObject {
     count: number;
     image: boolean;
 
-    constructor(gameId: number) {
+    constructor(gameId: number, gameNum: number) {
         this.owner = '';
         this.objectMap = new Map();
         this.layerMap = new Map();
@@ -50,6 +51,7 @@ export class GameObject {
 
         this.allGm = true;
         this.gameId = gameId;
+        this.gameNum = gameNum;
 
         // Having a database mutex on a per game basis does indeed defeat the entire purpose.
         // Should be moved into the database server itself instead.
