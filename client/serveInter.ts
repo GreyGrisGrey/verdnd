@@ -23,12 +23,12 @@ import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RollMenu } from './rightBar/rollBarMenu.ts';
 import { TooltipManager, TooltipMode } from './tooltip.ts';
 import { ObjectMenu } from './rightBar/objectBarMenu.ts';
+import { updateLoadText } from './loadMan.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
 const layerMan = new LayerMenu();
 const loadWall = getRequiredElement('loadBlock', HTMLElement);
-const loadText = getRequiredElement('loadText', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const rightCan1 = getRequiredElement('topObjContainer', HTMLElement);
@@ -104,6 +104,8 @@ export class TempStore {
         // No doubt a better way of doing this exists, but also it's so minor I don't care.
         const online = true;
 
+        updateLoadText();
+
         if (online) {
             this.socket = new WebSocket('wss://verDnD.ca/');
         } else {
@@ -119,12 +121,12 @@ export class TempStore {
             if (message.entity === Entity.Name && message.accepted) {
                 if (!this.connected) {
                     this.connected = true;
-                    loadText.innerText = 'Connecting to game';
+                    updateLoadText('Connecting to game');
                     this.connectLocal();
                 } else {
                     this.id = message.id;
                     localStorage['id'] = message.id;
-                    loadText.innerText = 'Loading game';
+                    updateLoadText('Loading game');
                     this.isGm = message.gm;
                     console.log('logged in successfully.');
                     modeMan.toggleModeSwitcher(this.isGm);
@@ -266,7 +268,7 @@ export class TempStore {
             this.connected = false;
             loadWall.style.visibility = 'visible';
             loadWall.style.pointerEvents = 'auto';
-            loadText.innerText = 'Disconnected, attempting reconnect';
+            updateLoadText('Disconnected, attempting reconnect');
             this.attemptReconnect();
         };
 
