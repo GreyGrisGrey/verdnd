@@ -8,7 +8,7 @@
         "target": "ES2024",
         "skipLibCheck": true
     },
-    "include": ["clientOut.ts", "toolcool-color-picker.min.js"],
+    "include": ["clientOut.ts"],
     "exclude": ["node_modules/"],
     "moduleResolution": "nodenext",
     "resolveJsonModule": true
