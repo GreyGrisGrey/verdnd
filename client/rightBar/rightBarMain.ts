@@ -176,6 +176,7 @@ export class RightBarManager {
 
     updateSizes() {
         const barHeight = `${Math.min(800, window.innerHeight - 50)}px`;
+        console.log(barHeight);
         rightBar.style.height = barHeight;
         layerBox.style.height = barHeight;
         chatBox.style.height = barHeight;

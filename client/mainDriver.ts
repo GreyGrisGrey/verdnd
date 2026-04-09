@@ -7,6 +7,7 @@ import { BottomBarManager } from './bottomBarMain.ts';
 import { TopBarManager } from './topBarMain.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 import { getRequiredElement } from './dom.ts';
+import { updateLoadBoxSize } from './loadMan.ts';
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const modeMan = new ModeManager();
@@ -28,12 +29,14 @@ async function setup() {
 function updateObjectSizes() {
     if (can.height !== window.innerHeight) {
         can.height = window.innerHeight;
+        rightMan.updateSizes();
+        updateLoadBoxSize();
     }
     if (can.width !== window.innerWidth) {
         can.width = window.innerWidth;
         topMan.updateSize();
         tooltips.updateSizes();
-        rightMan.updateSizes();
+        updateLoadBoxSize();
     }
 }
 
