@@ -4,6 +4,7 @@ import { ModeManager } from './boardCanvas/modeManager.ts';
 const tooltipManager = new TooltipManager();
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const modeMan = new ModeManager();
+const measureBox = getRequiredElement('measureBox', HTMLElement);
 
 export class BottomBarManager {
     boxDrawItems: HTMLButtonElement[];
@@ -47,6 +48,8 @@ export class BottomBarManager {
     // Updates the location of the bottom bar.
     updateSizes() {
         bottomBar.style.left = window.innerWidth / 2 - 300 + 'px';
+        // Should this be here? I'm not sure, but I don't immediately see a better alternative.
+        measureBox.style.left = window.innerWidth / 2 - 200 + 'px';
     }
 
     // Adds event listeners

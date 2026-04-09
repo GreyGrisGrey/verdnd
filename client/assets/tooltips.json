@@ -149,6 +149,9 @@
             {
                 "boldText": "Hotkey 8 : ",
                 "text": "Measure distance from cursor location"
+            },
+            {
+                "text": "Click this box to change measurement variables"
             }
         ],
         "view9": [

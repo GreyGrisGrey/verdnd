@@ -22,8 +22,6 @@ const bottomBar = getRequiredElement('bottomBar', HTMLElement);
 const board = new Board();
 const layerMan = new LayerMenu();
 const storedLayers: Map<number, BoardLayer> = new Map();
-const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
-const measureLabel = getRequiredElement('measureDegreesLabel', HTMLElement);
 
 export enum Mode {
     View = 'VIEW',
@@ -206,10 +204,6 @@ export class ModeManager {
         this.currMode = newMode;
         this.modes[this.currMode].flipListeners(true);
         this.buttons[this.currMode].disabled = true;
-        measureDegrees.style.visibility =
-            this.currMode === Mode.View ? 'visible' : 'hidden';
-        measureLabel.style.visibility =
-            this.currMode === Mode.View ? 'visible' : 'hidden';
     }
 
     // Checks if the user has selected an area of the canvas.

@@ -1,3 +1,10 @@
+<div id="measureBox">
+    <p id="measureDegreesLabel">Measuring tool degrees : </p>
+    <input type="text" id="measureDegrees" />
+    <p id="measureSizeLabel">One square is : </p>
+    <input type="text" id="measureSize" />
+</div>
+
 <div id="bottomBar">
     <div class="bottomBox" id="bottomBox1">
         <button class="bottomButton" id="bottomDrawBox1">Select</button>
@@ -52,6 +59,46 @@
 </div>
 
 <style>
+    #measureBox {
+        position: absolute;
+        left: 200px;
+        top: 40px;
+        width: 400px;
+        height: 60px;
+        background: rgba(30, 30, 30, 1);
+        visibility: hidden;
+        border-radius: 10px;
+        z-index: 2;
+    }
+
+    #measureDegreesLabel {
+        position: absolute;
+        left: 10px;
+        top: -10px;
+        font-size: 15px;
+        color: #eeeeee;
+    }
+
+    #measureDegrees {
+        position: absolute;
+        left: 165px;
+        top: 5px;
+    }
+
+    #measureSizeLabel {
+        position: absolute;
+        left: 10px;
+        font-size: 15px;
+        top: 20px;
+        color: #eeeeee;
+    }
+
+    #measureSize {
+        position: absolute;
+        left: 165px;
+        top: 35px;
+    }
+
     #bottomBar {
         position: absolute;
         height: 60px;

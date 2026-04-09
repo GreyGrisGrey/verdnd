@@ -11,6 +11,8 @@ const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
+const measureSize = getRequiredElement('measureSize', HTMLInputElement);
+const measureBox = getRequiredElement('measureBox', HTMLElement);
 
 // Class handling canvas' view mode.
 export class BoardViewMode {
@@ -21,6 +23,8 @@ export class BoardViewMode {
     completeSelectCheck: boolean;
     selectedToken: BoardObject | null;
     layerOffset: Vec2;
+    measureOn: boolean;
+    measureSize: number;
 
     constructor() {
         this.active = true;
@@ -33,6 +37,14 @@ export class BoardViewMode {
         this.completeSelectCheck = false;
         this.selectedToken = null;
         measureDegrees.value = '360';
+        measureSize.value = '5';
+        this.measureOn = false;
+        this.measureSize = 5;
+    }
+
+    togglePopup(newState: boolean = !this.measureOn) {
+        this.measureOn = newState;
+        measureBox.style.visibility = newState ? 'visible' : 'hidden';
     }
 
     // Updates the layer offset for the purposes of token selection.
@@ -49,6 +61,7 @@ export class BoardViewMode {
         this.completeSelectCheck = false;
         this.selectedToken = null;
         this.toggleBoxes();
+        this.togglePopup(false);
     }
 
     // Sets up control buttons for viewing/clicking.
@@ -61,7 +74,11 @@ export class BoardViewMode {
                 ),
             );
             this.boxItems[i - 5].addEventListener('click', () => {
-                this.handleSwitchEvent(i.toString());
+                if (i !== 8) {
+                    this.handleSwitchEvent(i.toString());
+                } else {
+                    this.handleSwitchEvent('ToggleMeasureBox');
+                }
             });
         }
     }
@@ -97,6 +114,8 @@ export class BoardViewMode {
             this.start.x = 0;
             this.start.y = 0;
             this.measuring = false;
+        } else if (key === 'ToggleMeasureBox') {
+            this.togglePopup();
         }
     }
 
@@ -173,7 +192,7 @@ export class BoardViewMode {
             ctx.font = '20px serif';
             ctx.fillStyle = '#eeeeee';
             ctx.textAlign = 'center';
-            const newText = `${Math.round(rad2 * 500) / 100} feet`;
+            const newText = `${Math.round(rad2 * 100 * this.measureSize) / 100} feet`;
             const textSize = ctx.measureText(newText).width;
             ctx.fillRect(
                 res3.x - textSize / 2 - 5,
@@ -216,7 +235,16 @@ export class BoardViewMode {
             let value = Number(measureDegrees.value);
             if (Number.isNaN(value) || value > 360 || value < 0) {
                 measureDegrees.value = '360';
-                value = 360;
+            }
+        });
+
+        measureSize.addEventListener('input', () => {
+            let value = Number(measureSize.value);
+            if (Number.isNaN(value) || value < 0) {
+                measureSize.value = '5';
+                this.measureSize = 5;
+            } else {
+                this.measureSize = value;
             }
         });
 
