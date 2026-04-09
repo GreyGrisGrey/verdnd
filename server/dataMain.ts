@@ -160,7 +160,7 @@ export class PostGresData {
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.rolls${newId} (Id int PRIMARY KEY, Result int NOT NULL, UserId text, ResultData text)`,
+                text: `CREATE TABLE mainschema.rolls${newId} (Id int PRIMARY KEY, Result int NOT NULL, UserId text, UserName text, ResultData text)`,
                 rowMode: 'array',
             });
             await this.client.query({
@@ -562,7 +562,7 @@ export class PostGresData {
             });
             this.gameLock = false;
             await this.constructGameTables(result.rows[0]);
-            return result.rows[0];
+            return newNum;
         } catch (err) {
             console.log('Database error: Could not construct new game', err);
             return false;

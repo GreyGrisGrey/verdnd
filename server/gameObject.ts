@@ -221,9 +221,9 @@ export class GameObject {
         await new Promise((resolve) => setTimeout(resolve, 500));
         const res = await cli.getGame(this.gameId);
         if (res) {
-            this.objectMap = res[0] as any;
-            this.layerMap = res[1] as any;
-            this.diceMap = res[2] as any;
+            this.objectMap = res[0];
+            this.layerMap = res[1];
+            this.diceMap = res[2];
             for (const [key, val] of this.objectMap) {
                 if (val.object.objectId >= this.currObj) {
                     this.currObj = val.object.objectId + 1;

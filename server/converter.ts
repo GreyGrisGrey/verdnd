@@ -81,10 +81,10 @@ export function rollTableToPayloads(rows: any[]): Map<number, RollComplete> {
     const mapping: Map<number, RollComplete> = new Map();
     for (const row of rows) {
         let structData: SingleRoll[];
-        if (row[3] === '') {
+        if (row[4] === '') {
             structData = [];
         } else {
-            structData = row[3].split(':').map((item: string) => {
+            structData = row[4].split(':').map((item: string) => {
                 let newItem = item.split(',');
                 return {
                     result: Number(newItem[0]),
@@ -99,7 +99,7 @@ export function rollTableToPayloads(rows: any[]): Map<number, RollComplete> {
             id: row[0],
             userId: row[2],
             result: { result: row[1], rolls: structData },
-            userName: row[2],
+            userName: row[3],
         });
     }
     return mapping;
@@ -195,7 +195,7 @@ export function rollPayloadToRow(payload: RollComplete): string {
             return `${item.result},${item.size},${item.exclude}`;
         })
         .join(':');
-    return `(${payload.id}, ${payload.result.result}, '${payload.userId}', '${convertString}')`;
+    return `(${payload.id}, ${payload.result.result}, '${payload.userId}', '${payload.userName}', '${convertString}')`;
 }
 
 // Takes token object and turns it into a row for the database.
