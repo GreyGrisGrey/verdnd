@@ -254,6 +254,12 @@ export interface GameListResultEvent {
     list: Number[];
 }
 
+export interface GameUpdateNameEvent {
+    entity: Entity.Meta;
+    action: Action.Rename;
+    newName: string;
+}
+
 export interface UserStatusUpdateEvent {
     entity: Entity.User;
     action: Action.Update;

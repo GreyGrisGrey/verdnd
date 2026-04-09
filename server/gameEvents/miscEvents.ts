@@ -137,3 +137,10 @@ export async function establishLocalUser(
     currGame.dbLock = false;
     currGame.userLock = false;
 }
+
+// Dummy function for updating game name. Will be set up when I desire to add functionality for this to the client.
+export async function updateGameName(currGame: GameObject, newName: string) {
+    await currGame.waitLock('db');
+    currGame.dbLock = true;
+    currGame.dbLock = false;
+}

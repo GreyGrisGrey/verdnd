@@ -16,7 +16,7 @@ import {
     updateLaser,
     updateBackground,
     establishLocalUser,
-    updateGameImage,
+    updateGameImage, updateGameName
 } from './miscEvents.ts';
 import WebSocket from 'ws';
 import { WebSocketData } from '../wsData.ts';
@@ -73,6 +73,8 @@ export async function handleGameEvent(
     } else if (payload.entity === Entity.Meta && userGm) {
         if (payload.action === Action.Image) {
             updateGameImage(payload.image, currGame, cli);
+        } else if (payload.action === Action.Rename) {
+            
         } else {
             updateBackground(payload.newColour, currGame, cli);
         }
