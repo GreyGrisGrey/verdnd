@@ -21,6 +21,7 @@ export class UserBox {
     toggleActive(newActive: boolean) {
         userContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         userContainer.style.pointerEvents = newActive ? 'auto' : 'none';
+        showUserButton.disabled = newActive;
     }
 
     // Adds a user to the menu.

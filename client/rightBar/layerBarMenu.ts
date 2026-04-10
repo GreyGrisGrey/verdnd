@@ -3,6 +3,7 @@ import { getRequiredElement } from '../dom.ts';
 import { TempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
 import { ModeManager } from '../boardCanvas/modeManager.ts';
+const layerTab = getRequiredElement('layerTab', HTMLButtonElement);
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const currLayerText = getRequiredElement('currLayerText', HTMLElement);
 const layerBottom = getRequiredElement('layerBottom', HTMLElement);
@@ -113,6 +114,7 @@ export class LayerMenu {
         this.active = newAct;
         this.layerObj.style.visibility = this.active ? 'inherit' : 'hidden';
         this.layerObj.style.pointerEvents = this.active ? 'auto' : 'none';
+        layerTab.disabled = newAct;
         this.enterCurrSelect();
     }
 

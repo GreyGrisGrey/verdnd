@@ -8,6 +8,7 @@ const diceContainer = getRequiredElement('diceContainer', HTMLElement);
 const presetContainer = getRequiredElement('presetContainer', HTMLElement);
 const finContainer = getRequiredElement('finalRollContainer', HTMLElement);
 const rollButton = getRequiredElement('rollButton', HTMLButtonElement);
+const showRollButton = getRequiredElement('showRoll', HTMLButtonElement);
 const advButton = getRequiredElement('defaultAdv', HTMLButtonElement);
 const disButton = getRequiredElement('defaultDisadv', HTMLButtonElement);
 
@@ -95,6 +96,7 @@ export class RollBox {
     toggleActive(newActive: boolean) {
         rollContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         rollContainer.style.pointerEvents = newActive ? 'auto' : 'none';
+        showRollButton.disabled = newActive;
     }
 
     setRollElements() {

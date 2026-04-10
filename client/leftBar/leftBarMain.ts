@@ -23,6 +23,12 @@ const board = new Board();
 const tooltipManager = new TooltipManager();
 const modeMan = new ModeManager();
 
+export enum LeftBarPanel {
+    Colour = 'COLOUR',
+    Roll = 'ROLL',
+    User = 'USER',
+}
+
 // Class managing the top-left box.
 // Somewhat poorly named.
 export class LeftBarManager {
@@ -90,7 +96,7 @@ export class LeftBarManager {
         });
 
         showUserButton.addEventListener('click', () => {
-            this.toggleActive('USER');
+            this.toggleActive(LeftBarPanel.User);
         });
 
         showUserButton.addEventListener('mouseenter', () => {
@@ -102,7 +108,7 @@ export class LeftBarManager {
         });
 
         showColourButton.addEventListener('click', () => {
-            this.toggleActive('COLOUR');
+            this.toggleActive(LeftBarPanel.Colour);
         });
 
         showColourButton.addEventListener('mouseenter', () => {
@@ -114,7 +120,7 @@ export class LeftBarManager {
         });
 
         showRollButton.addEventListener('click', () => {
-            this.toggleActive('ROLL');
+            this.toggleActive(LeftBarPanel.Roll);
         });
 
         showRollButton.addEventListener('mouseenter', () => {
@@ -133,27 +139,26 @@ export class LeftBarManager {
                 return;
             }
             if (event.key === 'z' && !modeMan.controlClick) {
-                this.toggleActive('USER');
+                this.toggleActive(LeftBarPanel.User);
             } else if (event.key === 'x' && serveInter.isGm) {
-                this.toggleActive('COLOUR');
+                this.toggleActive(LeftBarPanel.Colour);
             } else if (event.key === 'c') {
-                this.toggleActive('ROLL');
+                this.toggleActive(LeftBarPanel.Roll);
             }
         });
     }
 
     // Toggles the currently active left box submenu.
-    // TODO use an enum here
-    toggleActive(newAct: string) {
-        if (newAct === 'COLOUR') {
+    toggleActive(newAct: LeftBarPanel) {
+        if (newAct === LeftBarPanel.Colour) {
             userBox.toggleActive(false);
             colourBox.toggleActive(true);
             rollBox.toggleActive(false);
-        } else if (newAct === 'ROLL') {
+        } else if (newAct === LeftBarPanel.Roll) {
             userBox.toggleActive(false);
             colourBox.toggleActive(false);
             rollBox.toggleActive(true);
-        } else if (newAct === 'USER') {
+        } else if (newAct === LeftBarPanel.User) {
             userBox.toggleActive(true);
             colourBox.toggleActive(false);
             rollBox.toggleActive(false);

@@ -52,6 +52,11 @@ export class ColourBox {
     toggleActive(newActive: boolean) {
         colourContainer.style.visibility = newActive ? 'inherit' : 'hidden';
         colourContainer.style.pointerEvents = newActive ? 'auto' : 'none';
+        showColourButton.style.backgroundColor = newActive
+            ? 'rgba(50, 50, 50, 1)'
+            : 'rgba(30, 30, 30, 1)';
+        (showColourButton as any).disabled = newActive;
+        (showColourButton as any).toggleButton(newActive);
     }
 
     // Adds relevant event listeners.

@@ -5,6 +5,7 @@ import { ColourBox } from '../leftBar/colourBox.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import type { ObjectCreatePayload } from '../../shared/objectEvents.ts';
+const objectTab = getRequiredElement('objectTab', HTMLButtonElement);
 const topHalf = getRequiredElement('topObjBox', HTMLElement);
 const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
@@ -325,6 +326,7 @@ export class ObjectMenu {
         this.active = newAct;
         objBox.style.visibility = newAct ? 'inherit' : 'hidden';
         objBox.style.pointerEvents = newAct ? 'auto' : 'none';
+        objectTab.disabled = newAct;
     }
 
     // Draws the templates.

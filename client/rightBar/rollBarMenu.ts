@@ -2,6 +2,7 @@ import { getRequiredElement } from '../dom.ts';
 import { RollComplete } from '../../shared/objectEvents.ts';
 import { ChatBox } from './chatBox.ts';
 const chatBox = getRequiredElement('chatBox', HTMLElement);
+const rollTab = getRequiredElement('rollTab', HTMLButtonElement);
 
 // Class manaing the roll menu on the right bar.
 // Also manages the roll menu on the left bar. Questionable.
@@ -26,6 +27,7 @@ export class RollMenu {
         this.active = newAct;
         chatBox.style.visibility = this.active ? 'inherit' : 'hidden';
         chatBox.style.pointerEvents = this.active ? 'auto' : 'none';
+        rollTab.disabled = newAct;
     }
 
     // Constructs a single chat box for the roll menu.
