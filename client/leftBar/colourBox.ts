@@ -3,6 +3,7 @@ import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';
 import { TempStore } from '../serveInter.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
+import '../../toolcool-color-picker.min.js';
 const tooltipManager = new TooltipManager();
 const colourPicker = getRequiredElement('colourPicker', HTMLButtonElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);

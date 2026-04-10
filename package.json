@@ -4,7 +4,14 @@
     "description": "verdDnd server",
     "main": "serveOut.js",
     "scripts": {
-        "test": "ver test"
+        "format": "npx @biomejs/biome format --write",
+        "build:pages": "tsc components.ts && node components.js",
+        "build:client": "python compile.py && call tsc -p tsconfig.json && python compile2.py",
+        "build:server": "esbuild server/websocketMain.ts --bundle --platform=node --outfile=serveOut.js --external:pg --external:ws",
+        "build": "npm run format && npm run build:pages && npm run build:client && npm run build:server",
+        "serve": "npm run build:server && node serveOut.js",
+        "dev": "npm run build && start https://verdnd.ca/ && node serveOut.js",
+        "test": "python compile.py && tsc -p ./test/tsconfig.json && node ./test/clientTest.js"
     },
     "author": "",
     "license": "ISC",
@@ -15,6 +22,7 @@
     },
     "devDependencies": {
         "@types/pg": "^8.18.0",
-        "@types/ws": "^8.18.1"
+        "@types/ws": "^8.18.1",
+        "esbuild": "^0.28.0"
     }
 }
