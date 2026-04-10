@@ -1,8 +1,8 @@
 import { GREY, GREY_DARK } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
-import { ModeManager } from '../boardCanvas/modeManager.ts';
+import { getModeManager } from '../uiSingleton.ts';
 const layerTab = getRequiredElement('layerTab', HTMLButtonElement);
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const currLayerText = getRequiredElement('currLayerText', HTMLElement);
@@ -14,8 +14,6 @@ const deleteButton = getRequiredElement('deleteLayerButton', HTMLElement);
 const upButton = getRequiredElement('layerUpButton', HTMLButtonElement);
 const downButton = getRequiredElement('layerDownButton', HTMLButtonElement);
 const storedLayerStates: Map<number, LayerState> = new Map();
-const serveInter = new TempStore();
-const modeMan = new ModeManager();
 
 // Class managing the right-bar's layer menu.
 // It's questionable that this effectively holds an entirely separate set of objects from localBoard. Something should be done about this.
@@ -53,7 +51,7 @@ export class LayerMenu {
                 return;
             }
             layer.zOrder += 1;
-            serveInter.updateLayer(layer);
+            getTempStore().updateLayer(layer);
             this.moveLayers();
         });
 
@@ -63,7 +61,7 @@ export class LayerMenu {
                 return;
             }
             layer.zOrder -= 1;
-            serveInter.updateLayer(layer);
+            getTempStore().updateLayer(layer);
             this.moveLayers();
         });
 
@@ -74,7 +72,7 @@ export class LayerMenu {
                     ? `Layer ${this.currSelect}`
                     : layerRenameInput.value;
             layer.name = layerRenameInput.value;
-            serveInter.updateLayer(layer);
+            getTempStore().updateLayer(layer);
         });
 
         layerXInput.addEventListener('change', () => {
@@ -85,7 +83,7 @@ export class LayerMenu {
                 const layer = storedLayerStates.get(this.currSelect);
                 if (layer) {
                     layer.x = Number(newX);
-                    serveInter.updateLayer(layer);
+                    getTempStore().updateLayer(layer);
                 }
             }
         });
@@ -98,14 +96,14 @@ export class LayerMenu {
                 const layer = storedLayerStates.get(this.currSelect);
                 if (layer) {
                     layer.y = Number(newY);
-                    serveInter.updateLayer(layer);
+                    getTempStore().updateLayer(layer);
                 }
             }
         });
 
         deleteButton.addEventListener('click', () => {
             const targLayer = storedLayerStates.get(this.currSelect)!;
-            serveInter.destroyLayer(targLayer);
+            getTempStore().destroyLayer(targLayer);
         });
     }
 
@@ -120,7 +118,7 @@ export class LayerMenu {
 
     // Calls the server interface to create a new layer.
     createLayer() {
-        serveInter.createLayer();
+        getTempStore().createLayer();
     }
 
     // Updates the input elements to match the given layer state.
@@ -211,8 +209,8 @@ export class LayerMenu {
                 if (this.currSelect !== num) {
                     this.exitCurrSelect();
                     this.currSelect = num;
-                    modeMan.drawMan.updateLayer();
-                    modeMan.viewMan.updateLayerOffset({
+                    getModeManager().drawMan.updateLayer();
+                    getModeManager().viewMan.updateLayerOffset({
                         x: buildData.x,
                         y: buildData.y,
                     });
@@ -226,7 +224,7 @@ export class LayerMenu {
                 const layer = storedLayerStates.get(num);
                 if (layer) {
                     layer.gmVisible = checkVisibleGM.checked;
-                    serveInter.updateLayer(layer);
+                    getTempStore().updateLayer(layer);
                 }
             }
         });
@@ -236,7 +234,7 @@ export class LayerMenu {
                 const layer = storedLayerStates.get(num);
                 if (layer) {
                     layer.playerVisible = checkVisibleAll.checked;
-                    serveInter.updateLayer(layer);
+                    getTempStore().updateLayer(layer);
                 }
             }
         });

@@ -13,26 +13,45 @@ export class PostGresData {
     secClient: Client;
     gameLock: boolean;
     queue: string[];
+    ready: Promise<void>;
 
     constructor() {
+        const host = process.env.PGHOST || 'localhost';
+        const port = Number(process.env.PGPORT || 5432);
+        const user = process.env.PGUSER || 'postgres';
+        const password = process.env.PGPASSWORD;
+        const database = process.env.PGDATABASE || 'boardtest';
+        const secDatabase = process.env.PGSECONDARYDB || 'template1';
         this.client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            port: 5432,
-            database: 'boardtest',
+            user,
+            host,
+            port,
+            database,
+            password,
         });
         this.secClient = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            port: 5432,
-            database: 'template1',
+            user,
+            host,
+            port,
+            database: secDatabase,
+            password,
         });
         this.gameLock = false;
         this.client.on('error', (err) => {
             console.error('something bad has happened!', err.stack);
         });
         this.queue = [];
-        this.client.connect();
+        this.ready = this.client
+            .connect()
+            .then(async () => {
+                await this.constructTables();
+            })
+            .catch((err) => {
+                console.error(
+                    'Database connection unavailable; continuing without DB.',
+                    err.message,
+                );
+            });
     }
 
     // Resets all database data.
@@ -46,27 +65,29 @@ export class PostGresData {
     async constructTables() {
         try {
             await this.client.query({
-                text: `CREATE SCHEMA mainschema`,
+                text: `CREATE SCHEMA IF NOT EXISTS mainschema`,
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.users (UserId text NOT NULL, Username text NOT NULL, Password text NOT NULL)`,
+                text: `CREATE TABLE IF NOT EXISTS mainschema.users (UserId text NOT NULL, Username text NOT NULL, Password text NOT NULL)`,
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.meta (FreeGame int)`,
+                text: `CREATE TABLE IF NOT EXISTS mainschema.meta (FreeGame int)`,
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `CREATE TABLE mainschema.games (GameId int NOT NULL, GmId text, BgColour text, BgImage boolean, GameName text, GameNum int)`,
+                text: `CREATE TABLE IF NOT EXISTS mainschema.games (GameId int NOT NULL, GmId text, BgColour text, BgImage boolean, GameName text, GameNum int)`,
                 rowMode: 'array',
             });
             await this.client.query({
-                text: `INSERT INTO mainschema.meta VALUES (0)`,
+                text: `INSERT INTO mainschema.meta (FreeGame)
+                       SELECT 0
+                       WHERE NOT EXISTS (SELECT 1 FROM mainschema.meta)`,
                 rowMode: 'array',
             });
         } catch (err) {
-            console.log('Database error: Base table already constructed.', err);
+            console.log('Database error: Failed to construct base tables.', err);
         }
     }
 
@@ -433,6 +454,26 @@ export class PostGresData {
                 err,
             );
             return false;
+        }
+    }
+
+    // Gets the next safe object id for a game by checking both objects and tokens tables.
+    async getNextObjectId(gameId: number): Promise<number> {
+        try {
+            const res = await this.client.query({
+                text: `SELECT GREATEST(
+                        COALESCE((SELECT MAX(ObjectId) FROM mainschema.objects${gameId}), -1),
+                        COALESCE((SELECT MAX(Id) FROM mainschema.tokens${gameId}), -1)
+                    ) + 1`,
+                rowMode: 'array',
+            });
+            return Number(res.rows[0][0]);
+        } catch (err) {
+            console.log(
+                `Database error: Could not determine next object id for game ${gameId}`,
+                err,
+            );
+            return -1;
         }
     }
 

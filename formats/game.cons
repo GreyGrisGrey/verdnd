@@ -1,5 +1,6 @@
 ADD	body.html
 ADD	topBar.html
 DIRADD	game/
-INSERT	<script src="./clientOut.js"></script>
+INSERT	<script src="/toolcool-color-picker.min.js"></script>
+INSERT	<script type="module" src="/assets/game.js"></script>
 INSERT	</body>

@@ -2,10 +2,9 @@ import { ColourBox } from './colourBox.ts';
 import { UserBox } from './userBox.ts';
 import { RollBox } from './rollBox.ts';
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
-import { Board } from '../boardCanvas/localBoard.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
-import { ModeManager } from '../boardCanvas/modeManager.ts';
+import { getBoard, getModeManager } from '../uiSingleton.ts';
 const hideLeft = getRequiredElement('hideLeftBar', HTMLButtonElement);
 const leftBar = getRequiredElement('leftBar', HTMLElement);
 const showUserButton = getRequiredElement('showUser', HTMLButtonElement);
@@ -18,10 +17,7 @@ const fileInput = getRequiredElement('fileInput', HTMLInputElement);
 const userBox = new UserBox();
 const colourBox = new ColourBox();
 const rollBox = new RollBox();
-const serveInter = new TempStore();
-const board = new Board();
 const tooltipManager = new TooltipManager();
-const modeMan = new ModeManager();
 
 export enum LeftBarPanel {
     Colour = 'COLOUR',
@@ -58,11 +54,12 @@ export class LeftBarManager {
     // Adds event listeners.
     addEventListeners() {
         changeImage.addEventListener('click', () => {
+            const board = getBoard();
             if (!board.bgImage.drawFlag) {
-                serveInter.bgUpload = true;
+                getTempStore().bgUpload = true;
                 fileInput.click();
             } else {
-                serveInter.removeFile();
+                getTempStore().removeFile();
             }
         });
 
@@ -75,7 +72,7 @@ export class LeftBarManager {
         });
 
         fileInput.addEventListener('change', () => {
-            serveInter.uploadFile();
+            getTempStore().uploadFile();
         });
 
         hideLeft.addEventListener('mouseenter', () => {
@@ -132,6 +129,7 @@ export class LeftBarManager {
         });
 
         document.addEventListener('keydown', (event) => {
+            const modeMan = getModeManager();
             if (
                 document.activeElement &&
                 document.activeElement.tagName === 'INPUT'
@@ -140,7 +138,7 @@ export class LeftBarManager {
             }
             if (event.key === 'z' && !modeMan.controlClick) {
                 this.toggleActive(LeftBarPanel.User);
-            } else if (event.key === 'x' && serveInter.isGm) {
+            } else if (event.key === 'x' && getTempStore().isGm) {
                 this.toggleActive(LeftBarPanel.Colour);
             } else if (event.key === 'c') {
                 this.toggleActive(LeftBarPanel.Roll);

@@ -28,12 +28,28 @@ export async function createObj(
         updateObj(newObject, currGame, cli);
         return;
     }
-    currGame.objectMap.set(currGame.currObj, newObject);
+
+    const nextId = await cli.getNextObjectId(currGame.gameId);
+    if (nextId < 0) {
+        currGame.objectLock = false;
+        return;
+    }
+    currGame.currObj = Math.max(currGame.currObj, nextId);
     newObject.object.objectId = currGame.currObj;
+    currGame.objectMap.set(currGame.currObj, newObject);
     const sendObj = JSON.stringify(newObject);
     await currGame.waitLock('db');
     currGame.dbLock = true;
-    cli.addObject(currGame.gameId, objectPayloadToRow(newObject));
+    const objectAdded = await cli.addObject(
+        currGame.gameId,
+        objectPayloadToRow(newObject),
+    );
+    if (!objectAdded) {
+        currGame.objectMap.delete(currGame.currObj);
+        currGame.dbLock = false;
+        currGame.objectLock = false;
+        return;
+    }
     if (
         !(await cli.addToken(
             currGame.gameId,
@@ -41,6 +57,7 @@ export async function createObj(
         ))
     ) {
         cli.destroyObject(currGame.gameId, currGame.currObj);
+        currGame.objectMap.delete(currGame.currObj);
         currGame.dbLock = false;
         currGame.objectLock = false;
     } else {

@@ -1,26 +1,35 @@
 import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import { Board, CoordModes } from './localBoard.ts';
+import type { Board } from './localBoard.ts';
+import { CoordModes } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import type {
     ObjectCreatePayload,
     ObjectParams,
 } from '../../shared/objectEvents.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
 import { Selector } from './selector.ts';
+import { getBoard } from '../uiSingleton.ts';
 const selector = new Selector();
 const layerMan = new LayerMenu();
 const colourBox = new ColourBox();
-const board = new Board();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
-const serveInter = new TempStore();
 const objectMan = new ObjectMenu();
+const board = new Proxy({} as Board, {
+    get(_target, prop) {
+        return (getBoard() as any)[prop];
+    },
+    set(_target, prop, value) {
+        (getBoard() as any)[prop] = value;
+        return true;
+    },
+});
 
 export function rectangleFromPoints(point1: Vec2, point2: Vec2): number[] {
     const x = Math.min(point1.x, point2.x);
@@ -187,6 +196,7 @@ export class BoardDrawMode {
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
                 if (this.currDraw < 3) {
+                    const board = getBoard();
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x -
@@ -201,6 +211,7 @@ export class BoardDrawMode {
                         ),
                     );
                 } else if (this.currDraw < 5) {
+                    const board = getBoard();
                     this.params.push(
                         board.determineTile(
                             board.mouseCoords.x,
@@ -210,6 +221,7 @@ export class BoardDrawMode {
                     );
                     this.flipBoxes();
                 } else {
+                    const board = getBoard();
                     objectMan.createObjectFromTemplate(
                         board.determineTile(
                             board.mouseCoords.x -
@@ -232,6 +244,7 @@ export class BoardDrawMode {
                 if (this.params.length === 0) {
                     return;
                 } else if (this.active && this.currDraw < 3) {
+                    const board = getBoard();
                     const res = board.determineTile(
                         board.mouseCoords.x -
                             this.currLayer.layerOffset.x * board.zoomVal * 5,
@@ -295,7 +308,7 @@ export class BoardDrawMode {
         } else {
             return;
         }
-        serveInter.createObject({
+        getTempStore().createObject({
             entity: Entity.Object,
             action: Action.Create,
             object: tempObj,
@@ -330,6 +343,7 @@ export class BoardDrawMode {
             );
         }
         if (this.currDraw < 3 && this.params.length >= 1) {
+            const board = getBoard();
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,

@@ -1,9 +1,8 @@
 import { getRequiredElement } from './dom.ts';
 import { TooltipManager, TooltipMode } from './tooltip.ts';
-import { ModeManager } from './boardCanvas/modeManager.ts';
+import { getModeManager } from './uiSingleton.ts';
 const tooltipManager = new TooltipManager();
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
-const modeMan = new ModeManager();
 const measureBox = getRequiredElement('measureBox', HTMLElement);
 
 export class BottomBarManager {
@@ -78,6 +77,7 @@ export class BottomBarManager {
             });
 
             this.boxSelectItems[i].addEventListener('mouseenter', () => {
+                const modeMan = getModeManager();
                 if (modeMan.selectMan.selectedObjects.length === 1) {
                     tooltipManager.updateTooltipData(
                         TooltipMode.Bottom,

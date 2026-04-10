@@ -1,11 +1,11 @@
 import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import { Board, CoordModes } from './localBoard.ts';
+import { CoordModes } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { rectangleFromPoints } from './boardDrawMode.ts';
-const board = new Board();
+import { getBoard } from '../uiSingleton.ts';
 
 export class Selector {
     active: boolean;
@@ -26,6 +26,7 @@ export class Selector {
             this.currLayer = newLayer;
         }
         this.active = true;
+        const board = getBoard();
         this.start = board.determineTile(
             board.mouseCoords.x -
                 this.currLayer.layerOffset.x * board.zoomVal * 5,
@@ -36,6 +37,7 @@ export class Selector {
     }
 
     complete() {
+        const board = getBoard();
         const newPos = board.determineTile(
             board.mouseCoords.x -
                 this.currLayer.layerOffset.x * board.zoomVal * 5,
@@ -60,6 +62,7 @@ export class Selector {
     }
 
     getTempObject(): BoardObject {
+        const board = getBoard();
         const res = board.determineTile(
             board.mouseCoords.x,
             board.mouseCoords.y,

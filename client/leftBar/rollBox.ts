@@ -1,8 +1,7 @@
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { RollElement } from './rollElement.ts';
 import { DiceIndividual } from '../../shared/objectEvents.ts';
-const serveInter = new TempStore();
 const rollContainer = getRequiredElement('rollContainer', HTMLElement);
 const diceContainer = getRequiredElement('diceContainer', HTMLElement);
 const presetContainer = getRequiredElement('presetContainer', HTMLElement);
@@ -44,7 +43,7 @@ export class RollBox {
                     });
                 }
             }
-            serveInter.rollNewDice(toSend);
+            getTempStore().rollNewDice(toSend);
         });
 
         advButton.addEventListener('click', () => {
@@ -66,7 +65,7 @@ export class RollBox {
                     toSend.modifier = obj.mainTab.val;
                 }
             }
-            serveInter.rollNewDice(toSend);
+            getTempStore().rollNewDice(toSend);
         });
 
         disButton.addEventListener('click', () => {
@@ -88,7 +87,7 @@ export class RollBox {
                     toSend.modifier = obj.mainTab.val;
                 }
             }
-            serveInter.rollNewDice(toSend);
+            getTempStore().rollNewDice(toSend);
         });
     }
 

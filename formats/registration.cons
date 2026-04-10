@@ -2,4 +2,5 @@ ADD	body.html
 ADD	grid.html
 ADD	topBar.html
 ADD	registration.html
+INSERT	<script type="module" src="/assets/registration.js"></script>
 INSERT	</body>

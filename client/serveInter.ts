@@ -10,20 +10,23 @@ import type {
     RollComplete,
     Token,
 } from '../shared/objectEvents.ts';
-import { Board } from './boardCanvas/localBoard.ts';
 import { Action, Entity, Handler } from '../shared/objectEvents.ts';
 import { BoardObject } from './boardCanvas/boardObject.ts';
 import { BoardLayer } from './boardCanvas/boardLayer.ts';
 import { LayerMenu } from './rightBar/layerBarMenu.ts';
-import { RightBarManager } from './rightBar/rightBarMain.ts';
 import { getRequiredElement } from './dom.ts';
 import { UserBox } from './leftBar/userBox.ts';
-import { ModeManager } from './boardCanvas/modeManager.ts';
-import { LeftBarManager } from './leftBar/leftBarMain.ts';
 import { RollMenu } from './rightBar/rollBarMenu.ts';
 import { TooltipManager, TooltipMode } from './tooltip.ts';
 import { ObjectMenu } from './rightBar/objectBarMenu.ts';
 import { updateLoadText } from './loadMan.ts';
+import { getApiBaseUrl, getWsUrl } from './runtimeConfig.ts';
+import {
+    getBoard,
+    getLeftBarManager,
+    getModeManager,
+    getRightBarManager,
+} from './uiSingleton.ts';
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
 const storedLayerStates: Map<number, LayerState> = new Map();
@@ -35,10 +38,6 @@ const rightCan1 = getRequiredElement('topObjContainer', HTMLElement);
 const rightCan2 = getRequiredElement('bottomObjContainer', HTMLElement);
 const undoButton = getRequiredElement('undoMenuButton', HTMLButtonElement);
 const userBox = new UserBox();
-const rightMan = new RightBarManager();
-const board = new Board();
-const modeMan = new ModeManager();
-const leftMan = new LeftBarManager();
 const rollMan = new RollMenu();
 const tooltipManager = new TooltipManager();
 const objectMan = new ObjectMenu();
@@ -107,7 +106,7 @@ export class TempStore {
         updateLoadText();
 
         if (online) {
-            this.socket = new WebSocket('wss://verDnD.ca/');
+            this.socket = new WebSocket(getWsUrl());
         } else {
             this.socket = new WebSocket('ws://192.168.2.142:8765/');
         }
@@ -129,9 +128,9 @@ export class TempStore {
                     updateLoadText('Loading game');
                     this.isGm = message.gm;
                     console.log('logged in successfully.');
-                    modeMan.toggleModeSwitcher(this.isGm);
-                    rightMan.toggleModeSwitcher(this.isGm);
-                    leftMan.toggleModeSwitcher(this.isGm);
+                    getModeManager().toggleModeSwitcher(this.isGm);
+                    getRightBarManager().toggleModeSwitcher(this.isGm);
+                    getLeftBarManager().toggleModeSwitcher(this.isGm);
                 }
             } else if (message.entity === Entity.Name) {
                 localStorage['id'] = (
@@ -149,7 +148,7 @@ export class TempStore {
                         layerMan.currSelect === message.layerId &&
                         this.isDone
                     ) {
-                        board.updateZLayers();
+                        getBoard().updateZLayers();
                         layerMan.enterCurrSelect();
                     }
                 } else if (storedLayerStates.has(Number(message.layer.id))) {
@@ -160,7 +159,7 @@ export class TempStore {
                 } else {
                     this.createLayerLocal(message.layer);
                 }
-                board.updateZLayers();
+                getBoard().updateZLayers();
                 layerMan.moveLayers();
             } else if (message.entity === Entity.Object) {
                 if (
@@ -169,7 +168,7 @@ export class TempStore {
                 ) {
                     this.storedObjectPayloads.delete(message.objectId);
                     if (board) {
-                        board.removeObject(message.objectId);
+                        getBoard().removeObject(message.objectId);
                     }
                 } else if (message.action === Action.Relayer) {
                     const curr = storedObjects.get(message.objectId);
@@ -201,9 +200,9 @@ export class TempStore {
                             [message.object.objectId],
                         );
                         this.undoCreateTracker.delete(this.secondIndex);
-                        modeMan.clearTemp();
+                        getModeManager().clearTemp();
                         if (
-                            modeMan.drawMan.paste &&
+                            getModeManager().drawMan.paste &&
                             objectMan.currTemplate.currObj.imageObj.drawFlag
                         ) {
                             this.uploadBlob(
@@ -237,20 +236,20 @@ export class TempStore {
                     loadWall.style.pointerEvents = 'none';
                     const curr = storedLayers.get(layerMan.currSelect);
                     if (curr) {
-                        modeMan.viewMan.updateLayerOffset({
+                        getModeManager().viewMan.updateLayerOffset({
                             x: curr.layerOffset.x,
                             y: curr.layerOffset.y,
                         });
                     }
                     layerMan.toggleActive(true);
-                    modeMan.drawMan.updateLayer();
+                    getModeManager().drawMan.updateLayer();
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
                     can.style.background = message.newColour;
                     rightCan1.style.background = message.newColour;
                     rightCan2.style.background = message.newColour;
                 } else if (message.action === Action.Image) {
-                    board.updateImage(message.image);
+                    getBoard().updateImage(message.image);
                 }
             } else if (message.entity === Entity.User) {
                 if (message.action === Action.Update) {
@@ -282,7 +281,7 @@ export class TempStore {
     async attemptReconnect() {
         while (this.socket.readyState !== 1) {
             if (this.socket.readyState === 3) {
-                this.socket = new WebSocket('wss://verDnD.ca/');
+                this.socket = new WebSocket(getWsUrl());
             }
             await new Promise((resolve) => setTimeout(resolve, 1000));
         }
@@ -375,7 +374,7 @@ export class TempStore {
     // Gets the file blob connected to a given object id.
     async getFile(objId: number = -1): Promise<Blob> {
         const fileString =
-            './client/assets/games/' + this.currGame + '/' + objId.toString();
+            '/client/assets/games/' + this.currGame + '/' + objId.toString();
         const response = await fetch(fileString);
         return response.blob();
     }
@@ -383,7 +382,8 @@ export class TempStore {
     // Uploads the blob of a given object. For pasting objects.
     async uploadBlob(objId: number, blob: Blob) {
         const response = await fetch(
-            'https://verdnd.ca/upload/game/' +
+            getApiBaseUrl() +
+                '/upload/game/' +
                 this.currGame +
                 '/' +
                 objId.toString(),
@@ -418,7 +418,8 @@ export class TempStore {
         const formData = new FormData();
         formData.append('file', file);
         const response = await fetch(
-            'https://verdnd.ca/upload/game/' +
+            getApiBaseUrl() +
+                '/upload/game/' +
                 this.currGame +
                 '/' +
                 objId.toString(),
@@ -456,7 +457,8 @@ export class TempStore {
     // Removes a file corresponding to a given object id.
     async removeFile(objId: number = -1) {
         const response = await fetch(
-            'https://verdnd.ca/upload/game/remove/' +
+            getApiBaseUrl() +
+                '/upload/game/remove/' +
                 this.currGame +
                 '/' +
                 objId.toString(),
@@ -663,7 +665,7 @@ export class TempStore {
                 );
                 this.storedObjectPayloads.delete(id);
                 if (board) {
-                    board.removeObject(id);
+                    getBoard().removeObject(id);
                 }
             }
         }
@@ -753,7 +755,7 @@ export class TempStore {
         if (!this.isGm) {
             return;
         }
-        board.clearLayer(input.id);
+        getBoard().clearLayer(input.id);
         this.socket.send(
             this.parcelServeEvent({
                 entity: Entity.Layer,
@@ -801,7 +803,7 @@ export class TempStore {
                 this.parcelServeEvent({
                     entity: Entity.Laser,
                     id: this.id,
-                    colour: board.laserCol,
+                    colour: getBoard().laserCol,
                     coords: { x: x, y: y },
                     time: Date.now(),
                 }),

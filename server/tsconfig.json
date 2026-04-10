@@ -2,19 +2,15 @@
     "compilerOptions": {
         "module": "NodeNext",
         "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
-        "lib": ["ES2024", "ES6", "DOM", "DOM.Iterable"],
-        "target": "ESNext",
+        "lib": ["ES2024"],
+        "target": "ES2024",
         "types": ["node"],
         "moduleResolution": "NodeNext",
-        "paths": {
-            "local/*": ["./node_modules/*"]
-        },
-        "allowJs": true
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "noEmit": true,
+        "skipLibCheck": true
     },
-    "include": ["../serveOut.ts"],
-    "exclude": ["../node_modules"],
-    "moduleResolution": "NodeNext",
-    "resolveJsonModule": true
+    "include": ["./**/*.ts", "../shared/**/*.ts"],
+    "exclude": ["../node_modules", "../dist"]
 }

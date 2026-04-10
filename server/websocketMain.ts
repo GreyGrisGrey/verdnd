@@ -8,20 +8,40 @@ import { Entity } from '../shared/objectEvents.ts';
 import { establishGlobalUser } from './metaEvents/metaEvents.ts';
 import { WebSocketData } from './wsData.ts';
 import { constructServer } from './serverMain.ts';
-const fs = require('fs');
-const path = require('path');
 
 import WebSocket, { WebSocketServer } from 'ws';
 const cli = new PostGresData();
 
-const hostname = '192.168.2.142';
-const port = 443;
+const hostname = process.env.HOST ?? '0.0.0.0';
+const basePort = Number(process.env.PORT ?? 3000);
+const maxPortRetries = 20;
 
 const server = constructServer();
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+let selectedPort = Number.isNaN(basePort) ? 3000 : basePort;
+let retryCount = 0;
+
+server.on('error', (err: any) => {
+    if (err?.code === 'EADDRINUSE' && retryCount < maxPortRetries) {
+        selectedPort += 1;
+        retryCount += 1;
+        console.warn(
+            `Port ${selectedPort - 1} in use, retrying on ${selectedPort}...`,
+        );
+        server.listen(selectedPort, hostname);
+        return;
+    }
+    throw err;
 });
+
+async function startServer() {
+    await cli.ready;
+    server.listen(selectedPort, hostname, () => {
+        console.log(`Server running at http://${hostname}:${selectedPort}/`);
+    });
+}
+
+startServer();
 
 const gameMap: Map<number, GameObject> = new Map();
 const userMap: Map<string, Set<WebSocket>> = new Map();
@@ -30,6 +50,13 @@ let metaDbLock = false;
 let metaUserLock = false;
 
 const wss = new WebSocketServer({ server });
+
+wss.on('error', (err: any) => {
+    if (err?.code === 'EADDRINUSE') {
+        return;
+    }
+    throw err;
+});
 
 wss.on('connection', async function connection(ws) {
     const newConnect = ws;

@@ -39,7 +39,7 @@ export class TooltipManager {
 
     // Gets the tooltip text data.
     async getData() {
-        const response = await fetch('./client/assets/tooltips.json');
+        const response = await fetch('/client/assets/tooltips.json');
         const data = await response.json();
         this.data = [data.left, data.right, data.bottom, data.mode].map(
             (obj: Record<string, TooltipData[]>) =>

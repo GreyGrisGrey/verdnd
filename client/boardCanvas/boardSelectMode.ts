@@ -1,6 +1,6 @@
 import type { BoardObject } from './boardObject.ts';
+import type { Board } from './localBoard.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type {
@@ -11,18 +11,26 @@ import { CoordModes } from './localBoard.ts';
 import { SelectBall } from './selectBall.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { GOLD } from '../../shared/colours.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { ObjectMenu } from '../rightBar/objectBarMenu.ts';
 import { RightBarManager } from '../rightBar/rightBarMain.ts';
+import { getBoard } from '../uiSingleton.ts';
 const objectMan = new ObjectMenu();
 const colourBox = new ColourBox();
-const board = new Board();
+const board = new Proxy({} as Board, {
+    get(_target, prop) {
+        return (getBoard() as any)[prop];
+    },
+    set(_target, prop, value) {
+        (getBoard() as any)[prop] = value;
+        return true;
+    },
+});
 const can = getRequiredElement('board', HTMLCanvasElement);
 const storedLayers: Map<number, BoardLayer> = new Map();
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const nameInput = getRequiredElement('renameTopObj', HTMLInputElement);
-const serveInter = new TempStore();
 const rightMan = new RightBarManager();
 
 // Activates following a completed selection from draw mode or token mode.
@@ -84,7 +92,7 @@ export class BoardSelectMode {
                 movable: obj.token.movable,
             };
             obj.updateToken(newToken);
-            serveInter.updateToken(newToken, obj.objectId);
+            getTempStore().updateToken(newToken, obj.objectId);
         }
     }
 
@@ -98,7 +106,7 @@ export class BoardSelectMode {
                 movable: obj.token.movable,
             };
             obj.updateToken(newToken);
-            serveInter.updateToken(newToken, obj.objectId);
+            getTempStore().updateToken(newToken, obj.objectId);
         }
     }
 
@@ -112,7 +120,7 @@ export class BoardSelectMode {
                 movable: true,
             };
             obj.updateToken(newToken);
-            serveInter.updateToken(newToken, obj.objectId);
+            getTempStore().updateToken(newToken, obj.objectId);
         }
     }
 
@@ -162,7 +170,7 @@ export class BoardSelectMode {
             for (const obj of this.selectedObjects) {
                 idList.push(obj.objectId);
             }
-            serveInter.destroyObjects(idList);
+            getTempStore().destroyObjects(idList);
             this.exitOnNextStep = true;
         } else if (key === '2') {
             this.recolour();
@@ -205,7 +213,7 @@ export class BoardSelectMode {
             return;
         }
         for (const obj of this.selectedObjects) {
-            serveInter.changeObjLayer(obj, up);
+            getTempStore().changeObjLayer(obj, up);
         }
     }
 
@@ -225,7 +233,7 @@ export class BoardSelectMode {
         this.currColour = colourBox.getCurrColour();
         this.selectClick = board.leftMouseDown;
         this.thirdOffset = { x: 0, y: 0 };
-        if (serveInter.isGm) {
+        if (getTempStore().isGm) {
             this.toggleBoxes();
             objectMan.disableSecondary();
         }
@@ -395,7 +403,7 @@ export class BoardSelectMode {
                 y: point.y,
             });
         }
-        serveInter.moveObjects(moveList);
+        getTempStore().moveObjects(moveList);
         this.updateCornerPos(point);
         this.thirdOffset.x = 0;
         this.thirdOffset.y = 0;
@@ -414,7 +422,7 @@ export class BoardSelectMode {
             });
             obj.setColour(colourBox.getCurrColour());
         }
-        serveInter.recolourObjects(recolourList);
+        getTempStore().recolourObjects(recolourList);
         this.currColour = colourBox.getCurrColour();
     }
 

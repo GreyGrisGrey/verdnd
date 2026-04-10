@@ -5,9 +5,8 @@ import type {
     ObjectParams,
 } from '../../shared/objectEvents.ts';
 import { Token } from '../../shared/objectEvents.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { ImageObject } from './imageObject.ts';
-const serveInter = new TempStore();
 
 // General purpose superclass for any shape that appears on the board.
 // Includes tokens, rectangles, polylines.
@@ -114,7 +113,7 @@ export class BoardObject {
         this.setCenter();
         this.setOpac();
         if (sendObj && this.objectId >= 0) {
-            serveInter.updateObject(this.payloadFromObject());
+            getTempStore().updateObject(this.payloadFromObject());
         }
     }
 

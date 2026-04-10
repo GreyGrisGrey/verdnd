@@ -1,16 +1,14 @@
-import { Board } from '../boardCanvas/localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from '../boardCanvas/localBoard.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
+import { getBoard } from '../uiSingleton.ts';
 const tooltipManager = new TooltipManager();
 const colourPicker = getRequiredElement('colourPicker', HTMLButtonElement);
 const colourBackground = getRequiredElement('colourBackground', HTMLElement);
 const colourContainer = getRequiredElement('colourContainer', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const showColourButton = document.getElementById('showColour')!;
-const board = new Board();
-const serveInter = new TempStore();
 
 // Class handling the colour selection box.
 export class ColourBox {
@@ -64,6 +62,7 @@ export class ColourBox {
     addEventListeners() {
         can.addEventListener('mousedown', (event) => {
             if (this.pickColour) {
+                const board = getBoard();
                 const coords = board.determineTile(
                     event.clientX,
                     event.clientY,
@@ -94,7 +93,7 @@ export class ColourBox {
         });
 
         colourBackground.addEventListener('click', () => {
-            serveInter.sendChangeBackground((showColourButton as any).hex);
+            getTempStore().sendChangeBackground((showColourButton as any).hex);
         });
 
         colourBackground.addEventListener('mouseenter', () => {

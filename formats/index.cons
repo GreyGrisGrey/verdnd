@@ -2,4 +2,5 @@ ADD	body.html
 ADD	grid.html
 ADD	index.html
 ADD	topBar.html
+INSERT	<script type="module" src="/assets/landing.js"></script>
 INSERT	</body>

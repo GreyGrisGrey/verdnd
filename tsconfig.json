@@ -1,15 +1,15 @@
 {
     "compilerOptions": {
-        "module": "es6",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
         "noImplicitAny": true,
-        "removeComments": true,
-        "preserveConstEnums": true,
         "lib": ["ES2024", "ES6", "DOM", "DOM.Iterable"],
         "target": "ES2024",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "noEmit": true
     },
-    "include": ["clientOut.ts"],
-    "exclude": ["node_modules/"],
-    "moduleResolution": "nodenext",
-    "resolveJsonModule": true
+    "include": ["client/**/*.ts", "shared/**/*.ts", "components.ts"],
+    "exclude": ["node_modules/", "dist/"]
 }

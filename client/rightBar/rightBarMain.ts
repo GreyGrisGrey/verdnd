@@ -3,7 +3,7 @@ import { LayerMenu } from './layerBarMenu.ts';
 import { RollMenu } from './rollBarMenu.ts';
 import { ObjectMenu } from './objectBarMenu.ts';
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
 const rightBar = getRequiredElement('rightBar', HTMLElement);
 const layerBox = getRequiredElement('layerLayerObj', HTMLElement);
@@ -14,7 +14,6 @@ const characterTab = getRequiredElement('characterTab', HTMLButtonElement);
 const hideRight = getRequiredElement('hideRightBar', HTMLButtonElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
-const serveInter = new TempStore();
 const layerMan = new LayerMenu();
 const objectMan = new ObjectMenu();
 const characterMan = new CharacterMenu();
@@ -120,9 +119,9 @@ export class RightBarManager {
             }
             if (event.key === 'p') {
                 this.updateActive(RightBarTab.Roll);
-            } else if (event.key === 'l' && serveInter.isGm) {
+            } else if (event.key === 'l' && getTempStore().isGm) {
                 this.updateActive(RightBarTab.Layer);
-            } else if (event.key === 'o' && serveInter.isGm) {
+            } else if (event.key === 'o' && getTempStore().isGm) {
                 this.updateActive(RightBarTab.Object);
             }
         });

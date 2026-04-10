@@ -1,19 +1,18 @@
 import { BoardLayer } from './boardLayer.ts';
 import type { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
-import { GetObjectReason, ModeManager } from './modeManager.ts';
+import { GetObjectReason } from './getObjectReason.ts';
 import { BLUE, GREY } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { ImageObject } from './imageObject.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
+import { getModeManager } from '../uiSingleton.ts';
 const layerMan = new LayerMenu();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const storedObjects: Map<number, BoardObject> = new Map();
 const storedLayers: Map<number, BoardLayer> = new Map();
-const serveInter = new TempStore();
-const modeMan = new ModeManager();
 
 export enum CoordModes {
     Vertex = 0,
@@ -67,7 +66,7 @@ export class Board {
             for (const [key, val] of layer.heldMap) {
                 destroyItems.push(key);
             }
-            serveInter.destroyObjects(destroyItems, true);
+            getTempStore().destroyObjects(destroyItems, true);
         }
     }
 
@@ -148,7 +147,7 @@ export class Board {
     // Retrieves objects corresponding to set of coordinates
     selectObjects(
         targetType: string = 'any',
-        coords: Vec2[] = modeMan.getSelectCoords(),
+        coords: Vec2[] = getModeManager().getSelectCoords(),
     ): BoardObject[] {
         const layer = storedLayers.get(layerMan.currSelect);
         if (layer) {
@@ -241,12 +240,13 @@ export class Board {
         for (let i = 0; i < this.zLayers.size; i++) {
             const layer = this.zLayers.get(i);
             if (layer) {
+                const modeMan = getModeManager();
                 layer.drawLayer(
                     ctx,
                     squareSize,
                     this.offset,
                     modeMan.selectMan.thirdOffset,
-                    serveInter.isGm,
+                    getTempStore().isGm,
                 );
                 if (layer.id === layerMan.currSelect) {
                     const tempObj = modeMan.getObject(GetObjectReason.Draw) as
@@ -259,17 +259,17 @@ export class Board {
             }
         }
         this.drawPointGrid(squareSize);
-        if (modeMan.sendLaser) {
+        if (getModeManager().sendLaser) {
             this.drawMousePointer();
         }
-        modeMan.step();
+        getModeManager().step();
     }
 
     // Performs a single drawing step.
     step() {
         ctx.clearRect(0, 0, can.width, can.height);
         this.draw();
-        const newLasers = serveInter.getLasers();
+        const newLasers = getTempStore().getLasers();
         for (const [key, val] of newLasers) {
             if (Date.now() - val.time < 10000) {
                 this.drawLaser(

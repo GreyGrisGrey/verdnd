@@ -8,13 +8,25 @@ import { TopBarManager } from './topBarMain.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 import { getRequiredElement } from './dom.ts';
 import { updateLoadBoxSize } from './loadMan.ts';
+import { setTempStore } from './tempStoreSingleton.ts';
+import {
+    setBoard,
+    setLeftBarManager,
+    setModeManager,
+    setRightBarManager,
+} from './uiSingleton.ts';
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
-const modeMan = new ModeManager();
-const rightMan = new RightBarManager();
-const serveInter = new TempStore();
 const board = new Board();
+setBoard(board);
+const modeMan = new ModeManager();
+setModeManager(modeMan);
+const rightMan = new RightBarManager();
+setRightBarManager(rightMan);
+const serveInter = new TempStore();
+setTempStore(serveInter);
 const leftMan = new LeftBarManager();
+setLeftBarManager(leftMan);
 const topMan = new TopBarManager();
 const tooltips = new BottomBarManager();
 let prevLaser = 0;

@@ -3,23 +3,22 @@ import type { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { BoardSelectMode } from './boardSelectMode.ts';
 import { BoardViewMode } from './boardViewMode.ts';
-import { Board } from './localBoard.ts';
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { TooltipManager, TooltipMode } from '../tooltip.ts';
 import { Selector } from './selector.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { LayerMenu } from '../rightBar/layerBarMenu.ts';
+import { getBoard } from '../uiSingleton.ts';
+import { GetObjectReason } from './getObjectReason.ts';
 const selector = new Selector();
 const tooltipManager = new TooltipManager();
-const serveInter = new TempStore();
 const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
 const selectButton = getRequiredElement('selectMenuButton', HTMLButtonElement);
 const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
-const board = new Board();
 const layerMan = new LayerMenu();
 const storedLayers: Map<number, BoardLayer> = new Map();
 
@@ -29,10 +28,7 @@ export enum Mode {
     Select = 'SELECT',
 }
 
-export enum GetObjectReason {
-    Draw = 'DRAW',
-    Create = 'CREATE',
-}
+export { GetObjectReason };
 
 type BoardMode = BoardViewMode | BoardDrawMode | BoardSelectMode;
 
@@ -132,8 +128,8 @@ export class ModeManager {
         });
 
         can.addEventListener('mousemove', (event) => {
-            board.mouseCoords.x = event.clientX;
-            board.mouseCoords.y = event.clientY;
+            getBoard().mouseCoords.x = event.clientX;
+            getBoard().mouseCoords.y = event.clientY;
         });
 
         document.addEventListener('keydown', (event) => {
@@ -145,12 +141,12 @@ export class ModeManager {
             }
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
-            } else if (event.key === 'd' && serveInter.isGm) {
+            } else if (event.key === 'd' && getTempStore().isGm) {
                 this.modeSwitch(Mode.Draw);
             } else if (event.key === 'Control') {
                 this.controlClick = true;
             } else if (event.key === 'z' && this.controlClick) {
-                serveInter.undoLast();
+                getTempStore().undoLast();
             } else if (event.key === 'Escape') {
                 selector.deactivate();
             }
@@ -166,11 +162,11 @@ export class ModeManager {
             'mousedown',
             (event) => {
                 if (event.button === 0) {
-                    board.leftMouseDown = true;
+                    getBoard().leftMouseDown = true;
                 } else if (event.button === 1) {
-                    board.midMouseDown = true;
+                    getBoard().midMouseDown = true;
                 } else if (event.button === 2) {
-                    board.rightMouseDown = true;
+                    getBoard().rightMouseDown = true;
                     if (storedLayers.has(layerMan.currSelect)) {
                         selector.activate(
                             storedLayers.get(layerMan.currSelect)!,
@@ -185,11 +181,11 @@ export class ModeManager {
             'mouseup',
             (event) => {
                 if (event.button === 0) {
-                    board.leftMouseDown = false;
+                    getBoard().leftMouseDown = false;
                 } else if (event.button === 1) {
-                    board.midMouseDown = false;
+                    getBoard().midMouseDown = false;
                 } else if (event.button === 2) {
-                    board.rightMouseDown = false;
+                    getBoard().rightMouseDown = false;
                     selector.complete();
                 }
             },
@@ -265,7 +261,7 @@ export class ModeManager {
             this.viewMan.flipListeners(false);
             return;
         }
-        let res: (BoardObject | undefined)[] = board.selectObjects();
+        let res: (BoardObject | undefined)[] = getBoard().selectObjects();
         const selected = res.filter((obj) => obj !== undefined);
         if (selected.length !== 0) {
             selector.deactivate();
@@ -319,7 +315,7 @@ export class ModeManager {
         if (this.currMode !== Mode.Select) {
             this.attemptSelectedSwap();
         } else if (this.hasCompleteSelection()) {
-            let res: (BoardObject | undefined)[] = board.selectObjects();
+            let res: (BoardObject | undefined)[] = getBoard().selectObjects();
             const selected = res.filter((obj) => obj !== undefined);
             if (selected.length !== 0) {
                 this.selectMan.addSelected(selected);

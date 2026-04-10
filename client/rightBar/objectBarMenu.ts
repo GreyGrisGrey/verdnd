@@ -1,6 +1,6 @@
 import { BoardObject } from '../boardCanvas/boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
+import { getTempStore } from '../tempStoreSingleton.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
 import { Action, Entity } from '../../shared/objectEvents.ts';
 import type { Vec2 } from '../../shared/coords.ts';
@@ -10,7 +10,6 @@ const topHalf = getRequiredElement('topObjBox', HTMLElement);
 const bottomHalf = getRequiredElement('bottomObjBox', HTMLElement);
 const objBox = getRequiredElement('objBox', HTMLElement);
 const fileInput = getRequiredElement('fileInput', HTMLInputElement);
-const serveInter = new TempStore();
 const colourBox = new ColourBox();
 
 interface ObjTemplate {
@@ -73,7 +72,7 @@ export class ObjectMenu {
             if (temp.currObj) {
                 temp.currObj.colour = colourBox.getCurrColour();
                 if (!top && this.currSelected.objectId >= 0) {
-                    serveInter.recolourObjects([
+                    getTempStore().recolourObjects([
                         {
                             entity: Entity.Object,
                             action: Action.Recolour,
@@ -123,7 +122,7 @@ export class ObjectMenu {
                     this.currTemplate.currObj.updateImage(false);
                     this.currTemplate.currObj.imageObj.drawFlag = false;
                 } else if (this.loadedTemplate.currObj) {
-                    serveInter.removeFile(this.currSelected.objectId);
+                    getTempStore().removeFile(this.currSelected.objectId);
                 }
             }
         });
@@ -143,7 +142,7 @@ export class ObjectMenu {
                     curr.imageObj.blob = file;
                 }
                 this.changeTopImg = false;
-                serveInter.uploadFile(this.currSelected.objectId);
+                getTempStore().uploadFile(this.currSelected.objectId);
                 this.changeBottomImg = false;
             } else if (this.changeTopImg) {
                 const file = fileInput.files ? fileInput.files[0] : null;
@@ -194,14 +193,14 @@ export class ObjectMenu {
             if (fromChange.currObj.imageObj.drawFlag) {
                 this.updateImage();
             } else {
-                serveInter.removeFile(this.currSelected.objectId);
+                getTempStore().removeFile(this.currSelected.objectId);
             }
         }
     }
 
     // Updates the image on the selected object.
     updateImage() {
-        serveInter.uploadBlob(
+        getTempStore().uploadBlob(
             this.currSelected.objectId,
             this.currTemplate.currObj.imageObj.blob,
         );
@@ -215,7 +214,7 @@ export class ObjectMenu {
                 this.loadedTemplate.activeCheck.checked;
             this.currSelected.token.colour =
                 this.loadedTemplate.currObj.token.colour;
-            serveInter.updateToken(
+            getTempStore().updateToken(
                 this.currSelected.token,
                 this.currSelected.objectId,
             );
@@ -377,7 +376,7 @@ export class ObjectMenu {
             newPoints.push({ x: pt.x + dist.x, y: pt.y + dist.y });
         }
         currCreate.points = newPoints;
-        serveInter.createObject({
+        getTempStore().createObject({
             entity: Entity.Object,
             action: Action.Create,
             object: currCreate,

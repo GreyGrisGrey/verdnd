@@ -62,7 +62,7 @@ export class ImageObject {
     async updateImageSource(objId: number, gameId: number) {
         try {
             const fileString =
-                './client/assets/games/' +
+                '/client/assets/games/' +
                 gameId.toString() +
                 '/obj' +
                 objId.toString() +

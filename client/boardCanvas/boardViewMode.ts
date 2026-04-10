@@ -1,13 +1,10 @@
 import type { Vec2 } from '../../shared/coords.ts';
-import { Board } from './localBoard.ts';
 import type { BoardObject } from './boardObject.ts';
 import { getRequiredElement } from '../dom.ts';
 import { CoordModes } from './localBoard.ts';
-import { ModeManager } from './modeManager.ts';
 import { ColourBox } from '../leftBar/colourBox.ts';
+import { getBoard, getModeManager } from '../uiSingleton.ts';
 const colourBox = new ColourBox();
-const modeMan = new ModeManager();
-const board = new Board();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 const measureDegrees = getRequiredElement('measureDegrees', HTMLInputElement);
@@ -95,13 +92,17 @@ export class BoardViewMode {
     // Handles key press events when view mode is active.
     handleSwitchEvent(key: string) {
         if (key === '6') {
+            const modeMan = getModeManager();
             modeMan.sendLaser = !modeMan.sendLaser;
         } else if (key === '5') {
+            const board = getBoard();
             board.offset.x = window.innerWidth / 2;
             board.offset.y = window.innerHeight / 2;
         } else if (key === '7') {
+            const board = getBoard();
             board.laserCol = colourBox.getCurrColour();
         } else if (key === '8') {
+            const board = getBoard();
             const res = board.determineTile(
                 board.mouseCoords.x,
                 board.mouseCoords.y,
@@ -144,6 +145,7 @@ export class BoardViewMode {
     // Kind of looks not great, something should be done about this.
     // TODO : Do that.
     drawMeasure() {
+        const board = getBoard();
         const squareSize = 5 * board.zoomVal;
         const res = board.determineTile(
             board.mouseCoords.x,
@@ -251,11 +253,12 @@ export class BoardViewMode {
         can.addEventListener('mousemove', (event) => {
             can.focus();
             if (
-                (board.leftMouseDown &&
+                (getBoard().leftMouseDown &&
                     !this.completeSelectCheck &&
                     this.active) ||
-                board.midMouseDown
+                getBoard().midMouseDown
             ) {
+                const board = getBoard();
                 const change: Vec2 = {
                     x: Math.round(board.mouseCoords.x - event.clientX),
                     y: Math.round(board.mouseCoords.y - event.clientY),
@@ -266,6 +269,7 @@ export class BoardViewMode {
 
         can.addEventListener('mousedown', (event) => {
             if (this.active && event.button === 0) {
+                const board = getBoard();
                 const res = board.selectToken(
                     [
                         board.determineTile(
