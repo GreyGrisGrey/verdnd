@@ -1,8 +1,6 @@
 import { getRequiredElement } from '../dom.ts';
-import { TempStore } from '../serveInter.ts';
 import { RollComplete } from '../../shared/objectEvents.ts';
 import { ChatBox } from './chatBox.ts';
-const rightBar = getRequiredElement('rightBar', HTMLElement);
 const chatBox = getRequiredElement('chatBox', HTMLElement);
 
 // Class manaing the roll menu on the right bar.

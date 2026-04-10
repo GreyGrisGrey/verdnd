@@ -14,8 +14,8 @@ export class ChatBox {
         this.index = index;
         this.mainBox = document.createElement('div');
         this.mainBox.style.position = 'absolute';
-        this.mainBox.style.top = this.index * 95 + 'px';
-        this.mainBox.style.width = '250px';
+        this.mainBox.style.top = this.index * 95 + 10 + 'px';
+        this.mainBox.style.width = '230px';
         this.mainBox.style.height = '90px';
         this.mainBox.style.visibility = 'inherit';
         this.mainBox.style.backgroundColor = 'rgba(50, 50, 50, 1)';
@@ -24,6 +24,7 @@ export class ChatBox {
         this.mainBox.style.padding = '10px';
         this.mainBox.style.borderRadius = '7px';
         this.mainBox.style.boxSizing = 'border-box';
+        this.mainBox.style.marginBottom = '10px';
 
         this.roll = isRoll;
 
@@ -31,21 +32,21 @@ export class ChatBox {
         this.textB = document.createElement('p');
         this.textC = document.createElement('p');
 
-        this.textA.style.width = '230px';
+        this.textA.style.width = '210px';
         this.textA.style.overflow = 'auto';
         this.textA.style.visibility = 'inherit';
         this.textA.style.whiteSpace = 'wrap';
         this.textA.style.margin = '0px';
         this.textA.style.padding = '0px';
 
-        this.textB.style.width = '230px';
+        this.textB.style.width = '210px';
         this.textB.style.overflow = 'auto';
         this.textB.style.visibility = 'inherit';
         this.textB.style.whiteSpace = 'wrap';
         this.textB.style.margin = '0px';
         this.textB.style.padding = '0px';
 
-        this.textC.style.width = '230px';
+        this.textC.style.width = '210px';
         this.textC.style.overflow = 'auto';
         this.textC.style.visibility = 'inherit';
         this.textC.style.whiteSpace = 'wrap';

@@ -159,6 +159,9 @@ export class RightBarManager {
             layerTab.style.visibility = 'hidden';
             characterTab.style.visibility = 'hidden';
         } else {
+            layerMan.toggleActive(true);
+            rollMan.toggleActive(false);
+            objectMan.toggleActive(false);
             layerTab.style.visibility = 'inherit';
             objectTab.style.visibility = 'inherit';
             rollTab.style.visibility = 'inherit';
