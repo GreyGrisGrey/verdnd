@@ -121,6 +121,7 @@ export class ColourBox {
                     this.changeSubColour(i);
                 } else {
                     (showColourButton as any).color = this.savedColours[i];
+                    (showColourButton as any).outsideColorChange();
                 }
             });
         });
