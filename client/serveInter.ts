@@ -145,7 +145,10 @@ export class TempStore {
                         layerMan.destroyLayerElement(message.layerId);
                         storedLayers.delete(message.layerId);
                     }
-                    if (layerMan.currSelect === message.layerId) {
+                    if (
+                        layerMan.currSelect === message.layerId &&
+                        this.isDone
+                    ) {
                         board.updateZLayers();
                         layerMan.enterCurrSelect();
                     }

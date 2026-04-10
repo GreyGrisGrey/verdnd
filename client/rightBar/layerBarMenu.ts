@@ -284,6 +284,9 @@ export class LayerMenu {
 
     // Selects the currently selected layer.
     enterCurrSelect() {
+        if (storedLayerStates.size === 0) {
+            return;
+        }
         let layer = storedLayerStates.get(this.currSelect);
         if (!layer) {
             this.currSelect = storedLayerStates.keys().next().value!;
@@ -293,7 +296,6 @@ export class LayerMenu {
             layer.element!.style.background = GREY_DARK.toString();
             this.updateInputs(layer);
         } else {
-            console.log(this.currSelect);
             console.log('Error, layerMan has invalid layer.');
         }
     }

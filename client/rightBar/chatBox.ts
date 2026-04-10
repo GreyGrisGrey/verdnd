@@ -13,18 +13,19 @@ export class ChatBox {
     constructor(isRoll: boolean, index: number) {
         this.index = index;
         this.mainBox = document.createElement('div');
-        this.mainBox.style.position = 'absolute';
-        this.mainBox.style.top = this.index * 95 + 10 + 'px';
+        this.mainBox.style.margin = '0px';
+        if (index !== 0) {
+            this.mainBox.style.marginTop = '10px';
+        }
+        this.mainBox.style.position = 'relative';
         this.mainBox.style.width = '230px';
         this.mainBox.style.height = '90px';
         this.mainBox.style.visibility = 'inherit';
         this.mainBox.style.backgroundColor = 'rgba(50, 50, 50, 1)';
         this.mainBox.style.overflow = 'auto';
-        this.mainBox.style.margin = '0px';
         this.mainBox.style.padding = '10px';
         this.mainBox.style.borderRadius = '7px';
         this.mainBox.style.boxSizing = 'border-box';
-        this.mainBox.style.marginBottom = '10px';
 
         this.roll = isRoll;
 

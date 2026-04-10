@@ -6,19 +6,15 @@ const chatBox = getRequiredElement('chatBox', HTMLElement);
 // Class manaing the roll menu on the right bar.
 // Also manages the roll menu on the left bar. Questionable.
 export class RollMenu {
-    textBox: HTMLElement;
     active: boolean;
     modifier: string;
-    modBox: HTMLElement;
     currChats: HTMLElement[];
     currBoxes: HTMLElement[];
     currElements: Map<number, ChatBox>;
 
     constructor() {
-        this.textBox = getRequiredElement('chatBoxTextBox', HTMLElement);
         this.active = false;
         this.modifier = '0';
-        this.modBox = this.textBox;
         this.currChats = [];
         this.currBoxes = [];
         this.currElements = new Map();
