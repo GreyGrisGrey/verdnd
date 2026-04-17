@@ -44,9 +44,35 @@
     <p id="tooltipText"></p>
 </div>
 
+<div id="settings">
+    <button id="settingsButton"></button>
+    <div id="settingsDropdown">
+        <label id="settingsLightModeLabel"></label>
+        <input id="settingsLightMode"></input>
+        <label id="settingsGameNameLabel"></label>
+        <input id="settingsGameName"></input>
+        <label id="settingsPlayerNameLabel"></label>
+        <input id="settingsPlayerName"></input>
+    </div>
+</div>
+
 <input type="file" id="fileInput">
 
 <style>
+    #settings {
+        position: absolute;
+        right: 20px;
+        top: 0px;
+        z-index: 10;
+    }
+
+    #settingsDropdown {
+        visibility: hidden;
+        pointer-events: none;
+        height: 200px;
+        width: 200px;
+    }
+
     #tooltip {
         position: absolute;
         background: rgba(30, 30, 30, 1);

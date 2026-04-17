@@ -8,6 +8,7 @@ import { TopBarManager } from './topBarMain.ts';
 import { ModeManager } from './boardCanvas/modeManager.ts';
 import { getRequiredElement } from './dom.ts';
 import { updateLoadBoxSize } from './loadMan.ts';
+import { SettingsMenu } from './settingsMenu.ts';
 const storedLayers: Map<number, BoardLayer> = new Map();
 const can = getRequiredElement('board', HTMLCanvasElement);
 const modeMan = new ModeManager();
@@ -17,6 +18,7 @@ const board = new Board();
 const leftMan = new LeftBarManager();
 const topMan = new TopBarManager();
 const tooltips = new BottomBarManager();
+const settingsMenu = new SettingsMenu();
 let prevLaser = 0;
 // The order of events up there is unfortunately quite important.
 // Try not to poke it too much.
