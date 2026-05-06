@@ -49,7 +49,7 @@ export class GameObject {
         this.laserTimer = 0;
         this.finishedSetup = false;
 
-        this.allGm = true;
+        this.allGm = false;
         this.gameId = gameId;
         this.gameNum = gameNum;
 

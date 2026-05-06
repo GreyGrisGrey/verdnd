@@ -427,7 +427,7 @@ export class BoardSelectMode {
         }
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
-            if (!skipSwap) {
+            if (!skipSwap && false) {
                 rightMan.updateActive('OBJECT' as any);
             }
         }

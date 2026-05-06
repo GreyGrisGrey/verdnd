@@ -242,7 +242,9 @@ export class TempStore {
                             y: curr.layerOffset.y,
                         });
                     }
-                    layerMan.toggleActive(true);
+                    if (this.isGm) {
+                        layerMan.toggleActive(true);
+                    }
                     modeMan.drawMan.updateLayer();
                     this.isDone = true;
                 } else if (message.action === Action.Recolour) {
