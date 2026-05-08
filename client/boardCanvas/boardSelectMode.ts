@@ -420,10 +420,12 @@ export class BoardSelectMode {
 
     // Sets the list of currently selected objects.
     setSelected(newObjs: BoardObject[], skipSwap: boolean) {
-        this.selectedObjects = newObjs;
         this.currLayer = storedLayers.get(newObjs[0].layerId)!;
-        for (const obj of this.selectedObjects) {
-            obj.setSelected(true);
+        for (const obj of newObjs) {
+            if (serveInter.isGm || obj.token.active) {
+                obj.setSelected(true);
+                this.selectedObjects.push(obj)
+            }
         }
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
@@ -440,7 +442,7 @@ export class BoardSelectMode {
     addSelected(newObjs: BoardObject[]) {
         let hasAdded = false;
         for (const obj of newObjs) {
-            if (!obj.selected) {
+            if (!obj.selected && (serveInter.isGm || obj.token.active)) {
                 this.selectedObjects.push(obj);
                 obj.setSelected(true);
                 hasAdded = true;
