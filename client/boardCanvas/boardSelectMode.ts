@@ -427,12 +427,14 @@ export class BoardSelectMode {
         }
         if (this.selectedObjects.length === 1) {
             objectMan.updateSecondary(this.selectedObjects[0]);
-            if (!skipSwap && false) {
+            if (!skipSwap && serveInter.isGm) {
                 rightMan.updateActive('OBJECT' as any);
             }
         }
         this.fastExit = skipSwap;
-        this.toggleBoxes();
+        if (serveInter.isGm) {
+            this.toggleBoxes();
+        }
     }
 
     addSelected(newObjs: BoardObject[]) {
@@ -447,7 +449,7 @@ export class BoardSelectMode {
         if (!hasAdded) {
             this.removeSelected(newObjs);
         }
-        if (this.selectedObjects.length !== 0) {
+        if (this.selectedObjects.length !== 0 && serveInter.isGm) {
             this.toggleBoxes();
         }
         if (this.selectedObjects.length === 1) {

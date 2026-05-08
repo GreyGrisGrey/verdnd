@@ -301,6 +301,7 @@ export class ModeManager {
             this.drawMan.toggleBoxes();
         } else if (this.currMode === Mode.View) {
             this.viewMan.flipListeners(true);
+            selector.deactivate();
         }
     }
 
