@@ -1,2 +1,2 @@
-# the dungeons and or the dragons
-they're here
+# VerDnD
+Custom VTT created for myself and a handful of D&D groups. Continual work in progress.
