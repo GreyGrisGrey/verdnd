@@ -424,7 +424,7 @@ export class BoardSelectMode {
         for (const obj of newObjs) {
             if (serveInter.isGm || obj.token.active) {
                 obj.setSelected(true);
-                this.selectedObjects.push(obj)
+                this.selectedObjects.push(obj);
             }
         }
         if (this.selectedObjects.length === 1) {
