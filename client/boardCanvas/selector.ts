@@ -2,7 +2,6 @@ import { BoardObject } from './boardObject.ts';
 import type { Vec2 } from '../../shared/coords.ts';
 import { Board, CoordModes } from './localBoard.ts';
 import { WHITE_50 } from '../../shared/colours.ts';
-import { getRequiredElement } from '../dom.ts';
 import { BoardLayer } from './boardLayer.ts';
 import { rectangleFromPoints } from './boardDrawMode.ts';
 const board = new Board();

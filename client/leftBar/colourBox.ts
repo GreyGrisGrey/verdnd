@@ -39,7 +39,7 @@ export class ColourBox {
         for (const i of [0, 1, 2, 3, 4, 5, 6]) {
             this.adjBoxes.push(getRequiredElement(`col${i + 1}`, HTMLElement));
             this.adjBoxes[i].style.left = `${i * 32.5 + 5}px`;
-            this.adjBoxes[i].style.background = this.savedColours[i].toString();
+            this.adjBoxes[i].style.background = this.savedColours[i];
         }
         this.addEventListeners();
     }
@@ -136,7 +136,6 @@ export class ColourBox {
     // Changes the saved colour of the indicated adjoining colour box.
     changeSubColour(swapId: number = -1) {
         this.savedColours[swapId] = (showColourButton as any).rgba;
-        this.adjBoxes[swapId].style.background =
-            this.savedColours[swapId].toString();
+        this.adjBoxes[swapId].style.background = this.savedColours[swapId];
     }
 }

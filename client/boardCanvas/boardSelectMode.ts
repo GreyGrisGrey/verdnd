@@ -550,7 +550,7 @@ export class BoardSelectMode {
     // Draws the outline surrounding a resized/restructured object.
     drawSkeleton() {
         if (this.selectedObjects.length === 1) {
-            ctx.strokeStyle = GOLD.toString();
+            ctx.strokeStyle = GOLD;
             ctx.lineWidth = 3;
             ctx.stroke(this.currPath);
         }

@@ -178,7 +178,7 @@ export class BoardObject {
             this.ctx = ctx;
         }
         if (this.selected) {
-            ctx.strokeStyle = GOLD.toString();
+            ctx.strokeStyle = GOLD;
             ctx.lineWidth = this.token.active ? 5 : 3;
             ctx.stroke(this.currPath);
         }
@@ -199,10 +199,10 @@ export class BoardObject {
         ) {
             if (!this.drawParams.fill) {
                 ctx.lineWidth = 3;
-                ctx.strokeStyle = this.colour.toString();
+                ctx.strokeStyle = this.colour;
                 ctx.stroke(this.currPath);
             } else {
-                ctx.fillStyle = this.colour.toString();
+                ctx.fillStyle = this.colour;
                 ctx.fill(this.currPath);
             }
         }

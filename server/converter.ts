@@ -136,7 +136,7 @@ export function objectPayloadToRow(payload: ObjectCreateEvent): string {
     newVal += payload.object.params.fill ? 0 : 2;
     newVal += payload.object.params.close ? 0 : 4;
     newVal += payload.object.image ? 0 : 8;
-    let returnString = `(${newVal}, '${payload.object.colour.toString()}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
+    let returnString = `(${newVal}, '${payload.object.colour}', ${payload.object.layerId}, ${payload.object.objectId}, '`;
     returnString += `${(payload.object as any).points
         .map((item: Vec2) => {
             return `${item.x},${item.y}`;
@@ -156,7 +156,7 @@ export function updateObjectToRow(
     newVal += payload.object.image ? 0 : 8;
     return [
         newVal,
-        payload.object.colour.toString(),
+        payload.object.colour,
         (payload.object as any).points
             .map((item: Vec2) => {
                 return `${item.x},${item.y}`;

@@ -1,4 +1,4 @@
-import { GREY, GREY_DARK } from '../../shared/colours.ts';
+import { GREY_DARK } from '../../shared/colours.ts';
 import { getRequiredElement } from '../dom.ts';
 import { TempStore } from '../serveInter.ts';
 import { LayerState } from '../../shared/objectEvents.ts';
@@ -295,7 +295,7 @@ export class LayerMenu {
             layer = storedLayerStates.get(this.currSelect);
         }
         if (layer) {
-            layer.element!.style.background = GREY_DARK.toString();
+            layer.element!.style.background = GREY_DARK;
             this.updateInputs(layer);
         } else {
             console.log('Error, layerMan has invalid layer.');
@@ -307,7 +307,7 @@ export class LayerMenu {
         layerBottom.style.height = `${Number(rightBar.style.height.slice(0, rightBar.style.height.length - 2)) - 350}px`;
         const layer = storedLayerStates.get(this.currSelect);
         if (layer) {
-            layer.element!.style.background = GREY_DARK.toString();
+            layer.element!.style.background = GREY_DARK;
         }
         if (this.layerObj.style.width !== rightBar.style.width) {
             this.layerObj.style.width = rightBar.style.width;

@@ -182,7 +182,7 @@ export class Board {
             while (currY + squareSize > 0) {
                 currY -= squareSize;
             }
-            ctx.fillStyle = GREY.toString();
+            ctx.fillStyle = GREY;
             while (currY < can.height + 100) {
                 ctx.fillRect(currX - 1, currY - 1, 2, 2);
                 currY += squareSize;
@@ -265,11 +265,7 @@ export class Board {
         const newLasers = serveInter.getLasers();
         for (const [key, val] of newLasers) {
             if (Date.now() - val.time < 10000) {
-                this.drawLaser(
-                    val.coords.x,
-                    val.coords.y,
-                    val.colour.toString(),
-                );
+                this.drawLaser(val.coords.x, val.coords.y, val.colour);
             }
         }
     }
