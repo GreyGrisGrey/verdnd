@@ -23,14 +23,15 @@ export class RollElement {
 
 class RollTab {
     val: number;
+    countBox: HTMLInputElement;
     constructor(newBox: HTMLElement, count: number, size: number) {
+        this.countBox = document.createElement('input');
         this.setUpTest(newBox, count, size);
         this.val = 0;
     }
 
     setUpTest(newBox: HTMLElement, count: number, size: number) {
         const newText = document.createElement('p');
-        const setCount = document.createElement('input');
         const plus = document.createElement('input');
         const minus = document.createElement('input');
 
@@ -38,7 +39,7 @@ class RollTab {
         minus.type = 'button';
 
         newBox.append(newText);
-        newBox.append(setCount);
+        newBox.append(this.countBox);
         newBox.append(plus);
         newBox.append(minus);
 
@@ -50,13 +51,13 @@ class RollTab {
         newText.innerText = size === 0 ? 'mod' : `d${size}`;
         newText.style.textAlign = 'center';
 
-        setCount.style.position = 'absolute';
-        setCount.style.width = '25px';
-        setCount.style.height = '15px';
-        setCount.style.top = `${count * 30 + 5}px`;
-        setCount.style.left = `${59}px`;
-        setCount.style.textAlign = 'center';
-        setCount.value = '0';
+        this.countBox.style.position = 'absolute';
+        this.countBox.style.width = '25px';
+        this.countBox.style.height = '15px';
+        this.countBox.style.top = `${count * 30 + 5}px`;
+        this.countBox.style.left = `${59}px`;
+        this.countBox.style.textAlign = 'center';
+        this.countBox.value = '0';
 
         plus.style.position = 'absolute';
         plus.style.width = '20px';
@@ -74,22 +75,27 @@ class RollTab {
 
         plus.addEventListener('click', () => {
             this.val++;
-            setCount.value = this.val.toString();
+            this.countBox.value = this.val.toString();
         });
 
         minus.addEventListener('click', () => {
             this.val--;
-            setCount.value = this.val.toString();
+            this.countBox.value = this.val.toString();
         });
 
-        setCount.addEventListener('change', () => {
-            if (!this.validateVal(setCount.value)) {
-                setCount.value = '0';
+        this.countBox.addEventListener('change', () => {
+            if (!this.validateVal(this.countBox.value)) {
+                this.countBox.value = '0';
             } else {
                 this.limitVal();
-                setCount.value = this.val.toString();
+                this.countBox.value = this.val.toString();
             }
         });
+    }
+
+    updateVal(newVal: number) {
+        this.val = newVal;
+        this.countBox.value = this.val.toString();
     }
 
     validateVal(newInput: string) {

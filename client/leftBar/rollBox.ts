@@ -35,6 +35,7 @@ export class RollBox {
             for (const obj of this.rollElements) {
                 if (obj.size === 0) {
                     toSend.modifier = obj.mainTab.val;
+                    obj.mainTab.updateVal(0);
                 } else {
                     toRoll.push({
                         diceSize: obj.size,
@@ -42,6 +43,7 @@ export class RollBox {
                         dropLow: 0,
                         dropHigh: 0,
                     });
+                    obj.mainTab.updateVal(0);
                 }
             }
             serveInter.rollNewDice(toSend);

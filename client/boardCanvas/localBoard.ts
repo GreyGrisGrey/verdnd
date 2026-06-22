@@ -182,15 +182,8 @@ export class Board {
             while (currY + squareSize > 0) {
                 currY -= squareSize;
             }
+            ctx.fillStyle = GREY.toString();
             while (currY < can.height + 100) {
-                if (
-                    currX <= this.offset.x &&
-                    currX + squareSize >= this.offset.x
-                ) {
-                    ctx.fillStyle = GREY.toString();
-                } else {
-                    ctx.fillStyle = GREY.toString();
-                }
                 ctx.fillRect(currX - 1, currY - 1, 2, 2);
                 currY += squareSize;
             }
