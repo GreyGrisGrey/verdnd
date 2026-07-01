@@ -40,7 +40,13 @@ export function constructServer(): Server {
                     res.writeHead(404, { 'Content-Type': 'text/plain' });
                     res.end('404 Not Found');
                 } else {
-                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    if (path.extname(filePath) === '.js') {
+                        res.writeHead(200, {
+                            'Content-Type': 'text/javascript',
+                        });
+                    } else {
+                        res.writeHead(200, { 'Content-Type': 'text/html' });
+                    }
                     res.end(data);
                 }
             });
