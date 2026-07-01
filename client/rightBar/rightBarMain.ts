@@ -22,21 +22,36 @@ const rollMan = new RollMenu();
 const tooltipManager = new TooltipManager();
 
 export enum RightBarTab {
-    None = 'NONE',
     Layer = 'LAYER',
     Object = 'OBJECT',
     Roll = 'ROLL',
     Character = 'CHARACTER',
 }
 
+type RightBarMenu = ObjectMenu | LayerMenu | CharacterMenu | RollMenu;
+
 // Class managing the right bar and its constituent menues.
 export class RightBarManager {
     currActive: RightBarTab;
     visible: boolean;
+    buttons: Record<RightBarTab, HTMLButtonElement>;
+    menus: Record<RightBarTab, RightBarMenu>;
 
     constructor() {
         this.currActive = RightBarTab.Layer;
         this.visible = true;
+        this.buttons = {
+            LAYER: layerTab,
+            OBJECT: objectTab,
+            ROLL: rollTab,
+            CHARACTER: characterTab,
+        };
+        this.menus = {
+            LAYER: layerMan,
+            OBJECT: objectMan,
+            ROLL: rollMan,
+            CHARACTER: characterMan,
+        };
         rightBar.style.width = '250px';
         this.addEventListeners();
     }
@@ -51,53 +66,22 @@ export class RightBarManager {
 
     // Adds relevant event listeners to each tab object.
     addEventListeners() {
-        layerTab.addEventListener('click', () => {
-            this.updateActive(RightBarTab.Layer);
-        });
+        for (const tab of Object.values(RightBarTab)) {
+            this.buttons[tab].addEventListener('click', () => {
+                this.updateActive(tab);
+            });
 
-        layerTab.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Right, 'layers');
-        });
+            this.buttons[tab].addEventListener('mouseenter', () => {
+                tooltipManager.updateTooltipData(
+                    TooltipMode.Right,
+                    tab.toLowerCase(),
+                );
+            });
 
-        layerTab.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
-
-        objectTab.addEventListener('click', () => {
-            this.updateActive(RightBarTab.Object);
-        });
-
-        objectTab.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Right, 'obj');
-        });
-
-        objectTab.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
-
-        rollTab.addEventListener('click', () => {
-            this.updateActive(RightBarTab.Roll);
-        });
-
-        rollTab.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Right, 'roll');
-        });
-
-        rollTab.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
-
-        characterTab.addEventListener('click', () => {
-            this.updateActive(RightBarTab.Character);
-        });
-
-        characterTab.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Right, 'char');
-        });
-
-        characterTab.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
+            this.buttons[tab].addEventListener('mouseleave', () => {
+                tooltipManager.disable();
+            });
+        }
 
         hideRight.addEventListener('click', () => {
             this.visible = !this.visible;
@@ -136,53 +120,21 @@ export class RightBarManager {
     }
 
     updateActive(newActive: RightBarTab) {
-        if (newActive === RightBarTab.Layer) {
-            layerMan.toggleActive(true);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(false);
-            characterMan.toggleActive(false);
-        } else if (newActive === RightBarTab.Roll) {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(true);
-            objectMan.toggleActive(false);
-            characterMan.toggleActive(false);
-        } else if (newActive === RightBarTab.Object) {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(true);
-            characterMan.toggleActive(false);
-            objectMan.updateSizes(Math.min(800, window.innerHeight - 50));
-            objectMan.draw();
-        } else if (newActive === RightBarTab.Character) {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(false);
-            characterMan.toggleActive(true);
-        }
+        this.menus[this.currActive].toggleActive(false);
+        this.menus[newActive].toggleActive(true);
         this.currActive = newActive;
     }
 
     // Toggles which menus should be visible given if the user is a gm or not.
     toggleModeSwitcher(gm: boolean) {
         if (!gm) {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(true);
-            objectMan.toggleActive(false);
-            characterMan.toggleActive(false);
-            this.currActive = RightBarTab.Roll;
+            this.updateActive(RightBarTab.Roll);
             layerTab.style.visibility = 'hidden';
             objectTab.style.visibility = 'hidden';
             rollTab.style.visibility = 'hidden';
             characterTab.style.visibility = 'hidden';
         } else {
-            layerMan.toggleActive(true);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(false);
-            characterMan.toggleActive(false);
-            layerTab.style.visibility = 'inherit';
-            objectTab.style.visibility = 'inherit';
-            rollTab.style.visibility = 'inherit';
-            characterTab.style.visibility = 'inherit';
+            this.updateActive(RightBarTab.Layer);
         }
     }
 

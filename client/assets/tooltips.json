@@ -64,7 +64,7 @@
                 "right": "60px"
             }
         ],
-        "layers": [
+        "layer": [
             {
                 "boldText": "Hotkey L : ",
                 "text": "Layer menu"
@@ -85,7 +85,7 @@
                 "text": "Displays rolls"
             }
         ],
-        "obj": [
+        "object": [
             {
                 "boldText": "Hotkey O : ",
                 "text": "Object menu"
@@ -100,7 +100,7 @@
                 "text": "Outline colour and object name are only visible when an object is marked as an active token"
             }
         ],
-        "char": [
+        "character": [
             {
                 "boldText": "Hotkey K : ",
                 "text": "Character menu"
@@ -414,15 +414,15 @@
                 "text": "Add objects to the board"
             },
             {
-                "boldText": "Left click/Left click + drag : ",
+                "boldText": "Left click : ",
                 "text": "Draw current object type"
             },
             {
-                "boldText": "Middle click + drag : ",
+                "boldText": "Middle click : ",
                 "text": "Pan camera"
             },
             {
-                "boldText": "Right click + drag : ",
+                "boldText": "Right click : ",
                 "text": "Select objects"
             },
             {
@@ -439,15 +439,15 @@
                 "text": "Move tokens and measure objects"
             },
             {
-                "boldText": "Left click + drag : ",
+                "boldText": "Left click : ",
                 "text": "Move token/pan camera"
             },
             {
-                "boldText": "Middle click + drag : ",
+                "boldText": "Middle click : ",
                 "text": "Pan camera"
             },
             {
-                "boldText": "Right click + drag : ",
+                "boldText": "Right click : ",
                 "text": "Select objects"
             },
             {
@@ -471,15 +471,15 @@
                 "text": "Select and modify objects"
             },
             {
-                "boldText": "Left click + drag : ",
+                "boldText": "Left click : ",
                 "text": "Move selected/pan camera"
             },
             {
-                "boldText": "Middle click + drag : ",
+                "boldText": "Middle click : ",
                 "text": "Pan camera"
             },
             {
-                "boldText": "Right click/Right click + drag : ",
+                "boldText": "Right click : ",
                 "text": "Select object/objects"
             },
             {

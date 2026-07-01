@@ -327,6 +327,8 @@ export class ObjectMenu {
         objBox.style.visibility = newAct ? 'inherit' : 'hidden';
         objBox.style.pointerEvents = newAct ? 'auto' : 'none';
         objectTab.disabled = newAct;
+        this.updateSizes(Math.min(800, window.innerHeight - 50));
+        this.draw();
     }
 
     // Draws the templates.

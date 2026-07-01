@@ -13,9 +13,6 @@ import { LayerMenu } from '../rightBar/layerBarMenu.ts';
 const selector = new Selector();
 const tooltipManager = new TooltipManager();
 const serveInter = new TempStore();
-const viewButton = getRequiredElement('viewMenuButton', HTMLButtonElement);
-const selectButton = getRequiredElement('selectMenuButton', HTMLButtonElement);
-const drawButton = getRequiredElement('drawMenuButton', HTMLButtonElement);
 const modeMenu = getRequiredElement('modeMenu', HTMLElement);
 const can = getRequiredElement('board', HTMLCanvasElement);
 const bottomBar = getRequiredElement('bottomBar', HTMLElement);
@@ -62,9 +59,9 @@ export class ModeManager {
             SELECT: this.selectMan,
         };
         this.buttons = {
-            DRAW: drawButton,
-            VIEW: viewButton,
-            SELECT: selectButton,
+            DRAW: getRequiredElement('drawMenuButton', HTMLButtonElement),
+            VIEW: getRequiredElement('viewMenuButton', HTMLButtonElement),
+            SELECT: getRequiredElement('selectMenuButton', HTMLButtonElement),
         };
         this.selectClick = false;
         this.boxItems = [];
@@ -95,41 +92,22 @@ export class ModeManager {
 
     // Adds event listeners for all modes, as well as some of its own.
     addEventListeners() {
-        viewButton.addEventListener('click', () => {
-            this.modeSwitch(Mode.View);
-        });
+        for (const mode of Object.values(Mode)) {
+            this.buttons[mode].addEventListener('click', () => {
+                this.modeSwitch(mode);
+            });
 
-        viewButton.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Mode, 'view');
-        });
+            this.buttons[mode].addEventListener('mouseenter', () => {
+                tooltipManager.updateTooltipData(
+                    TooltipMode.Mode,
+                    mode.toLowerCase(),
+                );
+            });
 
-        viewButton.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
-
-        drawButton.addEventListener('click', () => {
-            this.modeSwitch(Mode.Draw);
-        });
-
-        drawButton.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Mode, 'draw');
-        });
-
-        drawButton.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
-
-        selectButton.addEventListener('click', () => {
-            this.modeSwitch(Mode.Select);
-        });
-
-        selectButton.addEventListener('mouseenter', () => {
-            tooltipManager.updateTooltipData(TooltipMode.Mode, 'select');
-        });
-
-        selectButton.addEventListener('mouseleave', () => {
-            tooltipManager.disable();
-        });
+            this.buttons[mode].addEventListener('mouseleave', () => {
+                tooltipManager.disable();
+            });
+        }
 
         can.addEventListener('mousemove', (event) => {
             board.mouseCoords.x = event.clientX;
@@ -145,6 +123,8 @@ export class ModeManager {
             }
             if (event.key === 'a') {
                 this.modeSwitch(Mode.View);
+            } else if (event.key === 's') {
+                this.modeSwitch(Mode.Select);
             } else if (event.key === 'd' && serveInter.isGm) {
                 this.modeSwitch(Mode.Draw);
             } else if (event.key === 'Control') {
