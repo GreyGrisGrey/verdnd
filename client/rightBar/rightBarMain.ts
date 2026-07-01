@@ -88,10 +88,15 @@ export class RightBarManager {
         });
 
         characterTab.addEventListener('click', () => {
-            layerMan.toggleActive(false);
-            rollMan.toggleActive(false);
-            objectMan.toggleActive(false);
-            this.currActive = RightBarTab.Character;
+            this.updateActive(RightBarTab.Character);
+        });
+
+        characterTab.addEventListener('mouseenter', () => {
+            tooltipManager.updateTooltipData(TooltipMode.Right, 'char');
+        });
+
+        characterTab.addEventListener('mouseleave', () => {
+            tooltipManager.disable();
         });
 
         hideRight.addEventListener('click', () => {
@@ -124,6 +129,8 @@ export class RightBarManager {
                 this.updateActive(RightBarTab.Layer);
             } else if (event.key === 'o' && serveInter.isGm) {
                 this.updateActive(RightBarTab.Object);
+            } else if (event.key === 'k' && serveInter.isGm) {
+                this.updateActive(RightBarTab.Character);
             }
         });
     }
@@ -133,16 +140,24 @@ export class RightBarManager {
             layerMan.toggleActive(true);
             rollMan.toggleActive(false);
             objectMan.toggleActive(false);
+            characterMan.toggleActive(false);
         } else if (newActive === RightBarTab.Roll) {
             layerMan.toggleActive(false);
             rollMan.toggleActive(true);
             objectMan.toggleActive(false);
-        } else if ((newActive = RightBarTab.Object)) {
+            characterMan.toggleActive(false);
+        } else if (newActive === RightBarTab.Object) {
             layerMan.toggleActive(false);
             rollMan.toggleActive(false);
             objectMan.toggleActive(true);
+            characterMan.toggleActive(false);
             objectMan.updateSizes(Math.min(800, window.innerHeight - 50));
             objectMan.draw();
+        } else if (newActive === RightBarTab.Character) {
+            layerMan.toggleActive(false);
+            rollMan.toggleActive(false);
+            objectMan.toggleActive(false);
+            characterMan.toggleActive(true);
         }
         this.currActive = newActive;
     }
@@ -153,18 +168,21 @@ export class RightBarManager {
             layerMan.toggleActive(false);
             rollMan.toggleActive(true);
             objectMan.toggleActive(false);
+            characterMan.toggleActive(false);
             this.currActive = RightBarTab.Roll;
-            rollTab.style.visibility = 'hidden';
-            objectTab.style.visibility = 'hidden';
             layerTab.style.visibility = 'hidden';
+            objectTab.style.visibility = 'hidden';
+            rollTab.style.visibility = 'hidden';
             characterTab.style.visibility = 'hidden';
         } else {
             layerMan.toggleActive(true);
             rollMan.toggleActive(false);
             objectMan.toggleActive(false);
+            characterMan.toggleActive(false);
             layerTab.style.visibility = 'inherit';
             objectTab.style.visibility = 'inherit';
             rollTab.style.visibility = 'inherit';
+            characterTab.style.visibility = 'inherit';
         }
     }
 
