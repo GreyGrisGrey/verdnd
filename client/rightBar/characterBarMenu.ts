@@ -1,5 +1,5 @@
 import { getRequiredElement } from '../dom.ts';
-import { CharacterSheet } from '../../shared/characterSheet.ts';
+import { CharacterSheet } from '../../shared/character/characterSheet.ts';
 const characterTab = getRequiredElement('characterTab', HTMLButtonElement);
 
 export class CharacterMenu {
