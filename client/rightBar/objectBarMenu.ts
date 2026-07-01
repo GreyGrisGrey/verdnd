@@ -334,31 +334,24 @@ export class ObjectMenu {
     // Draws the templates.
     draw() {
         if (this.currTemplate.currObj) {
-            const curr = this.currTemplate.currObj;
-            const tl = curr.getTopLeft();
-            const br = curr.getBottomRight();
-            this.ctx1.clearRect(0, 0, 100, 100);
-            const size = { x: br.x - tl.x, y: br.y - tl.y };
-            const scale = Math.min(100 / size.x, 100 / size.y);
-            const offset = { x: scale * size.x, y: scale * size.y };
-            curr.draw(this.ctx1, scale, {
-                x: -tl.x * scale + (100 - offset.x) / 2,
-                y: -tl.y * scale + (100 - offset.y) / 2,
-            });
+            this.drawCtx(this.ctx1, this.currTemplate.currObj);
         }
         if (this.loadedActive && this.loadedTemplate.currObj) {
-            const curr = this.loadedTemplate.currObj;
-            const tl = curr.getTopLeft();
-            const br = curr.getBottomRight();
-            this.ctx2.clearRect(0, 0, 100, 100);
-            const size = { x: br.x - tl.x, y: br.y - tl.y };
-            const scale = Math.min(100 / size.x, 100 / size.y);
-            const offset = { x: scale * size.x, y: scale * size.y };
-            curr.draw(this.ctx2, scale, {
-                x: -tl.x * scale + (100 - offset.x) / 2,
-                y: -tl.y * scale + (100 - offset.y) / 2,
-            });
+            this.drawCtx(this.ctx2, this.loadedTemplate.currObj);
         }
+    }
+
+    drawCtx(currCtx: CanvasRenderingContext2D, currObj: BoardObject) {
+        const tl = currObj.getTopLeft();
+        const br = currObj.getBottomRight();
+        currCtx.clearRect(0, 0, 100, 100);
+        const size = { x: br.x - tl.x, y: br.y - tl.y };
+        const scale = Math.min(100 / size.x, 100 / size.y);
+        const offset = { x: scale * size.x, y: scale * size.y };
+        currObj.draw(currCtx, scale, {
+            x: -tl.x * scale + (100 - offset.x) / 2,
+            y: -tl.y * scale + (100 - offset.y) / 2,
+        });
     }
 
     updateSizes(height: number) {

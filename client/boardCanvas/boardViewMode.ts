@@ -293,38 +293,31 @@ export class BoardViewMode {
 
         // Changes the zoom level when scrolled
         can.addEventListener('wheel', (event) => {
-            if (true) {
+            if (
+                (event.deltaY < 0 &&
+                    board.zoomGlobal < board.zoomLevels.length - 1) ||
+                (event.deltaY > 0 && board.zoomGlobal > 0)
+            ) {
                 const old = board.zoomVal;
                 if (
                     event.deltaY < 0 &&
                     board.zoomGlobal < board.zoomLevels.length - 1
                 ) {
                     board.zoomGlobal += 1;
-                    board.zoomVal = board.zoomLevels[board.zoomGlobal];
-                    const originDist: Vec2 = {
-                        x: board.mouseCoords.x - board.offset.x,
-                        y: board.mouseCoords.y - board.offset.y,
-                    };
-                    const goals: Vec2 = {
-                        x: (originDist.x * board.zoomVal) / old,
-                        y: (originDist.y * board.zoomVal) / old,
-                    };
-                    board.offset.x -= goals.x - originDist.x;
-                    board.offset.y -= goals.y - originDist.y;
-                } else if (event.deltaY > 0 && board.zoomGlobal > 0) {
+                } else {
                     board.zoomGlobal -= 1;
-                    board.zoomVal = board.zoomLevels[board.zoomGlobal];
-                    const originDist: Vec2 = {
-                        x: board.mouseCoords.x - board.offset.x,
-                        y: board.mouseCoords.y - board.offset.y,
-                    };
-                    const goals: Vec2 = {
-                        x: (originDist.x * board.zoomVal) / old,
-                        y: (originDist.y * board.zoomVal) / old,
-                    };
-                    board.offset.x -= goals.x - originDist.x;
-                    board.offset.y -= goals.y - originDist.y;
                 }
+                board.zoomVal = board.zoomLevels[board.zoomGlobal];
+                const originDist: Vec2 = {
+                    x: board.mouseCoords.x - board.offset.x,
+                    y: board.mouseCoords.y - board.offset.y,
+                };
+                const goals: Vec2 = {
+                    x: (originDist.x * board.zoomVal) / old,
+                    y: (originDist.y * board.zoomVal) / old,
+                };
+                board.offset.x -= goals.x - originDist.x;
+                board.offset.y -= goals.y - originDist.y;
                 board.offset.x = Math.round(board.offset.x * 10000) / 10000;
                 board.offset.y = Math.round(board.offset.y * 10000) / 10000;
             }

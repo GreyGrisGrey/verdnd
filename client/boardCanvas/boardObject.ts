@@ -182,9 +182,6 @@ export class BoardObject {
             ctx.lineWidth = this.token.active ? 5 : 3;
             ctx.stroke(this.currPath);
         }
-        if (this.token.active) {
-            this.drawToken(this.ctx as any, squareSize, offset);
-        }
         if (
             !this.imageObj.draw(
                 this.currPath,

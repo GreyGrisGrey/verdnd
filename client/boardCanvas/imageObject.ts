@@ -4,7 +4,6 @@ const can = getRequiredElement('board', HTMLCanvasElement);
 const ctx = can.getContext('2d') as CanvasRenderingContext2D;
 
 export class ImageObject {
-    imagePath: string;
     image: any;
     imageOffset: Vec2;
     drawFlag: boolean;
@@ -13,7 +12,6 @@ export class ImageObject {
     height: number;
     blob: Blob;
     constructor() {
-        this.imagePath = '';
         this.image = new Image(300, 300);
         this.imageOffset = { x: 0, y: 0 };
         this.drawFlag = false;
@@ -89,27 +87,20 @@ export class ImageObject {
 
     // Updates the image size so it matches the object's size.
     updateImageSize(width: number, height: number, bg: boolean) {
+        if (!this.drawFlag) {
+            return;
+        }
         if (!bg) {
-            if (
-                this.image.naturalHeight !== width ||
-                this.image.naturalWidth !== height
-            ) {
-                this.image.width = width;
-                this.image.height = height;
-            }
+            this.image.width = width;
+            this.image.height = height;
         } else {
-            if (
-                this.image.naturalHeight !== width ||
-                this.image.naturalWidth !== height
-            ) {
-                const rescaleX = can.width / this.image.naturalWidth;
-                const rescaleY = can.height / this.image.naturalHeight;
-                const minRescale = Math.min(rescaleX, rescaleY);
-                this.image.width = this.image.naturalWidth * minRescale;
-                this.image.height = this.image.naturalHeight * minRescale;
-                this.imageOffset.x = (can.width - this.image.width) / 2;
-                this.imageOffset.y = (can.height - this.image.height) / 2;
-            }
+            const rescaleX = can.width / this.image.naturalWidth;
+            const rescaleY = can.height / this.image.naturalHeight;
+            const minRescale = Math.min(rescaleX, rescaleY);
+            this.image.width = this.image.naturalWidth * minRescale;
+            this.image.height = this.image.naturalHeight * minRescale;
+            this.imageOffset.x = (can.width - this.image.width) / 2;
+            this.imageOffset.y = (can.height - this.image.height) / 2;
         }
     }
 

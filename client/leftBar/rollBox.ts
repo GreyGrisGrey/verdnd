@@ -13,12 +13,10 @@ const advButton = getRequiredElement('defaultAdv', HTMLButtonElement);
 const disButton = getRequiredElement('defaultDisadv', HTMLButtonElement);
 
 export class RollBox {
-    modBox: HTMLElement;
-    modifier: string;
+    modifierElement: RollElement;
     rollElements: RollElement[];
     constructor() {
-        this.modifier = '0';
-        this.modBox = rollContainer;
+        this.modifierElement = new RollElement(0);
         this.rollElements = [];
         this.setRollElements();
         this.addEventListeners();
@@ -63,11 +61,8 @@ export class RollBox {
                 modifier: 0,
                 result: 0,
             };
-            for (const obj of this.rollElements) {
-                if (obj.size === 0) {
-                    toSend.modifier = obj.mainTab.val;
-                }
-            }
+            toSend.modifier = this.modifierElement.mainTab.val;
+            this.modifierElement.mainTab.updateVal(0);
             serveInter.rollNewDice(toSend);
         });
 
@@ -85,11 +80,8 @@ export class RollBox {
                 modifier: 0,
                 result: 0,
             };
-            for (const obj of this.rollElements) {
-                if (obj.size === 0) {
-                    toSend.modifier = obj.mainTab.val;
-                }
-            }
+            toSend.modifier = this.modifierElement.mainTab.val;
+            this.modifierElement.mainTab.updateVal(0);
             serveInter.rollNewDice(toSend);
         });
     }
@@ -109,6 +101,6 @@ export class RollBox {
         this.rollElements.push(new RollElement(12));
         this.rollElements.push(new RollElement(20));
         this.rollElements.push(new RollElement(100));
-        this.rollElements.push(new RollElement(0));
+        this.rollElements.push(this.modifierElement);
     }
 }
