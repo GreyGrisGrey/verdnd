@@ -26,11 +26,13 @@ export class TooltipManager {
     active: boolean;
     data: Map<string, TooltipData[]>[];
     currMode: TooltipMode;
+    rightMod: number;
     activeDiv: HTMLElement;
     constructor() {
         this.active = false;
         this.data = [];
         this.currMode = TooltipMode.Left;
+        this.rightMod = 0;
         this.activeDiv = document.createElement('div');
         this.getData();
         tooltip.style.zIndex = '10';
@@ -121,7 +123,7 @@ export class TooltipManager {
             tooltip.style.width = '100px';
             tooltip.style.fontSize = '14px';
         } else if (this.currMode === TooltipMode.Right) {
-            tooltip.style.right = '320px';
+            tooltip.style.right = `${320 + this.rightMod}px`;
             tooltip.style.top = '40px';
             tooltip.style.left = '';
             tooltip.style.width = '150px';
@@ -140,6 +142,11 @@ export class TooltipManager {
     hardDisable() {
         this.active = false;
         tooltip.style.visibility = 'hidden';
+    }
+
+    updateRightMod(newNum: number) {
+        this.rightMod = newNum;
+        tooltip.style.right = `${320 + this.rightMod}px`;
     }
 
     // Waits a moment and then disables the tooltip if it's not active.

@@ -122,8 +122,15 @@ export class RightBarManager {
     updateActive(newActive: RightBarTab) {
         this.menus[this.currActive].toggleActive(false);
         this.menus[newActive].toggleActive(true);
-        rightBar.style.width =
-            newActive === RightBarTab.Character ? '450px' : '250px';
+        if (newActive === RightBarTab.Character) {
+            rightBar.style.width = '450px';
+            tooltipManager.hardDisable();
+            tooltipManager.updateRightMod(200);
+        } else if (this.currActive === RightBarTab.Character) {
+            rightBar.style.width = '250px';
+            tooltipManager.hardDisable();
+            tooltipManager.updateRightMod(0);
+        }
         this.currActive = newActive;
     }
 
