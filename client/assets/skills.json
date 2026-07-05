@@ -4,7 +4,7 @@
             "name": "Acrobatics",
             "ability": "dexterity"
         },
-        "animal_handling": {
+        "animalHandling": {
             "name": "Animal Handling",
             "ability": "wisdom"
         },
@@ -71,6 +71,148 @@
         "survival": {
             "name": "Survival",
             "ability": "wisdom"
+        }
+    },
+    "artisan": {
+        "alchemist": {
+            "name": "Alchemist's supplies",
+            "ability": "none"
+        },
+        "brewer": {
+            "name": "Brewers's supplies",
+            "ability": "none"
+        },
+        "calligrapher": {
+            "name": "Calligrapher's supplies",
+            "ability": "none"
+        },
+        "carpenter": {
+            "name": "Carpenter's tools",
+            "ability": "none"
+        },
+        "cartographer": {
+            "name": "Cartographer's tools",
+            "ability": "none"
+        },
+        "cobbler": {
+            "name": "Cobbler's tools",
+            "ability": "none"
+        },
+        "cook": {
+            "name": "Cook's utensils",
+            "ability": "none"
+        },
+        "glassblower": {
+            "name": "Glassblower's tools",
+            "ability": "none"
+        },
+        "jeweler": {
+            "name": "Jeweler's tools",
+            "ability": "none"
+        },
+        "leatherworker": {
+            "name": "Leatherworker's tools",
+            "ability": "none"
+        },
+        "mason": {
+            "name": "Mason's tools",
+            "ability": "none"
+        },
+        "painter": {
+            "name": "Painter's supplies",
+            "ability": "none"
+        },
+        "potter": {
+            "name": "Potter's tools",
+            "ability": "none"
+        },
+        "smith": {
+            "name": "Smith's tools",
+            "ability": "none"
+        },
+        "tinker": {
+            "name": "Tinker's tools",
+            "ability": "none"
+        },
+        "weaver": {
+            "name": "Weaver's tools",
+            "ability": "none"
+        },
+        "woodcarver": {
+            "name": "Woodcarver's tools",
+            "ability": "none"
+        }
+    },
+    "musical": {
+        "bagpipes": {
+            "name": "Bagpipes",
+            "ability": "none"
+        },
+        "drum": {
+            "name": "Drums",
+            "ability": "none"
+        },
+        "dulcimer": {
+            "name": "Dilcimer",
+            "ability": "none"
+        },
+        "flute": {
+            "name": "Flute",
+            "ability": "none"
+        },
+        "lute": {
+            "name": "Lute",
+            "ability": "none"
+        },
+        "lyre": {
+            "name": "Lyre",
+            "ability": "none"
+        },
+        "horn": {
+            "name": "Horn",
+            "ability": "none"
+        },
+        "panFlute": {
+            "name": "Pan flute",
+            "ability": "none"
+        },
+        "shawm": {
+            "name": "Shawm",
+            "ability": "none"
+        },
+        "viol": {
+            "name": "Viol",
+            "ability": "none"
+        }
+    },
+    "other": {
+        "dice": {
+            "name": "Dice set",
+            "ability": "none"
+        },
+        "card": {
+            "name": "Playing cards",
+            "ability": "none"
+        },
+        "thieves": {
+            "name": "Thieves' tools",
+            "ability": "dexterity"
+        },
+        "navigator": {
+            "name": "Navigator's tools",
+            "ability": "none"
+        },
+        "vehicleLand": {
+            "name": "Land vehicles",
+            "ability": "none"
+        },
+        "vehicleWater": {
+            "name": "Water vehicles",
+            "ability": "none"
+        },
+        "vehicleAir": {
+            "name": "Air vehicles",
+            "ability": "none"
         }
     }
 }

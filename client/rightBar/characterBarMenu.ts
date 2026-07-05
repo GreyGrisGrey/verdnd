@@ -26,7 +26,7 @@ export class CharacterMenu {
             newBox.append(newName);
             newBox.append(newCheck);
             skillBox.append(newBox);
-            newName.innerText = `${i[1].name}`;
+            newName.innerText = `${i[1].name}, ${i[1].modifier}`;
             if (i[1].proficiency >= 1) {
                 newCheck.checked = true;
             }
@@ -38,6 +38,16 @@ export class CharacterMenu {
             abilityBox.append(newBox);
             newName.innerText = `${i[1].name}, ${i[1].score}`;
         }
+
+        const nameBox = document.createElement('text');
+        const speciesBox = document.createElement('text');
+        const levelBox = document.createElement('text');
+        dataBox.append(nameBox);
+        dataBox.append(speciesBox);
+        dataBox.append(levelBox);
+        nameBox.innerText = `${this.currSheet.name}`;
+        speciesBox.innerText = `${this.currSheet.species}`;
+        levelBox.innerText = `${this.currSheet.getLevel()}`;
     }
 
     toggleActive(newAct: boolean) {
@@ -57,6 +67,7 @@ export class CharacterMenu {
         );
         this.currSheet.setAbilities(this.data[0]);
         this.currSheet.setSkills(this.data[1]);
+        this.currSheet.debugRandomize();
         this.setUpBox();
     }
 }

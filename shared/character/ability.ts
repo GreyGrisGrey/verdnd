@@ -10,5 +10,17 @@ export class Ability {
         this.modifier = 0;
     }
 
-    setScore() {}
+    setScore(num: number) {
+        this.score = num;
+        this.modifier = Math.floor((num - 10) / 2);
+    }
+
+    randomScore() {
+        const nums = [];
+        for (let i = 0; i < 4; i++) {
+            nums.push(Math.ceil(Math.random() * 6));
+        }
+        nums.sort();
+        this.setScore(nums[1] + nums[2] + nums[3]);
+    }
 }

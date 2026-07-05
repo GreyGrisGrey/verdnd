@@ -4,19 +4,22 @@ import { Skill } from './skill.ts';
 export class CharacterSheet {
     name: string;
     game: string;
+    species: string;
     player: string;
     proficiency: number;
-    level: number;
     abilities: Map<string, Ability>;
     skills: Map<string, Skill>;
+    levels: Map<string, number>;
     constructor() {
         this.name = 'grog';
         this.game = 'none';
+        this.species = 'bug';
         this.player = 'none';
         this.proficiency = 2;
-        this.level = 1;
         this.abilities = new Map();
         this.skills = new Map();
+        this.levels = new Map();
+        this.levels.set('total', 1);
     }
 
     setAbilities(abilities: Map<string, string>) {
@@ -37,5 +40,21 @@ export class CharacterSheet {
 
     getSkills() {
         return this.skills;
+    }
+
+    getLevel() {
+        return this.levels.get('total');
+    }
+
+    debugRandomize() {
+        this.abilities.forEach((value: any, key: string) => {
+            value.randomScore();
+        });
+        this.skills.forEach((value: any, key: string) => {
+            if (this.abilities.has(value.ability)) {
+                const abAdd = this.abilities.get(value.ability)!.modifier;
+                value.updateMod(abAdd, this.proficiency);
+            }
+        });
     }
 }
