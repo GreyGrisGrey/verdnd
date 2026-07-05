@@ -59,6 +59,11 @@
         </div>
         <button id="addLayerButton">Make Layer</button>
     </div>
+    <div id="charBox">
+        <div id="dataBox"></div>
+        <div id="abilityBox"></div>
+        <div id="skillBox"></div>
+    </div>
 </div>
 
 <style>
@@ -74,6 +79,13 @@
         pointer-events: auto;
         border-radius: 10px 0px 0px 10px;
         border: none;
+    }
+
+    #charBox {
+        position: absolute;
+        width: 450px;
+        visibility: hidden;
+        pointer-events: none;
     }
 
     #objBox {

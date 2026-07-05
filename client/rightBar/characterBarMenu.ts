@@ -1,6 +1,10 @@
 import { getRequiredElement } from '../dom.ts';
 import { CharacterSheet } from '../../shared/character/characterSheet.ts';
 const characterTab = getRequiredElement('characterTab', HTMLButtonElement);
+const charBox = getRequiredElement('charBox', HTMLElement);
+const abilityBox = getRequiredElement('abilityBox', HTMLElement);
+const skillBox = getRequiredElement('skillBox', HTMLElement);
+const dataBox = getRequiredElement('dataBox', HTMLElement);
 
 export class CharacterMenu {
     active: boolean;
@@ -13,9 +17,34 @@ export class CharacterMenu {
         this.currSheet = new CharacterSheet();
     }
 
+    setUpBox() {
+        for (const i of this.currSheet.getSkills()) {
+            const newBox = document.createElement('div');
+            const newName = document.createElement('text');
+            const newCheck = document.createElement('input');
+            newCheck.type = 'checkbox';
+            newBox.append(newName);
+            newBox.append(newCheck);
+            skillBox.append(newBox);
+            newName.innerText = `${i[1].name}`;
+            if (i[1].proficiency >= 1) {
+                newCheck.checked = true;
+            }
+        }
+        for (const i of this.currSheet.getAbilities()) {
+            const newBox = document.createElement('div');
+            const newName = document.createElement('text');
+            newBox.append(newName);
+            abilityBox.append(newBox);
+            newName.innerText = `${i[1].name}, ${i[1].score}`;
+        }
+    }
+
     toggleActive(newAct: boolean) {
         this.active = newAct;
         characterTab.disabled = newAct;
+        charBox.style.visibility = this.active ? 'inherit' : 'hidden';
+        charBox.style.pointerEvents = this.active ? 'auto' : 'none';
     }
 
     async getData() {
@@ -28,5 +57,6 @@ export class CharacterMenu {
         );
         this.currSheet.setAbilities(this.data[0]);
         this.currSheet.setSkills(this.data[1]);
+        this.setUpBox();
     }
 }

@@ -25,9 +25,17 @@ export class CharacterSheet {
         });
     }
 
+    getAbilities() {
+        return this.abilities;
+    }
+
     setSkills(skills: Map<string, Map<string, string>>) {
         skills.forEach((value: any, key: string) => {
             this.skills.set(key, new Skill(value.name, value.ability));
         });
+    }
+
+    getSkills() {
+        return this.skills;
     }
 }

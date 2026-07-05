@@ -122,6 +122,8 @@ export class RightBarManager {
     updateActive(newActive: RightBarTab) {
         this.menus[this.currActive].toggleActive(false);
         this.menus[newActive].toggleActive(true);
+        rightBar.style.width =
+            newActive === RightBarTab.Character ? '450px' : '250px';
         this.currActive = newActive;
     }
 
