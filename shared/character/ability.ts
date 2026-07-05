@@ -1,12 +1,14 @@
 export class Ability {
-    name: string
+    name: string;
     proficiency: number;
-    default: number;
+    score: number;
     modifier: number;
-    constructor() {
-        this.name = "grog";
+    constructor(name: string) {
+        this.name = name;
         this.proficiency = 0;
-        this.default = 10;
+        this.score = 10;
         this.modifier = 0;
     }
+
+    setScore() {}
 }

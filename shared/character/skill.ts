@@ -1,4 +1,4 @@
-import {Ability} from './ability.ts';
+import { Ability } from './ability.ts';
 
 export enum SkillCalc {
     Default = 'DEFAULT',
@@ -9,11 +9,11 @@ export class Skill {
     name: string;
     proficiency: number;
     calculation: SkillCalc;
-    ability: Ability | null;
-    constructor() {
-        this.name = 'grog';
+    ability: string;
+    constructor(name: string, ability: string) {
+        this.name = name;
         this.proficiency = 0;
         this.calculation = SkillCalc.Default;
-        this.ability = null;
+        this.ability = ability;
     }
 }
